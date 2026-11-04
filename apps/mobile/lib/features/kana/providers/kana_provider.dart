@@ -1,12 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/dio_provider.dart';
+import '../../../core/auth/current_account_provider.dart';
 import '../data/kana_repository.dart';
 import '../data/models/kana_character_model.dart';
 import '../data/models/kana_progress_model.dart';
 import '../data/models/kana_stage_model.dart';
 
 final kanaRepositoryProvider = Provider((ref) {
-  return KanaRepository(ref.watch(dioProvider));
+  final repository = KanaRepository(
+      ref.watch(dioProvider), ref.watch(currentAccountReaderProvider));
+  ref.onDispose(repository.dispose);
+  return repository;
 });
 
 final kanaProgressProvider =

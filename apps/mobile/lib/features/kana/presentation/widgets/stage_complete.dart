@@ -10,6 +10,7 @@ class StageComplete extends StatelessWidget {
   final int quizTotal;
   final int xpEarned;
   final String kanaType;
+  final bool rewardConfirmed;
 
   const StageComplete({
     super.key,
@@ -18,6 +19,7 @@ class StageComplete extends StatelessWidget {
     required this.quizTotal,
     required this.xpEarned,
     required this.kanaType,
+    this.rewardConfirmed = true,
   });
 
   @override
@@ -64,7 +66,7 @@ class StageComplete extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          '+$xpEarned XP',
+                          rewardConfirmed ? '+$xpEarned XP' : '저장된 결과를 확인했어요',
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),

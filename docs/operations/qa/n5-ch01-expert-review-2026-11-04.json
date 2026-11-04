@@ -1,0 +1,5352 @@
+{
+  "schemaVersion": 1,
+  "packetKind": "N5_CH01_EXPERT_REVIEW_SOURCE_SNAPSHOT",
+  "preparedDateKst": "2026-11-04",
+  "baselineCommit": "3bc22f36d4b33a4b9f425f7fcb6153d60afc1456",
+  "status": "PENDING",
+  "operatingContentChanged": false,
+  "operatingSnapshotFetched": false,
+  "sourceManifest": [
+    {
+      "path": "packages/database/data/lessons/n5/ch01-greetings-and-first-meetings.json",
+      "sha256": "a8ee2c2937a728c6c0eceec5c2d9a29cfe7d556f7f2cd4f562c6bb3c6ee52b81"
+    },
+    {
+      "path": "packages/database/data/vocabulary/n5-words.json",
+      "sha256": "563504a54b47881e3aaec6ff31a965bafe3f15b52688ce2839040f3fc51199ef"
+    },
+    {
+      "path": "packages/database/data/grammar/n5-grammar.json",
+      "sha256": "cb5efe3ed6e519bf07ab76a474bb56b4c8928aba0a07b4bc58743bc8f9fb862e"
+    },
+    {
+      "path": "docs/operations/plans/n5-human-audio-qa-ch01-2026-10-26.md",
+      "sha256": "43d474c78b313651129c67cd526e00e05d90ea791cbbd4fbeb71b3c6ada8717e"
+    },
+    {
+      "path": "docs/operations/plans/n5-audio-qa-current-state-2026-10-28.md",
+      "sha256": "7395147d0ccc3f2b579386f16f160cee00273120f62c70905e92b7aa33756fa9"
+    },
+    {
+      "path": "packages/database/data/curriculum/lesson-human-review/n5-pilot-review.json",
+      "sha256": "74e201df801e50d4a0665a4d01db58997d936871ccfbd765472c3ab649c59c16"
+    }
+  ],
+  "counts": {
+    "lessons": 5,
+    "grammar": 5,
+    "vocabularyLinks": 29,
+    "uniqueVocabularyOrders": 27,
+    "dialogueLines": 20,
+    "questions": 25,
+    "contentReviewItems": 84,
+    "audioReviewItems": 45,
+    "recordedPilotReferences": 4
+  },
+  "verdictPolicy": {
+    "allowed": ["PENDING", "PASS", "FLAG", "FAIL", "BLOCKED"],
+    "initial": "PENDING",
+    "aiAssistedApprovedRowsImportedAsPass": false,
+    "audioApprovalRequiresCurrentBindingAndSha": true
+  },
+  "boundaries": [
+    "Local source snapshot is not proof of current operating DB content or audio binding.",
+    "Proposed Can-dos are review proposals, not approved or deployed curriculum.",
+    "Word readings come from existing vocabulary seed; no dialogue furigana was inferred.",
+    "HN5-004 URLs/SHA references are from the 2026-10-28 document, not fresh HTTP/DB verification.",
+    "Other historical URLs are 2026-10-26 evidence; currentAppUrl/currentFileSha256 remain null.",
+    "Existing whole-N5 nine audio packets and verdicts are not changed by this packet.",
+    "Content and audio verdicts are separate axes and must not be summed as unique learning targets."
+  ],
+  "lessons": [
+    {
+      "lessonId": "HN5-001",
+      "sourceLesson": {
+        "lesson_id": "HN5-001",
+        "lesson_no": 1,
+        "chapter_lesson_no": 1,
+        "title": "처음 만난 자리",
+        "subtitle": "です/だ로 기본 자기소개하기",
+        "topic": "자기소개",
+        "estimated_minutes": 10,
+        "grammar": {
+          "pattern": "〜です",
+          "meaning_ko": "~입니다 / ~이에요",
+          "grammar_order": 1,
+          "bunpro_ref": "L1"
+        },
+        "vocab_orders": [503, 605, 74, 7, 6, 594],
+        "vocab_detail": {
+          "503": "はじめまして (처음 뵙겠습니다)",
+          "605": "私 (저)",
+          "74": "名前 (이름)",
+          "7": "学生 (학생)",
+          "6": "先生 (선생님)",
+          "594": "よろしく (잘 부탁합니다)"
+        },
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "대학 오리엔테이션 교실, 옆자리 학생에게 인사",
+            "script": [
+              {
+                "speaker": "田中",
+                "voice_id": "japanese_female_1",
+                "text": "はじめまして。田中です。学生です。",
+                "translation": "처음 뵙겠습니다. 다나카입니다. 학생입니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はじめまして。私はキムです。",
+                "translation": "처음 뵙겠습니다. 저는 김입니다."
+              },
+              {
+                "speaker": "田中",
+                "voice_id": "japanese_female_1",
+                "text": "キムさん、よろしくお願いします。",
+                "translation": "김 씨, 잘 부탁드립니다."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "こちらこそ、よろしくお願いします。",
+                "translation": "저야말로, 잘 부탁드립니다."
+              }
+            ],
+            "highlights": ["です", "はじめまして", "学生", "よろしく"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "vocabulary_order": 503,
+              "cognitive_level": "인식",
+              "prompt": "はじめまして의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "처음 뵙겠습니다"
+                },
+                {
+                  "id": "b",
+                  "text": "감사합니다"
+                },
+                {
+                  "id": "c",
+                  "text": "실례합니다"
+                },
+                {
+                  "id": "d",
+                  "text": "안녕히 가세요"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "はじめまして는 처음 만난 사람에게 하는 인사말입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "vocabulary_order": 7,
+              "cognitive_level": "인식",
+              "prompt": "'학생'의 일본어는?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "先生"
+                },
+                {
+                  "id": "b",
+                  "text": "学生"
+                },
+                {
+                  "id": "c",
+                  "text": "会社"
+                },
+                {
+                  "id": "d",
+                  "text": "大学"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "学生(がくせい)는 '학생'이라는 뜻입니다. 先生(せんせい)는 '선생님'이니 혼동하지 마세요."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "grammar_order": 1,
+              "cognitive_level": "적용",
+              "prompt": "私はキム____。(저는 김입니다.)",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "だけ"
+                },
+                {
+                  "id": "b",
+                  "text": "ます"
+                },
+                {
+                  "id": "c",
+                  "text": "です"
+                },
+                {
+                  "id": "d",
+                  "text": "から"
+                }
+              ],
+              "correct_answer": "c",
+              "explanation": "〜です는 '~입니다'라는 뜻으로, 명사 뒤에 붙여서 정중하게 말합니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "grammar_order": 1,
+              "cognitive_level": "적용",
+              "prompt": "はじめまして。田中____。(처음 뵙겠습니다. 다나카입니다.)",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "でした"
+                },
+                {
+                  "id": "b",
+                  "text": "ません"
+                },
+                {
+                  "id": "c",
+                  "text": "ました"
+                },
+                {
+                  "id": "d",
+                  "text": "です"
+                }
+              ],
+              "correct_answer": "d",
+              "explanation": "자기소개할 때 '이름 + です'로 '~입니다'라고 말합니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "grammar_order": 1,
+              "cognitive_level": "산출유사",
+              "prompt": "'저는 학생입니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["学生", "私は", "です"],
+              "correct_order": ["私は", "学生", "です"],
+              "explanation": "일본어 어순: 주어(私は) + 명사(学生) + です. '는/은'에 해당하는 は가 주어 뒤에 붙습니다."
+            }
+          ]
+        }
+      },
+      "proposedCanDo": "처음 만난 사람에게 인사하고 자신의 이름과 신분을 짧게 말할 수 있다.",
+      "referenceVocabulary": [
+        {
+          "vocabularyOrder": 503,
+          "lessonLabel": "はじめまして (처음 뵙겠습니다)",
+          "referenceWord": {
+            "word": "はじめまして",
+            "reading": "はじめまして",
+            "meaningKo": "처음 뵙겠습니다",
+            "partOfSpeech": "EXPRESSION",
+            "jlptLevel": "N5",
+            "exampleSentence": "はじめまして。よろしくおねがいします。",
+            "exampleReading": "はじめまして。よろしくおねがいします。",
+            "exampleTranslation": "처음 뵙겠습니다. 잘 부탁드립니다.",
+            "tags": [],
+            "order": 503
+          }
+        },
+        {
+          "vocabularyOrder": 605,
+          "lessonLabel": "私 (저)",
+          "referenceWord": {
+            "word": "私",
+            "reading": "わたし",
+            "meaningKo": "저",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "私は韓国人です。",
+            "exampleReading": "わたしはかんこくじんです。",
+            "exampleTranslation": "저는 한국 사람입니다.",
+            "tags": [],
+            "order": 605
+          }
+        },
+        {
+          "vocabularyOrder": 74,
+          "lessonLabel": "名前 (이름)",
+          "referenceWord": {
+            "word": "名前",
+            "reading": "なまえ",
+            "meaningKo": "이름",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "お名前は何ですか。",
+            "exampleReading": "おなまえはなんですか。",
+            "exampleTranslation": "이름이 무엇입니까?",
+            "tags": ["기본", "사람"],
+            "order": 74
+          }
+        },
+        {
+          "vocabularyOrder": 7,
+          "lessonLabel": "学生 (학생)",
+          "referenceWord": {
+            "word": "学生",
+            "reading": "がくせい",
+            "meaningKo": "학생",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "私は大学の学生です。",
+            "exampleReading": "わたしはだいがくのがくせいです。",
+            "exampleTranslation": "저는 대학교 학생입니다.",
+            "tags": ["사람", "학교"],
+            "order": 7
+          }
+        },
+        {
+          "vocabularyOrder": 6,
+          "lessonLabel": "先生 (선생님)",
+          "referenceWord": {
+            "word": "先生",
+            "reading": "せんせい",
+            "meaningKo": "선생님",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "先生はとても優しいです。",
+            "exampleReading": "せんせいはとてもやさしいです。",
+            "exampleTranslation": "선생님은 매우 친절합니다.",
+            "tags": ["사람", "학교"],
+            "order": 6
+          }
+        },
+        {
+          "vocabularyOrder": 594,
+          "lessonLabel": "よろしく (잘 부탁합니다)",
+          "referenceWord": {
+            "word": "よろしく",
+            "reading": "よろしく",
+            "meaningKo": "잘 (+부탁합니다)",
+            "partOfSpeech": "EXPRESSION",
+            "jlptLevel": "N5",
+            "exampleSentence": "どうぞよろしくおねがいします。",
+            "exampleReading": "どうぞよろしくおねがいします。",
+            "exampleTranslation": "잘 부탁드립니다.",
+            "tags": [],
+            "order": 594
+          }
+        }
+      ],
+      "referenceGrammar": {
+        "pattern": "〜です",
+        "meaningKo": "~입니다 / ~이에요",
+        "explanation": "명사나 형용사 뒤에 붙여서 정중하게 말하는 기본적인 표현입니다. 일본어에서 가장 기본이 되는 서술 표현으로, 상대방에게 예의를 갖추어 사실이나 상태를 전달할 때 사용합니다. 한국어의 '~입니다', '~이에요'에 해당합니다.",
+        "jlptLevel": "N5",
+        "exampleSentences": [
+          {
+            "japanese": "私は学生です。",
+            "reading": "わたしはがくせいです。",
+            "korean": "저는 학생입니다."
+          },
+          {
+            "japanese": "これは本です。",
+            "reading": "これはほんです。",
+            "korean": "이것은 책입니다."
+          }
+        ],
+        "order": 1
+      }
+    },
+    {
+      "lessonId": "HN5-002",
+      "sourceLesson": {
+        "lesson_id": "HN5-002",
+        "lesson_no": 2,
+        "chapter_lesson_no": 2,
+        "title": "어디서 오셨나요?",
+        "subtitle": "か로 기본 질문하기",
+        "topic": "질문",
+        "estimated_minutes": 10,
+        "grammar": {
+          "pattern": "〜か",
+          "meaning_ko": "~인가요? / ~입니까?",
+          "grammar_order": 31,
+          "bunpro_ref": "L1"
+        },
+        "vocab_orders": [462, 328, 601, 254, 499, 222],
+        "vocab_detail": {
+          "462": "どこ (어디)",
+          "328": "国 (나라)",
+          "601": "留学生 (유학생)",
+          "254": "英語 (영어)",
+          "499": "はい (네)",
+          "222": "いいえ (아니오)"
+        },
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "대학 국제교류 행사에서 유학생끼리 대화",
+            "script": [
+              {
+                "speaker": "鈴木",
+                "voice_id": "japanese_female_1",
+                "text": "キムさんは留学生ですか。",
+                "translation": "김 씨는 유학생인가요?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい、留学生です。韓国から来ました。",
+                "translation": "네, 유학생입니다. 한국에서 왔습니다."
+              },
+              {
+                "speaker": "鈴木",
+                "voice_id": "japanese_female_1",
+                "text": "そうですか。英語は分かりますか。",
+                "translation": "그렇군요. 영어는 알아요?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい、少し分かります。鈴木さんの国はどこですか。",
+                "translation": "네, 조금 알아요. 스즈키 씨의 나라는 어디인가요?"
+              }
+            ],
+            "highlights": ["ですか", "留学生", "どこ", "英語"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "vocabulary_order": 601,
+              "cognitive_level": "인식",
+              "prompt": "留学生의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "학생"
+                },
+                {
+                  "id": "b",
+                  "text": "유학생"
+                },
+                {
+                  "id": "c",
+                  "text": "선생님"
+                },
+                {
+                  "id": "d",
+                  "text": "회사원"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "留学生(りゅうがくせい)는 외국에서 온 학생, 즉 '유학생'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "vocabulary_order": 462,
+              "cognitive_level": "인식",
+              "prompt": "'어디'를 뜻하는 일본어는?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "いつ"
+                },
+                {
+                  "id": "b",
+                  "text": "なに"
+                },
+                {
+                  "id": "c",
+                  "text": "どこ"
+                },
+                {
+                  "id": "d",
+                  "text": "だれ"
+                }
+              ],
+              "correct_answer": "c",
+              "explanation": "どこ는 '어디'를 뜻합니다. なに는 '무엇', いつ는 '언제', だれ는 '누구'입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "grammar_order": 31,
+              "cognitive_level": "적용",
+              "prompt": "学生です____。(학생인가요?)",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "も"
+                },
+                {
+                  "id": "b",
+                  "text": "よ"
+                },
+                {
+                  "id": "c",
+                  "text": "ね"
+                },
+                {
+                  "id": "d",
+                  "text": "か"
+                }
+              ],
+              "correct_answer": "d",
+              "explanation": "문장 끝에 か를 붙이면 의문문(질문)이 됩니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "grammar_order": 31,
+              "cognitive_level": "적용",
+              "prompt": "国は どこ ____。(나라는 어디인가요?)",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "ですか"
+                },
+                {
+                  "id": "b",
+                  "text": "ですよ"
+                },
+                {
+                  "id": "c",
+                  "text": "ですね"
+                },
+                {
+                  "id": "d",
+                  "text": "でした"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "どこ + ですか로 '어디인가요?'라고 정중하게 질문합니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "grammar_order": 31,
+              "cognitive_level": "산출유사",
+              "prompt": "'김 씨는 유학생인가요?'를 올바른 순서로 배열하세요.",
+              "tokens": ["キムさんは", "ですか", "留学生"],
+              "correct_order": ["キムさんは", "留学生", "ですか"],
+              "explanation": "일본어 의문문: 주어(キムさんは) + 명사(留学生) + ですか. 의문의 か는 맨 끝에 붙습니다."
+            }
+          ]
+        }
+      },
+      "proposedCanDo": "상대가 유학생인지 정중하게 묻고, 자신에 대한 간단한 질문에 대답할 수 있다.",
+      "referenceVocabulary": [
+        {
+          "vocabularyOrder": 462,
+          "lessonLabel": "どこ (어디)",
+          "referenceWord": {
+            "word": "どこ",
+            "reading": "どこ",
+            "meaningKo": "어디",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "学校はどこにありますか。",
+            "exampleReading": "がっこうはどこにありますか。",
+            "exampleTranslation": "학교는 어디에 있습니까?",
+            "tags": [],
+            "order": 462
+          }
+        },
+        {
+          "vocabularyOrder": 328,
+          "lessonLabel": "国 (나라)",
+          "referenceWord": {
+            "word": "国",
+            "reading": "くに",
+            "meaningKo": "나라",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "どの国から来ましたか。",
+            "exampleReading": "どのくにからきましたか。",
+            "exampleTranslation": "어느 나라에서 왔습니까?",
+            "tags": [],
+            "order": 328
+          }
+        },
+        {
+          "vocabularyOrder": 601,
+          "lessonLabel": "留学生 (유학생)",
+          "referenceWord": {
+            "word": "留学生",
+            "reading": "りゅうがくせい",
+            "meaningKo": "유학생",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "私は日本の留学生です。",
+            "exampleReading": "わたしはにほんのりゅうがくせいです。",
+            "exampleTranslation": "저는 일본 유학생입니다.",
+            "tags": [],
+            "order": 601
+          }
+        },
+        {
+          "vocabularyOrder": 254,
+          "lessonLabel": "英語 (영어)",
+          "referenceWord": {
+            "word": "英語",
+            "reading": "えいご",
+            "meaningKo": "영어",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "英語の本を読みます。",
+            "exampleReading": "えいごのほんをよみます。",
+            "exampleTranslation": "영어 책을 읽습니다.",
+            "tags": [],
+            "order": 254
+          }
+        },
+        {
+          "vocabularyOrder": 499,
+          "lessonLabel": "はい (네)",
+          "referenceWord": {
+            "word": "はい",
+            "reading": "はい",
+            "meaningKo": "예. 네",
+            "partOfSpeech": "EXPRESSION",
+            "jlptLevel": "N5",
+            "exampleSentence": "はい、わかりました。",
+            "exampleReading": "はい、わかりました。",
+            "exampleTranslation": "네, 알겠습니다.",
+            "tags": [],
+            "order": 499
+          }
+        },
+        {
+          "vocabularyOrder": 222,
+          "lessonLabel": "いいえ (아니오)",
+          "referenceWord": {
+            "word": "いいえ",
+            "reading": "いいえ",
+            "meaningKo": "아니오",
+            "partOfSpeech": "EXPRESSION",
+            "jlptLevel": "N5",
+            "exampleSentence": "いいえ、違います。",
+            "exampleReading": "いいえ、ちがいます。",
+            "exampleTranslation": "아니오, 다릅니다.",
+            "tags": [],
+            "order": 222
+          }
+        }
+      ],
+      "referenceGrammar": {
+        "pattern": "〜か",
+        "meaningKo": "~인가요? / ~입니까? (의문 조사)",
+        "explanation": "문장 끝에 か를 붙이면 질문(의문문)이 됩니다. 정중체에서는 'です/ます + か'의 형태로 사용하며, 억양을 올릴 필요 없이 か만으로 질문을 나타낼 수 있습니다. 한국어의 '~인가요?', '~합니까?'에 해당합니다.",
+        "jlptLevel": "N5",
+        "exampleSentences": [
+          {
+            "japanese": "学生ですか。",
+            "reading": "がくせいですか。",
+            "korean": "학생인가요?"
+          },
+          {
+            "japanese": "これは何ですか。",
+            "reading": "これはなんですか。",
+            "korean": "이것은 무엇인가요?"
+          }
+        ],
+        "order": 31
+      }
+    },
+    {
+      "lessonId": "HN5-003",
+      "sourceLesson": {
+        "lesson_id": "HN5-003",
+        "lesson_no": 3,
+        "chapter_lesson_no": 3,
+        "title": "이야기 주제 세우기",
+        "subtitle": "は로 화제 정리하기",
+        "topic": "화제",
+        "estimated_minutes": 10,
+        "grammar": {
+          "pattern": "〜は",
+          "meaning_ko": "~은/는 (주제를 나타내는 조사)",
+          "grammar_order": 32,
+          "bunpro_ref": "L1"
+        },
+        "vocab_orders": [80, 27, 30, 226, 5, 7],
+        "vocab_detail": {
+          "80": "仕事 (일, 직업)",
+          "27": "大学 (대학교)",
+          "30": "会社 (회사)",
+          "226": "医者 (의사)",
+          "5": "友達 (친구)",
+          "7": "学生 (학생)"
+        },
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "카페에서 새 친구와 서로의 직업·학교 이야기",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "鈴木さんの仕事は何ですか。",
+                "translation": "스즈키 씨의 직업은 뭔가요?"
+              },
+              {
+                "speaker": "鈴木",
+                "voice_id": "japanese_female_1",
+                "text": "私は医者です。キムさんは？",
+                "translation": "저는 의사입니다. 김 씨는요?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "私は大学の学生です。友達は会社の人です。",
+                "translation": "저는 대학교 학생입니다. 친구는 회사 사람입니다."
+              },
+              {
+                "speaker": "鈴木",
+                "voice_id": "japanese_female_1",
+                "text": "そうですか。大学は楽しいですか。",
+                "translation": "그렇군요. 대학은 즐거운가요?"
+              }
+            ],
+            "highlights": ["は", "仕事", "医者", "大学", "会社"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "vocabulary_order": 80,
+              "cognitive_level": "인식",
+              "prompt": "仕事의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "회사"
+                },
+                {
+                  "id": "b",
+                  "text": "학교"
+                },
+                {
+                  "id": "c",
+                  "text": "일, 직업"
+                },
+                {
+                  "id": "d",
+                  "text": "친구"
+                }
+              ],
+              "correct_answer": "c",
+              "explanation": "仕事(しごと)는 '일' 또는 '직업'이라는 뜻입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "vocabulary_order": 226,
+              "cognitive_level": "인식",
+              "prompt": "'의사'를 뜻하는 일본어는?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "会社"
+                },
+                {
+                  "id": "b",
+                  "text": "学生"
+                },
+                {
+                  "id": "c",
+                  "text": "先生"
+                },
+                {
+                  "id": "d",
+                  "text": "医者"
+                }
+              ],
+              "correct_answer": "d",
+              "explanation": "医者(いしゃ)는 '의사'입니다. 先生(せんせい)는 '선생님'을 뜻합니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "grammar_order": 32,
+              "cognitive_level": "적용",
+              "prompt": "私____学生です。(저는 학생입니다.)",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "は"
+                },
+                {
+                  "id": "b",
+                  "text": "を"
+                },
+                {
+                  "id": "c",
+                  "text": "が"
+                },
+                {
+                  "id": "d",
+                  "text": "に"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "は는 '~은/는'에 해당하는 조사로, 이야기의 주제(화제)를 나타냅니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "grammar_order": 32,
+              "cognitive_level": "적용",
+              "prompt": "友達____会社の人です。(친구는 회사 사람입니다.)",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "も"
+                },
+                {
+                  "id": "b",
+                  "text": "は"
+                },
+                {
+                  "id": "c",
+                  "text": "か"
+                },
+                {
+                  "id": "d",
+                  "text": "と"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "は를 붙여서 '친구는(=화제)'이라고 이야기 주제를 세웁니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "grammar_order": 32,
+              "cognitive_level": "산출유사",
+              "prompt": "'스즈키 씨는 의사입니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["です", "鈴木さんは", "医者"],
+              "correct_order": ["鈴木さんは", "医者", "です"],
+              "explanation": "주제(鈴木さんは) + 명사(医者) + です. は가 주제를 표시합니다."
+            }
+          ]
+        }
+      },
+      "proposedCanDo": "は로 이야기할 대상을 세워 자신이나 상대의 신분·직업을 말할 수 있다.",
+      "referenceVocabulary": [
+        {
+          "vocabularyOrder": 80,
+          "lessonLabel": "仕事 (일, 직업)",
+          "referenceWord": {
+            "word": "仕事",
+            "reading": "しごと",
+            "meaningKo": "일, 직업",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "仕事は何ですか。",
+            "exampleReading": "しごとはなんですか。",
+            "exampleTranslation": "직업이 무엇입니까?",
+            "tags": ["일", "일상"],
+            "order": 80
+          }
+        },
+        {
+          "vocabularyOrder": 27,
+          "lessonLabel": "大学 (대학교)",
+          "referenceWord": {
+            "word": "大学",
+            "reading": "だいがく",
+            "meaningKo": "대학교",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "大学で経済学を勉強しています。",
+            "exampleReading": "だいがくでけいざいがくをべんきょうしています。",
+            "exampleTranslation": "대학교에서 경제학을 공부하고 있습니다.",
+            "tags": ["장소", "학교"],
+            "order": 27
+          }
+        },
+        {
+          "vocabularyOrder": 30,
+          "lessonLabel": "会社 (회사)",
+          "referenceWord": {
+            "word": "会社",
+            "reading": "かいしゃ",
+            "meaningKo": "회사",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "会社は九時からです。",
+            "exampleReading": "かいしゃはくじからです。",
+            "exampleTranslation": "회사는 9시부터입니다.",
+            "tags": ["장소", "일"],
+            "order": 30
+          }
+        },
+        {
+          "vocabularyOrder": 226,
+          "lessonLabel": "医者 (의사)",
+          "referenceWord": {
+            "word": "医者",
+            "reading": "いしゃ",
+            "meaningKo": "의사",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "姉は医者です。",
+            "exampleReading": "あねはいしゃです。",
+            "exampleTranslation": "언니는 의사입니다.",
+            "tags": [],
+            "order": 226
+          }
+        },
+        {
+          "vocabularyOrder": 5,
+          "lessonLabel": "友達 (친구)",
+          "referenceWord": {
+            "word": "友達",
+            "reading": "ともだち",
+            "meaningKo": "친구",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "友達と映画を見ます。",
+            "exampleReading": "ともだちとえいがをみます。",
+            "exampleTranslation": "친구와 영화를 봅니다.",
+            "tags": ["사람", "관계"],
+            "order": 5
+          }
+        },
+        {
+          "vocabularyOrder": 7,
+          "lessonLabel": "学生 (학생)",
+          "referenceWord": {
+            "word": "学生",
+            "reading": "がくせい",
+            "meaningKo": "학생",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "私は大学の学生です。",
+            "exampleReading": "わたしはだいがくのがくせいです。",
+            "exampleTranslation": "저는 대학교 학생입니다.",
+            "tags": ["사람", "학교"],
+            "order": 7
+          }
+        }
+      ],
+      "referenceGrammar": {
+        "pattern": "〜は",
+        "meaningKo": "~은/는 (주제 조사)",
+        "explanation": "は는 문장의 주제(화제)를 나타내는 조사입니다. '~에 대해 말하자면'이라는 뜻으로, 이야기하고 싶은 대상을 앞에 놓고 は를 붙입니다. 발음은 'わ(wa)'이지만 표기는 'は'입니다. 한국어의 '~은/는'에 해당합니다.",
+        "jlptLevel": "N5",
+        "exampleSentences": [
+          {
+            "japanese": "私は学生です。",
+            "reading": "わたしはがくせいです。",
+            "korean": "저는 학생입니다."
+          },
+          {
+            "japanese": "田中さんは先生です。",
+            "reading": "たなかさんはせんせいです。",
+            "korean": "다나카 씨는 선생님입니다."
+          }
+        ],
+        "order": 32
+      }
+    },
+    {
+      "lessonId": "HN5-004",
+      "sourceLesson": {
+        "lesson_id": "HN5-004",
+        "lesson_no": 4,
+        "chapter_lesson_no": 4,
+        "title": "공통점이 반가울 때",
+        "subtitle": "も로 공감 이어가기",
+        "topic": "공감",
+        "estimated_minutes": 10,
+        "grammar": {
+          "pattern": "〜も",
+          "meaning_ko": "~도 (같음·추가를 나타내는 조사)",
+          "grammar_order": 33,
+          "bunpro_ref": "L1"
+        },
+        "vocab_orders": [76, 77, 78, 162, 79],
+        "vocab_detail": {
+          "76": "映画 (영화)",
+          "77": "音楽 (음악)",
+          "78": "旅行 (여행)",
+          "162": "好き (좋아하다)",
+          "79": "料理 (요리)"
+        },
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "점심시간, 동료와 취미 이야기를 하다 공통점 발견",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "私は映画が好きです。",
+                "translation": "저는 영화를 좋아합니다."
+              },
+              {
+                "speaker": "田中",
+                "voice_id": "japanese_female_1",
+                "text": "私も映画が好きです！音楽も好きです。",
+                "translation": "저도 영화를 좋아합니다! 음악도 좋아해요."
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "本当ですか。旅行も好きですか。",
+                "translation": "정말이에요? 여행도 좋아하나요?"
+              },
+              {
+                "speaker": "田中",
+                "voice_id": "japanese_female_1",
+                "text": "はい、旅行も料理も好きです。",
+                "translation": "네, 여행도 요리도 좋아합니다."
+              }
+            ],
+            "highlights": ["も", "映画", "音楽", "旅行", "好き", "料理"]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "vocabulary_order": 76,
+              "cognitive_level": "인식",
+              "prompt": "映画의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "요리"
+                },
+                {
+                  "id": "b",
+                  "text": "음악"
+                },
+                {
+                  "id": "c",
+                  "text": "여행"
+                },
+                {
+                  "id": "d",
+                  "text": "영화"
+                }
+              ],
+              "correct_answer": "d",
+              "explanation": "映画(えいが)는 '영화'입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "vocabulary_order": 79,
+              "cognitive_level": "인식",
+              "prompt": "'요리'를 뜻하는 일본어는?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "料理"
+                },
+                {
+                  "id": "b",
+                  "text": "旅行"
+                },
+                {
+                  "id": "c",
+                  "text": "映画"
+                },
+                {
+                  "id": "d",
+                  "text": "音楽"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "料理(りょうり)는 '요리'입니다. 旅行(りょこう)는 '여행'입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "grammar_order": 33,
+              "cognitive_level": "적용",
+              "prompt": "「私は映画が好きです。」「私____映画が好きです。」(저도 영화를 좋아합니다.)",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "は"
+                },
+                {
+                  "id": "b",
+                  "text": "も"
+                },
+                {
+                  "id": "c",
+                  "text": "が"
+                },
+                {
+                  "id": "d",
+                  "text": "を"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "も는 '~도'라는 뜻으로, 상대와 같은 점이 있을 때 は 대신 も를 씁니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "grammar_order": 33,
+              "cognitive_level": "적용",
+              "prompt": "旅行____料理____好きです。(여행도 요리도 좋아합니다.)",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "と … と"
+                },
+                {
+                  "id": "b",
+                  "text": "は … は"
+                },
+                {
+                  "id": "c",
+                  "text": "も … も"
+                },
+                {
+                  "id": "d",
+                  "text": "が … が"
+                }
+              ],
+              "correct_answer": "c",
+              "explanation": "も…も로 '~도 ~도'라고 여러 개를 같이 나열할 수 있습니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "grammar_order": 33,
+              "cognitive_level": "산출유사",
+              "prompt": "'저도 음악을 좋아합니다'를 올바른 순서로 배열하세요.",
+              "tokens": ["好きです", "私も", "音楽が"],
+              "correct_order": ["私も", "音楽が", "好きです"],
+              "explanation": "주어(私も) + 대상(音楽が) + 서술(好きです). は 자리에 も를 넣으면 '~도'가 됩니다."
+            }
+          ]
+        }
+      },
+      "proposedCanDo": "상대와 같은 취미를 も로 덧붙여 말하고 짧게 반응할 수 있다.",
+      "referenceVocabulary": [
+        {
+          "vocabularyOrder": 76,
+          "lessonLabel": "映画 (영화)",
+          "referenceWord": {
+            "word": "映画",
+            "reading": "えいが",
+            "meaningKo": "영화",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "映画を見に行きましょう。",
+            "exampleReading": "えいがをみにいきましょう。",
+            "exampleTranslation": "영화를 보러 갑시다.",
+            "tags": ["취미"],
+            "order": 76
+          }
+        },
+        {
+          "vocabularyOrder": 77,
+          "lessonLabel": "音楽 (음악)",
+          "referenceWord": {
+            "word": "音楽",
+            "reading": "おんがく",
+            "meaningKo": "음악",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "音楽を聞くのが好きです。",
+            "exampleReading": "おんがくをきくのがすきです。",
+            "exampleTranslation": "음악을 듣는 것을 좋아합니다.",
+            "tags": ["취미"],
+            "order": 77
+          }
+        },
+        {
+          "vocabularyOrder": 78,
+          "lessonLabel": "旅行 (여행)",
+          "referenceWord": {
+            "word": "旅行",
+            "reading": "りょこう",
+            "meaningKo": "여행",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "来月旅行に行きます。",
+            "exampleReading": "らいげつりょこうにいきます。",
+            "exampleTranslation": "다음 달에 여행을 갑니다.",
+            "tags": ["취미", "여행"],
+            "order": 78
+          }
+        },
+        {
+          "vocabularyOrder": 162,
+          "lessonLabel": "好き (좋아하다)",
+          "referenceWord": {
+            "word": "好き",
+            "reading": "すき",
+            "meaningKo": "좋아하다",
+            "partOfSpeech": "NA_ADJECTIVE",
+            "jlptLevel": "N5",
+            "exampleSentence": "日本料理が好きです。",
+            "exampleReading": "にほんりょうりがすきです。",
+            "exampleTranslation": "일본 요리를 좋아합니다.",
+            "tags": ["감정"],
+            "order": 162
+          }
+        },
+        {
+          "vocabularyOrder": 79,
+          "lessonLabel": "料理 (요리)",
+          "referenceWord": {
+            "word": "料理",
+            "reading": "りょうり",
+            "meaningKo": "요리",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "日本料理が好きです。",
+            "exampleReading": "にほんりょうりがすきです。",
+            "exampleTranslation": "일본 요리를 좋아합니다.",
+            "tags": ["음식", "취미"],
+            "order": 79
+          }
+        }
+      ],
+      "referenceGrammar": {
+        "pattern": "〜も",
+        "meaningKo": "~도 (첨가·동류 조사)",
+        "explanation": "も는 '~도'라는 뜻으로, は 자리에 넣어 '마찬가지로', '또한'이라는 의미를 나타냅니다. 상대방과 같은 점이 있을 때나, 여러 항목을 나열할 때 사용합니다. 'AもBも'로 '~도 ~도'라는 표현도 가능합니다.",
+        "jlptLevel": "N5",
+        "exampleSentences": [
+          {
+            "japanese": "私も学生です。",
+            "reading": "わたしもがくせいです。",
+            "korean": "저도 학생입니다."
+          },
+          {
+            "japanese": "映画も音楽も好きです。",
+            "reading": "えいがもおんがくもすきです。",
+            "korean": "영화도 음악도 좋아합니다."
+          }
+        ],
+        "order": 33
+      }
+    },
+    {
+      "lessonId": "HN5-005",
+      "sourceLesson": {
+        "lesson_id": "HN5-005",
+        "lesson_no": 5,
+        "chapter_lesson_no": 5,
+        "title": "대화 분위기 맞추기",
+        "subtitle": "よ/ね로 말끝 뉘앙스 조절하기",
+        "topic": "뉘앙스",
+        "estimated_minutes": 10,
+        "grammar": {
+          "pattern": "〜よ / 〜ね",
+          "meaning_ko": "~요(알려줌) / ~네(공감·확인)",
+          "grammar_order": 34,
+          "bunpro_ref": "L2"
+        },
+        "vocab_orders": [161, 196, 362, 197, 1, 5],
+        "vocab_detail": {
+          "161": "元気 (건강하다, 활기차다)",
+          "196": "おはようございます (안녕하세요-아침)",
+          "362": "こんにちは (안녕하세요-낮)",
+          "197": "ありがとうございます (감사합니다)",
+          "1": "人 (사람)",
+          "5": "友達 (친구)"
+        },
+        "content_jsonb": {
+          "reading": {
+            "type": "dialogue",
+            "scene": "아침에 학교 복도에서 친구와 가벼운 인사",
+            "script": [
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "おはようございます。今日はいい天気ですね。",
+                "translation": "안녕하세요. 오늘은 좋은 날씨네요."
+              },
+              {
+                "speaker": "田中",
+                "voice_id": "japanese_female_1",
+                "text": "そうですね。キムさん、元気ですか。",
+                "translation": "그렇네요. 김 씨, 잘 지내요?"
+              },
+              {
+                "speaker": "キム",
+                "voice_id": "japanese_male_1",
+                "text": "はい、元気ですよ。田中さんも元気ですね。",
+                "translation": "네, 잘 지내요. 다나카 씨도 건강하시네요."
+              },
+              {
+                "speaker": "田中",
+                "voice_id": "japanese_female_1",
+                "text": "ありがとうございます。あ、あの人は友達ですよ。いい人ですよ。",
+                "translation": "감사합니다. 아, 저 사람은 친구예요. 좋은 사람이에요."
+              }
+            ],
+            "highlights": [
+              "ね",
+              "よ",
+              "元気",
+              "おはようございます",
+              "ありがとうございます"
+            ]
+          },
+          "questions": [
+            {
+              "order": 1,
+              "type": "VOCAB_MCQ",
+              "vocabulary_order": 161,
+              "cognitive_level": "인식",
+              "prompt": "元気의 뜻은?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "건강하다, 활기차다"
+                },
+                {
+                  "id": "b",
+                  "text": "유명하다"
+                },
+                {
+                  "id": "c",
+                  "text": "조용하다"
+                },
+                {
+                  "id": "d",
+                  "text": "편리하다"
+                }
+              ],
+              "correct_answer": "a",
+              "explanation": "元気(げんき)는 '건강하다, 활기차다'는 뜻입니다."
+            },
+            {
+              "order": 2,
+              "type": "VOCAB_MCQ",
+              "vocabulary_order": 197,
+              "cognitive_level": "인식",
+              "prompt": "'감사합니다'를 뜻하는 일본어는?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "おはようございます"
+                },
+                {
+                  "id": "b",
+                  "text": "ありがとうございます"
+                },
+                {
+                  "id": "c",
+                  "text": "すみません"
+                },
+                {
+                  "id": "d",
+                  "text": "さようなら"
+                }
+              ],
+              "correct_answer": "b",
+              "explanation": "ありがとうございます는 '감사합니다'입니다."
+            },
+            {
+              "order": 3,
+              "type": "CONTEXT_CLOZE",
+              "grammar_order": 34,
+              "cognitive_level": "적용",
+              "prompt": "いい天気です____。(좋은 날씨네요.) — 상대에게 동의를 구할 때",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "か"
+                },
+                {
+                  "id": "b",
+                  "text": "よ"
+                },
+                {
+                  "id": "c",
+                  "text": "ね"
+                },
+                {
+                  "id": "d",
+                  "text": "も"
+                }
+              ],
+              "correct_answer": "c",
+              "explanation": "ね는 '~네요'처럼 상대와 공감하거나 동의를 구할 때 씁니다."
+            },
+            {
+              "order": 4,
+              "type": "CONTEXT_CLOZE",
+              "grammar_order": 34,
+              "cognitive_level": "적용",
+              "prompt": "あの人は友達です____。(저 사람은 친구예요.) — 상대가 모르는 정보를 알려줄 때",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "は"
+                },
+                {
+                  "id": "b",
+                  "text": "ね"
+                },
+                {
+                  "id": "c",
+                  "text": "か"
+                },
+                {
+                  "id": "d",
+                  "text": "よ"
+                }
+              ],
+              "correct_answer": "d",
+              "explanation": "よ는 '~요'처럼 상대가 모르는 새 정보를 알려줄 때 씁니다."
+            },
+            {
+              "order": 5,
+              "type": "SENTENCE_REORDER",
+              "grammar_order": 34,
+              "cognitive_level": "산출유사",
+              "prompt": "'오늘은 좋은 날씨네요'를 올바른 순서로 배열하세요.",
+              "tokens": ["ですね", "いい天気", "今日は"],
+              "correct_order": ["今日は", "いい天気", "ですね"],
+              "explanation": "주제(今日は) + 상태(いい天気) + ですね. ね를 붙여 공감의 뉘앙스를 더합니다."
+            }
+          ]
+        }
+      },
+      "proposedCanDo": "よ와ね의 알려주기·공감 뉘앙스를 구분하고 간단한 인사 대화에 반응할 수 있다.",
+      "referenceVocabulary": [
+        {
+          "vocabularyOrder": 161,
+          "lessonLabel": "元気 (건강하다, 활기차다)",
+          "referenceWord": {
+            "word": "元気",
+            "reading": "げんき",
+            "meaningKo": "건강하다, 활기차다",
+            "partOfSpeech": "NA_ADJECTIVE",
+            "jlptLevel": "N5",
+            "exampleSentence": "お元気ですか。",
+            "exampleReading": "おげんきですか。",
+            "exampleTranslation": "잘 지내십니까?",
+            "tags": ["인사", "건강"],
+            "order": 161
+          }
+        },
+        {
+          "vocabularyOrder": 196,
+          "lessonLabel": "おはようございます (안녕하세요-아침)",
+          "referenceWord": {
+            "word": "おはようございます",
+            "reading": "おはようございます",
+            "meaningKo": "안녕하세요(아침 인사)",
+            "partOfSpeech": "EXPRESSION",
+            "jlptLevel": "N5",
+            "exampleSentence": "先生、おはようございます。",
+            "exampleReading": "せんせい、おはようございます。",
+            "exampleTranslation": "선생님, 안녕하세요.",
+            "tags": ["인사"],
+            "order": 196
+          }
+        },
+        {
+          "vocabularyOrder": 362,
+          "lessonLabel": "こんにちは (안녕하세요-낮)",
+          "referenceWord": {
+            "word": "こんにちは",
+            "reading": "こんにちは",
+            "meaningKo": "안녕하세요(낮인사)",
+            "partOfSpeech": "EXPRESSION",
+            "jlptLevel": "N5",
+            "exampleSentence": "こんにちは。お元気ですか。",
+            "exampleReading": "こんにちは。おげんきですか。",
+            "exampleTranslation": "안녕하세요. 잘 지내십니까?",
+            "tags": [],
+            "order": 362
+          }
+        },
+        {
+          "vocabularyOrder": 197,
+          "lessonLabel": "ありがとうございます (감사합니다)",
+          "referenceWord": {
+            "word": "ありがとうございます",
+            "reading": "ありがとうございます",
+            "meaningKo": "감사합니다",
+            "partOfSpeech": "EXPRESSION",
+            "jlptLevel": "N5",
+            "exampleSentence": "プレゼント、ありがとうございます。",
+            "exampleReading": "ぷれぜんと、ありがとうございます。",
+            "exampleTranslation": "선물, 감사합니다.",
+            "tags": ["인사"],
+            "order": 197
+          }
+        },
+        {
+          "vocabularyOrder": 1,
+          "lessonLabel": "人 (사람)",
+          "referenceWord": {
+            "word": "人",
+            "reading": "ひと",
+            "meaningKo": "사람",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "あの人は日本人です。",
+            "exampleReading": "あのひとはにほんじんです。",
+            "exampleTranslation": "저 사람은 일본인입니다.",
+            "tags": ["사람", "기본"],
+            "order": 1
+          }
+        },
+        {
+          "vocabularyOrder": 5,
+          "lessonLabel": "友達 (친구)",
+          "referenceWord": {
+            "word": "友達",
+            "reading": "ともだち",
+            "meaningKo": "친구",
+            "partOfSpeech": "NOUN",
+            "jlptLevel": "N5",
+            "exampleSentence": "友達と映画を見ます。",
+            "exampleReading": "ともだちとえいがをみます。",
+            "exampleTranslation": "친구와 영화를 봅니다.",
+            "tags": ["사람", "관계"],
+            "order": 5
+          }
+        }
+      ],
+      "referenceGrammar": {
+        "pattern": "〜よ / 〜ね",
+        "meaningKo": "~요(알려줌) / ~네요(공감·확인)",
+        "explanation": "よ는 상대방이 모르는 사실을 알려주거나 내 생각을 강조할 때 쓰고('~란 말이야', '~라고요'), ね는 상대방의 공감을 구하거나 확인할 때 씁니다('~네요', '~그렇죠?'). 정중체에서는 'です/ますよ', 'です/ますね' 형태로 사용합니다.",
+        "jlptLevel": "N5",
+        "exampleSentences": [
+          {
+            "japanese": "あの人は友達ですよ。",
+            "reading": "あのひとはともだちですよ。",
+            "korean": "저 사람은 친구예요."
+          },
+          {
+            "japanese": "今日はいい天気ですね。",
+            "reading": "きょうはいいてんきですね。",
+            "korean": "오늘은 좋은 날씨네요."
+          }
+        ],
+        "order": 34
+      }
+    }
+  ],
+  "contentReviewItems": [
+    {
+      "itemId": "HN5-001-CD01",
+      "lessonId": "HN5-001",
+      "kind": "CAN_DO_PROPOSAL",
+      "description": "학습 목표 제안·목표/평가 대응",
+      "source": {
+        "proposal": "처음 만난 사람에게 인사하고 자신의 이름과 신분을 짧게 말할 수 있다.",
+        "notExistingApprovedContent": true,
+        "existingTitle": "처음 만난 자리",
+        "existingSubtitle": "です/だ로 기본 자기소개하기"
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-G01",
+      "lessonId": "HN5-001",
+      "kind": "GRAMMAR",
+      "description": "문법·뜻·예문/읽기·선행 지식",
+      "source": {
+        "lessonGrammar": {
+          "pattern": "〜です",
+          "meaning_ko": "~입니다 / ~이에요",
+          "grammar_order": 1,
+          "bunpro_ref": "L1"
+        },
+        "referenceGrammar": {
+          "pattern": "〜です",
+          "meaningKo": "~입니다 / ~이에요",
+          "explanation": "명사나 형용사 뒤에 붙여서 정중하게 말하는 기본적인 표현입니다. 일본어에서 가장 기본이 되는 서술 표현으로, 상대방에게 예의를 갖추어 사실이나 상태를 전달할 때 사용합니다. 한국어의 '~입니다', '~이에요'에 해당합니다.",
+          "jlptLevel": "N5",
+          "exampleSentences": [
+            {
+              "japanese": "私は学生です。",
+              "reading": "わたしはがくせいです。",
+              "korean": "저는 학생입니다."
+            },
+            {
+              "japanese": "これは本です。",
+              "reading": "これはほんです。",
+              "korean": "이것은 책입니다."
+            }
+          ],
+          "order": 1
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-V503",
+      "lessonId": "HN5-001",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 503,
+        "lessonLabel": "はじめまして (처음 뵙겠습니다)",
+        "referenceWord": {
+          "word": "はじめまして",
+          "reading": "はじめまして",
+          "meaningKo": "처음 뵙겠습니다",
+          "partOfSpeech": "EXPRESSION",
+          "jlptLevel": "N5",
+          "exampleSentence": "はじめまして。よろしくおねがいします。",
+          "exampleReading": "はじめまして。よろしくおねがいします。",
+          "exampleTranslation": "처음 뵙겠습니다. 잘 부탁드립니다.",
+          "tags": [],
+          "order": 503
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-V605",
+      "lessonId": "HN5-001",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 605,
+        "lessonLabel": "私 (저)",
+        "referenceWord": {
+          "word": "私",
+          "reading": "わたし",
+          "meaningKo": "저",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "私は韓国人です。",
+          "exampleReading": "わたしはかんこくじんです。",
+          "exampleTranslation": "저는 한국 사람입니다.",
+          "tags": [],
+          "order": 605
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-V074",
+      "lessonId": "HN5-001",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 74,
+        "lessonLabel": "名前 (이름)",
+        "referenceWord": {
+          "word": "名前",
+          "reading": "なまえ",
+          "meaningKo": "이름",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "お名前は何ですか。",
+          "exampleReading": "おなまえはなんですか。",
+          "exampleTranslation": "이름이 무엇입니까?",
+          "tags": ["기본", "사람"],
+          "order": 74
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-V007",
+      "lessonId": "HN5-001",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 7,
+        "lessonLabel": "学生 (학생)",
+        "referenceWord": {
+          "word": "学生",
+          "reading": "がくせい",
+          "meaningKo": "학생",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "私は大学の学生です。",
+          "exampleReading": "わたしはだいがくのがくせいです。",
+          "exampleTranslation": "저는 대학교 학생입니다.",
+          "tags": ["사람", "학교"],
+          "order": 7
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-V006",
+      "lessonId": "HN5-001",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 6,
+        "lessonLabel": "先生 (선생님)",
+        "referenceWord": {
+          "word": "先生",
+          "reading": "せんせい",
+          "meaningKo": "선생님",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "先生はとても優しいです。",
+          "exampleReading": "せんせいはとてもやさしいです。",
+          "exampleTranslation": "선생님은 매우 친절합니다.",
+          "tags": ["사람", "학교"],
+          "order": 6
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-V594",
+      "lessonId": "HN5-001",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 594,
+        "lessonLabel": "よろしく (잘 부탁합니다)",
+        "referenceWord": {
+          "word": "よろしく",
+          "reading": "よろしく",
+          "meaningKo": "잘 (+부탁합니다)",
+          "partOfSpeech": "EXPRESSION",
+          "jlptLevel": "N5",
+          "exampleSentence": "どうぞよろしくおねがいします。",
+          "exampleReading": "どうぞよろしくおねがいします。",
+          "exampleTranslation": "잘 부탁드립니다.",
+          "tags": [],
+          "order": 594
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-S00",
+      "lessonId": "HN5-001",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 0,
+        "scriptLine": {
+          "speaker": "田中",
+          "voice_id": "japanese_female_1",
+          "text": "はじめまして。田中です。学生です。",
+          "translation": "처음 뵙겠습니다. 다나카입니다. 학생입니다."
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-S01",
+      "lessonId": "HN5-001",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 1,
+        "scriptLine": {
+          "speaker": "キム",
+          "voice_id": "japanese_male_1",
+          "text": "はじめまして。私はキムです。",
+          "translation": "처음 뵙겠습니다. 저는 김입니다."
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-S02",
+      "lessonId": "HN5-001",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 2,
+        "scriptLine": {
+          "speaker": "田中",
+          "voice_id": "japanese_female_1",
+          "text": "キムさん、よろしくお願いします。",
+          "translation": "김 씨, 잘 부탁드립니다."
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-S03",
+      "lessonId": "HN5-001",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 3,
+        "scriptLine": {
+          "speaker": "キム",
+          "voice_id": "japanese_male_1",
+          "text": "こちらこそ、よろしくお願いします。",
+          "translation": "저야말로, 잘 부탁드립니다."
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-Q01",
+      "lessonId": "HN5-001",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 1,
+          "type": "VOCAB_MCQ",
+          "vocabulary_order": 503,
+          "cognitive_level": "인식",
+          "prompt": "はじめまして의 뜻은?",
+          "options": [
+            {
+              "id": "a",
+              "text": "처음 뵙겠습니다"
+            },
+            {
+              "id": "b",
+              "text": "감사합니다"
+            },
+            {
+              "id": "c",
+              "text": "실례합니다"
+            },
+            {
+              "id": "d",
+              "text": "안녕히 가세요"
+            }
+          ],
+          "correct_answer": "a",
+          "explanation": "はじめまして는 처음 만난 사람에게 하는 인사말입니다."
+        },
+        "answerTextForReview": "처음 뵙겠습니다",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-Q02",
+      "lessonId": "HN5-001",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 2,
+          "type": "VOCAB_MCQ",
+          "vocabulary_order": 7,
+          "cognitive_level": "인식",
+          "prompt": "'학생'의 일본어는?",
+          "options": [
+            {
+              "id": "a",
+              "text": "先生"
+            },
+            {
+              "id": "b",
+              "text": "学生"
+            },
+            {
+              "id": "c",
+              "text": "会社"
+            },
+            {
+              "id": "d",
+              "text": "大学"
+            }
+          ],
+          "correct_answer": "b",
+          "explanation": "学生(がくせい)는 '학생'이라는 뜻입니다. 先生(せんせい)는 '선생님'이니 혼동하지 마세요."
+        },
+        "answerTextForReview": "学生",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-Q03",
+      "lessonId": "HN5-001",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 3,
+          "type": "CONTEXT_CLOZE",
+          "grammar_order": 1,
+          "cognitive_level": "적용",
+          "prompt": "私はキム____。(저는 김입니다.)",
+          "options": [
+            {
+              "id": "a",
+              "text": "だけ"
+            },
+            {
+              "id": "b",
+              "text": "ます"
+            },
+            {
+              "id": "c",
+              "text": "です"
+            },
+            {
+              "id": "d",
+              "text": "から"
+            }
+          ],
+          "correct_answer": "c",
+          "explanation": "〜です는 '~입니다'라는 뜻으로, 명사 뒤에 붙여서 정중하게 말합니다."
+        },
+        "answerTextForReview": "です",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-Q04",
+      "lessonId": "HN5-001",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 4,
+          "type": "CONTEXT_CLOZE",
+          "grammar_order": 1,
+          "cognitive_level": "적용",
+          "prompt": "はじめまして。田中____。(처음 뵙겠습니다. 다나카입니다.)",
+          "options": [
+            {
+              "id": "a",
+              "text": "でした"
+            },
+            {
+              "id": "b",
+              "text": "ません"
+            },
+            {
+              "id": "c",
+              "text": "ました"
+            },
+            {
+              "id": "d",
+              "text": "です"
+            }
+          ],
+          "correct_answer": "d",
+          "explanation": "자기소개할 때 '이름 + です'로 '~입니다'라고 말합니다."
+        },
+        "answerTextForReview": "です",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-001-Q05",
+      "lessonId": "HN5-001",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 5,
+          "type": "SENTENCE_REORDER",
+          "grammar_order": 1,
+          "cognitive_level": "산출유사",
+          "prompt": "'저는 학생입니다'를 올바른 순서로 배열하세요.",
+          "tokens": ["学生", "私は", "です"],
+          "correct_order": ["私は", "学生", "です"],
+          "explanation": "일본어 어순: 주어(私は) + 명사(学生) + です. '는/은'에 해당하는 は가 주어 뒤에 붙습니다."
+        },
+        "answerTextForReview": "私は学生です",
+        "answerTextIsDisplayJoinOnly": true
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-CD01",
+      "lessonId": "HN5-002",
+      "kind": "CAN_DO_PROPOSAL",
+      "description": "학습 목표 제안·목표/평가 대응",
+      "source": {
+        "proposal": "상대가 유학생인지 정중하게 묻고, 자신에 대한 간단한 질문에 대답할 수 있다.",
+        "notExistingApprovedContent": true,
+        "existingTitle": "어디서 오셨나요?",
+        "existingSubtitle": "か로 기본 질문하기"
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-G01",
+      "lessonId": "HN5-002",
+      "kind": "GRAMMAR",
+      "description": "문법·뜻·예문/읽기·선행 지식",
+      "source": {
+        "lessonGrammar": {
+          "pattern": "〜か",
+          "meaning_ko": "~인가요? / ~입니까?",
+          "grammar_order": 31,
+          "bunpro_ref": "L1"
+        },
+        "referenceGrammar": {
+          "pattern": "〜か",
+          "meaningKo": "~인가요? / ~입니까? (의문 조사)",
+          "explanation": "문장 끝에 か를 붙이면 질문(의문문)이 됩니다. 정중체에서는 'です/ます + か'의 형태로 사용하며, 억양을 올릴 필요 없이 か만으로 질문을 나타낼 수 있습니다. 한국어의 '~인가요?', '~합니까?'에 해당합니다.",
+          "jlptLevel": "N5",
+          "exampleSentences": [
+            {
+              "japanese": "学生ですか。",
+              "reading": "がくせいですか。",
+              "korean": "학생인가요?"
+            },
+            {
+              "japanese": "これは何ですか。",
+              "reading": "これはなんですか。",
+              "korean": "이것은 무엇인가요?"
+            }
+          ],
+          "order": 31
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-V462",
+      "lessonId": "HN5-002",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 462,
+        "lessonLabel": "どこ (어디)",
+        "referenceWord": {
+          "word": "どこ",
+          "reading": "どこ",
+          "meaningKo": "어디",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "学校はどこにありますか。",
+          "exampleReading": "がっこうはどこにありますか。",
+          "exampleTranslation": "학교는 어디에 있습니까?",
+          "tags": [],
+          "order": 462
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-V328",
+      "lessonId": "HN5-002",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 328,
+        "lessonLabel": "国 (나라)",
+        "referenceWord": {
+          "word": "国",
+          "reading": "くに",
+          "meaningKo": "나라",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "どの国から来ましたか。",
+          "exampleReading": "どのくにからきましたか。",
+          "exampleTranslation": "어느 나라에서 왔습니까?",
+          "tags": [],
+          "order": 328
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-V601",
+      "lessonId": "HN5-002",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 601,
+        "lessonLabel": "留学生 (유학생)",
+        "referenceWord": {
+          "word": "留学生",
+          "reading": "りゅうがくせい",
+          "meaningKo": "유학생",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "私は日本の留学生です。",
+          "exampleReading": "わたしはにほんのりゅうがくせいです。",
+          "exampleTranslation": "저는 일본 유학생입니다.",
+          "tags": [],
+          "order": 601
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-V254",
+      "lessonId": "HN5-002",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 254,
+        "lessonLabel": "英語 (영어)",
+        "referenceWord": {
+          "word": "英語",
+          "reading": "えいご",
+          "meaningKo": "영어",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "英語の本を読みます。",
+          "exampleReading": "えいごのほんをよみます。",
+          "exampleTranslation": "영어 책을 읽습니다.",
+          "tags": [],
+          "order": 254
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-V499",
+      "lessonId": "HN5-002",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 499,
+        "lessonLabel": "はい (네)",
+        "referenceWord": {
+          "word": "はい",
+          "reading": "はい",
+          "meaningKo": "예. 네",
+          "partOfSpeech": "EXPRESSION",
+          "jlptLevel": "N5",
+          "exampleSentence": "はい、わかりました。",
+          "exampleReading": "はい、わかりました。",
+          "exampleTranslation": "네, 알겠습니다.",
+          "tags": [],
+          "order": 499
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-V222",
+      "lessonId": "HN5-002",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 222,
+        "lessonLabel": "いいえ (아니오)",
+        "referenceWord": {
+          "word": "いいえ",
+          "reading": "いいえ",
+          "meaningKo": "아니오",
+          "partOfSpeech": "EXPRESSION",
+          "jlptLevel": "N5",
+          "exampleSentence": "いいえ、違います。",
+          "exampleReading": "いいえ、ちがいます。",
+          "exampleTranslation": "아니오, 다릅니다.",
+          "tags": [],
+          "order": 222
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-S00",
+      "lessonId": "HN5-002",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 0,
+        "scriptLine": {
+          "speaker": "鈴木",
+          "voice_id": "japanese_female_1",
+          "text": "キムさんは留学生ですか。",
+          "translation": "김 씨는 유학생인가요?"
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-S01",
+      "lessonId": "HN5-002",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 1,
+        "scriptLine": {
+          "speaker": "キム",
+          "voice_id": "japanese_male_1",
+          "text": "はい、留学生です。韓国から来ました。",
+          "translation": "네, 유학생입니다. 한국에서 왔습니다."
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-S02",
+      "lessonId": "HN5-002",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 2,
+        "scriptLine": {
+          "speaker": "鈴木",
+          "voice_id": "japanese_female_1",
+          "text": "そうですか。英語は分かりますか。",
+          "translation": "그렇군요. 영어는 알아요?"
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-S03",
+      "lessonId": "HN5-002",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 3,
+        "scriptLine": {
+          "speaker": "キム",
+          "voice_id": "japanese_male_1",
+          "text": "はい、少し分かります。鈴木さんの国はどこですか。",
+          "translation": "네, 조금 알아요. 스즈키 씨의 나라는 어디인가요?"
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-Q01",
+      "lessonId": "HN5-002",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 1,
+          "type": "VOCAB_MCQ",
+          "vocabulary_order": 601,
+          "cognitive_level": "인식",
+          "prompt": "留学生의 뜻은?",
+          "options": [
+            {
+              "id": "a",
+              "text": "학생"
+            },
+            {
+              "id": "b",
+              "text": "유학생"
+            },
+            {
+              "id": "c",
+              "text": "선생님"
+            },
+            {
+              "id": "d",
+              "text": "회사원"
+            }
+          ],
+          "correct_answer": "b",
+          "explanation": "留学生(りゅうがくせい)는 외국에서 온 학생, 즉 '유학생'입니다."
+        },
+        "answerTextForReview": "유학생",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-Q02",
+      "lessonId": "HN5-002",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 2,
+          "type": "VOCAB_MCQ",
+          "vocabulary_order": 462,
+          "cognitive_level": "인식",
+          "prompt": "'어디'를 뜻하는 일본어는?",
+          "options": [
+            {
+              "id": "a",
+              "text": "いつ"
+            },
+            {
+              "id": "b",
+              "text": "なに"
+            },
+            {
+              "id": "c",
+              "text": "どこ"
+            },
+            {
+              "id": "d",
+              "text": "だれ"
+            }
+          ],
+          "correct_answer": "c",
+          "explanation": "どこ는 '어디'를 뜻합니다. なに는 '무엇', いつ는 '언제', だれ는 '누구'입니다."
+        },
+        "answerTextForReview": "どこ",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-Q03",
+      "lessonId": "HN5-002",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 3,
+          "type": "CONTEXT_CLOZE",
+          "grammar_order": 31,
+          "cognitive_level": "적용",
+          "prompt": "学生です____。(학생인가요?)",
+          "options": [
+            {
+              "id": "a",
+              "text": "も"
+            },
+            {
+              "id": "b",
+              "text": "よ"
+            },
+            {
+              "id": "c",
+              "text": "ね"
+            },
+            {
+              "id": "d",
+              "text": "か"
+            }
+          ],
+          "correct_answer": "d",
+          "explanation": "문장 끝에 か를 붙이면 의문문(질문)이 됩니다."
+        },
+        "answerTextForReview": "か",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-Q04",
+      "lessonId": "HN5-002",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 4,
+          "type": "CONTEXT_CLOZE",
+          "grammar_order": 31,
+          "cognitive_level": "적용",
+          "prompt": "国は どこ ____。(나라는 어디인가요?)",
+          "options": [
+            {
+              "id": "a",
+              "text": "ですか"
+            },
+            {
+              "id": "b",
+              "text": "ですよ"
+            },
+            {
+              "id": "c",
+              "text": "ですね"
+            },
+            {
+              "id": "d",
+              "text": "でした"
+            }
+          ],
+          "correct_answer": "a",
+          "explanation": "どこ + ですか로 '어디인가요?'라고 정중하게 질문합니다."
+        },
+        "answerTextForReview": "ですか",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-002-Q05",
+      "lessonId": "HN5-002",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 5,
+          "type": "SENTENCE_REORDER",
+          "grammar_order": 31,
+          "cognitive_level": "산출유사",
+          "prompt": "'김 씨는 유학생인가요?'를 올바른 순서로 배열하세요.",
+          "tokens": ["キムさんは", "ですか", "留学生"],
+          "correct_order": ["キムさんは", "留学生", "ですか"],
+          "explanation": "일본어 의문문: 주어(キムさんは) + 명사(留学生) + ですか. 의문의 か는 맨 끝에 붙습니다."
+        },
+        "answerTextForReview": "キムさんは留学生ですか",
+        "answerTextIsDisplayJoinOnly": true
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-CD01",
+      "lessonId": "HN5-003",
+      "kind": "CAN_DO_PROPOSAL",
+      "description": "학습 목표 제안·목표/평가 대응",
+      "source": {
+        "proposal": "は로 이야기할 대상을 세워 자신이나 상대의 신분·직업을 말할 수 있다.",
+        "notExistingApprovedContent": true,
+        "existingTitle": "이야기 주제 세우기",
+        "existingSubtitle": "は로 화제 정리하기"
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-G01",
+      "lessonId": "HN5-003",
+      "kind": "GRAMMAR",
+      "description": "문법·뜻·예문/읽기·선행 지식",
+      "source": {
+        "lessonGrammar": {
+          "pattern": "〜は",
+          "meaning_ko": "~은/는 (주제를 나타내는 조사)",
+          "grammar_order": 32,
+          "bunpro_ref": "L1"
+        },
+        "referenceGrammar": {
+          "pattern": "〜は",
+          "meaningKo": "~은/는 (주제 조사)",
+          "explanation": "は는 문장의 주제(화제)를 나타내는 조사입니다. '~에 대해 말하자면'이라는 뜻으로, 이야기하고 싶은 대상을 앞에 놓고 は를 붙입니다. 발음은 'わ(wa)'이지만 표기는 'は'입니다. 한국어의 '~은/는'에 해당합니다.",
+          "jlptLevel": "N5",
+          "exampleSentences": [
+            {
+              "japanese": "私は学生です。",
+              "reading": "わたしはがくせいです。",
+              "korean": "저는 학생입니다."
+            },
+            {
+              "japanese": "田中さんは先生です。",
+              "reading": "たなかさんはせんせいです。",
+              "korean": "다나카 씨는 선생님입니다."
+            }
+          ],
+          "order": 32
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-V080",
+      "lessonId": "HN5-003",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 80,
+        "lessonLabel": "仕事 (일, 직업)",
+        "referenceWord": {
+          "word": "仕事",
+          "reading": "しごと",
+          "meaningKo": "일, 직업",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "仕事は何ですか。",
+          "exampleReading": "しごとはなんですか。",
+          "exampleTranslation": "직업이 무엇입니까?",
+          "tags": ["일", "일상"],
+          "order": 80
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-V027",
+      "lessonId": "HN5-003",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 27,
+        "lessonLabel": "大学 (대학교)",
+        "referenceWord": {
+          "word": "大学",
+          "reading": "だいがく",
+          "meaningKo": "대학교",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "大学で経済学を勉強しています。",
+          "exampleReading": "だいがくでけいざいがくをべんきょうしています。",
+          "exampleTranslation": "대학교에서 경제학을 공부하고 있습니다.",
+          "tags": ["장소", "학교"],
+          "order": 27
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-V030",
+      "lessonId": "HN5-003",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 30,
+        "lessonLabel": "会社 (회사)",
+        "referenceWord": {
+          "word": "会社",
+          "reading": "かいしゃ",
+          "meaningKo": "회사",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "会社は九時からです。",
+          "exampleReading": "かいしゃはくじからです。",
+          "exampleTranslation": "회사는 9시부터입니다.",
+          "tags": ["장소", "일"],
+          "order": 30
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-V226",
+      "lessonId": "HN5-003",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 226,
+        "lessonLabel": "医者 (의사)",
+        "referenceWord": {
+          "word": "医者",
+          "reading": "いしゃ",
+          "meaningKo": "의사",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "姉は医者です。",
+          "exampleReading": "あねはいしゃです。",
+          "exampleTranslation": "언니는 의사입니다.",
+          "tags": [],
+          "order": 226
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-V005",
+      "lessonId": "HN5-003",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 5,
+        "lessonLabel": "友達 (친구)",
+        "referenceWord": {
+          "word": "友達",
+          "reading": "ともだち",
+          "meaningKo": "친구",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "友達と映画を見ます。",
+          "exampleReading": "ともだちとえいがをみます。",
+          "exampleTranslation": "친구와 영화를 봅니다.",
+          "tags": ["사람", "관계"],
+          "order": 5
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-V007",
+      "lessonId": "HN5-003",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 7,
+        "lessonLabel": "学生 (학생)",
+        "referenceWord": {
+          "word": "学生",
+          "reading": "がくせい",
+          "meaningKo": "학생",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "私は大学の学生です。",
+          "exampleReading": "わたしはだいがくのがくせいです。",
+          "exampleTranslation": "저는 대학교 학생입니다.",
+          "tags": ["사람", "학교"],
+          "order": 7
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-S00",
+      "lessonId": "HN5-003",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 0,
+        "scriptLine": {
+          "speaker": "キム",
+          "voice_id": "japanese_male_1",
+          "text": "鈴木さんの仕事は何ですか。",
+          "translation": "스즈키 씨의 직업은 뭔가요?"
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-S01",
+      "lessonId": "HN5-003",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 1,
+        "scriptLine": {
+          "speaker": "鈴木",
+          "voice_id": "japanese_female_1",
+          "text": "私は医者です。キムさんは？",
+          "translation": "저는 의사입니다. 김 씨는요?"
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-S02",
+      "lessonId": "HN5-003",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 2,
+        "scriptLine": {
+          "speaker": "キム",
+          "voice_id": "japanese_male_1",
+          "text": "私は大学の学生です。友達は会社の人です。",
+          "translation": "저는 대학교 학생입니다. 친구는 회사 사람입니다."
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-S03",
+      "lessonId": "HN5-003",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 3,
+        "scriptLine": {
+          "speaker": "鈴木",
+          "voice_id": "japanese_female_1",
+          "text": "そうですか。大学は楽しいですか。",
+          "translation": "그렇군요. 대학은 즐거운가요?"
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-Q01",
+      "lessonId": "HN5-003",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 1,
+          "type": "VOCAB_MCQ",
+          "vocabulary_order": 80,
+          "cognitive_level": "인식",
+          "prompt": "仕事의 뜻은?",
+          "options": [
+            {
+              "id": "a",
+              "text": "회사"
+            },
+            {
+              "id": "b",
+              "text": "학교"
+            },
+            {
+              "id": "c",
+              "text": "일, 직업"
+            },
+            {
+              "id": "d",
+              "text": "친구"
+            }
+          ],
+          "correct_answer": "c",
+          "explanation": "仕事(しごと)는 '일' 또는 '직업'이라는 뜻입니다."
+        },
+        "answerTextForReview": "일, 직업",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-Q02",
+      "lessonId": "HN5-003",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 2,
+          "type": "VOCAB_MCQ",
+          "vocabulary_order": 226,
+          "cognitive_level": "인식",
+          "prompt": "'의사'를 뜻하는 일본어는?",
+          "options": [
+            {
+              "id": "a",
+              "text": "会社"
+            },
+            {
+              "id": "b",
+              "text": "学生"
+            },
+            {
+              "id": "c",
+              "text": "先生"
+            },
+            {
+              "id": "d",
+              "text": "医者"
+            }
+          ],
+          "correct_answer": "d",
+          "explanation": "医者(いしゃ)는 '의사'입니다. 先生(せんせい)는 '선생님'을 뜻합니다."
+        },
+        "answerTextForReview": "医者",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-Q03",
+      "lessonId": "HN5-003",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 3,
+          "type": "CONTEXT_CLOZE",
+          "grammar_order": 32,
+          "cognitive_level": "적용",
+          "prompt": "私____学生です。(저는 학생입니다.)",
+          "options": [
+            {
+              "id": "a",
+              "text": "は"
+            },
+            {
+              "id": "b",
+              "text": "を"
+            },
+            {
+              "id": "c",
+              "text": "が"
+            },
+            {
+              "id": "d",
+              "text": "に"
+            }
+          ],
+          "correct_answer": "a",
+          "explanation": "は는 '~은/는'에 해당하는 조사로, 이야기의 주제(화제)를 나타냅니다."
+        },
+        "answerTextForReview": "は",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-Q04",
+      "lessonId": "HN5-003",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 4,
+          "type": "CONTEXT_CLOZE",
+          "grammar_order": 32,
+          "cognitive_level": "적용",
+          "prompt": "友達____会社の人です。(친구는 회사 사람입니다.)",
+          "options": [
+            {
+              "id": "a",
+              "text": "も"
+            },
+            {
+              "id": "b",
+              "text": "は"
+            },
+            {
+              "id": "c",
+              "text": "か"
+            },
+            {
+              "id": "d",
+              "text": "と"
+            }
+          ],
+          "correct_answer": "b",
+          "explanation": "は를 붙여서 '친구는(=화제)'이라고 이야기 주제를 세웁니다."
+        },
+        "answerTextForReview": "は",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-003-Q05",
+      "lessonId": "HN5-003",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 5,
+          "type": "SENTENCE_REORDER",
+          "grammar_order": 32,
+          "cognitive_level": "산출유사",
+          "prompt": "'스즈키 씨는 의사입니다'를 올바른 순서로 배열하세요.",
+          "tokens": ["です", "鈴木さんは", "医者"],
+          "correct_order": ["鈴木さんは", "医者", "です"],
+          "explanation": "주제(鈴木さんは) + 명사(医者) + です. は가 주제를 표시합니다."
+        },
+        "answerTextForReview": "鈴木さんは医者です",
+        "answerTextIsDisplayJoinOnly": true
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-CD01",
+      "lessonId": "HN5-004",
+      "kind": "CAN_DO_PROPOSAL",
+      "description": "학습 목표 제안·목표/평가 대응",
+      "source": {
+        "proposal": "상대와 같은 취미를 も로 덧붙여 말하고 짧게 반응할 수 있다.",
+        "notExistingApprovedContent": true,
+        "existingTitle": "공통점이 반가울 때",
+        "existingSubtitle": "も로 공감 이어가기"
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-G01",
+      "lessonId": "HN5-004",
+      "kind": "GRAMMAR",
+      "description": "문법·뜻·예문/읽기·선행 지식",
+      "source": {
+        "lessonGrammar": {
+          "pattern": "〜も",
+          "meaning_ko": "~도 (같음·추가를 나타내는 조사)",
+          "grammar_order": 33,
+          "bunpro_ref": "L1"
+        },
+        "referenceGrammar": {
+          "pattern": "〜も",
+          "meaningKo": "~도 (첨가·동류 조사)",
+          "explanation": "も는 '~도'라는 뜻으로, は 자리에 넣어 '마찬가지로', '또한'이라는 의미를 나타냅니다. 상대방과 같은 점이 있을 때나, 여러 항목을 나열할 때 사용합니다. 'AもBも'로 '~도 ~도'라는 표현도 가능합니다.",
+          "jlptLevel": "N5",
+          "exampleSentences": [
+            {
+              "japanese": "私も学生です。",
+              "reading": "わたしもがくせいです。",
+              "korean": "저도 학생입니다."
+            },
+            {
+              "japanese": "映画も音楽も好きです。",
+              "reading": "えいがもおんがくもすきです。",
+              "korean": "영화도 음악도 좋아합니다."
+            }
+          ],
+          "order": 33
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-V076",
+      "lessonId": "HN5-004",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 76,
+        "lessonLabel": "映画 (영화)",
+        "referenceWord": {
+          "word": "映画",
+          "reading": "えいが",
+          "meaningKo": "영화",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "映画を見に行きましょう。",
+          "exampleReading": "えいがをみにいきましょう。",
+          "exampleTranslation": "영화를 보러 갑시다.",
+          "tags": ["취미"],
+          "order": 76
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-V077",
+      "lessonId": "HN5-004",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 77,
+        "lessonLabel": "音楽 (음악)",
+        "referenceWord": {
+          "word": "音楽",
+          "reading": "おんがく",
+          "meaningKo": "음악",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "音楽を聞くのが好きです。",
+          "exampleReading": "おんがくをきくのがすきです。",
+          "exampleTranslation": "음악을 듣는 것을 좋아합니다.",
+          "tags": ["취미"],
+          "order": 77
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-V078",
+      "lessonId": "HN5-004",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 78,
+        "lessonLabel": "旅行 (여행)",
+        "referenceWord": {
+          "word": "旅行",
+          "reading": "りょこう",
+          "meaningKo": "여행",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "来月旅行に行きます。",
+          "exampleReading": "らいげつりょこうにいきます。",
+          "exampleTranslation": "다음 달에 여행을 갑니다.",
+          "tags": ["취미", "여행"],
+          "order": 78
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-V162",
+      "lessonId": "HN5-004",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 162,
+        "lessonLabel": "好き (좋아하다)",
+        "referenceWord": {
+          "word": "好き",
+          "reading": "すき",
+          "meaningKo": "좋아하다",
+          "partOfSpeech": "NA_ADJECTIVE",
+          "jlptLevel": "N5",
+          "exampleSentence": "日本料理が好きです。",
+          "exampleReading": "にほんりょうりがすきです。",
+          "exampleTranslation": "일본 요리를 좋아합니다.",
+          "tags": ["감정"],
+          "order": 162
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-V079",
+      "lessonId": "HN5-004",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 79,
+        "lessonLabel": "料理 (요리)",
+        "referenceWord": {
+          "word": "料理",
+          "reading": "りょうり",
+          "meaningKo": "요리",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "日本料理が好きです。",
+          "exampleReading": "にほんりょうりがすきです。",
+          "exampleTranslation": "일본 요리를 좋아합니다.",
+          "tags": ["음식", "취미"],
+          "order": 79
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-S00",
+      "lessonId": "HN5-004",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 0,
+        "scriptLine": {
+          "speaker": "キム",
+          "voice_id": "japanese_male_1",
+          "text": "私は映画が好きです。",
+          "translation": "저는 영화를 좋아합니다."
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-S01",
+      "lessonId": "HN5-004",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 1,
+        "scriptLine": {
+          "speaker": "田中",
+          "voice_id": "japanese_female_1",
+          "text": "私も映画が好きです！音楽も好きです。",
+          "translation": "저도 영화를 좋아합니다! 음악도 좋아해요."
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-S02",
+      "lessonId": "HN5-004",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 2,
+        "scriptLine": {
+          "speaker": "キム",
+          "voice_id": "japanese_male_1",
+          "text": "本当ですか。旅行も好きですか。",
+          "translation": "정말이에요? 여행도 좋아하나요?"
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-S03",
+      "lessonId": "HN5-004",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 3,
+        "scriptLine": {
+          "speaker": "田中",
+          "voice_id": "japanese_female_1",
+          "text": "はい、旅行も料理も好きです。",
+          "translation": "네, 여행도 요리도 좋아합니다."
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-Q01",
+      "lessonId": "HN5-004",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 1,
+          "type": "VOCAB_MCQ",
+          "vocabulary_order": 76,
+          "cognitive_level": "인식",
+          "prompt": "映画의 뜻은?",
+          "options": [
+            {
+              "id": "a",
+              "text": "요리"
+            },
+            {
+              "id": "b",
+              "text": "음악"
+            },
+            {
+              "id": "c",
+              "text": "여행"
+            },
+            {
+              "id": "d",
+              "text": "영화"
+            }
+          ],
+          "correct_answer": "d",
+          "explanation": "映画(えいが)는 '영화'입니다."
+        },
+        "answerTextForReview": "영화",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-Q02",
+      "lessonId": "HN5-004",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 2,
+          "type": "VOCAB_MCQ",
+          "vocabulary_order": 79,
+          "cognitive_level": "인식",
+          "prompt": "'요리'를 뜻하는 일본어는?",
+          "options": [
+            {
+              "id": "a",
+              "text": "料理"
+            },
+            {
+              "id": "b",
+              "text": "旅行"
+            },
+            {
+              "id": "c",
+              "text": "映画"
+            },
+            {
+              "id": "d",
+              "text": "音楽"
+            }
+          ],
+          "correct_answer": "a",
+          "explanation": "料理(りょうり)는 '요리'입니다. 旅行(りょこう)는 '여행'입니다."
+        },
+        "answerTextForReview": "料理",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-Q03",
+      "lessonId": "HN5-004",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 3,
+          "type": "CONTEXT_CLOZE",
+          "grammar_order": 33,
+          "cognitive_level": "적용",
+          "prompt": "「私は映画が好きです。」「私____映画が好きです。」(저도 영화를 좋아합니다.)",
+          "options": [
+            {
+              "id": "a",
+              "text": "は"
+            },
+            {
+              "id": "b",
+              "text": "も"
+            },
+            {
+              "id": "c",
+              "text": "が"
+            },
+            {
+              "id": "d",
+              "text": "を"
+            }
+          ],
+          "correct_answer": "b",
+          "explanation": "も는 '~도'라는 뜻으로, 상대와 같은 점이 있을 때 は 대신 も를 씁니다."
+        },
+        "answerTextForReview": "も",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-Q04",
+      "lessonId": "HN5-004",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 4,
+          "type": "CONTEXT_CLOZE",
+          "grammar_order": 33,
+          "cognitive_level": "적용",
+          "prompt": "旅行____料理____好きです。(여행도 요리도 좋아합니다.)",
+          "options": [
+            {
+              "id": "a",
+              "text": "と … と"
+            },
+            {
+              "id": "b",
+              "text": "は … は"
+            },
+            {
+              "id": "c",
+              "text": "も … も"
+            },
+            {
+              "id": "d",
+              "text": "が … が"
+            }
+          ],
+          "correct_answer": "c",
+          "explanation": "も…も로 '~도 ~도'라고 여러 개를 같이 나열할 수 있습니다."
+        },
+        "answerTextForReview": "も … も",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-004-Q05",
+      "lessonId": "HN5-004",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 5,
+          "type": "SENTENCE_REORDER",
+          "grammar_order": 33,
+          "cognitive_level": "산출유사",
+          "prompt": "'저도 음악을 좋아합니다'를 올바른 순서로 배열하세요.",
+          "tokens": ["好きです", "私も", "音楽が"],
+          "correct_order": ["私も", "音楽が", "好きです"],
+          "explanation": "주어(私も) + 대상(音楽が) + 서술(好きです). は 자리에 も를 넣으면 '~도'가 됩니다."
+        },
+        "answerTextForReview": "私も音楽が好きです",
+        "answerTextIsDisplayJoinOnly": true
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-CD01",
+      "lessonId": "HN5-005",
+      "kind": "CAN_DO_PROPOSAL",
+      "description": "학습 목표 제안·목표/평가 대응",
+      "source": {
+        "proposal": "よ와ね의 알려주기·공감 뉘앙스를 구분하고 간단한 인사 대화에 반응할 수 있다.",
+        "notExistingApprovedContent": true,
+        "existingTitle": "대화 분위기 맞추기",
+        "existingSubtitle": "よ/ね로 말끝 뉘앙스 조절하기"
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-G01",
+      "lessonId": "HN5-005",
+      "kind": "GRAMMAR",
+      "description": "문법·뜻·예문/읽기·선행 지식",
+      "source": {
+        "lessonGrammar": {
+          "pattern": "〜よ / 〜ね",
+          "meaning_ko": "~요(알려줌) / ~네(공감·확인)",
+          "grammar_order": 34,
+          "bunpro_ref": "L2"
+        },
+        "referenceGrammar": {
+          "pattern": "〜よ / 〜ね",
+          "meaningKo": "~요(알려줌) / ~네요(공감·확인)",
+          "explanation": "よ는 상대방이 모르는 사실을 알려주거나 내 생각을 강조할 때 쓰고('~란 말이야', '~라고요'), ね는 상대방의 공감을 구하거나 확인할 때 씁니다('~네요', '~그렇죠?'). 정중체에서는 'です/ますよ', 'です/ますね' 형태로 사용합니다.",
+          "jlptLevel": "N5",
+          "exampleSentences": [
+            {
+              "japanese": "あの人は友達ですよ。",
+              "reading": "あのひとはともだちですよ。",
+              "korean": "저 사람은 친구예요."
+            },
+            {
+              "japanese": "今日はいい天気ですね。",
+              "reading": "きょうはいいてんきですね。",
+              "korean": "오늘은 좋은 날씨네요."
+            }
+          ],
+          "order": 34
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-V161",
+      "lessonId": "HN5-005",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 161,
+        "lessonLabel": "元気 (건강하다, 활기차다)",
+        "referenceWord": {
+          "word": "元気",
+          "reading": "げんき",
+          "meaningKo": "건강하다, 활기차다",
+          "partOfSpeech": "NA_ADJECTIVE",
+          "jlptLevel": "N5",
+          "exampleSentence": "お元気ですか。",
+          "exampleReading": "おげんきですか。",
+          "exampleTranslation": "잘 지내십니까?",
+          "tags": ["인사", "건강"],
+          "order": 161
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-V196",
+      "lessonId": "HN5-005",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 196,
+        "lessonLabel": "おはようございます (안녕하세요-아침)",
+        "referenceWord": {
+          "word": "おはようございます",
+          "reading": "おはようございます",
+          "meaningKo": "안녕하세요(아침 인사)",
+          "partOfSpeech": "EXPRESSION",
+          "jlptLevel": "N5",
+          "exampleSentence": "先生、おはようございます。",
+          "exampleReading": "せんせい、おはようございます。",
+          "exampleTranslation": "선생님, 안녕하세요.",
+          "tags": ["인사"],
+          "order": 196
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-V362",
+      "lessonId": "HN5-005",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 362,
+        "lessonLabel": "こんにちは (안녕하세요-낮)",
+        "referenceWord": {
+          "word": "こんにちは",
+          "reading": "こんにちは",
+          "meaningKo": "안녕하세요(낮인사)",
+          "partOfSpeech": "EXPRESSION",
+          "jlptLevel": "N5",
+          "exampleSentence": "こんにちは。お元気ですか。",
+          "exampleReading": "こんにちは。おげんきですか。",
+          "exampleTranslation": "안녕하세요. 잘 지내십니까?",
+          "tags": [],
+          "order": 362
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-V197",
+      "lessonId": "HN5-005",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 197,
+        "lessonLabel": "ありがとうございます (감사합니다)",
+        "referenceWord": {
+          "word": "ありがとうございます",
+          "reading": "ありがとうございます",
+          "meaningKo": "감사합니다",
+          "partOfSpeech": "EXPRESSION",
+          "jlptLevel": "N5",
+          "exampleSentence": "プレゼント、ありがとうございます。",
+          "exampleReading": "ぷれぜんと、ありがとうございます。",
+          "exampleTranslation": "선물, 감사합니다.",
+          "tags": ["인사"],
+          "order": 197
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-V001",
+      "lessonId": "HN5-005",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 1,
+        "lessonLabel": "人 (사람)",
+        "referenceWord": {
+          "word": "人",
+          "reading": "ひと",
+          "meaningKo": "사람",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "あの人は日本人です。",
+          "exampleReading": "あのひとはにほんじんです。",
+          "exampleTranslation": "저 사람은 일본인입니다.",
+          "tags": ["사람", "기본"],
+          "order": 1
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-V005",
+      "lessonId": "HN5-005",
+      "kind": "VOCABULARY_LINK",
+      "description": "어휘·읽기·뜻·레슨 표시 대응",
+      "source": {
+        "vocabularyOrder": 5,
+        "lessonLabel": "友達 (친구)",
+        "referenceWord": {
+          "word": "友達",
+          "reading": "ともだち",
+          "meaningKo": "친구",
+          "partOfSpeech": "NOUN",
+          "jlptLevel": "N5",
+          "exampleSentence": "友達と映画を見ます。",
+          "exampleReading": "ともだちとえいがをみます。",
+          "exampleTranslation": "친구와 영화를 봅니다.",
+          "tags": ["사람", "관계"],
+          "order": 5
+        }
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-S00",
+      "lessonId": "HN5-005",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 0,
+        "scriptLine": {
+          "speaker": "キム",
+          "voice_id": "japanese_male_1",
+          "text": "おはようございます。今日はいい天気ですね。",
+          "translation": "안녕하세요. 오늘은 좋은 날씨네요."
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-S01",
+      "lessonId": "HN5-005",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 1,
+        "scriptLine": {
+          "speaker": "田中",
+          "voice_id": "japanese_female_1",
+          "text": "そうですね。キムさん、元気ですか。",
+          "translation": "그렇네요. 김 씨, 잘 지내요?"
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-S02",
+      "lessonId": "HN5-005",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 2,
+        "scriptLine": {
+          "speaker": "キム",
+          "voice_id": "japanese_male_1",
+          "text": "はい、元気ですよ。田中さんも元気ですね。",
+          "translation": "네, 잘 지내요. 다나카 씨도 건강하시네요."
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-S03",
+      "lessonId": "HN5-005",
+      "kind": "DIALOGUE",
+      "description": "대화·번역·상황·역할·난이도",
+      "source": {
+        "scriptIndex": 3,
+        "scriptLine": {
+          "speaker": "田中",
+          "voice_id": "japanese_female_1",
+          "text": "ありがとうございます。あ、あの人は友達ですよ。いい人ですよ。",
+          "translation": "감사합니다. 아, 저 사람은 친구예요. 좋은 사람이에요."
+        },
+        "fullReadingInLessonSource": null
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-Q01",
+      "lessonId": "HN5-005",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 1,
+          "type": "VOCAB_MCQ",
+          "vocabulary_order": 161,
+          "cognitive_level": "인식",
+          "prompt": "元気의 뜻은?",
+          "options": [
+            {
+              "id": "a",
+              "text": "건강하다, 활기차다"
+            },
+            {
+              "id": "b",
+              "text": "유명하다"
+            },
+            {
+              "id": "c",
+              "text": "조용하다"
+            },
+            {
+              "id": "d",
+              "text": "편리하다"
+            }
+          ],
+          "correct_answer": "a",
+          "explanation": "元気(げんき)는 '건강하다, 활기차다'는 뜻입니다."
+        },
+        "answerTextForReview": "건강하다, 활기차다",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-Q02",
+      "lessonId": "HN5-005",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 2,
+          "type": "VOCAB_MCQ",
+          "vocabulary_order": 197,
+          "cognitive_level": "인식",
+          "prompt": "'감사합니다'를 뜻하는 일본어는?",
+          "options": [
+            {
+              "id": "a",
+              "text": "おはようございます"
+            },
+            {
+              "id": "b",
+              "text": "ありがとうございます"
+            },
+            {
+              "id": "c",
+              "text": "すみません"
+            },
+            {
+              "id": "d",
+              "text": "さようなら"
+            }
+          ],
+          "correct_answer": "b",
+          "explanation": "ありがとうございます는 '감사합니다'입니다."
+        },
+        "answerTextForReview": "ありがとうございます",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-Q03",
+      "lessonId": "HN5-005",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 3,
+          "type": "CONTEXT_CLOZE",
+          "grammar_order": 34,
+          "cognitive_level": "적용",
+          "prompt": "いい天気です____。(좋은 날씨네요.) — 상대에게 동의를 구할 때",
+          "options": [
+            {
+              "id": "a",
+              "text": "か"
+            },
+            {
+              "id": "b",
+              "text": "よ"
+            },
+            {
+              "id": "c",
+              "text": "ね"
+            },
+            {
+              "id": "d",
+              "text": "も"
+            }
+          ],
+          "correct_answer": "c",
+          "explanation": "ね는 '~네요'처럼 상대와 공감하거나 동의를 구할 때 씁니다."
+        },
+        "answerTextForReview": "ね",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-Q04",
+      "lessonId": "HN5-005",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 4,
+          "type": "CONTEXT_CLOZE",
+          "grammar_order": 34,
+          "cognitive_level": "적용",
+          "prompt": "あの人は友達です____。(저 사람은 친구예요.) — 상대가 모르는 정보를 알려줄 때",
+          "options": [
+            {
+              "id": "a",
+              "text": "は"
+            },
+            {
+              "id": "b",
+              "text": "ね"
+            },
+            {
+              "id": "c",
+              "text": "か"
+            },
+            {
+              "id": "d",
+              "text": "よ"
+            }
+          ],
+          "correct_answer": "d",
+          "explanation": "よ는 '~요'처럼 상대가 모르는 새 정보를 알려줄 때 씁니다."
+        },
+        "answerTextForReview": "よ",
+        "answerTextIsDisplayJoinOnly": false
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "itemId": "HN5-005-Q05",
+      "lessonId": "HN5-005",
+      "kind": "QUESTION",
+      "description": "문항·보기·정답·해설·목표 평가",
+      "source": {
+        "question": {
+          "order": 5,
+          "type": "SENTENCE_REORDER",
+          "grammar_order": 34,
+          "cognitive_level": "산출유사",
+          "prompt": "'오늘은 좋은 날씨네요'를 올바른 순서로 배열하세요.",
+          "tokens": ["ですね", "いい天気", "今日は"],
+          "correct_order": ["今日は", "いい天気", "ですね"],
+          "explanation": "주제(今日は) + 상태(いい天気) + ですね. ね를 붙여 공감의 뉘앙스를 더합니다."
+        },
+        "answerTextForReview": "今日はいい天気ですね",
+        "answerTextIsDisplayJoinOnly": true
+      },
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    }
+  ],
+  "audioReviewItems": [
+    {
+      "audioId": "HN5-001-S00-AUDIO",
+      "contentItemId": "HN5-001-S00",
+      "lessonId": "HN5-001",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 0,
+      "sourceText": "はじめまして。田中です。学生です。",
+      "speaker": "田中",
+      "sourceVoiceAlias": "japanese_female_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/a1946486-f789-4741-ab15-4f6c712f586b/script-line-0.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-001-S01-AUDIO",
+      "contentItemId": "HN5-001-S01",
+      "lessonId": "HN5-001",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 1,
+      "sourceText": "はじめまして。私はキムです。",
+      "speaker": "キム",
+      "sourceVoiceAlias": "japanese_male_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/a1946486-f789-4741-ab15-4f6c712f586b/script-line-1.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-001-S02-AUDIO",
+      "contentItemId": "HN5-001-S02",
+      "lessonId": "HN5-001",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 2,
+      "sourceText": "キムさん、よろしくお願いします。",
+      "speaker": "田中",
+      "sourceVoiceAlias": "japanese_female_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/a1946486-f789-4741-ab15-4f6c712f586b/script-line-2.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-001-S03-AUDIO",
+      "contentItemId": "HN5-001-S03",
+      "lessonId": "HN5-001",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 3,
+      "sourceText": "こちらこそ、よろしくお願いします。",
+      "speaker": "キム",
+      "sourceVoiceAlias": "japanese_male_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/a1946486-f789-4741-ab15-4f6c712f586b/script-line-3.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-001-Q01-AUDIO",
+      "contentItemId": "HN5-001-Q01",
+      "lessonId": "HN5-001",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 1,
+      "sourceText": "はじめまして의 뜻은?",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/a1946486-f789-4741-ab15-4f6c712f586b/question-1.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-001-Q02-AUDIO",
+      "contentItemId": "HN5-001-Q02",
+      "lessonId": "HN5-001",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 2,
+      "sourceText": "'학생'의 일본어는?",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/a1946486-f789-4741-ab15-4f6c712f586b/question-2.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-001-Q03-AUDIO",
+      "contentItemId": "HN5-001-Q03",
+      "lessonId": "HN5-001",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 3,
+      "sourceText": "私はキム____。(저는 김입니다.)",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/a1946486-f789-4741-ab15-4f6c712f586b/question-3.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-001-Q04-AUDIO",
+      "contentItemId": "HN5-001-Q04",
+      "lessonId": "HN5-001",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 4,
+      "sourceText": "はじめまして。田中____。(처음 뵙겠습니다. 다나카입니다.)",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/a1946486-f789-4741-ab15-4f6c712f586b/question-4.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-001-Q05-AUDIO",
+      "contentItemId": "HN5-001-Q05",
+      "lessonId": "HN5-001",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 5,
+      "sourceText": "'저는 학생입니다'를 올바른 순서로 배열하세요.",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/a1946486-f789-4741-ab15-4f6c712f586b/question-5.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-002-S00-AUDIO",
+      "contentItemId": "HN5-002-S00",
+      "lessonId": "HN5-002",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 0,
+      "sourceText": "キムさんは留学生ですか。",
+      "speaker": "鈴木",
+      "sourceVoiceAlias": "japanese_female_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/22b9bfa8-9819-4afd-8e1d-969524adca1e/script-line-0.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-002-S01-AUDIO",
+      "contentItemId": "HN5-002-S01",
+      "lessonId": "HN5-002",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 1,
+      "sourceText": "はい、留学生です。韓国から来ました。",
+      "speaker": "キム",
+      "sourceVoiceAlias": "japanese_male_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/22b9bfa8-9819-4afd-8e1d-969524adca1e/script-line-1.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-002-S02-AUDIO",
+      "contentItemId": "HN5-002-S02",
+      "lessonId": "HN5-002",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 2,
+      "sourceText": "そうですか。英語は分かりますか。",
+      "speaker": "鈴木",
+      "sourceVoiceAlias": "japanese_female_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/22b9bfa8-9819-4afd-8e1d-969524adca1e/script-line-2.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-002-S03-AUDIO",
+      "contentItemId": "HN5-002-S03",
+      "lessonId": "HN5-002",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 3,
+      "sourceText": "はい、少し分かります。鈴木さんの国はどこですか。",
+      "speaker": "キム",
+      "sourceVoiceAlias": "japanese_male_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/22b9bfa8-9819-4afd-8e1d-969524adca1e/script-line-3.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-002-Q01-AUDIO",
+      "contentItemId": "HN5-002-Q01",
+      "lessonId": "HN5-002",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 1,
+      "sourceText": "留学生의 뜻은?",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/22b9bfa8-9819-4afd-8e1d-969524adca1e/question-1.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-002-Q02-AUDIO",
+      "contentItemId": "HN5-002-Q02",
+      "lessonId": "HN5-002",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 2,
+      "sourceText": "'어디'를 뜻하는 일본어는?",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/22b9bfa8-9819-4afd-8e1d-969524adca1e/question-2.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-002-Q03-AUDIO",
+      "contentItemId": "HN5-002-Q03",
+      "lessonId": "HN5-002",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 3,
+      "sourceText": "学生です____。(학생인가요?)",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/22b9bfa8-9819-4afd-8e1d-969524adca1e/question-3.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-002-Q04-AUDIO",
+      "contentItemId": "HN5-002-Q04",
+      "lessonId": "HN5-002",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 4,
+      "sourceText": "国は どこ ____。(나라는 어디인가요?)",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/22b9bfa8-9819-4afd-8e1d-969524adca1e/question-4.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-002-Q05-AUDIO",
+      "contentItemId": "HN5-002-Q05",
+      "lessonId": "HN5-002",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 5,
+      "sourceText": "'김 씨는 유학생인가요?'를 올바른 순서로 배열하세요.",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/22b9bfa8-9819-4afd-8e1d-969524adca1e/question-5.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-003-S00-AUDIO",
+      "contentItemId": "HN5-003-S00",
+      "lessonId": "HN5-003",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 0,
+      "sourceText": "鈴木さんの仕事は何ですか。",
+      "speaker": "キム",
+      "sourceVoiceAlias": "japanese_male_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/21161f32-9b71-43e2-9c38-e0a8192bf076/script-line-0.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-003-S01-AUDIO",
+      "contentItemId": "HN5-003-S01",
+      "lessonId": "HN5-003",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 1,
+      "sourceText": "私は医者です。キムさんは？",
+      "speaker": "鈴木",
+      "sourceVoiceAlias": "japanese_female_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/21161f32-9b71-43e2-9c38-e0a8192bf076/script-line-1.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-003-S02-AUDIO",
+      "contentItemId": "HN5-003-S02",
+      "lessonId": "HN5-003",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 2,
+      "sourceText": "私は大学の学生です。友達は会社の人です。",
+      "speaker": "キム",
+      "sourceVoiceAlias": "japanese_male_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/21161f32-9b71-43e2-9c38-e0a8192bf076/script-line-2.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-003-S03-AUDIO",
+      "contentItemId": "HN5-003-S03",
+      "lessonId": "HN5-003",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 3,
+      "sourceText": "そうですか。大学は楽しいですか。",
+      "speaker": "鈴木",
+      "sourceVoiceAlias": "japanese_female_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/21161f32-9b71-43e2-9c38-e0a8192bf076/script-line-3.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-003-Q01-AUDIO",
+      "contentItemId": "HN5-003-Q01",
+      "lessonId": "HN5-003",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 1,
+      "sourceText": "仕事의 뜻은?",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/21161f32-9b71-43e2-9c38-e0a8192bf076/question-1.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-003-Q02-AUDIO",
+      "contentItemId": "HN5-003-Q02",
+      "lessonId": "HN5-003",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 2,
+      "sourceText": "'의사'를 뜻하는 일본어는?",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/21161f32-9b71-43e2-9c38-e0a8192bf076/question-2.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-003-Q03-AUDIO",
+      "contentItemId": "HN5-003-Q03",
+      "lessonId": "HN5-003",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 3,
+      "sourceText": "私____学生です。(저는 학생입니다.)",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/21161f32-9b71-43e2-9c38-e0a8192bf076/question-3.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-003-Q04-AUDIO",
+      "contentItemId": "HN5-003-Q04",
+      "lessonId": "HN5-003",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 4,
+      "sourceText": "友達____会社の人です。(친구는 회사 사람입니다.)",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/21161f32-9b71-43e2-9c38-e0a8192bf076/question-4.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-003-Q05-AUDIO",
+      "contentItemId": "HN5-003-Q05",
+      "lessonId": "HN5-003",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 5,
+      "sourceText": "'스즈키 씨는 의사입니다'를 올바른 순서로 배열하세요.",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/21161f32-9b71-43e2-9c38-e0a8192bf076/question-5.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-004-S00-AUDIO",
+      "contentItemId": "HN5-004-S00",
+      "lessonId": "HN5-004",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 0,
+      "sourceText": "私は映画が好きです。",
+      "speaker": "キム",
+      "sourceVoiceAlias": "japanese_male_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/script-line-0.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/voice-pilot-kenzo-shizuka-20261027/8366debe783cbb6091a102b1dbca3cc0ed9ab0289d22480d77c994e89b8a3a08/script-line-0.mp3",
+      "recordedPilotReferenceDate": "2026-10-28",
+      "recordedPilotSha256FromPath": "8366debe783cbb6091a102b1dbca3cc0ed9ab0289d22480d77c994e89b8a3a08",
+      "recordedPilotExpectedReading": "わたしは えいがが すきです。",
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-004-S01-AUDIO",
+      "contentItemId": "HN5-004-S01",
+      "lessonId": "HN5-004",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 1,
+      "sourceText": "私も映画が好きです！音楽も好きです。",
+      "speaker": "田中",
+      "sourceVoiceAlias": "japanese_female_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/script-line-1.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/voice-pilot-kenzo-shizuka-20261027/ba79d5253030f75a2e6a78f1f3a4db6a21255081b8eb0cf0b4c11a520c7436e1/script-line-1.mp3",
+      "recordedPilotReferenceDate": "2026-10-28",
+      "recordedPilotSha256FromPath": "ba79d5253030f75a2e6a78f1f3a4db6a21255081b8eb0cf0b4c11a520c7436e1",
+      "recordedPilotExpectedReading": "わたしも えいがが すきです！ おんがくも すきです。",
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-004-S02-AUDIO",
+      "contentItemId": "HN5-004-S02",
+      "lessonId": "HN5-004",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 2,
+      "sourceText": "本当ですか。旅行も好きですか。",
+      "speaker": "キム",
+      "sourceVoiceAlias": "japanese_male_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/script-line-2.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/voice-pilot-kenzo-shizuka-20261027/fba9010c7c4839ec4229df0d046a99989748e8e5fc53618a39c79ae068c30b24/script-line-2.mp3",
+      "recordedPilotReferenceDate": "2026-10-28",
+      "recordedPilotSha256FromPath": "fba9010c7c4839ec4229df0d046a99989748e8e5fc53618a39c79ae068c30b24",
+      "recordedPilotExpectedReading": "ほんとうですか。りょこうも すきですか。",
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-004-S03-AUDIO",
+      "contentItemId": "HN5-004-S03",
+      "lessonId": "HN5-004",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 3,
+      "sourceText": "はい、旅行も料理も好きです。",
+      "speaker": "田中",
+      "sourceVoiceAlias": "japanese_female_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/script-line-3.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/voice-pilot-kenzo-shizuka-20261027/d5490d3b1ef90fb23d55d5cb0330f94b72b65781415c387ad5d457ba96c8d4be/script-line-3.mp3",
+      "recordedPilotReferenceDate": "2026-10-28",
+      "recordedPilotSha256FromPath": "d5490d3b1ef90fb23d55d5cb0330f94b72b65781415c387ad5d457ba96c8d4be",
+      "recordedPilotExpectedReading": "はい、りょこうも りょうりも すきです。",
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-004-Q01-AUDIO",
+      "contentItemId": "HN5-004-Q01",
+      "lessonId": "HN5-004",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 1,
+      "sourceText": "映画의 뜻은?",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/question-1.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-004-Q02-AUDIO",
+      "contentItemId": "HN5-004-Q02",
+      "lessonId": "HN5-004",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 2,
+      "sourceText": "'요리'를 뜻하는 일본어는?",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/question-2.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-004-Q03-AUDIO",
+      "contentItemId": "HN5-004-Q03",
+      "lessonId": "HN5-004",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 3,
+      "sourceText": "「私は映画が好きです。」「私____映画が好きです。」(저도 영화를 좋아합니다.)",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/question-3.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-004-Q04-AUDIO",
+      "contentItemId": "HN5-004-Q04",
+      "lessonId": "HN5-004",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 4,
+      "sourceText": "旅行____料理____好きです。(여행도 요리도 좋아합니다.)",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/question-4.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-004-Q05-AUDIO",
+      "contentItemId": "HN5-004-Q05",
+      "lessonId": "HN5-004",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 5,
+      "sourceText": "'저도 음악을 좋아합니다'를 올바른 순서로 배열하세요.",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/c2ed2932-ed5a-4dc8-92f3-db96516e6859/question-5.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-005-S00-AUDIO",
+      "contentItemId": "HN5-005-S00",
+      "lessonId": "HN5-005",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 0,
+      "sourceText": "おはようございます。今日はいい天気ですね。",
+      "speaker": "キム",
+      "sourceVoiceAlias": "japanese_male_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/9555d852-d2a3-4d63-ac90-68e4f1ceee6d/script-line-0.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-005-S01-AUDIO",
+      "contentItemId": "HN5-005-S01",
+      "lessonId": "HN5-005",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 1,
+      "sourceText": "そうですね。キムさん、元気ですか。",
+      "speaker": "田中",
+      "sourceVoiceAlias": "japanese_female_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/9555d852-d2a3-4d63-ac90-68e4f1ceee6d/script-line-1.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-005-S02-AUDIO",
+      "contentItemId": "HN5-005-S02",
+      "lessonId": "HN5-005",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 2,
+      "sourceText": "はい、元気ですよ。田中さんも元気ですね。",
+      "speaker": "キム",
+      "sourceVoiceAlias": "japanese_male_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/9555d852-d2a3-4d63-ac90-68e4f1ceee6d/script-line-2.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-005-S03-AUDIO",
+      "contentItemId": "HN5-005-S03",
+      "lessonId": "HN5-005",
+      "kind": "SCRIPT_LINE",
+      "scriptIndex": 3,
+      "sourceText": "ありがとうございます。あ、あの人は友達ですよ。いい人ですよ。",
+      "speaker": "田中",
+      "sourceVoiceAlias": "japanese_female_1",
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/9555d852-d2a3-4d63-ac90-68e4f1ceee6d/script-line-3.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-005-Q01-AUDIO",
+      "contentItemId": "HN5-005-Q01",
+      "lessonId": "HN5-005",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 1,
+      "sourceText": "元気의 뜻은?",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/9555d852-d2a3-4d63-ac90-68e4f1ceee6d/question-1.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-005-Q02-AUDIO",
+      "contentItemId": "HN5-005-Q02",
+      "lessonId": "HN5-005",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 2,
+      "sourceText": "'감사합니다'를 뜻하는 일본어는?",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/9555d852-d2a3-4d63-ac90-68e4f1ceee6d/question-2.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-005-Q03-AUDIO",
+      "contentItemId": "HN5-005-Q03",
+      "lessonId": "HN5-005",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 3,
+      "sourceText": "いい天気です____。(좋은 날씨네요.) — 상대에게 동의를 구할 때",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/9555d852-d2a3-4d63-ac90-68e4f1ceee6d/question-3.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-005-Q04-AUDIO",
+      "contentItemId": "HN5-005-Q04",
+      "lessonId": "HN5-005",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 4,
+      "sourceText": "あの人は友達です____。(저 사람은 친구예요.) — 상대가 모르는 정보를 알려줄 때",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/9555d852-d2a3-4d63-ac90-68e4f1ceee6d/question-4.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    },
+    {
+      "audioId": "HN5-005-Q05-AUDIO",
+      "contentItemId": "HN5-005-Q05",
+      "lessonId": "HN5-005",
+      "kind": "QUESTION_PROMPT",
+      "questionOrder": 5,
+      "sourceText": "'오늘은 좋은 날씨네요'를 올바른 순서로 배열하세요.",
+      "speaker": null,
+      "sourceVoiceAlias": null,
+      "historicalUrl": "https://storage.googleapis.com/harukoto-storage/tts/lesson/9555d852-d2a3-4d63-ac90-68e4f1ceee6d/question-5.mp3",
+      "historicalUrlSnapshotDate": "2026-10-26",
+      "recordedPilotUrl": null,
+      "recordedPilotReferenceDate": null,
+      "recordedPilotSha256FromPath": null,
+      "recordedPilotExpectedReading": null,
+      "currentAppUrl": null,
+      "currentFileSha256": null,
+      "currentBindingVerifiedAt": null,
+      "playbackSurface": "Historical packet link; no current mobile lesson question TTS button verified here",
+      "review": {
+        "status": "PENDING",
+        "reviewer": null,
+        "reviewedAt": null,
+        "evidence": null,
+        "proposedCorrection": null
+      }
+    }
+  ]
+}

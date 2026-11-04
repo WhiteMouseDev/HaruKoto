@@ -65,6 +65,11 @@ docs/
 - [학습 앱 개선 사례 기록](blog/2026-10-21-harukoto-improvement-casebook.md) — 학습 UI, 퀴즈 저장, 이어 풀기, DB 보안과 파티션 문제의 원인·설계·수정·검증
 - [일일 목표·진행률·학습일 구현 재검토](operations/plans/study-metrics-correctness-review-2026-11-02.md) — 기존 완료 재전송·저장 실패와 계정별 목표의 결함 재현
 - [가나·웹 완료 저장과 계정별 목표 보완](operations/plans/study-completion-safety-2026-11-03.md) — 최초 완료·원자적 저장·계정별 확정 목표, 회귀 검증과 운영 적용 경계
+- [가나 저장 확인·실패 재시도 개선](operations/plans/kana-save-retry-and-qa-2026-11-04.md) — 두 활성 가나 화면의 답안/완료 확인, 계정 경계와 운영 적용 전 회귀·시뮬레이터 검증
+- [문자카드 진도 재시도의 API·영수증 제안](operations/plans/kana-card-progress-retry-contract-proposal-2026-11-04.md) — 기존 누적 경로의 재전송 한계, 미승인 새 접수 경로와 CHECK 확장·보존/원복안
+- [N5 첫 챕터 전문 검수 자료](operations/qa/n5-ch01-expert-review-2026-11-04.md) — HN5-001~005 원문·정답·해설·어휘·음원 출처와 사람의 판정 원장
+- [히라가나·가타카나 쓰기 연습 설계](operations/plans/kana-handwriting-practice-design-2026-11-04.md) — 10자 파일럿·획순/따라쓰기/혼자쓰기·로컬 저장·기존 학습 지표 보존 경계
+- [블로그: 저장 실패를 오답으로 바꾸지 않기](blog/2026-11-04-kana-saving-is-not-an-answer.md) — 서버 중복 방지와 화면 저장 확인의 차이, 계정별 재시도와 전문 검수/쓰기 설계의 경계
 - [하루 목표 옆의 2%는 무엇을 뜻할까 (블로그)](blog/2026-10-30-daily-word-goal-and-quiz-progress.md) — 오늘 단어 목표와 퀴즈 진행·장기 숙련도를 분리한 이유와 검증
 - [개선 기록 블로그 연재 구성](blog/2026-10-21-harukoto-blog-outline.md) — 주제별 글 구성과 공개 전 확인할 근거·진행 상태
 - [읽기 전용 파티션 검사 구현 계획](operations/plans/read-only-partition-check-2026-10-21.md) — DB 구조 검사, 회귀 테스트와 별도 승인이 필요한 운영 배치안

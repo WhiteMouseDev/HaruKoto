@@ -9,6 +9,7 @@ class KanaMasterResult {
   final int accuracy;
   final int xpEarned;
   final bool passed;
+  final bool rewardConfirmed;
 
   KanaMasterResult({
     required this.correct,
@@ -16,6 +17,7 @@ class KanaMasterResult {
     required this.accuracy,
     required this.xpEarned,
     required this.passed,
+    this.rewardConfirmed = true,
   });
 }
 
@@ -107,7 +109,9 @@ class KanaQuizMasterResultView extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                '${result.correct}/${result.total} 정답 · +${result.xpEarned} XP',
+                                result.rewardConfirmed
+                                    ? '${result.correct}/${result.total} 정답 · +${result.xpEarned} XP'
+                                    : '${result.correct}/${result.total} 정답 · 저장된 결과를 확인했어요',
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurface
                                       .withValues(alpha: 0.5),
