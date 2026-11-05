@@ -13,6 +13,20 @@ String kanaSaveErrorMessage(Object error) {
   ).userMessage;
 }
 
+class KanaSaveIndicator extends StatelessWidget {
+  const KanaSaveIndicator({super.key, required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      dimension: 16,
+      child: CircularProgressIndicator(strokeWidth: 2, semanticsLabel: label),
+    );
+  }
+}
+
 /// Status for one pending operation. A retry repeats that operation only.
 class KanaSaveStatus extends StatelessWidget {
   const KanaSaveStatus({

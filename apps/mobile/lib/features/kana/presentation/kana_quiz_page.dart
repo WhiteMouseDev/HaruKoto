@@ -332,11 +332,23 @@ class _KanaQuizPageState extends ConsumerState<KanaQuizPage> {
                     onPressed: () => context.pop(),
                     visualDensity: VisualDensity.compact,
                   ),
-                  Text(
-                    widget.isMaster ? '$label 마스터 퀴즈' : '$label 퀴즈',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
+                  Expanded(
+                    child: Text(
+                      widget.isMaster ? '$label 마스터 퀴즈' : '$label 퀴즈',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
+                  ),
+                  SizedBox(
+                    width: 16,
+                    child: _savingAnswer || _completing
+                        ? KanaSaveIndicator(
+                            label: _savingAnswer
+                                ? '답안을 저장하고 있어요'
+                                : '퀴즈 결과를 저장하고 있어요',
+                          )
+                        : null,
                   ),
                 ],
               ),
@@ -357,21 +369,20 @@ class _KanaQuizPageState extends ConsumerState<KanaQuizPage> {
                         _completionError != null,
                     onSelect: _handleSelect,
                   ),
-                  if (_savingAnswer || _answerError != null)
+                  if (_answerError != null)
                     KanaSaveStatus(
                       key: const ValueKey('kana-answer-status'),
-                      label: _savingAnswer ? '답안을 저장하고 있어요' : '답안을 저장하지 못했어요',
+                      label: '답안을 저장하지 못했어요',
                       error: _answerError,
-                      onRetry: _savingAnswer ? null : _saveAnswer,
+                      onRetry: _saveAnswer,
                       retryLabel: '답안 저장 다시 시도',
                     ),
-                  if (_completing || _completionError != null)
+                  if (_completionError != null)
                     KanaSaveStatus(
                       key: const ValueKey('kana-completion-status'),
-                      label:
-                          _completing ? '퀴즈 결과를 저장하고 있어요' : '퀴즈 결과를 저장하지 못했어요',
+                      label: '퀴즈 결과를 저장하지 못했어요',
                       error: _completionError,
-                      onRetry: _completing ? null : _handleComplete,
+                      onRetry: _handleComplete,
                       retryLabel: '결과 저장 다시 시도',
                     ),
                 ])),

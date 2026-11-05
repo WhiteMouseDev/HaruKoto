@@ -186,6 +186,12 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
     final content = KanaCardContent.fromStage(_owner!, stage, stageChars);
     _activeCardContent = content;
     final cards = ref.watch(kanaCardProgressProvider(content));
+    final pendingLabel = switch (_phase) {
+      _Phase.intro || _Phase.practice when cards.busy => '문자 학습을 저장하고 있어요',
+      _Phase.quiz when _savingAnswer => '답안을 저장하고 있어요',
+      _Phase.quiz when _completing => '학습 결과를 저장하고 있어요',
+      _ => null,
+    };
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -218,6 +224,12 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    width: 16,
+                    child: pendingLabel == null
+                        ? null
+                        : KanaSaveIndicator(label: pendingLabel),
                   ),
                 ],
               ),
@@ -268,20 +280,20 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
                   _completionError != null,
               onSelect: (optionId) => _handleQuizSelect(optionId),
             ),
-            if (_savingAnswer || _answerError != null)
+            if (_answerError != null)
               KanaSaveStatus(
                 key: const ValueKey('kana-answer-status'),
-                label: _savingAnswer ? '답안을 저장하고 있어요' : '답안을 저장하지 못했어요',
+                label: '답안을 저장하지 못했어요',
                 error: _answerError,
-                onRetry: _savingAnswer ? null : _saveAnswer,
+                onRetry: _saveAnswer,
                 retryLabel: '답안 저장 다시 시도',
               ),
-            if (_completing || _completionError != null)
+            if (_completionError != null)
               KanaSaveStatus(
                 key: const ValueKey('kana-completion-status'),
-                label: _completing ? '학습 결과를 저장하고 있어요' : '학습 결과를 저장하지 못했어요',
+                label: '학습 결과를 저장하지 못했어요',
                 error: _completionError,
-                onRetry: _completing ? null : _handleQuizComplete,
+                onRetry: _handleQuizComplete,
                 retryLabel:
                     _quizCompletion == null ? '결과 저장 다시 시도' : '단계 저장 다시 시도',
               ),
@@ -314,61 +326,68 @@ class _KanaStagePageState extends ConsumerState<KanaStagePage> {
       List<KanaCharacterModel> characters) {
     final controller = ref.read(kanaCardProgressProvider(content).notifier);
     final cursor = cards.journal?.cursor;
-    if (cards.loading || cards.busy || cards.error != null) {
-      return SingleChildScrollView(
-          child: Column(children: [
-        if (cursor != null && cursor.phase != KanaCardPhase.quiz) ...[
-          Text(
-              '${cursor.phase == KanaCardPhase.intro ? '문자 익히기' : '문자 연습'} ${cursor.index + 1}/${characters.length}'),
-          const SizedBox(height: 12),
-          Text(characters[cursor.index].character,
-              style: const TextStyle(fontSize: 52)),
-        ],
-        KanaSaveStatus(
-          key: const ValueKey('kana-card-save-status'),
-          label: cards.loading
-              ? '저장된 문자 학습을 확인하고 있어요'
-              : cards.busy
-                  ? '문자 학습을 저장하고 있어요'
-                  : '문자 학습 저장을 확인해 주세요',
-          error: cards.error,
-          onRetry: cards.loading || cards.busy || cards.blocked
-              ? null
-              : controller.retry,
-          retryLabel: '문자 저장 다시 확인',
+    final status = KanaSaveStatus(
+      key: const ValueKey('kana-card-save-status'),
+      label: cards.loading ? '저장된 문자 학습을 확인하고 있어요' : '문자 학습 저장을 확인해 주세요',
+      error: cards.error,
+      onRetry: cards.loading || cards.blocked ? null : controller.retry,
+      retryLabel: '문자 저장 다시 확인',
+    );
+    if (cursor == null) {
+      return cards.loading || cards.error != null
+          ? SingleChildScrollView(child: status)
+          : const SizedBox.shrink();
+    }
+    final card = switch (cursor.phase) {
+      KanaCardPhase.quiz => SingleChildScrollView(
+            child: Column(children: [
+          const SizedBox(height: 24),
+          Text(cards.restored ? '저장된 문자 학습 위치를 복원했어요' : '문자 학습을 마쳤어요'),
+          const SizedBox(height: 16),
+          FilledButton(
+              onPressed: cards.canAct ? _startQuiz : null,
+              child: const Text('퀴즈 시작')),
+          const SizedBox(height: 8),
+          TextButton(
+              onPressed: cards.canAct ? controller.restartCards : null,
+              child: const Text('문자부터 다시 학습')),
+        ])),
+      KanaCardPhase.intro => StageIntro(
+          character: characters[cursor.index],
+          currentIndex: cursor.index,
+          totalCount: characters.length,
+          locked: !cards.canAct,
+          onNext: () => unawaited(_advanceCard(content, cursor, known: true)),
         ),
-      ]));
-    }
-    if (cursor == null) return const SizedBox.shrink();
-    if (cursor.phase == KanaCardPhase.quiz) {
-      return SingleChildScrollView(
-          child: Column(children: [
-        const SizedBox(height: 24),
-        Text(cards.restored ? '저장된 문자 학습 위치를 복원했어요' : '문자 학습을 마쳤어요'),
-        const SizedBox(height: 16),
-        FilledButton(
-            onPressed: cards.canAct ? _startQuiz : null,
-            child: const Text('퀴즈 시작')),
-        const SizedBox(height: 8),
-        TextButton(
-            onPressed: cards.canAct ? controller.restartCards : null,
-            child: const Text('문자부터 다시 학습')),
-      ]));
-    }
-    if (cursor.phase == KanaCardPhase.intro) {
-      return StageIntro(
-        character: characters[cursor.index],
-        currentIndex: cursor.index,
-        totalCount: characters.length,
-        onNext: () => unawaited(_advanceCard(content, cursor, known: true)),
-      );
-    }
-    return StagePractice(
-      character: characters[cursor.index],
-      currentIndex: cursor.index,
-      totalCount: characters.length,
-      onKnow: () => unawaited(_advanceCard(content, cursor, known: true)),
-      onDontKnow: () => unawaited(_advanceCard(content, cursor, known: false)),
+      KanaCardPhase.practice => StagePractice(
+          character: characters[cursor.index],
+          currentIndex: cursor.index,
+          totalCount: characters.length,
+          locked: !cards.canAct,
+          onKnow: () => unawaited(_advanceCard(content, cursor, known: true)),
+          onDontKnow: () =>
+              unawaited(_advanceCard(content, cursor, known: false)),
+        ),
+    };
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        card,
+        if (cards.error != null)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Card(
+              margin: EdgeInsets.zero,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 220),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+                  child: status,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
