@@ -154,10 +154,13 @@ class DeviceSettingsRepository {
     );
   }
 
-  Future<void> hydrateRuntime(DeviceSettings settings) async {
+  Future<void> hydrateRuntime(
+    DeviceSettings settings, {
+    Future<void> Function(DeviceSettings)? notificationSettingsApplier,
+  }) async {
     await _soundDriver.setEnabled(settings.soundEnabled);
     await _hapticDriver.setEnabled(settings.hapticEnabled);
-    await applyNotificationSettings(settings);
+    await (notificationSettingsApplier ?? applyNotificationSettings)(settings);
   }
 
   Future<void> applyNotificationSettings(DeviceSettings settings) async {
