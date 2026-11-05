@@ -7,13 +7,25 @@ on:
       - 'apps/api/**'
   workflow_dispatch:
 
+concurrency:
+  group: harukoto-api-production
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
       id-token: write
+
+    env:
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      CLOUD_RUN_REGION: asia-northeast3
+      CLOUD_RUN_SERVICE: harukoto-api
+      CANDIDATE_TAG: verify-${{ github.run_id }}-${{ github.run_attempt }}
+      API_IMAGE_REPOSITORY: asia-northeast3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/harukoto/api
 
     steps:
       - uses: actions/checkout@v5
@@ -30,25 +42,39 @@ jobs:
         run: gcloud auth configure-docker asia-northeast3-docker.pkg.dev
 
       - name: Build and Push
+        id: image
         run: |
-          IMAGE=asia-northeast3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/harukoto/api:${{ github.sha }}
-          docker build -t $IMAGE apps/api/
-          docker push $IMAGE
+          image_tag="$API_IMAGE_REPOSITORY:$GITHUB_SHA"
+          docker build -t "$image_tag" apps/api/
+          docker push "$image_tag"
+          digest=$(gcloud artifacts docker images describe "$image_tag" \
+            --project="$GCP_PROJECT_ID" --format='value(image_summary.digest)')
+          [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+          echo "reference=$API_IMAGE_REPOSITORY@$digest" >> "$GITHUB_OUTPUT"
 
-      - name: Deploy to Cloud Run
+      - name: Record current serving revisions
+        run: |
+          gcloud run services describe "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT_ID" --region="$CLOUD_RUN_REGION" \
+            --format='json(status.traffic)' > "$RUNNER_TEMP/cloud-run-before.json"
+
+      - name: Deploy Cloud Run candidate
+        id: candidate
         uses: google-github-actions/deploy-cloudrun@v3
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service: harukoto-api
-          region: asia-northeast3
-          image: asia-northeast3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/harukoto/api:${{ github.sha }}
+          service: ${{ env.CLOUD_RUN_SERVICE }}
+          region: ${{ env.CLOUD_RUN_REGION }}
+          image: ${{ steps.image.outputs.reference }}
+          suffix: ${{ env.CANDIDATE_TAG }}
+          tag: ${{ env.CANDIDATE_TAG }}
+          no_traffic: true
           flags: |
             --min-instances=1
             --max-instances=10
             --memory=512Mi
             --cpu=1
             --port=8000
-            --allow-unauthenticated
           env_vars: |
             ENVIRONMENT=production
           secrets: |
@@ -74,3 +100,21 @@ jobs:
             CORS_ORIGINS=CORS_ORIGINS:latest
             CRON_SECRET=CRON_SECRET:latest
             SENTRY_DSN=SENTRY_DSN:latest
+
+      - name: Verify and promote candidate
+        env:
+          CANDIDATE_IMAGE: ${{ steps.image.outputs.reference }}
+        run: |
+          git fetch --no-tags --depth=1 origin main
+          if ! git diff --quiet "$GITHUB_SHA" FETCH_HEAD -- apps/api; then
+            echo "::error::main now contains newer API sources. A newer run must deploy them."
+            exit 1
+          fi
+          python3 .github/scripts/rollout_cloud_run.py "$RUNNER_TEMP/cloud-run-before.json"
+
+      - name: Remove temporary candidate tag
+        if: ${{ always() && steps.candidate.outcome != 'skipped' }}
+        run: |
+          gcloud run services update-traffic "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT_ID" --region="$CLOUD_RUN_REGION" \
+            --remove-tags="$CANDIDATE_TAG" --quiet --format='value(status.url)'
