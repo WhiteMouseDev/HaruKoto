@@ -86,3 +86,5 @@ flutter:
     - assets/sounds/
     - assets/icons/
     - assets/images/characters/
+  licenses:
+    - assets/licenses/strokesvg.txt
