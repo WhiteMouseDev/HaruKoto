@@ -1,19 +1,26 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../core/services/tts_service.dart';
 import '../domain/katakana_pilot.dart';
+import '../domain/kana_writing_audio.dart';
 import '../domain/kana_writing_progress.dart';
+import '../providers/kana_writing_audio_provider.dart';
 import '../providers/kana_writing_progress_provider.dart';
 import '../providers/katakana_pilot_review_provider.dart';
 import 'widgets/katakana_pilot_strokes.dart';
+import 'widgets/kana_writing_audio_panel.dart';
 
 class KanaPilotPage extends ConsumerWidget {
-  const KanaPilotPage({super.key, this.hiragana = false});
+  const KanaPilotPage({super.key, this.hiragana = false, this.ttsService});
 
   final bool hiragana;
+  final TtsService? ttsService;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,6 +35,8 @@ class KanaPilotPage extends ConsumerWidget {
                 key: ValueKey((account, hiragana)),
                 owner: account,
                 hiragana: hiragana,
+                ttsService:
+                    ttsService ?? ref.watch(kanaWritingTtsServiceProvider),
               ),
       ),
     );
@@ -43,10 +52,12 @@ class _PilotSession extends ConsumerStatefulWidget {
     super.key,
     required this.owner,
     required this.hiragana,
+    required this.ttsService,
   });
 
   final String owner;
   final bool hiragana;
+  final TtsService ttsService;
 
   @override
   ConsumerState<_PilotSession> createState() => _PilotSessionState();
@@ -66,6 +77,22 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
   VoidCallback? _afterProgressSave;
   bool _saving = false;
   String? _saveError;
+  final Object _audioOwner = Object();
+  String? _audioText;
+
+  void _stopAudio() {
+    widget.ttsService.stop(owner: _audioOwner);
+    _audioText = null;
+  }
+
+  void _playAudio(KanaWritingAudioTarget target) {
+    if (!_canInteract || _letters.isEmpty) {
+      _stopAudio();
+      return;
+    }
+    setState(() => _audioText = target.text);
+    unawaited(widget.ttsService.playText(target.text, owner: _audioOwner));
+  }
 
   KanaPracticeLetter get _letter => _letters[_index];
   bool get _dailyReview => _mode == _PracticeMode.dailyReview;
@@ -102,6 +129,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
       );
 
   void _applySession(KanaWritingSession session) {
+    _stopAudio();
     setState(() {
       _letters = session.letters;
       _mode = session.mode == KanaWritingMode.row
@@ -154,6 +182,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
 
   Future<void> _goTo(_Step step) async {
     if (!_canInteract) return;
+    _stopAudio();
     if (_dailyReview) {
       setState(() => _step = step);
       return;
@@ -164,6 +193,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
 
   Future<void> _showComparison(bool show) async {
     if (!_canInteract) return;
+    _stopAudio();
     final next = _snapshot(showExample: show, clearInk: !show);
     await _persist(next, () => _applySession(next));
   }
@@ -194,6 +224,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
         _afterProgressSave != null) {
       return;
     }
+    _stopAudio();
     setState(() {
       _letters = const [];
       _index = 0;
@@ -209,13 +240,24 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
   }
 
   @override
+  void didUpdateWidget(covariant _PilotSession oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.ttsService, widget.ttsService)) {
+      oldWidget.ttsService.stop(owner: _audioOwner);
+      _audioText = null;
+    }
+  }
+
+  @override
   void dispose() {
+    _stopAudio();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) _stopAudio();
     if (state == AppLifecycleState.resumed) {
       ref.read(katakanaPilotLocalDayProvider.notifier).refresh();
     }
@@ -231,6 +273,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
         _afterProgressSave != null) {
       return;
     }
+    _stopAudio();
     if (mode == _PracticeMode.dailyReview) {
       setState(() {
         _letters = letters;
@@ -283,6 +326,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
 
   Future<void> _next() async {
     if (!_canActOnWord) return;
+    _stopAudio();
     if (_dailyReview) {
       ref.read(katakanaPilotLocalDayProvider.notifier).refresh();
       final day = ref.read(katakanaPilotLocalDayProvider);
@@ -348,6 +392,9 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
 
     return PopScope<void>(
       canPop: !_saving && !writing.busy && _afterProgressSave == null,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) _stopAudio();
+      },
       child: ListView(
         key: ValueKey((isStart, _index, _step)),
         padding: const EdgeInsets.all(AppSizes.md),
@@ -375,6 +422,17 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
                       ? '${_index + 1}/${_letters.length} 글자 · 새 단어 복습'
                       : '${_index + 1}/${_letters.length} 글자 · ${_step.index + 1}/3 단계',
                   style: theme.textTheme.labelLarge,
+                ),
+                const SizedBox(height: AppSizes.sm),
+                KanaWritingAudioPanel(
+                  audio:
+                      KanaWritingAudio.forLetter(_letter, review: _dailyReview),
+                  tts: widget.ttsService,
+                  owner: _audioOwner,
+                  selectedText: _audioText,
+                  enabled: _canInteract,
+                  onPlay: _playAudio,
+                  onStop: () => setState(_stopAudio),
                 ),
                 const SizedBox(height: AppSizes.sm),
                 ...switch (_step) {
