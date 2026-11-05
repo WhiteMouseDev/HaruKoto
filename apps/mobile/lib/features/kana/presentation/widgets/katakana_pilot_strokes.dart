@@ -124,8 +124,14 @@ class KatakanaRecallPad extends StatefulWidget {
     super.key,
     required this.onInkChanged,
     this.example,
+    this.initialStrokes = const [],
+    this.onStrokesChanged,
+    this.enabled = true,
   });
 
+  final List<List<Offset>> initialStrokes;
+  final ValueChanged<List<List<Offset>>>? onStrokesChanged;
+  final bool enabled;
   final ValueChanged<bool> onInkChanged;
   final KanaPracticeLetter? example;
 
@@ -144,8 +150,20 @@ class _KatakanaRecallPadState extends State<KatakanaRecallPad>
   @override
   void initState() {
     super.initState();
+    _strokes.addAll(widget.initialStrokes.map((stroke) => [...stroke]));
     WidgetsBinding.instance.addObserver(this);
   }
+
+  @override
+  void didUpdateWidget(covariant KatakanaRecallPad oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.enabled) _cancelStroke();
+  }
+
+  void _notifyStrokes() => widget.onStrokesChanged?.call(
+        List.unmodifiable(
+            _strokes.map((stroke) => List<Offset>.unmodifiable(stroke))),
+      );
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -166,7 +184,7 @@ class _KatakanaRecallPadState extends State<KatakanaRecallPad>
       Offset(point.dx / side, point.dy / side);
 
   void _begin(PointerDownEvent event, double side) {
-    if (_pointer != null || widget.example != null) return;
+    if (!widget.enabled || _pointer != null || widget.example != null) return;
     _pointer = event.pointer;
     _active = [_normalized(event.localPosition, side)];
     _travel = 0;
@@ -194,12 +212,15 @@ class _KatakanaRecallPadState extends State<KatakanaRecallPad>
   void _finish(PointerUpEvent event) {
     if (event.pointer != _pointer) return;
     final wasEmpty = _strokes.isEmpty;
+    var added = false;
     // A tap or slight jitter should not count as a written stroke.
     if (_travel >= 0.025 && _strokes.length < 32) {
       setState(() => _strokes.add(_active!));
+      added = true;
     }
     _cancelStroke();
     if (wasEmpty && _strokes.isNotEmpty) widget.onInkChanged(true);
+    if (added) _notifyStrokes();
   }
 
   void _cancelStroke() {
@@ -220,6 +241,7 @@ class _KatakanaRecallPadState extends State<KatakanaRecallPad>
     });
     _redraw.value++;
     widget.onInkChanged(_strokes.isNotEmpty);
+    _notifyStrokes();
   }
 
   @override
@@ -294,14 +316,16 @@ class _KatakanaRecallPadState extends State<KatakanaRecallPad>
             alignment: WrapAlignment.center,
             children: [
               TextButton.icon(
-                onPressed:
-                    _strokes.isEmpty ? null : () => _editInk(clear: false),
+                onPressed: _strokes.isEmpty || !widget.enabled
+                    ? null
+                    : () => _editInk(clear: false),
                 icon: const Icon(Icons.undo),
                 label: const Text('한 획 지우기'),
               ),
               TextButton.icon(
-                onPressed:
-                    _strokes.isEmpty ? null : () => _editInk(clear: true),
+                onPressed: _strokes.isEmpty || !widget.enabled
+                    ? null
+                    : () => _editInk(clear: true),
                 icon: const Icon(Icons.refresh),
                 label: const Text('모두 지우기'),
               ),

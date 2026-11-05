@@ -5,6 +5,8 @@ import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/network/api_exception.dart';
 import '../domain/katakana_pilot.dart';
+import '../domain/kana_writing_progress.dart';
+import '../providers/kana_writing_progress_provider.dart';
 import '../providers/katakana_pilot_review_provider.dart';
 import 'widgets/katakana_pilot_strokes.dart';
 
@@ -60,15 +62,145 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
   bool _hasInk = false;
   bool _showExample = false;
   int? _selectedIndex;
+  List<List<Offset>> _strokes = const [];
+  VoidCallback? _afterProgressSave;
   bool _saving = false;
   String? _saveError;
 
   KanaPracticeLetter get _letter => _letters[_index];
   bool get _dailyReview => _mode == _PracticeMode.dailyReview;
-  bool get _canActOnWord =>
+  KanaWritingScope get _scope =>
+      KanaWritingScope(owner: widget.owner, hiragana: widget.hiragana);
+  KanaWritingProgressState get _writingState =>
+      ref.read(kanaWritingProgressProvider(_scope));
+  bool get _isOwner => ref.read(currentAccountReaderProvider)() == widget.owner;
+  bool get _canInteract =>
+      _isOwner &&
       !_saving &&
-      _step == _Step.word &&
-      ref.read(currentAccountReaderProvider)() == widget.owner;
+      (_dailyReview ? !_writingState.busy : _writingState.canAct);
+  bool get _canActOnWord => _canInteract && _step == _Step.word;
+
+  KanaWritingSession _snapshot({
+    _Step? step,
+    bool? showExample,
+    int? selectedIndex,
+    bool clearInk = false,
+  }) =>
+      KanaWritingSession(
+        letters: _letters,
+        index: _index,
+        step: KanaWritingStep.values[(step ?? _step).index],
+        mode: _mode == _PracticeMode.row
+            ? KanaWritingMode.row
+            : KanaWritingMode.comparison,
+        showExample: (step ?? _step) == _Step.recall
+            ? showExample ?? _showExample
+            : false,
+        selectedIndex: selectedIndex ?? _selectedIndex,
+        strokes:
+            clearInk || (step ?? _step) != _Step.recall ? const [] : _strokes,
+      );
+
+  void _applySession(KanaWritingSession session) {
+    setState(() {
+      _letters = session.letters;
+      _mode = session.mode == KanaWritingMode.row
+          ? _PracticeMode.row
+          : _PracticeMode.comparison;
+      _index = session.index;
+      _step = _Step.values[session.step.index];
+      _showExample = session.showExample;
+      _selectedIndex = session.selectedIndex;
+      _strokes = session.strokes;
+      _hasInk = _strokes.isNotEmpty;
+      _writingAttempt++;
+      _saveError = null;
+    });
+  }
+
+  Future<void> _persist(KanaWritingSession? session, VoidCallback after,
+      {KanaPracticeRow? completedRow}) async {
+    if (!_isOwner || !_writingState.canAct) return;
+    _afterProgressSave = after;
+    final controller = ref.read(kanaWritingProgressProvider(_scope).notifier);
+    if (session == null) {
+      await controller.finishSession(completedRow: completedRow);
+    } else {
+      await controller.saveSession(session);
+    }
+    if (!mounted ||
+        !_isOwner ||
+        _writingState.error != null ||
+        _writingState.busy) {
+      return;
+    }
+    _afterProgressSave = null;
+    after();
+  }
+
+  Future<void> _retryWriting() async {
+    if (!_isOwner || _writingState.busy) return;
+    await ref.read(kanaWritingProgressProvider(_scope).notifier).retry();
+    if (!mounted ||
+        !_isOwner ||
+        _writingState.error != null ||
+        _writingState.busy) {
+      return;
+    }
+    final after = _afterProgressSave;
+    _afterProgressSave = null;
+    after?.call();
+  }
+
+  Future<void> _goTo(_Step step) async {
+    if (!_canInteract) return;
+    if (_dailyReview) {
+      setState(() => _step = step);
+      return;
+    }
+    final next = _snapshot(step: step);
+    await _persist(next, () => _applySession(next));
+  }
+
+  Future<void> _showComparison(bool show) async {
+    if (!_canInteract) return;
+    final next = _snapshot(showExample: show, clearInk: !show);
+    await _persist(next, () => _applySession(next));
+  }
+
+  Future<void> _inkChanged(List<List<Offset>> strokes) async {
+    if (!_canInteract || _dailyReview) return;
+    setState(() {
+      _strokes = strokes;
+      _hasInk = strokes.isNotEmpty;
+    });
+    await _persist(_snapshot(), () {});
+  }
+
+  Future<void> _selectWord(int index) async {
+    if (!_canActOnWord) return;
+    if (_dailyReview) {
+      setState(() => _selectedIndex = index);
+      return;
+    }
+    final next = _snapshot(selectedIndex: index);
+    await _persist(next, () => _applySession(next));
+  }
+
+  void _toPicker() {
+    if (!_isOwner ||
+        _saving ||
+        _writingState.busy ||
+        _afterProgressSave != null) {
+      return;
+    }
+    setState(() {
+      _letters = const [];
+      _index = 0;
+      _mode = _PracticeMode.comparison;
+      _resetLetter();
+    });
+  }
 
   @override
   void initState() {
@@ -89,21 +221,61 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
     }
   }
 
-  void _start(
+  Future<void> _start(
     List<KanaPracticeLetter> letters, {
     _PracticeMode mode = _PracticeMode.comparison,
-  }) {
-    setState(() {
-      _letters = letters;
-      _mode = mode;
-      _index = 0;
-      _resetLetter();
-    });
+  }) async {
+    if (!_isOwner ||
+        _saving ||
+        _writingState.busy ||
+        _afterProgressSave != null) {
+      return;
+    }
+    if (mode == _PracticeMode.dailyReview) {
+      setState(() {
+        _letters = letters;
+        _mode = mode;
+        _index = 0;
+        _resetLetter();
+      });
+      return;
+    }
+    if (!_writingState.canAct) return;
+    if (_writingState.progress?.session != null) {
+      final replace = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('새 연습을 시작할까요?'),
+          content: const Text('이 기기에 저장된 이전 쓰기 위치가 새 연습으로 바뀌어요. 복습 표시는 유지돼요.'),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('취소')),
+            FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('새 연습 시작')),
+          ],
+        ),
+      );
+      if (!mounted || replace != true || !_isOwner || !_writingState.canAct) {
+        return;
+      }
+    }
+    final next = KanaWritingSession(
+      letters: letters,
+      index: 0,
+      step: KanaWritingStep.compare,
+      mode: mode == _PracticeMode.row
+          ? KanaWritingMode.row
+          : KanaWritingMode.comparison,
+    );
+    await _persist(next, () => _applySession(next));
   }
 
   void _resetLetter() {
     _step = _dailyReview ? _Step.word : _Step.compare;
     _hasInk = false;
+    _strokes = const [];
     _showExample = false;
     _selectedIndex = null;
     _saveError = null;
@@ -118,17 +290,33 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
         (review) => review.completeDailyReview(_letter, day),
       );
       if (!mounted || !saved || !_canActOnWord) return;
+      setState(() {
+        if (_index + 1 == _letters.length) {
+          _letters = const [];
+          _mode = _PracticeMode.comparison;
+          _index = 0;
+        } else {
+          _index++;
+        }
+        _resetLetter();
+      });
+      return;
     }
-    setState(() {
-      if (_index + 1 == _letters.length) {
-        _letters = const [];
-        _mode = _PracticeMode.comparison;
-        _index = 0;
-      } else {
-        _index++;
-      }
-      _resetLetter();
-    });
+    if (_index + 1 == _letters.length) {
+      final row = _snapshot().row;
+      await _persist(null, _toPicker,
+          completedRow: row?.section == KanaPracticeSection.basic ? row : null);
+    } else {
+      final next = KanaWritingSession(
+        letters: _letters,
+        index: _index + 1,
+        step: KanaWritingStep.compare,
+        mode: _mode == _PracticeMode.row
+            ? KanaWritingMode.row
+            : KanaWritingMode.comparison,
+      );
+      await _persist(next, () => _applySession(next));
+    }
   }
 
   Future<bool> _save(Future<void> Function(KatakanaPilotReview) update) async {
@@ -150,6 +338,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
 
   @override
   Widget build(BuildContext context) {
+    final writing = ref.watch(kanaWritingProgressProvider(_scope));
     final review = ref.watch(katakanaPilotReviewProvider);
     final savedReview =
         review.isLoading || review.hasError ? null : review.asData?.value;
@@ -157,27 +346,136 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
     final theme = Theme.of(context);
     final isStart = _letters.isEmpty;
 
-    return ListView(
-      key: ValueKey((isStart, _index, _step)),
-      padding: const EdgeInsets.all(AppSizes.md),
-      children: isStart
-          ? _startContent(theme, savedReview, day, review.hasError)
-          : [
-              Text(
-                _dailyReview
-                    ? '${_index + 1}/${_letters.length} 글자 · 새 단어 복습'
-                    : '${_index + 1}/${_letters.length} 글자 · ${_step.index + 1}/3 단계',
-                style: theme.textTheme.labelLarge,
-              ),
-              const SizedBox(height: AppSizes.sm),
-              ...switch (_step) {
-                _Step.compare => _compareContent(theme),
-                _Step.recall => _recallContent(theme),
-                _Step.word =>
-                  _wordContent(theme, savedReview?.marked, review.hasError),
-              },
-            ],
+    return PopScope<void>(
+      canPop: !_saving && !writing.busy && _afterProgressSave == null,
+      child: ListView(
+        key: ValueKey((isStart, _index, _step)),
+        padding: const EdgeInsets.all(AppSizes.md),
+        children: isStart
+            ? [
+                ..._writingStart(theme, writing),
+                ..._startContent(theme, savedReview, day, review.hasError),
+              ]
+            : [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    key: const ValueKey('kana-writing-picker'),
+                    onPressed:
+                        _saving || writing.busy || _afterProgressSave != null
+                            ? null
+                            : _toPicker,
+                    icon: const Icon(Icons.arrow_back, size: 18),
+                    label: const Text('연습 목록'),
+                  ),
+                ),
+                if (!_dailyReview) ..._writingStatus(writing),
+                Text(
+                  _dailyReview
+                      ? '${_index + 1}/${_letters.length} 글자 · 새 단어 복습'
+                      : '${_index + 1}/${_letters.length} 글자 · ${_step.index + 1}/3 단계',
+                  style: theme.textTheme.labelLarge,
+                ),
+                const SizedBox(height: AppSizes.sm),
+                ...switch (_step) {
+                  _Step.compare => _compareContent(theme),
+                  _Step.recall => _recallContent(theme),
+                  _Step.word =>
+                    _wordContent(theme, savedReview?.marked, review.hasError),
+                },
+              ],
+      ),
     );
+  }
+
+  List<Widget> _writingStatus(KanaWritingProgressState writing) => [
+        SizedBox(
+          height: 24,
+          child: Semantics(
+            liveRegion: true,
+            child: Text(
+              writing.loading
+                  ? '쓰기 위치를 불러오고 있어요.'
+                  : writing.busy
+                      ? '쓰기 위치 저장 중…'
+                      : '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        ),
+        if (writing.error != null) ...[
+          Semantics(
+            liveRegion: true,
+            child: Text(writing.error!,
+                style: TextStyle(color: Theme.of(context).colorScheme.error)),
+          ),
+          TextButton(
+              onPressed: writing.busy ? null : _retryWriting,
+              child: Text(writing.progress == null || writing.blocked
+                  ? '쓰기 위치 다시 불러오기'
+                  : '쓰기 위치 저장 다시 시도')),
+        ],
+      ];
+
+  List<Widget> _writingStart(
+      ThemeData theme, KanaWritingProgressState writing) {
+    final progress = writing.progress;
+    final session = progress?.session;
+    final row = progress?.recommendedRow;
+    const labels = ['획순 보기', '가리고 쓰기', '단어에서 찾기'];
+    return [
+      ..._writingStatus(writing),
+      if (session != null) ...[
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSizes.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('이어서 쓰기', style: theme.textTheme.titleMedium),
+                const SizedBox(height: AppSizes.sm),
+                Text(
+                    '${session.letter.glyph} · ${session.index + 1}/${session.letters.length} 글자 · ${labels[session.step.index]}'),
+                const SizedBox(height: AppSizes.sm),
+                FilledButton(
+                  key: const ValueKey('kana-writing-resume'),
+                  onPressed: writing.canAct && !_saving
+                      ? () => _applySession(session)
+                      : null,
+                  child: const Text('쓰기 연습 이어하기'),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSizes.md),
+      ],
+      if (progress != null) ...[
+        Text('기본 46자, 한 행씩 써보세요', style: theme.textTheme.titleLarge),
+        const SizedBox(height: AppSizes.sm),
+        Text('이 기기의 기본 쓰기 연습 ${progress.completedBasicCount}/46자 완료'),
+        const Text('처음에는 위에서부터 한 행씩 추천해요. 원하는 행도 자유롭게 고를 수 있어요.'),
+        if (row != null) ...[
+          const SizedBox(height: AppSizes.sm),
+          Text('다음 추천: ${row.label(hiragana: widget.hiragana)}',
+              style: theme.textTheme.titleMedium),
+          FilledButton(
+            key: const ValueKey('kana-writing-recommendation'),
+            onPressed: writing.canAct && !_saving
+                ? () => _start(row.letters(hiragana: widget.hiragana),
+                    mode: _PracticeMode.row)
+                : null,
+            child: const Text('추천 행 연습하기'),
+          ),
+        ] else ...[
+          const SizedBox(height: AppSizes.sm),
+          const Text('기본 46자 쓰기 연습을 마쳤어요. 헷갈린 글자를 복습하거나 탁음·작은 글자도 연습해 보세요.'),
+        ],
+        const SizedBox(height: AppSizes.lg),
+      ],
+    ];
   }
 
   List<Widget> _startContent(
@@ -296,7 +594,9 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
   }) =>
       FilledButton.tonal(
         key: ValueKey(id),
-        onPressed: () => _start(letters, mode: mode),
+        onPressed: _writingState.canAct && !_saving
+            ? () => _start(letters, mode: mode)
+            : null,
         style: FilledButton.styleFrom(
           minimumSize: const Size(0, AppSizes.buttonHeight),
           padding: mode == _PracticeMode.row
@@ -328,7 +628,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
       KatakanaStrokeComparison(letter: letter, showComparison: showComparison),
       const SizedBox(height: AppSizes.md),
       FilledButton(
-        onPressed: () => setState(() => _step = _Step.recall),
+        onPressed: _canInteract ? () => _goTo(_Step.recall) : null,
         child: const Text('가리고 쓰기'),
       ),
     ];
@@ -359,31 +659,29 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
       KatakanaRecallPad(
         key: ValueKey(_writingAttempt),
         onInkChanged: (hasInk) => setState(() => _hasInk = hasInk),
+        initialStrokes: _strokes,
+        onStrokesChanged: _inkChanged,
+        enabled: _canInteract,
         example: _showExample ? _letter : null,
       ),
       const SizedBox(height: AppSizes.md),
       if (_showExample) ...[
         FilledButton(
-          onPressed: () => setState(() => _step = _Step.word),
+          onPressed: _canInteract ? () => _goTo(_Step.word) : null,
           child: Text('${_letter.exampleKind.label}에서 찾기'),
         ),
         TextButton(
-          onPressed: () {
-            setState(() {
-              _hasInk = false;
-              _showExample = false;
-              _writingAttempt++;
-            });
-          },
+          onPressed: _canInteract ? () => _showComparison(false) : null,
           child: const Text('다시 써보기'),
         ),
       ] else ...[
         FilledButton(
-          onPressed: _hasInk ? () => setState(() => _showExample = true) : null,
+          onPressed:
+              _hasInk && _canInteract ? () => _showComparison(true) : null,
           child: const Text('예시와 비교'),
         ),
         TextButton(
-          onPressed: () => setState(() => _step = _Step.word),
+          onPressed: _canInteract ? () => _goTo(_Step.word) : null,
           child: const Text('쓰기 건너뛰기'),
         ),
       ],
@@ -434,7 +732,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
                     correct ? theme.colorScheme.onSurface : null,
               ),
               onPressed:
-                  correct ? null : () => setState(() => _selectedIndex = index),
+                  correct || !_canActOnWord ? null : () => _selectWord(index),
               child: Text(
                 glyph,
                 locale: const Locale('ja'),
@@ -459,7 +757,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
           _reviewRetry()
         else
           OutlinedButton(
-            onPressed: marked == null || _saving
+            onPressed: marked == null || !_canActOnWord
                 ? null
                 : () => _save((review) => review.setMarked(letter, !saved)),
             child: Text(saved ? '헷갈림 표시 지우기' : '헷갈렸어요'),
@@ -478,7 +776,7 @@ class _PilotSessionState extends ConsumerState<_PilotSession>
         const SizedBox(height: AppSizes.md),
         if (correct)
           FilledButton(
-            onPressed: _saving ? null : _next,
+            onPressed: _canActOnWord ? _next : null,
             child: Text(_index + 1 == _letters.length ? '연습 마치기' : '다음 글자'),
           ),
       ],
