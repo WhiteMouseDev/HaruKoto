@@ -11,6 +11,7 @@ class StatsHistoryRecord {
 
   /// Null only for a legacy server response; explicit false stays authoritative.
   final bool? hasStudied;
+  final bool goalAchieved;
 
   const StatsHistoryRecord({
     required this.date,
@@ -22,6 +23,7 @@ class StatsHistoryRecord {
     required this.studyTimeSeconds,
     required this.xpEarned,
     this.hasStudied,
+    this.goalAchieved = false,
   });
 
   bool get hasStudyActivity =>
@@ -43,6 +45,7 @@ class StatsHistoryRecord {
       studyTimeSeconds: json['studyTimeSeconds'] as int? ?? 0,
       xpEarned: json['xpEarned'] as int? ?? 0,
       hasStudied: json['hasStudied'] as bool?,
+      goalAchieved: json['goalAchieved'] == true,
     );
   }
 }

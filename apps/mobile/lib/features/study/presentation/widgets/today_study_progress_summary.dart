@@ -10,8 +10,8 @@ class TodayStudyProgressSummary extends StatelessWidget {
   final OverallProgress progress;
   final String jlptLevel;
   final String category;
-  final int currentGoal;
-  final VoidCallback onGoalTap;
+  final int? currentGoal;
+  final VoidCallback? onGoalTap;
 
   const TodayStudyProgressSummary({
     super.key,
@@ -69,27 +69,31 @@ class TodayStudyProgressSummary extends StatelessWidget {
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: onGoalTap,
-                child: Row(
-                  children: [
-                    Text(
-                      '하루 목표 $currentGoal개',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w600,
+              if (currentGoal != null) ...[
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: onGoalTap,
+                  child: Row(
+                    children: [
+                      Text(
+                        '하루 목표 $currentGoal개',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 4),
-                    Icon(
-                      LucideIcons.pencil,
-                      size: 12,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ],
+                      if (onGoalTap != null) ...[
+                        const SizedBox(width: 4),
+                        Icon(
+                          LucideIcons.pencil,
+                          size: 12,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),

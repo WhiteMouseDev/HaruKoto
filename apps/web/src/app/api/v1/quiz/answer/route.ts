@@ -25,6 +25,9 @@ import {
   decodeWebQuizSnapshot,
   QuizSnapshotError,
 } from '@/lib/quiz-session-snapshot';
+import { earnedDailyGoalSettings } from '@/lib/daily-category-goal';
+import { getTodayKST } from '@/lib/date';
+import { ANSWERED_STUDY_DAY_RECOGNITION_ENABLED } from '@/lib/study-day-policy';
 
 const quizAnswerSchema = z.object({
   sessionId: z.string().min(1),
@@ -298,10 +301,28 @@ export async function POST(request: Request) {
         });
       }
 
-      // Transport replays return above; an intentional next attempt has a new
-      // ID and an acknowledged predecessor. Attendance still uses first evidence.
-      if (!previousAnswer && !lockedSession.completedAt) {
+      // Transport replays return above. A new attempt can be the first answer
+      // to this question on a new KST day.
+      if (
+        !previousAnswer ||
+        getTodayKST(previousAnswer.answeredAt).getTime() !==
+          getTodayKST(processedAt).getTime()
+      ) {
         await recordAnsweredStudyDay(tx, currentUser, processedAt);
+        if (ANSWERED_STUDY_DAY_RECOGNITION_ENABLED) {
+          const appSettings = await earnedDailyGoalSettings(
+            tx,
+            currentUser,
+            questionType,
+            processedAt
+          );
+          if (appSettings) {
+            await tx.user.update({
+              where: { id: user.id },
+              data: { app_settings: appSettings },
+            });
+          }
+        }
       }
       return NextResponse.json({ success: true, answerId: attemptId });
     });

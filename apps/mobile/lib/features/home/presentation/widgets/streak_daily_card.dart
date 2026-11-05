@@ -153,13 +153,13 @@ class StreakDailyCard extends ConsumerWidget {
   if (streak.current > 0) {
     return (
       '${streak.current}일 연속 학습',
-      '어제까지의 기록 · 오늘 마치면 ${streak.current + 1}일'
+      '어제까지의 기록 · 오늘 학습하면 ${streak.current + 1}일'
     );
   }
   if (streak.longest > 0) {
-    return ('오늘부터 다시 시작해요', '학습 하나를 마치고 새로운 기록을 쌓아보세요');
+    return ('오늘부터 다시 시작해요', '오늘 한 문제부터 시작해보세요');
   }
-  return ('첫 학습을 시작해요', '학습 하나를 마치면 오늘의 기록이 남아요');
+  return ('첫 학습을 시작해요', '한 문제만 풀어도 오늘의 기록이 남아요');
 }
 
 class _StreakWeek extends StatelessWidget {
@@ -332,7 +332,11 @@ class _CalendarSheetContentState extends ConsumerState<_CalendarSheetContent> {
             today: today,
             studiedDates: {
               for (final record in records)
-                if (record.hasStudyActivity) record.date
+                if (record.hasStudyActivity) record.date,
+            },
+            achievedDates: {
+              for (final record in records)
+                if (record.goalAchieved) record.date,
             },
           ),
           loading: () => const Padding(
@@ -385,11 +389,17 @@ class _CalendarSheetContentState extends ConsumerState<_CalendarSheetContent> {
 }
 
 class _CalendarGrid extends StatelessWidget {
-  const _CalendarGrid(
-      {required this.month, required this.today, required this.studiedDates});
+  const _CalendarGrid({
+    required this.month,
+    required this.today,
+    required this.studiedDates,
+    required this.achievedDates,
+  });
+
   final DateTime month;
   final DateTime today;
   final Set<String> studiedDates;
+  final Set<String> achievedDates;
 
   @override
   Widget build(BuildContext context) {
@@ -423,14 +433,16 @@ class _CalendarGrid extends StatelessWidget {
                 final date = DateTime.utc(month.year, month.month, day);
                 final isToday = date == today;
                 final future = date.isAfter(today);
-                final studied =
-                    !future && studiedDates.contains(studyDateKey(date));
+                final dateKey = studyDateKey(date);
+                final studied = !future && studiedDates.contains(dateKey);
+                final achieved = studied && achievedDates.contains(dateKey);
                 return Expanded(
                   child: Semantics(
                     container: true,
                     label:
                         '${date.year}년 ${date.month}월 ${date.day}일 ${_weekdays[index]}요일, '
-                        '${isToday ? '오늘, ' : ''}${studied ? '학습 기록 있음' : future ? '예정' : '학습 기록 없음'}',
+                        '${isToday ? '오늘, ' : ''}${studied ? '학습 기록 있음' : future ? '예정' : '학습 기록 없음'}'
+                        '${achieved ? ', 하루 목표 달성' : ''}',
                     child: ExcludeSemantics(
                       child: Container(
                         constraints: BoxConstraints(minHeight: fontSize + 30),
@@ -457,8 +469,13 @@ class _CalendarGrid extends StatelessWidget {
                             SizedBox(
                                 height: 14,
                                 child: studied
-                                    ? Icon(LucideIcons.check,
-                                        size: 12, color: palette.accent)
+                                    ? Icon(
+                                        achieved
+                                            ? LucideIcons.trophy
+                                            : LucideIcons.check,
+                                        size: 12,
+                                        color: palette.accent,
+                                      )
                                     : null),
                           ],
                         ),
@@ -470,11 +487,11 @@ class _CalendarGrid extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 8),
-        Text('체크는 학습한 날 · 테두리는 오늘',
+        Text('체크는 학습한 날 · 트로피는 목표를 달성한 날 · 테두리는 오늘',
             style:
                 theme.textTheme.bodySmall?.copyWith(color: palette.secondary)),
         const SizedBox(height: 8),
-        Text('학습 활동이 기록된 날을 표시해요. 기록은 한국 시간을 기준으로 확인해요.',
+        Text('한 문제라도 풀면 학습일로 기록해요. 날짜는 한국 시간 기준이에요.',
             style: theme.textTheme.bodySmall
                 ?.copyWith(height: 1.5, color: palette.secondary)),
       ],

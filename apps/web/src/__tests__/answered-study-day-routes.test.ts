@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { POST as answer } from '@/app/api/v1/quiz/answer/route';
 import { POST as kanaAnswer } from '@/app/api/v1/kana/quiz/answer/route';
+import { PATCH as updateProfile } from '@/app/api/v1/user/profile/route';
 
 const mocks = vi.hoisted(() => ({
   enabled: true,
@@ -17,7 +18,7 @@ const mocks = vi.hoisted(() => ({
     userVocabProgress: { findUnique: vi.fn(), upsert: vi.fn() },
     userGrammarProgress: { findUnique: vi.fn(), upsert: vi.fn() },
     userKanaProgress: { findUnique: vi.fn(), upsert: vi.fn(), update: vi.fn() },
-    dailyProgress: { upsert: vi.fn() },
+    dailyProgress: { upsert: vi.fn(), findUnique: vi.fn() },
     user: { update: vi.fn() },
   },
 }));
@@ -65,6 +66,8 @@ const lockedUser = () => ({
   streakCount: 4,
   longestStreak: 9,
   lastStudyDate: new Date('2026-11-01T01:00:00Z'),
+  dailyGoal: 10,
+  app_settings: null,
 });
 const attemptId = '10000000-0000-4000-8000-000000000090';
 const nextAttemptId = '10000000-0000-4000-8000-000000000091';
@@ -98,6 +101,121 @@ beforeEach(() => {
   );
 });
 afterEach(() => vi.useRealTimers());
+
+describe('daily goal trophy compatibility', () => {
+  const goals = {
+    grammar: 5,
+    sentence: 15,
+    earnedByMonth: { '2026-10': [23], '2026-11': [1] },
+  };
+  const existingSettings = {
+    showFurigana: true,
+    dailyCategoryGoalsV1: goals,
+  };
+  const earnedSettings = {
+    ...existingSettings,
+    dailyCategoryGoalsV1: {
+      ...goals,
+      earnedByMonth: { ...goals.earnedByMonth, '2026-11': [1, 2] },
+    },
+  };
+
+  function mockCount(count: number) {
+    mocks.tx.$queryRaw.mockImplementation(async (sql: TemplateStringsArray) =>
+      sql.join(' ').includes('COUNT(DISTINCT')
+        ? [{ count }]
+        : [{ ...lockedUser(), app_settings: existingSettings }]
+    );
+  }
+
+  it('stores a trophy on an accepted web answer at the word target', async () => {
+    mocks.preflight.mockResolvedValue(snapshot(false));
+    mocks.tx.quizSession.findUnique.mockResolvedValue(snapshot(false));
+    mockCount(10);
+
+    expect((await answer(request())).status).toBe(200);
+    const [sql, countedUser, category, start, end] =
+      mocks.tx.$queryRaw.mock.calls[2];
+    expect(sql.join(' ')).toContain('answer.question_type = session.quiz_type');
+    expect(sql.join(' ')).toContain("answer.question_type = 'CLOZE'");
+    expect(sql.join(' ')).toContain("'id', answer.question_id::text, 'type', 'CLOZE'");
+    expect([countedUser, category, start, end]).toEqual([
+      userId,
+      'VOCABULARY',
+      Date.parse('2026-11-01T15:00:00Z') / 1000,
+      Date.parse('2026-11-02T15:00:00Z') / 1000,
+    ]);
+    expect(mocks.tx.user.update).toHaveBeenLastCalledWith({
+      where: { id: userId },
+      data: { app_settings: earnedSettings },
+    });
+  });
+
+  it('credits an intentional wrong retry after KST midnight but does not credit its transport replay', async () => {
+    mocks.preflight.mockResolvedValue(snapshot(false));
+    mocks.tx.quizSession.findUnique.mockResolvedValue(snapshot(false));
+    mockCount(10);
+    mocks.tx.quizAnswer.findFirst.mockResolvedValue({
+      id: attemptId,
+      isCorrect: false,
+      answeredAt: new Date('2026-11-02T14:59:59.999Z'),
+    });
+    vi.setSystemTime(new Date('2026-11-02T15:00:00Z'));
+
+    expect((await answer(request('wrong', attemptId))).status).toBe(200);
+    const saved = mocks.tx.quizAnswer.create.mock.calls[0][0].data;
+    expect(saved).toMatchObject({ id: nextAttemptId, isCorrect: false });
+    expect(mocks.tx.dailyProgress.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          userId_date: { userId, date: new Date('2026-11-03T00:00:00Z') },
+        },
+        update: { activity_recorded: true, studyDayCredited: true },
+      })
+    );
+    expect(mocks.tx.user.update).toHaveBeenLastCalledWith({
+      where: { id: userId },
+      data: {
+        app_settings: {
+          ...existingSettings,
+          dailyCategoryGoalsV1: {
+            ...goals,
+            earnedByMonth: { ...goals.earnedByMonth, '2026-11': [1, 3] },
+          },
+        },
+      },
+    });
+
+    mocks.tx.quizAnswer.findUnique.mockResolvedValue(saved);
+    vi.setSystemTime(new Date('2026-11-03T15:00:00Z'));
+    expect((await answer(request('wrong', attemptId))).status).toBe(200);
+    expect(mocks.tx.quizAnswer.create).toHaveBeenCalledTimes(1);
+    expect(mocks.tx.dailyProgress.upsert).toHaveBeenCalledTimes(1);
+    expect(mocks.tx.user.update).toHaveBeenCalledTimes(2);
+  });
+
+  it('awards from the changed word target only when today was a study day', async () => {
+    const changeGoal = () =>
+      updateProfile(
+        new Request('http://localhost/api/v1/user/profile', {
+          method: 'PATCH',
+          body: JSON.stringify({ dailyGoal: 5 }),
+        })
+      );
+    mockCount(5);
+    mocks.tx.dailyProgress.findUnique
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ studyDayCredited: true });
+
+    expect((await changeGoal()).status).toBe(200);
+    expect(mocks.tx.user.update.mock.calls[0][0].data).toEqual({ dailyGoal: 5 });
+    expect((await changeGoal()).status).toBe(200);
+    expect(mocks.tx.user.update.mock.calls[1][0].data).toEqual({
+      dailyGoal: 5,
+      app_settings: earnedSettings,
+    });
+  });
+});
 
 describe.each([
   ['normal', answer, false],
@@ -139,10 +257,14 @@ describe.each([
     expect(mocks.transaction).toHaveBeenCalledTimes(1);
   });
 
-  it('preserves native wrong-to-correct matching retries and SRS, but creates no new attendance next day', async () => {
+  it('preserves same-day wrong-to-correct matching retries and SRS without duplicating attendance', async () => {
     expect((await handler(request())).status).toBe(200);
-    mocks.tx.quizAnswer.findFirst.mockResolvedValue({ id: attemptId, isCorrect: false });
-    vi.setSystemTime(new Date('2026-11-03T01:00:00Z'));
+    mocks.tx.quizAnswer.findFirst.mockResolvedValue({
+      id: attemptId,
+      isCorrect: false,
+      answeredAt: new Date('2026-11-02T01:00:00.123Z'),
+    });
+    vi.setSystemTime(new Date('2026-11-02T01:00:01Z'));
     expect((await handler(request('right', attemptId))).status).toBe(200);
     expect(mocks.tx.quizAnswer.create).toHaveBeenCalledTimes(2);
     expect(mocks.tx.quizSession.update).toHaveBeenCalledTimes(1);
@@ -153,9 +275,11 @@ describe.each([
     expect(mocks.tx.user.update).toHaveBeenCalledTimes(1);
   });
 
-  it('does not infer attendance from a pre-activation answer', async () => {
+  it('does not infer attendance from a same-day pre-activation answer', async () => {
     mocks.tx.quizAnswer.findFirst.mockResolvedValue({
-      id: attemptId, isCorrect: false,
+      id: attemptId,
+      isCorrect: false,
+      answeredAt: new Date('2026-11-02T01:00:00Z'),
     });
     expect((await handler(request('right', attemptId))).status).toBe(200);
     expect(mocks.tx.quizAnswer.create).toHaveBeenCalledTimes(1);

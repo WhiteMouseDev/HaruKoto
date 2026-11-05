@@ -23,9 +23,22 @@ LEGACY_TODAY = {
 }
 
 
+def _category_goals(count: int) -> dict[str, object]:
+    return {
+        "date": "2026-10-30",
+        "vocabulary": {"target": 20, "answeredCount": count},
+        "grammar": {"target": 10, "answeredCount": 0},
+        "sentence": {"target": 10, "answeredCount": 0},
+    }
+
+
 @pytest.mark.parametrize("count", [0, 1, 15])
 def test_today_serializes_required_vocabulary_goal_and_preserves_legacy_fields(count: int) -> None:
-    payload = {**LEGACY_TODAY, "vocabularyGoal": {"date": "2026-10-30", "answeredCount": count}}
+    payload = {
+        **LEGACY_TODAY,
+        "vocabularyGoal": {"date": "2026-10-30", "answeredCount": count},
+        "categoryGoals": _category_goals(count),
+    }
 
     assert TodayStats.model_validate(payload).model_dump(mode="json", by_alias=True) == payload
 
@@ -37,7 +50,7 @@ def test_today_serializes_required_vocabulary_goal_and_preserves_legacy_fields(c
 )
 def test_today_requires_nonnull_vocabulary_goal_with_nonnegative_count(extra: dict[str, object]) -> None:
     with pytest.raises(ValidationError):
-        TodayStats.model_validate({**LEGACY_TODAY, **extra})
+        TodayStats.model_validate({**LEGACY_TODAY, "categoryGoals": _category_goals(0), **extra})
 
 
 @pytest.mark.asyncio
@@ -70,8 +83,8 @@ def test_dashboard_openapi_exposes_additive_required_vocabulary_goal_without_aut
     assert dashboard["security"] == [{"HTTPBearer": []}]
     assert dashboard.get("parameters", []) == []
     assert dashboard["responses"]["200"]["content"]["application/json"]["schema"] == {"$ref": "#/components/schemas/DashboardResponse"}
-    assert set(today["required"]) == {*LEGACY_TODAY, "vocabularyGoal"}
-    assert set(today["properties"]) == {*LEGACY_TODAY, "vocabularyGoal"}
+    assert set(today["required"]) == {*LEGACY_TODAY, "vocabularyGoal", "categoryGoals"}
+    assert set(today["properties"]) == {*LEGACY_TODAY, "vocabularyGoal", "categoryGoals"}
     goal_ref = today["properties"]["vocabularyGoal"]["$ref"].rsplit("/", 1)[1]
     goal = spec["components"]["schemas"][goal_ref]
     assert set(goal["required"]) == {"date", "answeredCount"}

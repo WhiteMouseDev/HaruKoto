@@ -8,6 +8,7 @@ import 'package:harukoto_mobile/core/providers/study_clock_provider.dart';
 import 'package:harukoto_mobile/features/kana/domain/katakana_pilot.dart';
 import 'package:harukoto_mobile/features/kana/presentation/kana_type_page.dart';
 import 'package:harukoto_mobile/features/kana/presentation/katakana_pilot_page.dart';
+import 'package:harukoto_mobile/features/kana/presentation/widgets/katakana_pilot_strokes.dart';
 import 'package:harukoto_mobile/features/kana/providers/kana_provider.dart';
 import 'package:harukoto_mobile/features/kana/providers/katakana_pilot_review_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,14 +19,18 @@ void main() {
   const uMarkKey = 'katakana_pilot_review.v1.account-a.u';
   final canvas = find.byKey(const ValueKey('katakana-recall-canvas'));
 
-  Future<void> tapText(WidgetTester tester, String label) async {
+  Future<void> showText(WidgetTester tester, String label) async {
     final target = find.text(label);
     if (target.evaluate().isEmpty) {
       await tester.scrollUntilVisible(target, 160);
     }
     await tester.ensureVisible(target);
     await tester.pumpAndSettle();
-    await tester.tap(target);
+  }
+
+  Future<void> tapText(WidgetTester tester, String label) async {
+    await showText(tester, label);
+    await tester.tap(find.text(label));
     await tester.pumpAndSettle();
   }
 
@@ -149,6 +154,7 @@ void main() {
     await tapText(tester, '연습 마치기');
 
     expect(find.text('묶음 골라 연습'), findsOneWidget);
+    await showText(tester, '이 기기에 저장된 복습');
     expect(find.text('シ · ク'), findsOneWidget);
     await tapText(tester, '헷갈린 글자 복습');
     expect(find.text('1/2 글자 · 1/3 단계'), findsOneWidget);
@@ -232,6 +238,157 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('hiragana first row uses sound hints and its own review marks',
+      (tester) async {
+    final prefs = await _preferences({markKey: true});
+    await _pumpPilot(tester, prefs, hiragana: true);
+    expect(find.text('히라가나 집중 연습'), findsOneWidget);
+    expect(find.text('シ'), findsNothing);
+    await tapText(tester, 'あ・い・う・え・お');
+
+    final letters = KanaPracticeRow.firstRow.letters(hiragana: true);
+    for (final (index, letter) in letters.indexed) {
+      expect(find.text('${index + 1}/5 글자 · 1/3 단계'), findsOneWidget);
+      expect(find.text('${letter.glyph} · ${letter.reading}'), findsOneWidget);
+      await tapText(tester, '획순 재생');
+      await tapText(tester, '가리고 쓰기');
+      expect(find.text(letter.glyph), findsNothing);
+      expect(find.text(letter.reading), findsOneWidget);
+
+      if (index == 0) {
+        await tester.drag(canvas, const Offset(30, -45));
+        await tester.pump();
+        await tapText(tester, '예시와 비교');
+        expect(find.text('분홍색 예시와 내 글씨를 비교해 보세요.'), findsOneWidget);
+        await tapText(tester, '단어에서 찾기');
+      } else {
+        await tapText(tester, '쓰기 건너뛰기');
+      }
+
+      await tapText(tester, letter.glyph);
+      expect(find.text('맞았어요! ${letter.word} · ${letter.meaning}'),
+          findsOneWidget);
+      if (index == 0) await tapText(tester, '헷갈렸어요');
+      await tapText(tester, index == 4 ? '연습 마치기' : '다음 글자');
+    }
+
+    expect(prefs.getBool('hiragana_pilot_review.v1.account-a.a'), isTrue);
+    expect(prefs.getBool('katakana_pilot_review.v1.account-a.a'), isNull);
+    expect(prefs.getBool(markKey), isTrue);
+    await tapText(tester, '헷갈린 글자 복습');
+    expect(find.text('1/1 글자 · 1/3 단계'), findsOneWidget);
+    expect(find.text('あ · 아'), findsOneWidget);
+  });
+
+  testWidgets('the last row teaches wo as a particle in both scripts',
+      (tester) async {
+    final prefs = await _preferences({markKey: true});
+    for (final hiragana in [true, false]) {
+      await _pumpPilot(tester, prefs, hiragana: hiragana);
+      await tapText(
+        tester,
+        KanaPracticeRow.waRow.label(hiragana: hiragana),
+      );
+      expect(find.text('1/3 글자 · 1/3 단계'), findsOneWidget);
+      await tapText(tester, '가리고 쓰기');
+      await tapText(tester, '쓰기 건너뛰기');
+      await tapText(tester, hiragana ? 'わ' : 'ワ');
+      await tapText(tester, '다음 글자');
+      expect(find.text('2/3 글자 · 1/3 단계'), findsOneWidget);
+      await tapText(tester, '가리고 쓰기');
+      expect(find.text(hiragana ? '오 (목적격 조사)' : 'を'), findsOneWidget);
+      await tapText(tester, '쓰기 건너뛰기');
+      expect(find.text('문장에서 찾기'), findsOneWidget);
+      if (!hiragana) {
+        expect(find.textContaining('가타카나로 옮겨 적은 문장'), findsOneWidget);
+      }
+      await tester.tap(find.byKey(const ValueKey('katakana-word-character-0')));
+      await tester.pump();
+      expect(find.textContaining('다시 찾아보세요.'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('katakana-word-character-2')));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('맞았어요!'), findsOneWidget);
+      expect(prefs.getBool(markKey), isTrue);
+    }
+  });
+
+  testWidgets('small hiragana keeps a separate mark and shows a size hint',
+      (tester) async {
+    const regularA = 'hiragana_pilot_review.v1.account-a.a';
+    const smallA = 'hiragana_pilot_review.v1.account-a.smallA';
+    final prefs = await _preferences({regularA: true});
+    await _pumpPilot(tester, prefs, hiragana: true);
+    await tapText(tester, 'ぁ・ぃ・ぅ・ぇ・ぉ');
+    expect(find.text('1/5 글자 · 1/3 단계'), findsOneWidget);
+    await tapText(tester, '가리고 쓰기');
+    expect(find.text('작은 아'), findsOneWidget);
+    expect(find.text('ぁ'), findsNothing);
+    await tapText(tester, '쓰기 건너뛰기');
+    expect(find.text('글자 조합에서 찾기'), findsOneWidget);
+    await tapText(tester, 'ぁ');
+    expect(find.textContaining('맞았어요! ふぁ'), findsOneWidget);
+    await tapText(tester, '헷갈렸어요');
+    expect(prefs.getBool(regularA), isTrue);
+    expect(prefs.getBool(smallA), isTrue);
+    expect(prefs.getBool('katakana_pilot_review.v1.account-a.smallA'), isNull);
+  });
+
+  testWidgets('textbook replay and compare share the same filled outline',
+      (tester) async {
+    const letter = KatakanaPilotLetter.e;
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ListView(
+          children: [
+            const KatakanaStrokeComparison(
+              letter: letter,
+              showComparison: false,
+            ),
+            KatakanaRecallPad(example: letter, onInkChanged: (_) {}),
+          ],
+        ),
+      ),
+    ));
+
+    List<Invocation> paint(Finder widget) {
+      final square = find.descendant(
+        of: widget,
+        matching: find.byType(AspectRatio),
+      );
+      final customPaint = find.descendant(
+        of: square,
+        matching: find.byType(CustomPaint),
+      );
+      final recording = TestRecordingCanvas();
+      tester.widget<CustomPaint>(customPaint).painter!.paint(
+            recording,
+            const Size.square(144),
+          );
+      return recording.invocations.map((record) => record.invocation).toList();
+    }
+
+    final diagram = find.byType(KatakanaStrokeComparison);
+    await tester.tap(find.text('획순 재생'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(paint(diagram).map((call) => call.memberName), contains(#clipPath));
+    await tester.pumpAndSettle();
+
+    List<Path> filledPaths(Finder widget) => [
+          for (final call in paint(widget))
+            if (call.memberName == #drawPath &&
+                (call.positionalArguments[1] as Paint).style ==
+                    PaintingStyle.fill)
+              call.positionalArguments.first as Path,
+        ];
+    final silhouette = filledPaths(diagram).single;
+    final overlay = filledPaths(find.byType(KatakanaRecallPad)).single;
+    expect(
+      Path.combine(PathOperation.xor, silhouette, overlay).computeMetrics(),
+      isEmpty,
+    );
+  });
+
   testWidgets('both entrances share one persisted ウ review mark',
       (tester) async {
     final prefs = await _preferences({markKey: true});
@@ -264,6 +421,7 @@ void main() {
     await tester.pumpAndSettle();
     final nextDay = DateTime(2026, 11, 5);
     await _pumpPilot(tester, prefs, clock: () => nextDay);
+    await showText(tester, '이 기기에 저장된 복습');
     expect(find.text('シ · ウ'), findsOneWidget);
     expect(find.text('오늘 새 단어로 복습할 글자 2개'), findsOneWidget);
     await tapText(tester, '새 단어로 복습');
@@ -273,6 +431,7 @@ void main() {
     await tapText(tester, 'ウ');
     expect(find.textContaining('맞았어요! ウール'), findsOneWidget);
     await tapText(tester, '연습 마치기');
+    await showText(tester, '이 기기에 저장된 복습');
     expect(find.text('새 단어로 복습'), findsNothing);
     expect(find.text('シ · ウ'), findsOneWidget);
     expect(prefs.getBool(markKey), true);
@@ -284,6 +443,7 @@ void main() {
       (tester) async {
     final prefs = await _preferences({markKey: true});
     await _pumpPilot(tester, prefs, owner: 'account-b');
+    await showText(tester, '이 기기에 저장된 복습');
     expect(find.text('헷갈린 글자 복습'), findsNothing);
 
     await tester.pumpWidget(const SizedBox());
@@ -298,6 +458,7 @@ void main() {
     await tester.pumpAndSettle();
     await tapText(tester, '헷갈림 표시 지우기');
     await tapText(tester, '연습 마치기');
+    await showText(tester, '이 기기에 저장된 복습');
     expect(find.text('헷갈린 글자 복습'), findsNothing);
     expect(prefs.getBool(markKey), isNot(true));
   });
@@ -316,6 +477,7 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
     await _pumpPilot(tester, prefs, clock: () => now);
+    await showText(tester, '이 기기에 저장된 복습');
     expect(find.text('새 단어로 복습'), findsNothing);
     expect(find.text('헷갈린 글자 복습'), findsOneWidget);
 
@@ -332,6 +494,7 @@ void main() {
     expect(find.textContaining('맞았어요! シール'), findsOneWidget);
     await tapText(tester, '연습 마치기');
 
+    await showText(tester, '이 기기에 저장된 복습');
     expect(find.text('새 단어로 복습'), findsNothing);
     expect(find.text('헷갈린 글자 복습'), findsOneWidget);
     expect(prefs.getBool(markKey), true);
@@ -357,6 +520,7 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
     await _pumpPilot(tester, prefs, clock: () => now);
+    await showText(tester, '이 기기에 저장된 복습');
     expect(find.text('シ · フ'), findsOneWidget);
     expect(find.text('오늘 새 단어로 복습할 글자 1개'), findsOneWidget);
     await tapText(tester, '새 단어로 복습');
@@ -368,6 +532,7 @@ void main() {
     await tapText(tester, '헷갈림 표시 지우기');
     await tapText(tester, '헷갈렸어요');
     await tapText(tester, '연습 마치기');
+    await showText(tester, '이 기기에 저장된 복습');
     expect(find.text('새 단어로 복습'), findsNothing);
     expect(prefs.getBool(markKey), true);
     expect(prefs.getBool(fuMarkKey), true);
@@ -384,6 +549,7 @@ void main() {
     expect(find.text('기기에 저장하지 못했어요. 다시 시도해 주세요.'), findsOneWidget);
     expect(find.textContaining('맞았어요! シール'), findsOneWidget);
     await tapText(tester, '연습 마치기');
+    await showText(tester, '이 기기에 저장된 복습');
     expect(find.text('새 단어로 복습'), findsNothing);
     expect(find.text('헷갈린 글자 복습'), findsOneWidget);
   });
@@ -417,7 +583,23 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('다시 시도'), findsOneWidget);
-    expect(find.text('닮은 가타카나 집중 연습'), findsOneWidget);
+    expect(find.text('가타카나 쓰기 연습'), findsOneWidget);
+  });
+
+  testWidgets('hiragana has the local entry even when stage fetch fails',
+      (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          kanaStagesProvider('HIRAGANA')
+              .overrideWith((ref) async => throw StateError('offline')),
+        ],
+        child: const MaterialApp(home: KanaTypePage(type: 'hiragana')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('다시 시도'), findsOneWidget);
+    expect(find.text('히라가나 쓰기 연습'), findsOneWidget);
   });
 }
 
@@ -440,6 +622,7 @@ Future<void> _pumpPilot(
   KatakanaPilotReview Function()? reviewFactory,
   double width = 412,
   double textScale = 1,
+  bool hiragana = false,
 }) async {
   tester.view.physicalSize = Size(width, 900);
   tester.view.devicePixelRatio = 1;
@@ -465,7 +648,7 @@ Future<void> _pumpPilot(
           ),
           child: child!,
         ),
-        home: const KatakanaPilotPage(),
+        home: KanaPilotPage(hiragana: hiragana),
       ),
     ),
   );
@@ -477,7 +660,7 @@ class _FailOnceReview extends KatakanaPilotReview {
 
   @override
   Future<void> completeDailyReview(
-    KatakanaPilotLetter letter,
+    KanaPracticeLetter letter,
     DateTime day,
   ) async {
     if (!_failed) {

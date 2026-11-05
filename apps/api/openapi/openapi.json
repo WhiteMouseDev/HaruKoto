@@ -5984,6 +5984,53 @@
         ]
       }
     },
+    "/api/v1/study/category-goal": {
+      "patch": {
+        "tags": [
+          "study"
+        ],
+        "summary": "Update Category Goal",
+        "description": "Update exactly one quiz category's daily target.",
+        "operationId": "update_category_goal_api_v1_study_category_goal_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryGoalRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DailyGoalResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/study/capabilities": {
       "get": {
         "tags": [
@@ -8422,6 +8469,45 @@
         "type": "object",
         "title": "CancelRequest"
       },
+      "CategoryGoalProgress": {
+        "properties": {
+          "target": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Target"
+          },
+          "answeredCount": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Answeredcount"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target",
+          "answeredCount"
+        ],
+        "title": "CategoryGoalProgress"
+      },
+      "CategoryGoalRequest": {
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/GoalCategory"
+          },
+          "dailyGoal": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 5.0,
+            "title": "Dailygoal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "dailyGoal"
+        ],
+        "title": "CategoryGoalRequest"
+      },
       "CategoryStat": {
         "properties": {
           "total": {
@@ -9324,6 +9410,32 @@
         "type": "object",
         "title": "ConversationUpdateRequest"
       },
+      "DailyCategoryGoals": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "vocabulary": {
+            "$ref": "#/components/schemas/CategoryGoalProgress"
+          },
+          "grammar": {
+            "$ref": "#/components/schemas/CategoryGoalProgress"
+          },
+          "sentence": {
+            "$ref": "#/components/schemas/CategoryGoalProgress"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "vocabulary",
+          "grammar",
+          "sentence"
+        ],
+        "title": "DailyCategoryGoals"
+      },
       "DailyGoalRequest": {
         "properties": {
           "dailyGoal": {
@@ -9387,6 +9499,10 @@
           "hasStudied": {
             "type": "boolean",
             "title": "Hasstudied"
+          },
+          "goalAchieved": {
+            "type": "boolean",
+            "title": "Goalachieved"
           }
         },
         "type": "object",
@@ -9562,6 +9678,14 @@
           "body"
         ],
         "title": "GameEvent"
+      },
+      "GoalCategory": {
+        "type": "string",
+        "enum": [
+          "VOCABULARY",
+          "GRAMMAR",
+          "SENTENCE"
+        ]
       },
       "GrammarAdminItem": {
         "properties": {
@@ -14112,6 +14236,9 @@
           },
           "vocabularyGoal": {
             "$ref": "#/components/schemas/VocabularyGoal"
+          },
+          "categoryGoals": {
+            "$ref": "#/components/schemas/DailyCategoryGoals"
           }
         },
         "type": "object",
@@ -14123,7 +14250,8 @@
           "xpEarned",
           "goalProgress",
           "hasStudied",
-          "vocabularyGoal"
+          "vocabularyGoal",
+          "categoryGoals"
         ],
         "title": "TodayStats"
       },

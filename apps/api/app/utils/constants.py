@@ -106,3 +106,8 @@ PAGINATION = _Pagination()
 AI_LIMITS = _AiLimits()
 PRICES = _Prices()
 RATE_LIMITS = _RateLimits()
+
+# Reserved server-managed entry in the existing users.app_settings JSON.
+DAILY_CATEGORY_GOALS_KEY = "dailyCategoryGoalsV1"
+MIN_DAILY_GOAL = 5
+MAX_DAILY_GOAL = 50

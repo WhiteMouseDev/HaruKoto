@@ -42,10 +42,10 @@ int _dayKey(DateTime day) => day.year * 10000 + day.month * 100 + day.day;
 class KatakanaPilotReviewState {
   const KatakanaPilotReviewState._(this.marked, this._deferredThrough);
 
-  final Set<KatakanaPilotLetter> marked;
-  final Map<KatakanaPilotLetter, int> _deferredThrough;
+  final Set<KanaPracticeLetter> marked;
+  final Map<KanaPracticeLetter, int> _deferredThrough;
 
-  Set<KatakanaPilotLetter> dueOn(DateTime day) {
+  Set<KanaPracticeLetter> dueOn(DateTime day) {
     final key = _dayKey(day);
     return Set.unmodifiable(marked.where(
       // Legacy marks have no day metadata and are eligible immediately.
@@ -64,11 +64,12 @@ class KatakanaPilotReview extends AsyncNotifier<KatakanaPilotReviewState> {
   int _generation = 0;
   Future<void> _writes = Future<void>.value();
 
-  static String _key(String owner, KatakanaPilotLetter letter) =>
-      'katakana_pilot_review.v1.${Uri.encodeComponent(owner)}.${letter.name}';
-
-  static String _dayStorageKey(String owner, KatakanaPilotLetter letter) =>
-      'katakana_pilot_review.day.v1.${Uri.encodeComponent(owner)}.${letter.name}';
+  static String _key(String owner, KanaPracticeLetter letter,
+      {bool day = false}) {
+    final script = letter is HiraganaPilotLetter ? 'hiragana' : 'katakana';
+    final daySegment = day ? 'day.' : '';
+    return '${script}_pilot_review.${daySegment}v1.${Uri.encodeComponent(owner)}.${letter.reviewId}';
+  }
 
   @override
   Future<KatakanaPilotReviewState> build() async {
@@ -85,12 +86,15 @@ class KatakanaPilotReview extends AsyncNotifier<KatakanaPilotReviewState> {
     } catch (_) {
       throw const ApiException(message: '기기에 저장된 복습 목록을 불러오지 못했어요.');
     }
-    final marked = <KatakanaPilotLetter>{};
-    final deferredThrough = <KatakanaPilotLetter, int>{};
-    for (final letter in KatakanaPilotLetter.values) {
+    final marked = <KanaPracticeLetter>{};
+    final deferredThrough = <KanaPracticeLetter, int>{};
+    for (final letter in const <KanaPracticeLetter>[
+      ...KatakanaPilotLetter.values,
+      ...HiraganaPilotLetter.values,
+    ]) {
       if (preferences.get(_key(owner, letter)) != true) continue;
       marked.add(letter);
-      final day = preferences.get(_dayStorageKey(owner, letter));
+      final day = preferences.get(_key(owner, letter, day: true));
       if (day is int) deferredThrough[letter] = day;
     }
     return KatakanaPilotReviewState._(
@@ -108,7 +112,7 @@ class KatakanaPilotReview extends AsyncNotifier<KatakanaPilotReviewState> {
     }
   }
 
-  Future<void> setMarked(KatakanaPilotLetter letter, bool marked) {
+  Future<void> setMarked(KanaPracticeLetter letter, bool marked) {
     final preferences = ref.read(sharedPreferencesProvider);
     final day = _dayKey(ref.read(studyClockProvider)().toLocal());
     return _update((owner, previous) async {
@@ -116,7 +120,7 @@ class KatakanaPilotReview extends AsyncNotifier<KatakanaPilotReviewState> {
       // Write the day first. A failed flag write leaves an unmarked glyph,
       // which ignores any day metadata until a new mark saves it again.
       if (marked &&
-          !await preferences.setInt(_dayStorageKey(owner, letter), day)) {
+          !await preferences.setInt(_key(owner, letter, day: true), day)) {
         throw StateError('Unconfirmed local write');
       }
       if (!await preferences.setBool(_key(owner, letter), marked)) {
@@ -138,12 +142,12 @@ class KatakanaPilotReview extends AsyncNotifier<KatakanaPilotReviewState> {
     });
   }
 
-  Future<void> completeDailyReview(KatakanaPilotLetter letter, DateTime day) {
+  Future<void> completeDailyReview(KanaPracticeLetter letter, DateTime day) {
     final preferences = ref.read(sharedPreferencesProvider);
     return _update((owner, previous) async {
       if (!previous.dueOn(day).contains(letter)) return previous;
       final key = _dayKey(day);
-      if (!await preferences.setInt(_dayStorageKey(owner, letter), key)) {
+      if (!await preferences.setInt(_key(owner, letter, day: true), key)) {
         throw StateError('Unconfirmed local write');
       }
       return KatakanaPilotReviewState._(

@@ -7,13 +7,17 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Grammar, QuizAnswer, QuizSession, Vocabulary
+from app.models.enums import QuizType
 from app.models.user import User
 from app.schemas.quiz import QuizAnswerRequest
+from app.services import study_day_recording
+from app.services.category_goals import CATEGORIZED_CLOZE_TYPES, GOAL_QUIZ_TYPES, award_goal_if_reached
 from app.services.quiz_answer_progress import update_grammar_answer_progress, update_vocab_answer_progress
 from app.services.quiz_resume_snapshot import INVALID_SNAPSHOT
 from app.services.quiz_saved_sessions import CONTENT_UNAVAILABLE
 from app.services.quiz_session import extract_questions_data
 from app.services.study_day_recording import canonical_study_instant, lock_study_user, record_answered_study_day
+from app.utils.date import study_date_kst
 
 
 class QuizAnswerServiceError(Exception):
@@ -110,6 +114,14 @@ async def _submit_quiz_answer(
         )
 
     await record_answered_study_day(db, user, processed_at=now)
+    matches_goal_category = body.question_type == session.quiz_type or (
+        session.quiz_type in CATEGORIZED_CLOZE_TYPES
+        and body.question_type == QuizType.CLOZE
+        and question_data.get("type") == QuizType.CLOZE
+    )
+    if study_day_recording.ANSWERED_STUDY_DAY_RECOGNITION_ENABLED and session.quiz_type in GOAL_QUIZ_TYPES and matches_goal_category:
+        await db.refresh(user, attribute_names=["daily_goal", "app_settings"])
+        await award_goal_if_reached(db, user, day=study_date_kst(now), quiz_type=session.quiz_type)
     await db.commit()
     return QuizAnswerResult(success=True)
 

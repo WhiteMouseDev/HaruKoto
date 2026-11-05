@@ -14,6 +14,7 @@ from app.dependencies import get_current_user
 from app.error_handlers import register_error_handlers
 from app.routers.stats import router
 from app.schemas.stats import DailyProgressItem
+from app.utils.constants import DAILY_CATEGORY_GOALS_KEY
 
 LEGACY_RECORD = {
     "date": "2026-10-03",
@@ -31,7 +32,7 @@ LEGACY_RECORD = {
 def test_history_record_serializes_required_boolean_and_keeps_legacy_fields(has_studied: bool) -> None:
     payload = {**LEGACY_RECORD, "hasStudied": has_studied}
 
-    assert DailyProgressItem.model_validate(payload).model_dump(by_alias=True) == payload
+    assert DailyProgressItem.model_validate(payload).model_dump(by_alias=True) == {**payload, "goalAchieved": False}
 
 
 @pytest.mark.parametrize("extra", [{}, {"hasStudied": None}], ids=["missing", "null"])
@@ -45,6 +46,7 @@ async def test_history_endpoint_adds_activity_boolean_and_preserves_records_and_
     app = FastAPI()
     app.include_router(router)
     register_error_handlers(app)
+    mock_user.app_settings = {DAILY_CATEGORY_GOALS_KEY: {"earnedByMonth": {"2026-10": [4]}}}
     rows = [
         SimpleNamespace(
             date=date(2026, 10, 3),
@@ -94,8 +96,8 @@ async def test_history_endpoint_adds_activity_boolean_and_preserves_records_and_
         "year": 2026,
         "month": 10,
         "records": [
-            {**LEGACY_RECORD, "hasStudied": False},
-            {**LEGACY_RECORD, "date": "2026-10-04", "hasStudied": True},
+            {**LEGACY_RECORD, "hasStudied": False, "goalAchieved": False},
+            {**LEGACY_RECORD, "date": "2026-10-04", "hasStudied": True, "goalAchieved": True},
         ],
     }
     query = db.execute.await_args.args[0]
@@ -140,4 +142,5 @@ def test_history_openapi_adds_required_boolean_without_changing_auth_or_query_co
     assert history["responses"]["200"]["content"]["application/json"]["schema"] == {"$ref": "#/components/schemas/HistoryResponse"}
     assert record["properties"]["hasStudied"]["type"] == "boolean"
     assert set(record["required"]) == {*LEGACY_RECORD, "hasStudied"}
-    assert set(record["properties"]) == {*LEGACY_RECORD, "hasStudied"}
+    assert set(record["properties"]) == {*LEGACY_RECORD, "hasStudied", "goalAchieved"}
+    assert record["properties"]["goalAchieved"]["type"] == "boolean"

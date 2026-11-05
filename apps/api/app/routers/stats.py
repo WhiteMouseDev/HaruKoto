@@ -45,7 +45,7 @@ async def get_history(
     year: int | None = Query(default=None),
     month: int | None = Query(default=None),
 ) -> HistoryResponse:
-    return await get_history_data(db, user_id=user.id, year=year, month=month)
+    return await get_history_data(db, user_id=user.id, year=year, month=month, app_settings=user.app_settings)
 
 
 @router.get("/heatmap", response_model=HeatmapResponse, status_code=200)

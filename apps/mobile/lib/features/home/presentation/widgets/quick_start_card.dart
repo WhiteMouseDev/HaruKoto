@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/auth/current_account_provider.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/study_clock_provider.dart';
-import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../../my/providers/settings_sync_provider.dart';
 import '../../../study/providers/study_provider.dart';
 import '../../../study/presentation/study_entry_flow.dart';
+import '../../../study/presentation/widgets/today_study_goal_picker.dart';
+import '../../data/models/category_goals_model.dart';
 import '../../data/models/dashboard_model.dart';
 import '../../domain/quick_start_progress.dart';
-import '../../domain/daily_vocabulary_goal_progress.dart';
+import '../../domain/daily_goal_progress.dart';
 
 // ═══════════════════════════════════════════════════════════════
 //  Constants
@@ -30,7 +32,7 @@ const _tabBgColors = [
 const _categories = [
   _CategoryInfo(
     icon: LucideIcons.bookOpen,
-    quizType: 'vocabulary',
+    goalCategory: DailyGoalCategory.vocabulary,
     ctaLabel: '오늘의 단어',
     title: '단어 학습',
     color: AppColors.primary,
@@ -38,7 +40,7 @@ const _categories = [
   ),
   _CategoryInfo(
     icon: LucideIcons.braces,
-    quizType: 'grammar',
+    goalCategory: DailyGoalCategory.grammar,
     ctaLabel: '오늘의 문법',
     title: '문법 학습',
     color: AppColors.grammar,
@@ -46,7 +48,7 @@ const _categories = [
   ),
   _CategoryInfo(
     icon: LucideIcons.alignLeft,
-    quizType: 'sentence',
+    goalCategory: DailyGoalCategory.sentence,
     ctaLabel: '오늘의 문장배열',
     title: '문장배열 학습',
     color: AppColors.kanji,
@@ -171,7 +173,7 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard>
                   for (int i = 0; i < _categories.length; i++)
                     GestureDetector(
                       key: ValueKey(
-                          'quick-start-tab-${_categories[i].quizType}'),
+                          'quick-start-tab-${_categories[i].goalCategory.name}'),
                       onTap: () => _selectTab(i),
                       behavior: HitTestBehavior.opaque,
                       child: SizedBox(
@@ -362,8 +364,15 @@ class _MainContent extends ConsumerWidget {
     final theme = Theme.of(context);
     final mutedForeground = theme.colorScheme.onSurface.withValues(alpha: 0.65);
     final cat = _categories[selectedIndex];
-    final apiType = _apiTypeForCategory(cat.quizType);
-    final progress = _getProgress(cat.quizType);
+    final goalCategory = cat.goalCategory;
+    final apiType = goalCategory == DailyGoalCategory.sentence
+        ? 'SENTENCE_ARRANGE'
+        : goalCategory.apiValue;
+    final progress = switch (goalCategory) {
+      DailyGoalCategory.vocabulary => levelProgress?.vocabulary,
+      DailyGoalCategory.grammar => levelProgress?.grammar,
+      DailyGoalCategory.sentence => null,
+    };
     final hasProgress = progress != null && progress.total > 0;
     final incompleteAsync =
         showSavedQuiz ? ref.watch(incompleteQuizProvider) : null;
@@ -385,73 +394,41 @@ class _MainContent extends ConsumerWidget {
           incompleteAsync?.hasValue == true ? incompleteAsync!.value : null,
       mastery: progress,
     );
-    final isVocabulary = apiType == 'VOCABULARY';
-    final vocabularyProgress = resolveDailyVocabularyGoalProgress(
+    final studyDate = ref.watch(studyDateProvider);
+    final categoryGoals = today?.categoryGoals;
+    final hasCategoryGoal = categoryGoals?.date == studyDateKey(studyDate);
+    final dailyProgress = resolveDailyGoalProgress(
+      category: goalCategory,
+      categoryGoals: categoryGoals,
       vocabularyGoal: today?.vocabularyGoal,
       dailyGoal: dailyGoalKnown ? dailyGoal : 0,
-      studyDate: ref.watch(studyDateProvider),
+      studyDate: studyDate,
     );
-    final ringFraction =
-        isVocabulary ? vocabularyProgress.fraction : cardProgress.fraction;
-    final ringPercentage =
-        isVocabulary ? vocabularyProgress.percentage : cardProgress.percentage;
-    final ringLabel = isVocabulary ? '오늘 목표' : cardProgress.label;
+    final canEditGoal = hasCategoryGoal ||
+        (today != null &&
+            categoryGoals == null &&
+            goalCategory == DailyGoalCategory.vocabulary &&
+            dailyGoalKnown);
     final incomplete = cardProgress.session;
-    final preview = previewAsync?.hasValue == true &&
-            (!isVocabulary ||
-                (!previewAsync!.isLoading && !previewAsync.hasError))
-        ? previewAsync!.value
-        : null;
+    final canShowPreview = previewAsync != null &&
+        (previewAsync.isLoading ||
+            (previewAsync.hasValue && !previewAsync.hasError));
     final decision = resolveStudyEntryDecision(
       category: apiType,
       hasIncomplete: incomplete != null,
-      hasPreview: preview != null,
+      canShowPreview: canShowPreview,
     );
 
     final ctaLabel = decision.action == StudyEntryActionKind.resumeOrNew
         ? '이어서 학습하기'
         : cat.ctaLabel;
 
-    final stackDailyProgress = isVocabulary &&
-        (MediaQuery.sizeOf(context).width < 360 ||
-            MediaQuery.textScalerOf(context).scale(14) > 18.2);
-    final goalEditor = Tooltip(
-      message: '하루 목표 설정',
-      child: InkWell(
-        key: const ValueKey('quick-start-edit-goal'),
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => _showDailyGoalSheet(context, ref),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-          child: isVocabulary
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        vocabularyProgress.countLabel,
-                        key: const ValueKey('quick-start-daily-count'),
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Icon(LucideIcons.pencil,
-                        size: 14,
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.4)),
-                  ],
-                )
-              : Center(
-                  widthFactor: 1,
-                  heightFactor: 1,
-                  child: Icon(LucideIcons.pencil,
-                      size: 14,
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.4)),
-                ),
-        ),
-      ),
+    final stackDailyProgress = MediaQuery.sizeOf(context).width < 360 ||
+        MediaQuery.textScalerOf(context).scale(14) > 18.2;
+    final countText = Text(
+      dailyProgress.countLabel,
+      key: const ValueKey('quick-start-daily-count'),
+      style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
     );
     final progressSummary = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -462,102 +439,105 @@ class _MainContent extends ConsumerWidget {
               theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
-        if (isVocabulary) ...[
-          goalEditor,
-          if (vocabularyProgress.remainingLabel != null)
-            Text(
-              vocabularyProgress.remainingLabel!,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+        if (canEditGoal)
+          Tooltip(
+            message: '${goalCategory.label} 하루 목표 설정',
+            child: InkWell(
+              key: const ValueKey('quick-start-edit-goal'),
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => _showDailyGoalSheet(
+                context,
+                ref,
+                category: goalCategory,
+                currentGoal: dailyProgress.goal,
+                hasCategoryGoal: hasCategoryGoal,
               ),
-            ),
-          if (cardProgress.savedAnswerLabel != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              stackDailyProgress
-                  ? '이번 퀴즈\n${cardProgress.savedAnswerLabel!}'
-                  : '이번 퀴즈 ${cardProgress.savedAnswerLabel!}',
-              key: const ValueKey('quick-start-saved-progress'),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(child: countText),
+                    const SizedBox(width: 6),
+                    Icon(LucideIcons.pencil,
+                        size: 14,
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.4)),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ] else if (cardProgress.savedAnswerLabel != null)
-          Text(
-            cardProgress.savedAnswerLabel!,
-            key: const ValueKey('quick-start-saved-progress'),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           )
         else
-          Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Text('하루 목표  ',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                  )),
-              Text(dailyGoalKnown ? '$dailyGoal개' : '확인 필요',
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(width: 6),
-              goalEditor,
-            ],
+          countText,
+        if (dailyProgress.remainingLabel != null)
+          Text(
+            dailyProgress.remainingLabel!,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
           ),
+        if (cardProgress.savedAnswerLabel != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            stackDailyProgress
+                ? '이번 퀴즈\n${cardProgress.savedAnswerLabel!}'
+                : '이번 퀴즈 ${cardProgress.savedAnswerLabel!}',
+            key: const ValueKey('quick-start-saved-progress'),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+        ],
       ],
     );
-    final progressRing = ringLabel == null
-        ? null
-        : SizedBox(
-            width: stackDailyProgress ? 100 : 72,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (ringFraction != null) ...[
-                  SizedBox(
-                    width: 64,
-                    height: 64,
-                    child: CustomPaint(
-                      painter: _CircularProgressPainter(
-                        progress: ringFraction,
-                        trackColor: theme.brightness == Brightness.dark
-                            ? theme.colorScheme.onSurface
-                                .withValues(alpha: 0.12)
-                            : AppColors.surfaceMuted,
-                        progressColor: cat.color,
-                        strokeWidth: 5,
-                      ),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(6),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              ringPercentage!,
-                              key: const ValueKey('quick-start-percentage'),
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: cat.color),
-                            ),
-                          ),
-                        ),
+    final ringFraction = dailyProgress.fraction;
+    final progressRing = SizedBox(
+      width: stackDailyProgress ? 100 : 72,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (ringFraction != null) ...[
+            SizedBox(
+              width: 64,
+              height: 64,
+              child: CustomPaint(
+                painter: _CircularProgressPainter(
+                  progress: ringFraction,
+                  trackColor: theme.brightness == Brightness.dark
+                      ? theme.colorScheme.onSurface.withValues(alpha: 0.12)
+                      : AppColors.surfaceMuted,
+                  progressColor: cat.color,
+                  strokeWidth: 5,
+                ),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        dailyProgress.percentage!,
+                        key: const ValueKey('quick-start-percentage'),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold, color: cat.color),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 6),
-                ],
-                Text(
-                  ringLabel,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
                 ),
-              ],
+              ),
             ),
-          );
+            const SizedBox(height: 6),
+          ],
+          Text(
+            '오늘 목표',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+        ],
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -638,20 +618,16 @@ class _MainContent extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       progressSummary,
-                      if (progressRing != null) ...[
-                        const SizedBox(height: 12),
-                        Center(child: progressRing),
-                      ],
+                      const SizedBox(height: 12),
+                      Center(child: progressRing),
                     ],
                   )
                 : Row(
                     key: ValueKey('content_$selectedIndex'),
                     children: [
                       Expanded(child: progressSummary),
-                      if (progressRing != null) ...[
-                        const SizedBox(width: 8),
-                        progressRing,
-                      ],
+                      const SizedBox(width: 8),
+                      progressRing,
                     ],
                   ),
           ),
@@ -675,7 +651,7 @@ class _MainContent extends ConsumerWidget {
                   category: apiType,
                   jlptLevel: jlptLevel,
                   incomplete: incomplete,
-                  preview: preview,
+                  canShowPreview: canShowPreview,
                 );
               },
               child: Container(
@@ -711,55 +687,48 @@ class _MainContent extends ConsumerWidget {
     );
   }
 
-  ProgressStat? _getProgress(String quizType) {
-    if (levelProgress == null) return null;
-    switch (quizType) {
-      case 'vocabulary':
-        return levelProgress!.vocabulary;
-      case 'grammar':
-        return levelProgress!.grammar;
-      default:
-        return null;
-    }
-  }
-
   static String _getAccuracy(TodayStats? today) {
     if (today == null || today.totalAnswers == 0) return '-';
     return ((today.correctAnswers / today.totalAnswers) * 100)
         .toStringAsFixed(0);
   }
 
-  static String _apiTypeForCategory(String quizType) {
-    return switch (quizType) {
-      'grammar' => 'GRAMMAR',
-      'sentence' => 'SENTENCE_ARRANGE',
-      _ => 'VOCABULARY',
-    };
-  }
-
-  Future<void> _showDailyGoalSheet(BuildContext context, WidgetRef ref) async {
-    final theme = Theme.of(context);
-    final goals = [5, 10, 15, 20, 30];
-    final selectedGoal = await showModalBottomSheet<int>(
+  Future<void> _showDailyGoalSheet(
+    BuildContext context,
+    WidgetRef ref, {
+    required DailyGoalCategory category,
+    required int currentGoal,
+    required bool hasCategoryGoal,
+  }) async {
+    final owner = ref.read(currentAccountIdProvider);
+    if (owner == null || ref.read(currentAccountReaderProvider)() != owner) {
+      return;
+    }
+    final selectedGoal = await showTodayStudyGoalPicker(
       context: context,
-      useRootNavigator: true,
-      isScrollControlled: true,
-      shape: AppSizes.sheetShape,
-      builder: (ctx) {
-        return _DailyGoalSheetContent(
-          goals: goals,
-          currentGoal: dailyGoal,
-          theme: theme,
-        );
-      },
+      currentGoal: currentGoal,
+      title: hasCategoryGoal ? '${category.label} 하루 목표 설정' : '하루 목표 설정',
     );
 
-    if (selectedGoal == null || selectedGoal == dailyGoal) return;
+    bool accountCurrent() =>
+        ref.read(currentAccountIdProvider) == owner &&
+        ref.read(currentAccountReaderProvider)() == owner;
+    if (!context.mounted ||
+        selectedGoal == null ||
+        selectedGoal == currentGoal ||
+        !accountCurrent()) {
+      return;
+    }
 
     try {
-      await ref.read(settingsSyncServiceProvider).updateDailyGoal(selectedGoal);
+      final settings = ref.read(settingsSyncServiceProvider);
+      if (hasCategoryGoal) {
+        await settings.updateCategoryDailyGoal(category, selectedGoal);
+      } else {
+        await settings.updateDailyGoal(selectedGoal);
+      }
 
-      if (context.mounted) {
+      if (context.mounted && accountCurrent()) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('하루 목표가 $selectedGoal개로 변경되었습니다'),
@@ -768,7 +737,7 @@ class _MainContent extends ConsumerWidget {
         );
       }
     } catch (_) {
-      if (context.mounted) {
+      if (context.mounted && accountCurrent()) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('목표 변경에 실패했습니다. 다시 시도해주세요.'),
@@ -783,65 +752,6 @@ class _MainContent extends ConsumerWidget {
 // ═══════════════════════════════════════════════════════════════
 //  Supporting widgets
 // ═══════════════════════════════════════════════════════════════
-
-class _DailyGoalSheetContent extends StatelessWidget {
-  final List<int> goals;
-  final int currentGoal;
-  final ThemeData theme;
-
-  const _DailyGoalSheetContent({
-    required this.goals,
-    required this.currentGoal,
-    required this.theme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = this.theme;
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const AppSheetHandle(),
-              const SizedBox(height: 16),
-              Text('하루 목표 설정',
-                  style: theme.textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              ...goals.map((g) {
-                final isActive = g == currentGoal;
-                return ListTile(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  selected: isActive,
-                  selectedTileColor:
-                      theme.colorScheme.primary.withValues(alpha: 0.08),
-                  title: Text('$g개',
-                      style: TextStyle(
-                        fontWeight:
-                            isActive ? FontWeight.bold : FontWeight.normal,
-                        color: isActive
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.onSurface,
-                      )),
-                  trailing: isActive
-                      ? Icon(LucideIcons.check,
-                          color: theme.colorScheme.primary, size: 20)
-                      : null,
-                  onTap: () => Navigator.of(context).pop(g),
-                );
-              }),
-              const SizedBox(height: 8),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _CircularProgressPainter extends CustomPainter {
   final double progress;
@@ -891,7 +801,7 @@ class _CircularProgressPainter extends CustomPainter {
 
 class _CategoryInfo {
   final IconData icon;
-  final String quizType;
+  final DailyGoalCategory goalCategory;
   final String ctaLabel;
   final String title;
   final Color color;
@@ -899,7 +809,7 @@ class _CategoryInfo {
 
   const _CategoryInfo({
     required this.icon,
-    required this.quizType,
+    required this.goalCategory,
     required this.ctaLabel,
     required this.title,
     required this.color,

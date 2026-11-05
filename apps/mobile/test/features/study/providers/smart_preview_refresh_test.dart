@@ -20,8 +20,7 @@ const _vocabN4 = (category: 'VOCABULARY', jlptLevel: 'N4');
 const _grammar = (category: 'GRAMMAR', jlptLevel: 'N5');
 
 void main() {
-  test('KST midnight reloads vocabulary without changing grammar previews',
-      () async {
+  test('KST midnight reloads both day-scoped smart previews', () async {
     var now = DateTime.utc(2026, 10, 30, 14, 59);
     final repository = _StudyRepository(() async => _preview());
     final container = ProviderContainer(overrides: [
@@ -43,7 +42,7 @@ void main() {
     container.read(studyDateProvider.notifier).refresh();
     await container.read(smartPreviewProvider(_vocabN5).future);
     await container.read(smartPreviewProvider(_grammar).future);
-    expect(repository.calls, {'VOCABULARY:N5': 2, 'GRAMMAR:N5': 1});
+    expect(repository.calls, {'VOCABULARY:N5': 2, 'GRAMMAR:N5': 2});
   });
 
   for (final fails in [false, true]) {

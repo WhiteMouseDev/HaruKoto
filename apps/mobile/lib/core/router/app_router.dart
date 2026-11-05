@@ -221,7 +221,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                         parentNavigatorKey: _rootNavigatorKey,
                         pageBuilder: (context, state) => _slideTransitionPage(
                           state: state,
-                          child: const KatakanaPilotPage(),
+                          child: const KanaPilotPage(),
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'hiragana/focus',
+                        parentNavigatorKey: _rootNavigatorKey,
+                        pageBuilder: (context, state) => _slideTransitionPage(
+                          state: state,
+                          child: const KanaPilotPage(hiragana: true),
                         ),
                       ),
                       GoRoute(

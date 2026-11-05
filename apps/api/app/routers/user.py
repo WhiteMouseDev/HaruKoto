@@ -13,6 +13,7 @@ from app.config import settings
 from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.models import DailyProgress, QuizSession, UserAchievement, UserVocabProgress
+from app.models.enums import QuizType
 from app.models.user import User
 from app.schemas.common import CamelModel
 from app.schemas.user import (
@@ -22,7 +23,11 @@ from app.schemas.user import (
     UserProfileUpdate,
     UserSummary,
 )
+from app.services.category_goals import award_goal_after_target_change, goal_target
 from app.services.gamification import calculate_level
+from app.services.study_day_recording import lock_study_user
+from app.utils.constants import DAILY_CATEGORY_GOALS_KEY
+from app.utils.date import get_today_kst
 
 logger = logging.getLogger(__name__)
 
@@ -123,20 +128,33 @@ async def update_profile(
         merged = {**(user.call_settings or {}), **update_data["call_settings"]}
         update_data["call_settings"] = merged
 
-    # Validate and merge app_settings — 새 dict 할당 (SQLAlchemy JSON 변경 감지용)
-    if "app_settings" in update_data and update_data["app_settings"] is not None:
-        new_settings = update_data["app_settings"]
-        for key, value in new_settings.items():
-            if isinstance(value, (dict, list)):
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"app_settings must be a flat dict. Nested value found for key '{key}'.",
-                )
-        merged_settings = {**(user.app_settings or {}), **new_settings}
-        update_data["app_settings"] = merged_settings
+    if "app_settings" in update_data or "daily_goal" in update_data:
+        await lock_study_user(db, user)
+        await db.refresh(user, attribute_names=["app_settings", "daily_goal"])
 
+    # Never expose, accept, or erase private goal history through profile settings.
+    if "app_settings" in update_data:
+        new_settings = update_data["app_settings"]
+        current_settings = user.app_settings or {}
+        if new_settings is None:
+            if DAILY_CATEGORY_GOALS_KEY in current_settings:
+                update_data["app_settings"] = {DAILY_CATEGORY_GOALS_KEY: current_settings[DAILY_CATEGORY_GOALS_KEY]}
+        else:
+            if DAILY_CATEGORY_GOALS_KEY in new_settings:
+                raise HTTPException(status_code=400, detail="서버에서 관리하는 설정은 변경할 수 없습니다")
+            for key, value in new_settings.items():
+                if isinstance(value, (dict, list)):
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"app_settings must be a flat dict. Nested value found for key '{key}'.",
+                    )
+            update_data["app_settings"] = {**current_settings, **new_settings}
+
+    previous_word_goal = goal_target(user, QuizType.VOCABULARY) if "daily_goal" in update_data else None
     for field, value in update_data.items():
         setattr(user, field, value)
+    if previous_word_goal is not None and previous_word_goal != goal_target(user, QuizType.VOCABULARY):
+        await award_goal_after_target_change(db, user, day=get_today_kst(), quiz_type=QuizType.VOCABULARY)
 
     await db.commit()
     await db.refresh(user)

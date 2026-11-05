@@ -3,12 +3,14 @@ from __future__ import annotations
 import calendar
 import uuid
 from datetime import date
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import DailyProgress
 from app.schemas.stats import DailyProgressItem, HistoryResponse
+from app.services.category_goals import achievement_days
 from app.services.study_activity import has_study_activity
 from app.utils.date import get_today_kst
 
@@ -19,6 +21,7 @@ async def get_history_data(
     user_id: uuid.UUID,
     year: int | None,
     month: int | None,
+    app_settings: dict[str, Any] | None = None,
 ) -> HistoryResponse:
     target_year, target_month = _resolve_year_month(year=year, month=month)
     start_date, end_date = _month_range(year=target_year, month=target_month)
@@ -29,10 +32,11 @@ async def get_history_data(
         end_date=end_date,
     )
 
+    earned = achievement_days(app_settings, month=start_date)
     return HistoryResponse(
         year=target_year,
         month=target_month,
-        records=[_build_daily_progress_item(progress) for progress in progress_list],
+        records=[_build_daily_progress_item(progress, goal_achieved=progress.date.day in earned) for progress in progress_list],
     )
 
 
@@ -69,7 +73,7 @@ async def _load_monthly_progress(
     return list(result.scalars().all())
 
 
-def _build_daily_progress_item(progress: DailyProgress) -> DailyProgressItem:
+def _build_daily_progress_item(progress: DailyProgress, *, goal_achieved: bool = False) -> DailyProgressItem:
     return DailyProgressItem(
         date=str(progress.date),
         words_studied=progress.words_studied,
@@ -80,4 +84,5 @@ def _build_daily_progress_item(progress: DailyProgress) -> DailyProgressItem:
         study_time_seconds=progress.study_time_seconds,
         xp_earned=progress.xp_earned,
         has_studied=has_study_activity(progress),
+        goal_achieved=goal_achieved,
     )

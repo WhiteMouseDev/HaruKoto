@@ -9,6 +9,8 @@ type StudyActivityUser = Pick<
   | 'lastStudyDate'
   | 'streakCount'
   | 'longestStreak'
+  | 'dailyGoal'
+  | 'app_settings'
 >;
 
 /**
@@ -27,7 +29,9 @@ export async function lockStudyActivityUser(
            level,
            last_study_date AS "lastStudyDate",
            streak_count AS "streakCount",
-           longest_streak AS "longestStreak"
+           longest_streak AS "longestStreak",
+           daily_goal AS "dailyGoal",
+           app_settings
     FROM public.users
     WHERE id = ${userId}::uuid
     FOR NO KEY UPDATE

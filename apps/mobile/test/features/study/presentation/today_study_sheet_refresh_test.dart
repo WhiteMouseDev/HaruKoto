@@ -8,8 +8,10 @@ import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/core/providers/study_clock_provider.dart';
 import 'package:harukoto_mobile/core/providers/user_preferences_provider.dart';
-import 'package:harukoto_mobile/features/my/data/my_repository.dart';
-import 'package:harukoto_mobile/features/my/providers/my_provider.dart';
+import 'package:harukoto_mobile/features/home/data/home_repository.dart';
+import 'package:harukoto_mobile/features/home/data/models/category_goals_model.dart';
+import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
+import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/smart_preview_model.dart';
 import 'package:harukoto_mobile/features/study/domain/study_repository.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/today_study_sheet.dart';
@@ -60,7 +62,7 @@ void main() {
     try {
       await tester.tap(find.text('하루 목표 20개'));
       await tester.pumpAndSettle();
-      Navigator.of(tester.element(find.text('하루 목표 설정'))).pop();
+      Navigator.of(tester.element(find.text('단어 하루 목표 설정'))).pop();
       await tester.pumpAndSettle();
       expect(scenario.previewCalls, 1);
       expect(scenario.saveCalls, 0);
@@ -158,19 +160,33 @@ void main() {
     }
   });
   testWidgets(
-      'grammar keeps its existing snapshot and does not watch vocabulary refreshes',
+      'grammar edits refresh only its live preview and preserve the word goal',
       (tester) async {
     final scenario = _Scenario();
     final container = await _pumpSheet(tester, scenario, category: 'GRAMMAR');
     try {
-      expect(_start(tester).totalCount, 10);
-      expect(scenario.previewCalls, 0);
+      expect(_start(tester).totalCount, 7);
+      expect(scenario.previewCalls, 1);
       container.read(vocabularyPreviewRefreshProvider.notifier).refresh();
-      scenario.now = DateTime.utc(2026, 10, 30, 15);
-      container.read(studyDateProvider.notifier).refresh();
       await tester.pumpAndSettle();
-      expect(_start(tester).totalCount, 10);
-      expect(scenario.previewCalls, 0);
+      expect(scenario.previewCalls, 1);
+
+      await _chooseThirty(tester, currentGoal: 15);
+      expect(_start(tester).onStart, isNull);
+      final refreshed = Completer<SmartPreviewModel>();
+      scenario.nextResponse = refreshed.future;
+      scenario.saveGate.complete();
+      await tester.pump();
+      await tester.pump();
+      expect(scenario.savedCategories, [DailyGoalCategory.grammar]);
+      expect(container.read(userPreferencesProvider).dailyGoal, 20);
+      expect(scenario.previewCalls, 2);
+      expect(find.byType(TodayStudyStartButton), findsNothing);
+      refreshed.complete(_preview(goal: 30));
+      await tester.pumpAndSettle();
+      expect(find.text('하루 목표 30개'), findsOneWidget);
+      expect(_start(tester).totalCount, 22);
+      expect(_start(tester).onStart, isNotNull);
     } finally {
       await tester.pumpWidget(const SizedBox());
       container.dispose();
@@ -197,8 +213,8 @@ void main() {
 TodayStudyStartButton _start(WidgetTester tester) =>
     tester.widget<TodayStudyStartButton>(find.byType(TodayStudyStartButton));
 
-Future<void> _chooseThirty(WidgetTester tester) async {
-  await tester.tap(find.text('하루 목표 20개'));
+Future<void> _chooseThirty(WidgetTester tester, {int currentGoal = 20}) async {
+  await tester.tap(find.text('하루 목표 $currentGoal개'));
   await tester.pumpAndSettle();
   await tester.tap(find.text('30개'));
   await tester.pump();
@@ -219,14 +235,13 @@ Future<ProviderContainer> _pumpSheet(WidgetTester tester, _Scenario scenario,
     studyClockProvider.overrideWithValue(() => scenario.now),
     sharedPreferencesProvider.overrideWithValue(prefs),
     studyRepositoryProvider.overrideWithValue(_StudyRepository(scenario)),
-    myRepositoryProvider.overrideWithValue(_MyRepository(scenario)),
+    homeRepositoryProvider.overrideWithValue(_HomeRepository(scenario)),
   ]);
   await tester.pumpWidget(UncontrolledProviderScope(
     container: container,
     child: MaterialApp(
         home: Scaffold(
             body: TodayStudySheet(
-      data: _preview(goal: 10, completed: 0),
       jlptLevel: 'N5',
       category: category,
     ))),
@@ -239,6 +254,8 @@ class _Scenario {
   String account = 'account-a';
   DateTime now = DateTime.utc(2026, 10, 30, 14);
   int goal = 20;
+  int grammarGoal = 15;
+  final savedCategories = <DailyGoalCategory>[];
   int previewCalls = 0;
   int saveCalls = 0;
   bool failSave = false;
@@ -253,19 +270,40 @@ class _StudyRepository extends Fake implements StudyRepository {
   Future<SmartPreviewModel> fetchSmartPreview(
       {String category = 'VOCABULARY', String jlptLevel = 'N5'}) {
     scenario.previewCalls++;
-    return scenario.nextResponse ?? Future.value(_preview(goal: scenario.goal));
+    final goal = category == 'GRAMMAR' ? scenario.grammarGoal : scenario.goal;
+    return scenario.nextResponse ?? Future.value(_preview(goal: goal));
   }
 }
 
-class _MyRepository extends MyRepository {
-  _MyRepository(this.scenario) : super(Dio());
+class _HomeRepository extends HomeRepository {
+  _HomeRepository(this.scenario) : super(Dio());
   final _Scenario scenario;
+
   @override
-  Future<void> updateProfile(Map<String, dynamic> data) async {
+  Future<DashboardModel> fetchDashboard() async => DashboardModel.fromJson({
+        'today': {
+          'categoryGoals': {
+            'date': studyDateKey(studyDateInKorea(scenario.now)),
+            'vocabulary': {'target': scenario.goal, 'answeredCount': 8},
+            'grammar': {'target': scenario.grammarGoal, 'answeredCount': 8},
+            'sentence': {'target': 10, 'answeredCount': 0},
+          },
+        },
+      });
+
+  @override
+  Future<int> updateCategoryDailyGoal(
+      DailyGoalCategory category, int goal) async {
+    scenario.savedCategories.add(category);
     scenario.saveCalls++;
     await scenario.saveGate.future;
     if (scenario.failSave) throw StateError('synthetic failed goal save');
-    scenario.goal = data['dailyGoal'] as int;
+    if (category == DailyGoalCategory.grammar) {
+      scenario.grammarGoal = goal;
+    } else {
+      scenario.goal = goal;
+    }
+    return goal;
   }
 }
 

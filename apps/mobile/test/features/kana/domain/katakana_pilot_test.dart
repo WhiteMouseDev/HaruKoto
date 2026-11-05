@@ -42,35 +42,91 @@ void main() {
     final letters =
         KatakanaPracticeGroup.values.expand((group) => group.letters);
     expect(letters, hasLength(14));
-    expect(letters.toSet(), unorderedEquals(KatakanaPilotLetter.values));
+    expect(
+      letters.toSet(),
+      unorderedEquals(
+        KatakanaPilotLetter.values.where((letter) => letter.strokes.isNotEmpty),
+      ),
+    );
   });
 
-  test('practice and next-day words are distinct and have one target', () {
-    const letters = KatakanaPilotLetter.values;
-    final practiceWords = letters.map((letter) => letter.word).toSet();
-    expect(practiceWords, hasLength(letters.length));
-    expect(
-      letters.map((letter) => letter.reviewWord.text).toSet(),
-      hasLength(letters.length),
-    );
-    for (final letter in letters) {
-      final reviewWord = letter.reviewWord;
-      expect(practiceWords, isNot(contains(reviewWord.text)));
-      for (final word in [letter.word, reviewWord.text]) {
-        expect(
-          word.runes.where((rune) => rune == letter.glyph.runes.single),
-          hasLength(1),
-          reason: '$word must contain one ${letter.glyph}',
-        );
+  test('the ten rows cover the 46 basic letters once in each script', () {
+    final rows = KanaPracticeRow.values
+        .where((row) => row.section == KanaPracticeSection.basic);
+    expect(rows, hasLength(10));
+    for (final hiragana in [true, false]) {
+      final letters = rows.expand((row) => row.letters(hiragana: hiragana));
+      expect(rows.map((row) => row.letters(hiragana: hiragana).length),
+          [5, 5, 5, 5, 5, 5, 5, 3, 5, 3]);
+      expect(
+        letters.map((letter) => letter.glyph).join(),
+        hiragana
+            ? 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん'
+            : 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン',
+      );
+    }
+  });
+
+  test('variant rows contain each voiced and small kana exactly once', () {
+    for (final hiragana in [true, false]) {
+      final catalog = KanaPracticeRow.values
+          .expand((row) => row.letters(hiragana: hiragana))
+          .toList();
+      expect(
+        catalog,
+        unorderedEquals(
+          hiragana ? HiraganaPilotLetter.values : KatakanaPilotLetter.values,
+        ),
+      );
+
+      String glyphs(KanaPracticeSection section) => KanaPracticeRow.values
+          .where((row) => row.section == section)
+          .expand((row) => row.letters(hiragana: hiragana))
+          .map((letter) => letter.glyph)
+          .join();
+
+      expect(
+        glyphs(KanaPracticeSection.voiced),
+        hiragana ? 'がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゔ' : 'ガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポヴ',
+      );
+      expect(
+        glyphs(KanaPracticeSection.small),
+        hiragana ? 'ぁぃぅぇぉゃゅょっゎ' : 'ァィゥェォャュョッヮヵヶ',
+      );
+    }
+  });
+
+  test('practice and next-day examples are distinct and have one target', () {
+    for (final List<KanaPracticeLetter> letters in [
+      KatakanaPilotLetter.values,
+      HiraganaPilotLetter.values,
+    ]) {
+      final practiceWords = letters.map((letter) => letter.word).toSet();
+      expect(practiceWords, hasLength(letters.length));
+      expect(
+        letters.map((letter) => letter.reviewWord.text).toSet(),
+        hasLength(letters.length),
+      );
+      for (final letter in letters) {
+        final reviewWord = letter.reviewWord;
+        expect(practiceWords, isNot(contains(reviewWord.text)));
+        for (final word in [letter.word, reviewWord.text]) {
+          expect(
+            word.runes.where((rune) => rune == letter.glyph.runes.single),
+            hasLength(1),
+            reason: '$word must contain one ${letter.glyph}',
+          );
+        }
+        expect(reviewWord.reading, isNotEmpty);
+        expect(reviewWord.meaning, isNotEmpty);
       }
-      expect(reviewWord.reading, isNotEmpty);
-      expect(reviewWord.meaning, isNotEmpty);
     }
   });
 
   test('schematic coordinates preserve stroke count, ordering and directions',
       () {
-    const letters = KatakanaPilotLetter.values;
+    final letters =
+        KatakanaPilotLetter.values.where((letter) => letter.strokes.isNotEmpty);
     expect(letters.map((letter) => letter.strokes.length),
         [3, 3, 2, 2, 2, 3, 1, 2, 3, 2, 2, 3, 3]);
     for (final letter in letters) {
