@@ -564,9 +564,13 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('katakana-word-character-1')));
     await tester.pumpAndSettle();
 
+    final beforeAccountChange = {
+      for (final key in prefs.getKeys()) key: prefs.get(key),
+    };
     sessionOwner = 'account-b';
     await tapText(tester, '헷갈렸어요');
-    expect(prefs.getKeys(), {'existing-learning-value'});
+    expect({for (final key in prefs.getKeys()) key: prefs.get(key)},
+        beforeAccountChange);
     expect(find.text('다음 복습에 저장했어요.'), findsNothing);
   });
 
