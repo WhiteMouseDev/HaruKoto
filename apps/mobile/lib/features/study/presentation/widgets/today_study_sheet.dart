@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+
 import '../../../../core/auth/current_account_provider.dart';
+import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/study_clock_provider.dart';
 import '../../../../shared/widgets/app_error_retry.dart';
+import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../../home/data/models/category_goals_model.dart';
 import '../../../home/providers/home_provider.dart';
 import '../../../my/providers/settings_sync_provider.dart';
@@ -11,7 +16,6 @@ import '../quiz_launch.dart';
 import 'today_study_distribution_breakdown.dart';
 import 'today_study_goal_picker.dart';
 import 'today_study_progress_summary.dart';
-import 'today_study_sheet_handle.dart';
 import 'today_study_start_button.dart';
 
 /// Bottom sheet for "오늘의 학습" — shows smart quiz preview,
@@ -92,7 +96,6 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final category = widget.category == 'GRAMMAR'
         ? DailyGoalCategory.grammar
         : DailyGoalCategory.vocabulary;
@@ -104,19 +107,22 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
         livePreview.isLoading ||
         livePreview.hasError ||
         !livePreview.hasValue) {
-      return SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: livePreview.isLoading && _accountCurrent
-              ? const CircularProgressIndicator(semanticsLabel: '오늘의 학습 확인 중')
-              : AppErrorRetry(onRetry: () {
-                  if (!_accountCurrent) {
-                    Navigator.pop(context);
-                    return;
-                  }
-                  ref.invalidate(previewProvider);
-                }),
-        ),
+      return _TodayStudySheetLayout(
+        title: '오늘의 ${category.label}',
+        children: [
+          if (livePreview.isLoading && _accountCurrent)
+            const Center(
+              child: CircularProgressIndicator(semanticsLabel: '오늘의 학습 확인 중'),
+            )
+          else
+            AppErrorRetry(onRetry: () {
+              if (!_accountCurrent) {
+                Navigator.pop(context);
+                return;
+              }
+              ref.invalidate(previewProvider);
+            }),
+        ],
       );
     }
     final data = livePreview.value!;
@@ -137,60 +143,159 @@ class _TodayStudySheetState extends ConsumerState<TodayStudySheet> {
     final dist = data.sessionDistribution;
     final progress = data.overallProgress;
 
+    return _TodayStudySheetLayout(
+      title: '오늘의 ${category.label}',
+      children: [
+        _TodayStudyGoal(
+          jlptLevel: widget.jlptLevel,
+          currentGoal: currentGoal,
+          onGoalTap: canEdit && !_isGoalLoading && currentGoal != null
+              ? () => _showGoalPicker(
+                    currentGoal: currentGoal,
+                    category: category,
+                    hasCategoryGoal: hasCategoryGoal,
+                  )
+              : null,
+        ),
+        const SizedBox(height: AppSizes.md),
+        TodayStudyDistributionBreakdown(
+          distribution: dist,
+          category: widget.category,
+        ),
+        if (progress.total > 0) ...[
+          const SizedBox(height: AppSizes.md),
+          TodayStudyProgressSummary(
+            progress: progress,
+            jlptLevel: widget.jlptLevel,
+            category: widget.category,
+          ),
+        ],
+        const SizedBox(height: AppSizes.md),
+        TodayStudyStartButton(
+          totalCount: dist.total,
+          category: widget.category,
+          onStart: dist.total > 0 && !_isGoalLoading
+              ? () {
+                  if (!_accountCurrent) return;
+                  Navigator.pop(context);
+                  openQuizPageForSession(
+                    context,
+                    quizType: widget.category,
+                    jlptLevel: widget.jlptLevel,
+                    count: dist.total,
+                    mode: 'smart',
+                  );
+                }
+              : null,
+        ),
+      ],
+    );
+  }
+}
+
+class _TodayStudySheetLayout extends StatelessWidget {
+  const _TodayStudySheetLayout({required this.title, required this.children});
+
+  final String title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(
+          AppSizes.pageHorizontal,
+          AppSizes.pageHorizontal,
+          AppSizes.pageHorizontal,
+          AppSizes.lg,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const TodayStudySheetHandle(),
-            const SizedBox(height: 20),
-            Text(
-              '오늘의 학습',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+            const AppSheetHandle(),
+            const SizedBox(height: AppSizes.md),
+            Semantics(
+              header: true,
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
             ),
-            const SizedBox(height: 24),
-            TodayStudyProgressSummary(
-              progress: progress,
-              jlptLevel: widget.jlptLevel,
-              category: widget.category,
-              currentGoal: currentGoal,
-              onGoalTap: canEdit && !_isGoalLoading && currentGoal != null
-                  ? () => _showGoalPicker(
-                        currentGoal: currentGoal,
-                        category: category,
-                        hasCategoryGoal: hasCategoryGoal,
-                      )
-                  : null,
-            ),
-            const SizedBox(height: 24),
-            TodayStudyDistributionBreakdown(
-              distribution: dist,
-              category: widget.category,
-            ),
-            const SizedBox(height: 24),
-            TodayStudyStartButton(
-              totalCount: dist.total,
-              category: widget.category,
-              onStart: dist.total > 0 && !_isGoalLoading
-                  ? () {
-                      if (!_accountCurrent) return;
-                      Navigator.pop(context);
-                      openQuizPageForSession(
-                        context,
-                        quizType: widget.category,
-                        jlptLevel: widget.jlptLevel,
-                        count: dist.total,
-                        mode: 'smart',
-                      );
-                    }
-                  : null,
-            ),
+            const SizedBox(height: AppSizes.xs),
+            ...children,
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TodayStudyGoal extends StatelessWidget {
+  const _TodayStudyGoal({
+    required this.jlptLevel,
+    required this.currentGoal,
+    required this.onGoalTap,
+  });
+
+  final String jlptLevel;
+  final int? currentGoal;
+  final VoidCallback? onGoalTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: AppSizes.xs,
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(AppSizes.radiusFull),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.sm, vertical: AppSizes.xs),
+            child: Text(
+              jlptLevel,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: AppColors.sakuraOn,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+        if (currentGoal case final goal?)
+          if (onGoalTap != null)
+            TextButton(
+              onPressed: onGoalTap,
+              style: TextButton.styleFrom(
+                foregroundColor: theme.colorScheme.onSurfaceVariant,
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.sm),
+              ),
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: AppSizes.xs,
+                children: [
+                  Text('하루 목표 $goal개', textAlign: TextAlign.center),
+                  const Icon(LucideIcons.pencil, size: AppSizes.iconSm),
+                ],
+              ),
+            )
+          else
+            Text(
+              '하루 목표 $goal개',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+      ],
     );
   }
 }

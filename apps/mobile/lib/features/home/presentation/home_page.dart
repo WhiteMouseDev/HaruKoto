@@ -213,7 +213,6 @@ class _HomePageState extends ConsumerState<HomePage>
               _staggered(
                 3,
                 QuickStartCard(
-                  levelProgress: dashboard?.levelProgress,
                   today: dashboard?.today,
                   dailyGoal: preferences.dailyGoal,
                   dailyGoalKnown:

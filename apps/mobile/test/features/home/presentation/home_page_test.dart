@@ -48,19 +48,23 @@ void main() {
         child: const MaterialApp(home: HomePage()),
       ));
       await tester.pumpAndSettle();
-      expect(find.text('오늘도 학습했어요 · 내일도 이어가요'), findsOneWidget);
+      final studiedToday = find.bySemanticsLabel(RegExp('오늘도 학습했어요'));
+      expect(studiedToday, findsOneWidget);
       final container =
           ProviderScope.containerOf(tester.element(find.byType(HomePage)));
       now = DateTime.utc(2026, 9, 27, 15);
       container.read(studyDateProvider.notifier).refresh();
       await tester.pump();
       expect(find.byType(StreakDailyCard), findsNothing);
-      expect(find.text('오늘도 학습했어요 · 내일도 이어가요'), findsNothing);
+      expect(studiedToday, findsNothing);
       nextDashboard.complete(DashboardModel.fromJson({
         'streak': {'current': 2, 'longest': 2, 'studiedToday': false}
       }));
       await tester.pumpAndSettle();
-      expect(find.text('어제까지의 기록 · 오늘 학습하면 3일'), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(RegExp('어제까지의 기록 · 오늘 학습하면 3일')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('shows skeleton when all providers are loading',

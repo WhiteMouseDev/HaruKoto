@@ -57,3 +57,10 @@ git worktree add --detach ../harukoto-before-redesign b3854e9503ca52227a8cb8762f
 - 홈의 학습 버튼과 오늘의 학습 시트는 공용 버튼 스타일을, 홈의 가나 학습 카드는 [AppCard](../../../apps/mobile/lib/shared/widgets/app_card.dart)를 사용한다. 진행률·학습 추천·진입 동작은 기존 구현에 연결된다.
 - 학습 통계의 기존 **기간별·학습별·JLPT 진도** 전환을 [AppSegmentedTabs](../../../apps/mobile/lib/shared/widgets/app_segmented_tabs.dart)로 바꿨다. **N5~N1**은 JLPT 진도 안에서 조회할 급수를 정하는 별도 탭이다. 급수 조회 동작은 이 공용 컴포넌트 작업 범위 밖에 있다.
 - [Widgetbook](../../../apps/mobile/lib/widgetbook.dart)에서 라이트·다크 테마의 기본·비활성 버튼, 카드, 선택 가능한 통계 탭을 확인할 수 있다.
+
+## 6. 홈 화면 적용
+
+- [홈 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=93-657)에 맞춰 단어·문법·문장배열 가로 탭과 반원 게이지를 [홈 학습 카드](../../../apps/mobile/lib/features/home/presentation/widgets/quick_start_card.dart)에 적용했다. 선택한 유형의 한국 시간 기준 풀이 수와 목표를 표시하고, 기존 목표 편집과 오답노트로 연결한다. 시안의 ‘복습 정답’에는 별도 집계가 필요해, 현재는 추천에 포함된 실제 ‘복습할 문제’ 수를 표시한다.
+- [학습 시작 시트 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=114-1470)을 단어·문법에 적용했다. [시트](../../../apps/mobile/lib/features/study/presentation/widgets/today_study_sheet.dart)는 실제 새 문제·복습·재도전 수와 시작 분량을 사용한다. 하루 목표와 추천 분량에는 각각 이름을 붙여 유저가 구분할 수 있게 했다.
+- 한 줄 벚꽃 카드의 전체 영역을 누르면 [월간 학습 기록](../../../apps/mobile/lib/features/home/presentation/widgets/streak_daily_card.dart)이 열린다. 오늘은 점, 기록이 있는 요일은 분홍 벚꽃잎으로 표시하고, 달력에서는 학습일과 목표 달성 트로피를 기존 서버 기록으로 표시한다. 큰 글씨에서 한 줄에 다 들어가지 않으면 요일을 아래 줄로 배치한다.
+- [이어하기 회귀 테스트](../../../apps/mobile/test/features/study/presentation/saved_quiz_section_test.dart)에서 홈의 저장된 퀴즈가 원래 세션 ID로 열리고 저장된 답안 다음 문제를 복원하는지 확인했다. 홈·달력 테스트는 한국 시간 자정, 계정 전환, 독립 목표 편집과 트로피 표시를 검증한다.

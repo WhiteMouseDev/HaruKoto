@@ -18,21 +18,29 @@ void main() {
   testWidgets('distinguishes today pending from an already completed streak',
       (tester) async {
     await _pumpCard(tester, streak: _streak(current: 3));
-    expect(find.text('3일 연속 학습'), findsOneWidget);
-    expect(find.text('어제까지의 기록 · 오늘 학습하면 4일'), findsOneWidget);
-    expect(find.text('오늘도 학습했어요'), findsNothing);
+    expect(find.text('연속 학습'), findsOneWidget);
+    expect(find.text('3일'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('3일 연속 학습. 어제까지의 기록 · 오늘 학습하면 4일. 학습 기록 보기'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('today completed takes priority even with a zero current count',
       (tester) async {
     await _pumpCard(tester, streak: _streak(studied: true));
-    expect(find.text('오늘도 학습했어요'), findsOneWidget);
-    expect(find.text('오늘의 학습 기록을 남겼어요'), findsOneWidget);
-    expect(find.text('첫 학습을 시작해요'), findsNothing);
+    expect(find.text('0일'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('오늘도 학습했어요. 오늘의 학습 기록을 남겼어요. 학습 기록 보기'),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel('9월 27일 일요일, 오늘, 학습 기록 있음'), findsOneWidget);
   });
 
   testWidgets('week uses date keys, Monday order and explicit completion flags',
       (tester) async {
+    await tester.binding.setSurfaceSize(const Size(320, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await _pumpCard(tester, weeklyStats: [
       _entry('2026-09-24', true),
       _entry('2026-09-21', true),
@@ -45,8 +53,20 @@ void main() {
         .where((text) => _labels.contains(text))
         .toList();
     expect(labels, _labels);
-    expect(find.byIcon(LucideIcons.check), findsNWidgets(2));
-    expect(find.text('오늘'), findsOneWidget);
+    final weekdaysY = {
+      for (final label in _labels) tester.getCenter(find.text(label)).dy,
+    };
+    expect(weekdaysY, hasLength(1));
+    expect(
+      tester
+          .getSize(find.byKey(const ValueKey('streak-calendar-action')))
+          .height,
+      lessThanOrEqualTo(70),
+    );
+    expect(find.bySemanticsLabel('9월 21일 월요일, 학습 기록 있음'), findsOneWidget);
+    expect(find.bySemanticsLabel('9월 22일 화요일, 학습 기록 없음'), findsOneWidget);
+    expect(find.bySemanticsLabel('9월 24일 목요일, 학습 기록 있음'), findsOneWidget);
+    expect(find.byKey(const ValueKey('streak-week-today')), findsOneWidget);
   });
 
   testWidgets(
@@ -58,8 +78,7 @@ void main() {
           now: DateTime.utc(2026, 9, 23, 3),
           streak: _streak(current: 2, studied: true),
           weeklyStats: [_entry('2026-09-27', true)]);
-      expect(find.text('오늘'), findsOneWidget);
-      expect(find.byIcon(LucideIcons.check), findsOneWidget);
+      expect(find.byKey(const ValueKey('streak-week-today')), findsOneWidget);
       expect(find.bySemanticsLabel('9월 23일 수요일, 오늘, 학습 기록 있음'), findsOneWidget);
       expect(find.bySemanticsLabel('9월 27일 일요일, 예정'), findsOneWidget);
       expect(tester.hasRunningAnimations, isFalse);
@@ -211,7 +230,8 @@ void main() {
           await _pumpCard(tester,
               streak: status, brightness: brightness, scale: 2);
           expect(tester.takeException(), isNull);
-          expect(find.text('기록 보기 · 한국 시간 기준'), findsOneWidget);
+          expect(find.text('연속 학습'), findsOneWidget);
+          expect(find.text('${status.current}일'), findsOneWidget);
           final action = tester.getSemantics(
               find.byKey(const ValueKey('streak-calendar-action')));
           expect(

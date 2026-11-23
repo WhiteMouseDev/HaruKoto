@@ -6,12 +6,15 @@ class AppSegmentedTabs extends StatelessWidget {
   const AppSegmentedTabs({
     super.key,
     required this.labels,
+    this.tabKeys,
     required this.selectedIndex,
     required this.onChanged,
   })  : assert(labels.length > 1),
+        assert(tabKeys == null || tabKeys.length == labels.length),
         assert(selectedIndex >= 0 && selectedIndex < labels.length);
 
   final List<String> labels;
+  final List<Key>? tabKeys;
   final int selectedIndex;
   final ValueChanged<int> onChanged;
 
@@ -35,6 +38,7 @@ class AppSegmentedTabs extends StatelessWidget {
               for (var index = 0; index < labels.length; index++)
                 Expanded(
                   child: TextButton(
+                    key: tabKeys?[index],
                     onPressed: () => onChanged(index),
                     style: TextButton.styleFrom(
                       minimumSize: const Size(0, kMinInteractiveDimension),

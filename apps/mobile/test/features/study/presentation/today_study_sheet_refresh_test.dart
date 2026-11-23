@@ -21,6 +21,37 @@ import 'package:harukoto_mobile/shared/widgets/app_error_retry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  testWidgets('small sheet scrolls to the live grammar recommendation',
+      (tester) async {
+    final scenario = _Scenario()
+      ..nextResponse = Future.value(
+        _preview(goal: 15, newCount: 2, review: 4, retry: 1),
+      );
+    final container = await _pumpSheet(
+      tester,
+      scenario,
+      category: 'GRAMMAR',
+      viewport: const Size(320, 360),
+      textScale: 2,
+    );
+    try {
+      expect(find.text('오늘의 문법'), findsOneWidget);
+      expect(find.text('하루 목표 15개'), findsOneWidget);
+      expect(find.text('복습할 문법'), findsOneWidget);
+      expect(find.text('4개'), findsOneWidget);
+      expect(find.text('재도전 문법'), findsOneWidget);
+      expect(find.text('1개'), findsOneWidget);
+      expect(find.text('N5 문법 학습 현황'), findsOneWidget);
+      await tester.ensureVisible(find.text('학습 시작 (7문제)'));
+      await tester.pumpAndSettle();
+      expect(find.text('학습 시작 (7문제)').hitTestable(), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      container.dispose();
+    }
+  });
+
   testWidgets(
       'goal confirmation reloads once and disables start until fresh distribution arrives',
       (tester) async {
@@ -221,9 +252,14 @@ Future<void> _chooseThirty(WidgetTester tester, {int currentGoal = 20}) async {
   await tester.pump();
 }
 
-Future<ProviderContainer> _pumpSheet(WidgetTester tester, _Scenario scenario,
-    {String category = 'VOCABULARY'}) async {
-  tester.view.physicalSize = const Size(390, 900);
+Future<ProviderContainer> _pumpSheet(
+  WidgetTester tester,
+  _Scenario scenario, {
+  String category = 'VOCABULARY',
+  Size viewport = const Size(390, 900),
+  double textScale = 1,
+}) async {
+  tester.view.physicalSize = viewport;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
@@ -240,11 +276,15 @@ Future<ProviderContainer> _pumpSheet(WidgetTester tester, _Scenario scenario,
   await tester.pumpWidget(UncontrolledProviderScope(
     container: container,
     child: MaterialApp(
-        home: Scaffold(
-            body: TodayStudySheet(
-      jlptLevel: 'N5',
-      category: category,
-    ))),
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context)
+            .copyWith(textScaler: TextScaler.linear(textScale)),
+        child: child!,
+      ),
+      home: Scaffold(
+        body: TodayStudySheet(jlptLevel: 'N5', category: category),
+      ),
+    ),
   ));
   await tester.pumpAndSettle();
   return container;
@@ -307,13 +347,19 @@ class _HomeRepository extends HomeRepository {
   }
 }
 
-SmartPreviewModel _preview({int goal = 20, int completed = 8}) =>
+SmartPreviewModel _preview({
+  int goal = 20,
+  int completed = 8,
+  int? newCount,
+  int review = 0,
+  int retry = 0,
+}) =>
     SmartPreviewModel.fromJson({
-      'poolSize': {'newReady': 100, 'reviewDue': 0, 'retryDue': 0},
+      'poolSize': {'newReady': 100, 'reviewDue': review, 'retryDue': retry},
       'sessionDistribution': {
-        'new': goal - completed,
-        'review': 0,
-        'retry': 0,
+        'new': newCount ?? goal - completed,
+        'review': review,
+        'retry': retry,
         'total': goal - completed
       },
       'dailyGoal': goal,

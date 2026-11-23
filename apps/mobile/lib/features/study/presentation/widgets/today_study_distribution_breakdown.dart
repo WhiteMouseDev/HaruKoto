@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/sizes.dart';
 import '../../data/models/smart_preview_model.dart';
 
 class TodayStudyDistributionBreakdown extends StatelessWidget {
@@ -15,44 +17,36 @@ class TodayStudyDistributionBreakdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isGrammar = category == 'GRAMMAR';
+    final subject = category == 'GRAMMAR' ? '문법' : '단어';
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.gap),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
+        color: theme.colorScheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _DistItem(
-            label: isGrammar ? '새로운 문법' : '새로운 단어',
+            label: '새로운 $subject',
             count: distribution.newCount,
-            color: theme.colorScheme.primary,
+            color: theme.brightness == Brightness.dark
+                ? theme.colorScheme.primary
+                : AppColors.primaryButton,
           ),
-          _divider(theme),
+          const SizedBox(width: AppSizes.sm),
           _DistItem(
-            label: isGrammar ? '복습할 문법' : '복습할 단어',
+            label: '복습할 $subject',
             count: distribution.review,
-            color: const Color(0xFF10B981),
           ),
-          _divider(theme),
+          const SizedBox(width: AppSizes.sm),
           _DistItem(
-            label: isGrammar ? '재도전 문법' : '재도전 단어',
+            label: '재도전 $subject',
             count: distribution.retry,
-            color: theme.colorScheme.error,
           ),
         ],
       ),
-    );
-  }
-
-  Widget _divider(ThemeData theme) {
-    return Container(
-      width: 1,
-      height: 32,
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      color: theme.colorScheme.outline.withValues(alpha: 0.15),
     );
   }
 }
@@ -60,12 +54,12 @@ class TodayStudyDistributionBreakdown extends StatelessWidget {
 class _DistItem extends StatelessWidget {
   final String label;
   final int count;
-  final Color color;
+  final Color? color;
 
   const _DistItem({
     required this.label,
     required this.count,
-    required this.color,
+    this.color,
   });
 
   @override
@@ -76,18 +70,18 @@ class _DistItem extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            '$count',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+            '$count개',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
               color: color,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSizes.xs),
           Text(
             label,
             style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              color: theme.colorScheme.onSurfaceVariant,
             ),
             textAlign: TextAlign.center,
           ),

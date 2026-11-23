@@ -19,7 +19,7 @@ void main() {
     testWidgets('vocabulary always shows today $count/20 goal progress',
         (tester) async {
       await _pumpCard(tester, count: count);
-      expect(find.text('오늘 목표'), findsOneWidget);
+      expect(find.text('하루 목표'), findsOneWidget);
       expect(find.text('오늘 $count/20개'), findsOneWidget);
       expect(find.text('${(count / 20 * 100).clamp(0, 100).round()}%'),
           findsOneWidget);
@@ -48,23 +48,38 @@ void main() {
 
   testWidgets('switching categories shows only the selected daily progress',
       (tester) async {
-    await _pumpCard(tester, incomplete: _session(), hasCategoryGoals: true);
+    await _pumpCard(
+      tester,
+      incomplete: _session(),
+      hasCategoryGoals: true,
+      grammarPreview: Future.value(_preview(reviewCount: 5)),
+    );
+    final wordTab = find.byKey(const ValueKey('quick-start-tab-vocabulary'));
+    final grammarTab = find.byKey(const ValueKey('quick-start-tab-grammar'));
+    final sentenceTab = find.byKey(const ValueKey('quick-start-tab-sentence'));
+    expect(tester.getCenter(wordTab).dy, tester.getCenter(grammarTab).dy);
+    expect(tester.getCenter(grammarTab).dy, tester.getCenter(sentenceTab).dy);
+    expect(tester.getCenter(wordTab).dx,
+        lessThan(tester.getCenter(grammarTab).dx));
+    expect(find.text('0문제'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('quick-start-tab-grammar')));
     await tester.pumpAndSettle();
     expect(find.text('이번 퀴즈 1/10문제 저장됨'), findsNothing);
     expect(find.text('오늘 8/20개'), findsNothing);
     expect(find.text('이어서 학습하기'), findsNothing);
-    expect(find.text('오늘의 문법'), findsOneWidget);
+    expect(find.text('오늘의 문법 학습하기'), findsOneWidget);
     expect(find.text('N5 숙련도'), findsNothing);
     expect(find.text('오늘 3/15개'), findsOneWidget);
     expect(find.text('20%'), findsOneWidget);
+    expect(find.text('5문제'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('quick-start-tab-sentence')));
     await tester.pumpAndSettle();
     expect(find.text('오늘 7/10개'), findsOneWidget);
     expect(find.text('70%'), findsOneWidget);
+    expect(find.text('복습할 문제'), findsNothing);
     expect(find.text('N5 숙련도'), findsNothing);
-    expect(find.text('오늘의 문장배열'), findsOneWidget);
+    expect(find.text('오늘의 문장배열 학습하기'), findsOneWidget);
   });
 
   testWidgets('grammar still shows its own saved quiz progress',
@@ -96,7 +111,7 @@ void main() {
         expect(find.text('진행 중인 학습이 있어요'), findsOneWidget);
         await tester.tap(find.text('오늘의 학습 보기'));
       } else {
-        await tester.tap(find.text('오늘의 문법'));
+        await tester.tap(find.text('오늘의 문법 학습하기'));
       }
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
@@ -104,7 +119,7 @@ void main() {
 
       pending.complete(_preview());
       await tester.pumpAndSettle();
-      expect(find.text('오늘의 학습'), findsOneWidget);
+      expect(find.text('오늘의 문법'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
   }
@@ -145,7 +160,7 @@ void main() {
     ]) {
       await _pumpCard(tester,
           hasGoal: state.hasGoal, date: state.date, dailyGoal: state.goal);
-      expect(find.text('오늘 목표'), findsOneWidget);
+      expect(find.text('하루 목표'), findsOneWidget);
       expect(find.text('오늘 학습량 확인 필요'), findsOneWidget);
       expect(
           find.byKey(const ValueKey('quick-start-percentage')), findsNothing);
@@ -223,7 +238,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await _pumpCard(tester, incomplete: _session(), textScale: 1.6);
-    expect(find.text('이번 퀴즈\n1/10문제 저장됨'), findsOneWidget);
+    expect(find.text('이번 퀴즈 1/10문제 저장됨'), findsOneWidget);
     expect(find.text('오늘 8/20개'), findsOneWidget);
     expect(find.text('40%'), findsOneWidget);
     final editSize =
@@ -291,12 +306,6 @@ Future<void> _pumpCard(
                             'answeredCount': count
                           },
                       }),
-                      levelProgress: const LevelProgressData(
-                        vocabulary: ProgressStat(
-                            total: 200, mastered: 0, inProgress: 1),
-                        grammar: ProgressStat(
-                            total: 100, mastered: 25, inProgress: 5),
-                      ),
                     ),
                   ),
                 ),
@@ -322,9 +331,15 @@ IncompleteSessionModel _session({
       startedAt: '2026-10-19T01:00:00Z',
     );
 
-SmartPreviewModel _preview() => SmartPreviewModel.fromJson({
+SmartPreviewModel _preview({int reviewCount = 0}) =>
+    SmartPreviewModel.fromJson({
       'poolSize': {'newReady': 10, 'reviewDue': 0, 'retryDue': 0},
-      'sessionDistribution': {'new': 10, 'review': 0, 'retry': 0, 'total': 10},
+      'sessionDistribution': {
+        'new': 10 - reviewCount,
+        'review': reviewCount,
+        'retry': 0,
+        'total': 10,
+      },
       'dailyGoal': 10,
       'todayCompleted': 0,
       'overallProgress': {
