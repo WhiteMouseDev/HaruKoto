@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 
 abstract final class AppColors {
   // ─── Brand ───────────────────────────────────────────────
-  static const primary = Color(0xFFFF6B86);
+  static const primary = Color(0xFFFF6A87);
   static const primaryStrong = primary;
   static const primaryPressed = Color(0xFFE04A6A);
   static const primaryContainer = Color(0xFFFFD8E1);
+  // White labels on the brand pink need a darker fill on primary buttons.
+  static const primaryButton = Color(0xFFCF3D60);
+  static const primaryButtonPressed = Color(0xFFC73759);
   static const brandPink = primary;
   static const sakura = primary;
   static const sakuraPressed = primaryPressed;
@@ -69,7 +72,7 @@ abstract final class AppColors {
   static const offlineBanner = Color(0xFFFF6B5F);
 
   // ─── Light theme ─────────────────────────────────────────
-  static const lightBackground = Color(0xFFFBFAF8);
+  static const lightBackground = Color(0xFFFFFFFF);
   static const lightCard = Color(0xFFFFFFFF);
   static const lightSecondary = surfaceMuted;
   static const lightBorder = Color(0xFFECE7E1);

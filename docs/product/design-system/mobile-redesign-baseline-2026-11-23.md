@@ -50,3 +50,10 @@ git worktree add --detach ../harukoto-before-redesign b3854e9503ca52227a8cb8762f
 3. **학습·퀴즈·마이페이지와 통계로 확장** · 공용 위젯을 적용하고 화면별 데이터 갱신, 뒤로가기, 접근성 라벨을 확인한다. 작은 화면과 큰 글씨, 다크 모드, 로딩·빈 상태·실패도 검증한다.
 
 화면 적용 시 [유형별 목표 카드 테스트](../../../apps/mobile/test/features/home/presentation/widgets/quick_start_card_test.dart), [학습 기록 달력 테스트](../../../apps/mobile/test/features/home/presentation/widgets/streak_daily_card_test.dart), [홈 집계 API 테스트](../../../apps/api/tests/test_stats_dashboard_service.py)를 회귀 확인의 출발점으로 삼는다. 이 기록은 기준 커밋 소스와 피그마의 속성을 비교한 문서다. 앱 빌드와 기기 검증은 화면 적용 단계에서 수행한다.
+
+## 5. 공용 컴포넌트 첫 적용
+
+- [테마](../../../apps/mobile/lib/core/theme/app_theme.dart)에 라이트 배경과 브랜드 색을 반영했다. 기본 학습 버튼은 높이 최소 48dp, 캡슐형, 14sp·600 굵기를 사용한다. 흰 글자와 피그마 브랜드 핑크 `#FF6A87`의 대비가 약 2.74:1이라 흰 글자를 유지하면서 기본 버튼 배경은 `#CF3D60`(약 4.68:1), 눌림은 `#C73759`로 정했다. 한글·일본어 글꼴은 기존 Noto Sans 스택을 유지했다.
+- 홈의 학습 버튼과 오늘의 학습 시트는 공용 버튼 스타일을, 홈의 가나 학습 카드는 [AppCard](../../../apps/mobile/lib/shared/widgets/app_card.dart)를 사용한다. 진행률·학습 추천·진입 동작은 기존 구현에 연결된다.
+- 학습 통계의 기존 **기간별·학습별·JLPT 진도** 전환을 [AppSegmentedTabs](../../../apps/mobile/lib/shared/widgets/app_segmented_tabs.dart)로 바꿨다. **N5~N1**은 JLPT 진도 안에서 조회할 급수를 정하는 별도 탭이다. 급수 조회 동작은 이 공용 컴포넌트 작업 범위 밖에 있다.
+- [Widgetbook](../../../apps/mobile/lib/widgetbook.dart)에서 라이트·다크 테마의 기본·비활성 버튼, 카드, 선택 가능한 통계 탭을 확인할 수 있다.

@@ -638,12 +638,10 @@ class _MainContent extends ConsumerWidget {
         // ── CTA button ──
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: Material(
-            color: AppColors.primaryStrong,
-            borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
-              onTap: () {
+          child: SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: () {
                 HapticService().light();
                 executeStudyEntryDecision(
                   context,
@@ -654,32 +652,8 @@ class _MainContent extends ConsumerWidget {
                   canShowPreview: canShowPreview,
                 );
               },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      LucideIcons.bookOpen,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        ctaLabel,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              icon: const Icon(LucideIcons.bookOpen, size: 20),
+              label: Text(ctaLabel, textAlign: TextAlign.center),
             ),
           ),
         ),

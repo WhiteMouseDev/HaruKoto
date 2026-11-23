@@ -5,6 +5,7 @@ import '../../../core/constants/sizes.dart';
 import '../../../core/providers/study_clock_provider.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../../shared/widgets/app_error_retry.dart';
+import '../../../shared/widgets/app_segmented_tabs.dart';
 import '../../../shared/widgets/app_skeleton.dart';
 import '../../home/data/models/dashboard_model.dart';
 import '../../home/providers/home_provider.dart';
@@ -34,7 +35,6 @@ class _StatsPageState extends ConsumerState<StatsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final owner = ref.watch(currentAccountIdProvider);
     final accountCurrent =
         owner != null && ref.watch(currentAccountReaderProvider)() == owner;
@@ -85,58 +85,13 @@ class _StatsPageState extends ConsumerState<StatsPage> {
       appBar: AppBar(title: const Text('학습 통계')),
       body: Column(
         children: [
-          // Fixed pill-style segmented tab
           Padding(
             padding: const EdgeInsets.fromLTRB(
                 AppSizes.md, 0, AppSizes.md, AppSizes.sm),
-            child: Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: List.generate(tabLabels.length, (i) {
-                  final isSelected = _selectedTab == i;
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedTab = i),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? theme.colorScheme.surface
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(13),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.06),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 1),
-                                  ),
-                                ]
-                              : null,
-                        ),
-                        child: Text(
-                          tabLabels[i],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight:
-                                isSelected ? FontWeight.w600 : FontWeight.w500,
-                            color: isSelected
-                                ? theme.colorScheme.onSurface
-                                : theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.45),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ),
+            child: AppSegmentedTabs(
+              labels: tabLabels,
+              selectedIndex: _selectedTab,
+              onChanged: (index) => setState(() => _selectedTab = index),
             ),
           ),
 

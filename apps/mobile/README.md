@@ -48,9 +48,9 @@ flutter run -d chrome -t lib/widgetbook.dart
 ```
 
 현재 등록된 카탈로그는 다음 폴더를 포함합니다.
-- `Shared`: `AppCard`, `AppErrorRetry`, `AppSkeleton`, `BottomNav`
+- `Shared`: `Primary Button`, `AppCard`, `AppSegmentedTabs`, `AppErrorRetry`, `AppSkeleton`, `BottomNav`
 - `Home`: `HomeHeader`
-- `Study`: `TabSwitcher`, `QuizProgressBar`
+- `Study`: `QuizProgressBar`
 
 ### 새 컴포넌트 추가 방법
 

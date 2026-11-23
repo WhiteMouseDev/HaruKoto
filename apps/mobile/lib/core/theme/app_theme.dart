@@ -33,6 +33,7 @@ abstract final class AppTheme {
       onSecondaryContainer: AppColors.accentAlt,
       surface: background,
       onSurface: text,
+      onSurfaceVariant: subtext,
       surfaceContainerLowest: card,
       surfaceContainerLow: card,
       surfaceContainer: card,
@@ -42,13 +43,43 @@ abstract final class AppTheme {
       onError: Colors.white,
       outline: border,
     );
+    final textTheme = appTextTheme(brightness);
+    final primaryButtonStyle = ButtonStyle(
+      backgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return semantic.surfaceMuted;
+        }
+        if (states.contains(WidgetState.pressed)) {
+          return AppColors.primaryButtonPressed;
+        }
+        return AppColors.primaryButton;
+      }),
+      foregroundColor: WidgetStateProperty.resolveWith((states) {
+        return states.contains(WidgetState.disabled) ? subtext : Colors.white;
+      }),
+      elevation: const WidgetStatePropertyAll(0),
+      minimumSize:
+          const WidgetStatePropertyAll(Size(64, AppSizes.buttonHeight)),
+      padding: const WidgetStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: AppSizes.pageHorizontal, vertical: 12),
+      ),
+      shape: const WidgetStatePropertyAll(StadiumBorder()),
+      textStyle: WidgetStatePropertyAll(
+        textTheme.labelLarge?.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          height: 1.4,
+          letterSpacing: -0.35,
+        ),
+      ),
+    );
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: background,
-      textTheme: appTextTheme(brightness),
+      textTheme: textTheme,
       extensions: [semantic],
       cardTheme: CardThemeData(
         color: card,
@@ -58,68 +89,8 @@ abstract final class AppTheme {
           side: BorderSide(color: border),
         ),
       ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.disabled)) {
-              return semantic.surfaceMuted;
-            }
-            if (states.contains(WidgetState.pressed)) {
-              return semantic.primaryPressed;
-            }
-            return colorScheme.primary;
-          }),
-          foregroundColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.disabled)) {
-              return semantic.tabInactive;
-            }
-            return Colors.white;
-          }),
-          elevation: const WidgetStatePropertyAll(0),
-          padding: const WidgetStatePropertyAll(
-            EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          ),
-          shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
-            ),
-          ),
-          textStyle: const WidgetStatePropertyAll(
-            TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.disabled)) {
-              return semantic.surfaceMuted;
-            }
-            if (states.contains(WidgetState.pressed)) {
-              return semantic.primaryPressed;
-            }
-            return colorScheme.primary;
-          }),
-          foregroundColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.disabled)) {
-              return semantic.tabInactive;
-            }
-            return Colors.white;
-          }),
-          elevation: const WidgetStatePropertyAll(0),
-          padding: const WidgetStatePropertyAll(
-            EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          ),
-          shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
-            ),
-          ),
-          textStyle: const WidgetStatePropertyAll(
-            TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-        ),
-      ),
+      filledButtonTheme: FilledButtonThemeData(style: primaryButtonStyle),
+      elevatedButtonTheme: ElevatedButtonThemeData(style: primaryButtonStyle),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surface,
