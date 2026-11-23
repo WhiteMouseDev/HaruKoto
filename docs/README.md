@@ -20,6 +20,7 @@ docs/
 
 - [PRD (제품 요구사항)](product/prd.md)
 - [화면 구조](product/screens/)
+- [모바일 리디자인 기준선과 디자인 시스템 분석 (2026-11-23)](product/design-system/mobile-redesign-baseline-2026-11-23.md) — 변경 전 Flutter 기준점, 피그마 속성, 화면별 합의와 구현 순서
 - [실전회화 경험 개선 통합](operations/plans/conversation-experience-integration-2026-11-03.md) — 두 모드의 학습 흐름, 통화 복구, 실제 화면과 검증 결과
 
 ### 학습 시스템 (Part 1 완성)
