@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main, codex/lesson-study-day-compatibility, codex/study-day-integration-qa]
+    types: [opened, synchronize, reopened, edited]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,6 +17,9 @@ jobs:
   # ============================
   changes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       admin: ${{ steps.filter.outputs.admin }}
       frontend: ${{ steps.filter.outputs.frontend }}
@@ -61,6 +65,7 @@ jobs:
             backend:
               - 'apps/api/**'
               - 'packages/database/**'
+              - 'packages/types/src/generated/api.ts'
               - '.github/workflows/ci.yml'
               - '.github/scripts/**'
               - '.github/tests/**'
@@ -269,16 +274,20 @@ jobs:
             exit 1
           fi
 
-      - name: Load base OpenAPI from main
+      - name: Load base OpenAPI
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
-          git show origin/main:apps/api/openapi/openapi.json > apps/api/openapi/base-openapi.json 2>/dev/null || echo '{}' > apps/api/openapi/base-openapi.json
+          if [[ ! "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]] ||
+             ! git show "$BASE_SHA:apps/api/openapi/openapi.json" > apps/api/openapi/base-openapi.json; then
+            echo "::error::OpenAPI snapshot is unavailable at base commit $BASE_SHA."
+            exit 1
+          fi
 
       - name: Check breaking changes (oasdiff)
-        # TODO: warning 모드 안정화 후 continue-on-error 제거
-        continue-on-error: true
-        uses: docker://tufin/oasdiff:latest
+        uses: docker://tufin/oasdiff@sha256:004bef22058ace818b61f0eb2f05efb89fc6a3882f68bf4db0b6a86f40723fe0 # v1.39.0
         with:
-          args: breaking apps/api/openapi/base-openapi.json apps/api/openapi/openapi.json
+          args: breaking --fail-on ERR apps/api/openapi/base-openapi.json apps/api/openapi/openapi.json
 
       # ============================
       # Generated TS types freshness
@@ -323,6 +332,32 @@ jobs:
       - name: Validate admin contracts against OpenAPI
         working-directory: apps/api
         run: uv run python scripts/validate_admin_contracts.py
+
+  api-contract-gate:
+    needs: [changes, api-contract]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require a successful API contract check when applicable
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          API_AFFECTED: ${{ needs.changes.outputs.backend }}
+          CONTRACT_RESULT: ${{ needs.api-contract.result }}
+        run: |
+          if [[ "$CHANGES_RESULT" == success ]]; then
+            case "$API_AFFECTED:$CONTRACT_RESULT" in
+              true:success)
+                echo "API contract checks passed."
+                exit 0
+                ;;
+              false:skipped)
+                echo "No API contract checks needed for this change."
+                exit 0
+                ;;
+            esac
+          fi
+          echo "::error::API compatibility check did not pass (changes=$CHANGES_RESULT, backend=$API_AFFECTED, contract=$CONTRACT_RESULT)."
+          exit 1
 
   # ============================
   # Schema Drift Check (Alembic ↔ Prisma)
