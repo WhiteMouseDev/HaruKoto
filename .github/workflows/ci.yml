@@ -151,7 +151,8 @@ jobs:
   admin-e2e:
     needs: changes
     if: needs.changes.outputs.admin == 'true'
-    runs-on: ubuntu-latest
+    # Keep Playwright Chromium on a supported runner image.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
 
