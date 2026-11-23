@@ -16,7 +16,7 @@ from app.models import (
     UserVocabProgress,
     Vocabulary,
 )
-from app.models.enums import KanaType
+from app.models.enums import KanaType, QuizType
 from app.models.user import User
 from app.schemas.kana import KanaProgressResponse, KanaStat
 from app.schemas.stats import (
@@ -27,9 +27,10 @@ from app.schemas.stats import (
     StreakInfo,
     TodayStats,
     VocabularyGoal,
+    WeeklyQuestionStatItem,
     WeeklyStatItem,
 )
-from app.services.category_goals import get_daily_category_goals
+from app.services.category_goals import build_daily_category_goals, build_daily_question_stat, get_goal_answered_counts_by_date
 from app.services.study_activity import has_study_activity as _has_study_activity
 from app.services.vocabulary_goal import get_vocabulary_answered_counts
 from app.utils.date import get_today_kst, study_date_kst
@@ -44,7 +45,9 @@ async def get_dashboard_data(
     weekly_stats = await _get_weekly_stats(db, user_id=user.id, today=today)
     level_progress = await _get_level_progress(db, user=user)
     kana_progress = await _get_kana_progress(db, user_id=user.id)
-    category_goals = await get_daily_category_goals(db, user, day=today)
+    week_start = today - timedelta(days=today.weekday())
+    counts_by_date = await get_goal_answered_counts_by_date(db, user_id=user.id, start_day=week_start, end_day=today)
+    category_goals = build_daily_category_goals(user, day=today, counts=counts_by_date.get(today, {}))
     legacy_vocabulary_count = weekly_stats[-1].vocabulary_answered_count or 0
 
     return DashboardResponse(
@@ -54,6 +57,7 @@ async def get_dashboard_data(
         ),
         streak=_build_streak_info(user=user, today_progress=today_progress, today=today),
         weekly_stats=weekly_stats,
+        weekly_question_stats=_build_weekly_question_stats(week_start, weekly_stats, counts_by_date),
         level_progress=level_progress,
         kana_progress=kana_progress,
     )
@@ -166,6 +170,25 @@ async def _get_weekly_stats(
                 words_studied=progress.words_studied if progress else 0,
                 xp_earned=progress.xp_earned if progress else 0,
                 has_studied=_has_study_activity(progress),
+            )
+        )
+    return stats
+
+
+def _build_weekly_question_stats(
+    week_start: date,
+    weekly_stats: list[WeeklyStatItem],
+    counts_by_date: dict[date, dict[QuizType, int]],
+) -> list[WeeklyQuestionStatItem]:
+    studied = {item.date for item in weekly_stats if item.has_studied}
+    stats: list[WeeklyQuestionStatItem] = []
+    for offset in range(7):
+        day = week_start + timedelta(days=offset)
+        stats.append(
+            build_daily_question_stat(
+                day,
+                has_studied=day.isoformat() in studied,
+                counts=counts_by_date.get(day, {}),
             )
         )
     return stats

@@ -45,6 +45,7 @@ REVIEWED_ALLOW_ROUTES = frozenset(
         ("POST", "/api/v1/chat/characters/favorites"),
         ("GET", "/api/v1/chat/{conversation_id}"),
         ("GET", "/api/v1/stats/dashboard"),
+        ("GET", "/api/v1/stats/study-overview"),
         ("GET", "/api/v1/stats/history"),
         ("GET", "/api/v1/stats/heatmap"),
         ("GET", "/api/v1/stats/jlpt-progress"),

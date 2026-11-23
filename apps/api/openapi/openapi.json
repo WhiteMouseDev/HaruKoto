@@ -4290,6 +4290,33 @@
         ]
       }
     },
+    "/api/v1/stats/study-overview": {
+      "get": {
+        "tags": [
+          "stats"
+        ],
+        "summary": "Get Study Overview",
+        "description": "Lifetime quiz and conversation totals, with recent saved answers by category.",
+        "operationId": "get_study_overview_api_v1_stats_study_overview_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudyOverviewResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/stats/history": {
       "get": {
         "tags": [
@@ -4430,8 +4457,27 @@
           "stats"
         ],
         "summary": "Get Jlpt Progress",
-        "description": "3-7: JLPT level progress across all levels the user has studied.",
+        "description": "3-7: JLPT vocabulary and grammar mastery by level.",
         "operationId": "get_jlpt_progress_api_v1_stats_jlpt_progress_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "include_all_levels",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Include unstudied levels that have vocabulary or grammar content.",
+              "default": false,
+              "title": "Include All Levels"
+            },
+            "description": "Include unstudied levels that have vocabulary or grammar content."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -4442,13 +4488,18 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
+        }
       }
     },
     "/api/v1/stats/time-chart": {
@@ -9541,6 +9592,23 @@
             "type": "array",
             "title": "Weeklystats"
           },
+          "weeklyQuestionStats": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/WeeklyQuestionStatItem"
+                },
+                "type": "array",
+                "maxItems": 7,
+                "minItems": 7
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weeklyquestionstats",
+            "description": "Current KST week, Monday through Sunday, in date order."
+          },
           "levelProgress": {
             "$ref": "#/components/schemas/LevelProgress"
           }
@@ -13845,6 +13913,49 @@
         ],
         "title": "StudyCapabilitiesResponse"
       },
+      "StudyOverviewResponse": {
+        "properties": {
+          "quizzesCompleted": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Quizzescompleted"
+          },
+          "correctAnswers": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Correctanswers"
+          },
+          "totalAnswers": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Totalanswers"
+          },
+          "conversationCount": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Conversationcount"
+          },
+          "daily": {
+            "items": {
+              "$ref": "#/components/schemas/WeeklyQuestionStatItem"
+            },
+            "type": "array",
+            "maxItems": 7,
+            "minItems": 7,
+            "title": "Daily",
+            "description": "The latest seven KST calendar dates, oldest first."
+          }
+        },
+        "type": "object",
+        "required": [
+          "quizzesCompleted",
+          "correctAnswers",
+          "totalAnswers",
+          "conversationCount",
+          "daily"
+        ],
+        "title": "StudyOverviewResponse"
+      },
       "StudyStageResponse": {
         "properties": {
           "id": {
@@ -15008,6 +15119,43 @@
           "data"
         ],
         "title": "VolumeChartResponse"
+      },
+      "WeeklyQuestionStatItem": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "hasStudied": {
+            "type": "boolean",
+            "title": "Hasstudied"
+          },
+          "vocabularyAnsweredCount": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Vocabularyansweredcount"
+          },
+          "grammarAnsweredCount": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Grammaransweredcount"
+          },
+          "sentenceArrangeAnsweredCount": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Sentencearrangeansweredcount"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "hasStudied",
+          "vocabularyAnsweredCount",
+          "grammarAnsweredCount",
+          "sentenceArrangeAnsweredCount"
+        ],
+        "title": "WeeklyQuestionStatItem"
       },
       "WeeklyStatItem": {
         "properties": {

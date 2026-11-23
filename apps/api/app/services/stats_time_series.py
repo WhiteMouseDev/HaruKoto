@@ -4,7 +4,7 @@ import calendar
 import uuid
 from datetime import date, timedelta
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import DailyProgress
@@ -13,16 +13,51 @@ from app.schemas.stats import (
     CategoryStat,
     HeatmapItem,
     HeatmapResponse,
+    StudyOverviewResponse,
     TimeChartItem,
     TimeChartResponse,
     VolumeChartItem,
     VolumeChartResponse,
 )
+from app.services.category_goals import build_daily_question_stat, get_goal_answered_counts_by_date
+from app.services.study_activity import has_study_activity
 from app.utils.date import get_today_kst
 
 HEATMAP_LEVEL_LOW = 10
 HEATMAP_LEVEL_MID = 20
 BY_CATEGORY_DAYS = 7
+
+
+async def get_study_overview_data(db: AsyncSession, *, user_id: uuid.UUID) -> StudyOverviewResponse:
+    start_date, end_date = _recent_range(days=7)
+    totals = await db.execute(
+        select(
+            func.greatest(func.coalesce(func.sum(DailyProgress.quizzes_completed), 0), 0),
+            func.greatest(func.coalesce(func.sum(DailyProgress.correct_answers), 0), 0),
+            func.greatest(func.coalesce(func.sum(DailyProgress.total_answers), 0), 0),
+            func.greatest(func.coalesce(func.sum(DailyProgress.conversation_count), 0), 0),
+        ).where(DailyProgress.user_id == user_id)
+    )
+    quizzes_completed, correct_answers, total_answers, conversation_count = totals.one()
+    progress_by_date = await _load_progress_by_day(db, user_id=user_id, start_date=start_date, end_date=end_date)
+    counts_by_date = await get_goal_answered_counts_by_date(db, user_id=user_id, start_day=start_date, end_day=end_date)
+    daily = []
+    for day in _date_range(start_date, end_date):
+        counts = counts_by_date.get(day, {})
+        daily.append(
+            build_daily_question_stat(
+                day,
+                has_studied=has_study_activity(progress_by_date.get(day)) or any(counts.values()),
+                counts=counts,
+            )
+        )
+    return StudyOverviewResponse(
+        quizzes_completed=quizzes_completed,
+        correct_answers=correct_answers,
+        total_answers=total_answers,
+        conversation_count=conversation_count,
+        daily=daily,
+    )
 
 
 async def get_heatmap_data(

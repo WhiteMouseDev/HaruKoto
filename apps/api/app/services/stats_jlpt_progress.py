@@ -23,6 +23,7 @@ async def get_jlpt_progress_data(
     *,
     user_id: uuid.UUID,
     current_jlpt_level: JlptLevel,
+    include_all_levels: bool = False,
 ) -> JlptProgressResponse:
     vocab_totals = await _load_content_totals(db, Vocabulary)
     grammar_totals = await _load_content_totals(db, Grammar)
@@ -42,6 +43,7 @@ async def get_jlpt_progress_data(
             if _should_include_level(
                 jlpt_level=jlpt_level,
                 current_jlpt_level=current_jlpt_level,
+                include_all_levels=include_all_levels,
                 vocab_total=vocab_totals.get(jlpt_level, 0),
                 grammar_total=grammar_totals.get(jlpt_level, 0),
                 vocab_progress=vocab_progress,
@@ -98,6 +100,7 @@ def _should_include_level(
     *,
     jlpt_level: JlptLevel,
     current_jlpt_level: JlptLevel,
+    include_all_levels: bool,
     vocab_total: int,
     grammar_total: int,
     vocab_progress: MasteryCounts,
@@ -106,7 +109,7 @@ def _should_include_level(
     if vocab_total == 0 and grammar_total == 0:
         return False
 
-    return _has_progress(jlpt_level, vocab_progress, grammar_progress) or jlpt_level == current_jlpt_level
+    return include_all_levels or jlpt_level == current_jlpt_level or _has_progress(jlpt_level, vocab_progress, grammar_progress)
 
 
 def _has_progress(

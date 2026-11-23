@@ -14,6 +14,7 @@ from app.schemas.stats import (
     HeatmapResponse,
     HistoryResponse,
     JlptProgressResponse,
+    StudyOverviewResponse,
     TimeChartResponse,
     VolumeChartResponse,
 )
@@ -23,6 +24,7 @@ from app.services.stats_jlpt_progress import get_jlpt_progress_data
 from app.services.stats_time_series import (
     get_by_category_data,
     get_heatmap_data,
+    get_study_overview_data,
     get_time_chart_data,
     get_volume_chart_data,
 )
@@ -36,6 +38,15 @@ async def get_dashboard(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> DashboardResponse:
     return await get_dashboard_data(db, user)
+
+
+@router.get("/study-overview", response_model=StudyOverviewResponse, status_code=200)
+async def get_study_overview(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> StudyOverviewResponse:
+    """Lifetime quiz and conversation totals, with recent saved answers by category."""
+    return await get_study_overview_data(db, user_id=user.id)
 
 
 @router.get("/history", response_model=HistoryResponse, status_code=200)
@@ -63,12 +74,14 @@ async def get_heatmap(
 async def get_jlpt_progress(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
+    include_all_levels: Annotated[bool, Query(description="Include unstudied levels that have vocabulary or grammar content.")] = False,
 ) -> JlptProgressResponse:
-    """3-7: JLPT level progress across all levels the user has studied."""
+    """3-7: JLPT vocabulary and grammar mastery by level."""
     return await get_jlpt_progress_data(
         db,
         user_id=user.id,
         current_jlpt_level=user.jlpt_level,
+        include_all_levels=include_all_levels,
     )
 
 

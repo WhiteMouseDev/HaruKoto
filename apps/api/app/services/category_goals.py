@@ -4,7 +4,7 @@ import uuid
 from datetime import UTC, date, datetime, time, timedelta
 from typing import Any
 
-from sqlalchemy import Text, and_, cast, func, or_, select
+from sqlalchemy import Select, Text, and_, cast, func, or_, select
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +12,7 @@ from app.models import QuizAnswer, QuizSession
 from app.models.enums import QuizType
 from app.models.gamification import DailyProgress
 from app.models.user import User
-from app.schemas.stats import CategoryGoalProgress, DailyCategoryGoals, GoalCategory
+from app.schemas.stats import CategoryGoalProgress, DailyCategoryGoals, GoalCategory, WeeklyQuestionStatItem
 from app.services.study_activity import has_study_activity
 from app.utils.constants import DAILY_CATEGORY_GOALS_KEY, MAX_DAILY_GOAL, MIN_DAILY_GOAL
 from app.utils.date import KST
@@ -36,8 +36,54 @@ async def get_goal_answered_counts(
     quiz_type: QuizType | None = None,
 ) -> dict[QuizType, int]:
     """Count distinct saved answers within one KST day, grouped by goal type."""
-    start = datetime.combine(day, time.min, tzinfo=KST).astimezone(UTC)
-    end = start + timedelta(days=1)
+    query = _goal_answered_counts_query(user_id=user_id, start_day=day, end_day=day, quiz_type=quiz_type)
+    result = await db.execute(query)
+    return {row[0]: int(row[1]) for row in result.all()}
+
+
+async def get_goal_answered_counts_by_date(
+    db: AsyncSession,
+    *,
+    user_id: uuid.UUID,
+    start_day: date,
+    end_day: date,
+) -> dict[date, dict[QuizType, int]]:
+    """Use the same goal counting rules independently for each KST day."""
+    if not 0 <= (end_day - start_day).days < 7:
+        raise ValueError("Category goal history must contain between one and seven days")
+    # A numeric day bucket preserves UTC-naive and timezone-aware timestamps
+    # the same way as the range filters, including the exact KST midnight.
+    answered_epoch = func.extract("epoch", QuizAnswer.answered_at)
+    day_bucket = func.floor((answered_epoch + 9 * 60 * 60) / (24 * 60 * 60)).label("day_bucket")
+    query = _goal_answered_counts_query(user_id=user_id, start_day=start_day, end_day=end_day)
+    result = await db.execute(query.add_columns(day_bucket).group_by(day_bucket))
+    counts: dict[date, dict[QuizType, int]] = {}
+    epoch_day = date(1970, 1, 1)
+    for quiz_type, count, bucket in result.all():
+        day = epoch_day + timedelta(days=int(bucket))
+        counts.setdefault(day, {})[quiz_type] = int(count)
+    return counts
+
+
+def build_daily_question_stat(day: date, *, has_studied: bool, counts: dict[QuizType, int]) -> WeeklyQuestionStatItem:
+    return WeeklyQuestionStatItem(
+        date=day,
+        has_studied=has_studied,
+        vocabulary_answered_count=counts.get(QuizType.VOCABULARY, 0),
+        grammar_answered_count=counts.get(QuizType.GRAMMAR, 0),
+        sentence_arrange_answered_count=counts.get(QuizType.SENTENCE_ARRANGE, 0),
+    )
+
+
+def _goal_answered_counts_query(
+    *,
+    user_id: uuid.UUID,
+    start_day: date,
+    end_day: date,
+    quiz_type: QuizType | None = None,
+) -> Select[tuple[QuizType, int]]:
+    start = datetime.combine(start_day, time.min, tzinfo=KST).astimezone(UTC)
+    end = datetime.combine(end_day + timedelta(days=1), time.min, tzinfo=KST).astimezone(UTC)
     # Epoch extraction treats UTC-naive timestamps as nominal UTC and aware
     # timestamps as instants, independent of PostgreSQL's session timezone.
     answered_epoch = func.extract("epoch", QuizAnswer.answered_at)
@@ -70,8 +116,7 @@ async def get_goal_answered_counts(
         # An older sentence-arrange snapshot may have no mode. A known matching
         # mode can use the same enum and is not a sentence-arrangement question.
         query = query.where(or_(QuizSession.quiz_type != QuizType.SENTENCE_ARRANGE, mode.is_(None), mode == "arrange"))
-    result = await db.execute(query)
-    return {row[0]: int(row[1]) for row in result.all()}
+    return query
 
 
 def _private_settings(app_settings: dict[str, Any] | None) -> dict[str, Any]:
@@ -135,9 +180,7 @@ async def award_goal_after_target_change(db: AsyncSession, user: User, *, day: d
         await award_goal_if_reached(db, user, day=day, quiz_type=quiz_type)
 
 
-async def get_daily_category_goals(db: AsyncSession, user: User, *, day: date) -> DailyCategoryGoals:
-    counts = await get_goal_answered_counts(db, user_id=user.id, day=day)
-
+def build_daily_category_goals(user: User, *, day: date, counts: dict[QuizType, int]) -> DailyCategoryGoals:
     def progress(quiz_type: QuizType) -> CategoryGoalProgress:
         return CategoryGoalProgress(target=goal_target(user, quiz_type), answered_count=counts.get(quiz_type, 0))
 
