@@ -87,7 +87,14 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
                 _DbResult(all_rows=[(KanaType.HIRAGANA, 46), (KanaType.KATAKANA, 46)]),
                 _DbResult(all_rows=[(KanaType.HIRAGANA, 12)]),
                 _DbResult(all_rows=[(KanaType.HIRAGANA, 20), (KanaType.KATAKANA, 5)]),
-                _DbResult(all_rows=[(QuizType.VOCABULARY, 5), (QuizType.GRAMMAR, 2)]),
+                _DbResult(
+                    all_rows=[
+                        (QuizType.VOCABULARY, 2, (date(2026, 4, 20) - date(1970, 1, 1)).days),
+                        (QuizType.SENTENCE_ARRANGE, 1, (date(2026, 4, 20) - date(1970, 1, 1)).days),
+                        (QuizType.VOCABULARY, 5, (date(2026, 4, 23) - date(1970, 1, 1)).days),
+                        (QuizType.GRAMMAR, 2, (date(2026, 4, 23) - date(1970, 1, 1)).days),
+                    ]
+                ),
             ]
         )
     )
@@ -124,6 +131,22 @@ async def test_get_dashboard_data_builds_dashboard_response(monkeypatch: pytest.
     assert response.weekly_stats[-1].vocabulary_answered_count == 4
     assert response.weekly_stats[3].words_studied == 3
     assert response.weekly_stats[3].has_studied is True
+    assert response.weekly_question_stats is not None
+    assert [item.date for item in response.weekly_question_stats] == [date(2026, 4, day) for day in range(20, 27)]
+    assert response.weekly_question_stats[0].model_dump(mode="json", by_alias=True) == {
+        "date": "2026-04-20",
+        "hasStudied": True,
+        "vocabularyAnsweredCount": 2,
+        "grammarAnsweredCount": 0,
+        "sentenceArrangeAnsweredCount": 1,
+    }
+    assert response.weekly_question_stats[-1].model_dump(mode="json", by_alias=True) == {
+        "date": "2026-04-26",
+        "hasStudied": False,
+        "vocabularyAnsweredCount": 0,
+        "grammarAnsweredCount": 0,
+        "sentenceArrangeAnsweredCount": 0,
+    }
     assert response.level_progress.vocabulary.total == 100
     assert response.level_progress.vocabulary.mastered == 12
     assert response.level_progress.vocabulary.in_progress == 3

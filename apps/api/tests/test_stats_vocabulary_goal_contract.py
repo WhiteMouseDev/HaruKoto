@@ -54,7 +54,8 @@ def test_today_requires_nonnull_vocabulary_goal_with_nonnegative_count(extra: di
 
 
 @pytest.mark.asyncio
-async def test_dashboard_still_requires_auth_before_reading_progress() -> None:
+@pytest.mark.parametrize("path", ["/api/v1/stats/dashboard", "/api/v1/stats/study-overview"])
+async def test_stats_require_auth_before_reading_progress(path: str) -> None:
     app = FastAPI()
     app.include_router(router)
     register_error_handlers(app)
@@ -65,7 +66,7 @@ async def test_dashboard_still_requires_auth_before_reading_progress() -> None:
 
     app.dependency_overrides[get_db] = override_db
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.get("/api/v1/stats/dashboard")
+        response = await client.get(path)
 
     assert response.status_code == 401
     assert response.headers["www-authenticate"] == "Bearer"
@@ -93,3 +94,26 @@ def test_dashboard_openapi_exposes_additive_required_vocabulary_goal_without_aut
     assert goal["properties"]["date"]["format"] == "date"
     assert goal["properties"]["answeredCount"]["type"] == "integer"
     assert goal["properties"]["answeredCount"]["minimum"] == 0
+
+
+def test_weekly_question_projection_is_additive_and_distinct_from_rolling_weekly_stats() -> None:
+    from app.main import app
+
+    schemas = app.openapi()["components"]["schemas"]
+    dashboard = schemas["DashboardResponse"]
+    assert "weeklyQuestionStats" not in dashboard["required"]
+    assert dashboard["properties"]["weeklyStats"]["items"]["$ref"] == "#/components/schemas/WeeklyStatItem"
+    assert dashboard["properties"]["weeklyQuestionStats"]["anyOf"] == [
+        {
+            "items": {"$ref": "#/components/schemas/WeeklyQuestionStatItem"},
+            "type": "array",
+            "maxItems": 7,
+            "minItems": 7,
+        },
+        {"type": "null"},
+    ]
+    item = schemas["WeeklyQuestionStatItem"]
+    counts = {"vocabularyAnsweredCount", "grammarAnsweredCount", "sentenceArrangeAnsweredCount"}
+    assert set(item["required"]) == {"date", "hasStudied", *counts}
+    assert item["properties"]["date"]["format"] == "date"
+    assert all(item["properties"][key]["minimum"] == 0 for key in counts)

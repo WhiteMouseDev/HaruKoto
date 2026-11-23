@@ -68,12 +68,33 @@ class WeeklyStatItem(CamelModel):
     has_studied: bool
 
 
+class WeeklyQuestionStatItem(CamelModel):
+    date: datetime.date
+    has_studied: bool
+    vocabulary_answered_count: int = Field(ge=0)
+    grammar_answered_count: int = Field(ge=0)
+    sentence_arrange_answered_count: int = Field(ge=0)
+
+
+class StudyOverviewResponse(CamelModel):
+    quizzes_completed: int = Field(ge=0)
+    correct_answers: int = Field(ge=0)
+    total_answers: int = Field(ge=0)
+    conversation_count: int = Field(ge=0)
+    daily: list[WeeklyQuestionStatItem] = Field(
+        min_length=7, max_length=7, description="The latest seven KST calendar dates, oldest first."
+    )
+
+
 class DashboardResponse(CamelModel):
     show_kana: bool
     kana_progress: KanaProgressResponse
     today: TodayStats
     streak: StreakInfo
     weekly_stats: list[WeeklyStatItem]
+    weekly_question_stats: list[WeeklyQuestionStatItem] | None = Field(
+        default=None, min_length=7, max_length=7, description="Current KST week, Monday through Sunday, in date order."
+    )
     level_progress: LevelProgress
 
 

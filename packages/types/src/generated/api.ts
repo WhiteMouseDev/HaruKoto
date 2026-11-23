@@ -1288,6 +1288,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/stats/study-overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Study Overview
+         * @description Lifetime quiz and conversation totals, with recent saved answers by category.
+         */
+        get: operations["get_study_overview_api_v1_stats_study_overview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/stats/history": {
         parameters: {
             query?: never;
@@ -1334,7 +1354,7 @@ export interface paths {
         };
         /**
          * Get Jlpt Progress
-         * @description 3-7: JLPT level progress across all levels the user has studied.
+         * @description 3-7: JLPT vocabulary and grammar mastery by level.
          */
         get: operations["get_jlpt_progress_api_v1_stats_jlpt_progress_get"];
         put?: never;
@@ -2884,6 +2904,11 @@ export interface components {
             streak: components["schemas"]["StreakInfo"];
             /** Weeklystats */
             weeklyStats: components["schemas"]["WeeklyStatItem"][];
+            /**
+             * Weeklyquestionstats
+             * @description Current KST week, Monday through Sunday, in date order.
+             */
+            weeklyQuestionStats?: components["schemas"]["WeeklyQuestionStatItem"][] | null;
             levelProgress: components["schemas"]["LevelProgress"];
         };
         ErrorDetails: {
@@ -4518,6 +4543,22 @@ export interface components {
             lesson: boolean;
             stage: components["schemas"]["StageCapabilitiesResponse"];
         };
+        /** StudyOverviewResponse */
+        StudyOverviewResponse: {
+            /** Quizzescompleted */
+            quizzesCompleted: number;
+            /** Correctanswers */
+            correctAnswers: number;
+            /** Totalanswers */
+            totalAnswers: number;
+            /** Conversationcount */
+            conversationCount: number;
+            /**
+             * Daily
+             * @description The latest seven KST calendar dates, oldest first.
+             */
+            daily: components["schemas"]["WeeklyQuestionStatItem"][];
+        };
         /** StudyStageResponse */
         StudyStageResponse: {
             /** Id */
@@ -4892,6 +4933,22 @@ export interface components {
         VolumeChartResponse: {
             /** Data */
             data: components["schemas"]["VolumeChartItem"][];
+        };
+        /** WeeklyQuestionStatItem */
+        WeeklyQuestionStatItem: {
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Hasstudied */
+            hasStudied: boolean;
+            /** Vocabularyansweredcount */
+            vocabularyAnsweredCount: number;
+            /** Grammaransweredcount */
+            grammarAnsweredCount: number;
+            /** Sentencearrangeansweredcount */
+            sentenceArrangeAnsweredCount: number;
         };
         /** WeeklyStatItem */
         WeeklyStatItem: {
@@ -7541,6 +7598,26 @@ export interface operations {
             };
         };
     };
+    get_study_overview_api_v1_stats_study_overview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudyOverviewResponse"];
+                };
+            };
+        };
+    };
     get_history_api_v1_stats_history_get: {
         parameters: {
             query?: {
@@ -7607,7 +7684,10 @@ export interface operations {
     };
     get_jlpt_progress_api_v1_stats_jlpt_progress_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Include unstudied levels that have vocabulary or grammar content. */
+                include_all_levels?: boolean;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -7621,6 +7701,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["JlptProgressResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

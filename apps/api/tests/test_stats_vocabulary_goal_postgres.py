@@ -20,7 +20,7 @@ from app.models.enums import JlptLevel, QuizType
 from app.models.user import User
 from app.routers.quiz import router as quiz_router
 from app.routers.stats import router
-from app.services import quiz_smart, stats_dashboard
+from app.services import quiz_smart, stats_dashboard, stats_time_series
 from tests.test_quiz_answer_persistence_postgres import isolated_postgres_url as isolated_postgres_url
 
 
@@ -37,6 +37,7 @@ async def test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answ
     start = datetime(2026, 10, 29, 15, tzinfo=UTC)
     end = start + timedelta(days=1)
     monkeypatch.setattr(stats_dashboard, "get_today_kst", lambda: today)
+    monkeypatch.setattr(stats_time_series, "get_today_kst", lambda: today)
     monkeypatch.setattr(quiz_smart, "get_today_kst", lambda: today)
     admin_engine = create_async_engine(isolated_postgres_url)
     schema = f"vocabulary_goal_{uuid.uuid4().hex}"
@@ -102,6 +103,27 @@ async def test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answ
                     xp_earned=70,
                 )
             )
+            db.add(DailyProgress(user_id=user_id, date=today - timedelta(days=2), conversation_count=1))
+            db.add_all(
+                [
+                    DailyProgress(
+                        user_id=user_id,
+                        date=today - timedelta(days=30),
+                        quizzes_completed=3,
+                        correct_answers=8,
+                        total_answers=9,
+                        conversation_count=4,
+                    ),
+                    DailyProgress(
+                        user_id=other_user_id,
+                        date=today - timedelta(days=2),
+                        quizzes_completed=50,
+                        correct_answers=50,
+                        total_answers=50,
+                        conversation_count=50,
+                    ),
+                ]
+            )
 
             async def add_session(
                 *,
@@ -157,6 +179,17 @@ async def test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answ
             # Answer time, rather than session completion time, owns the learning day.
             add_answer(ongoing, start - timedelta(milliseconds=1))
             add_answer(ongoing, end)  # Exclusive next KST midnight.
+            # Native cloze questions count in their saved quiz type when the
+            # snapshot confirms the submitted question was a cloze.
+            for quiz_type in (QuizType.VOCABULARY, QuizType.GRAMMAR):
+                cloze_session = await add_session(quiz_type=quiz_type)
+                cloze_id = uuid.uuid4()
+                cloze_session.questions_data = {"questions": [{"id": str(cloze_id), "type": "CLOZE"}]}
+                add_answer(cloze_session, start - timedelta(hours=1), question_id=cloze_id, question_type=QuizType.CLOZE)
+                add_answer(cloze_session, start - timedelta(hours=1), question_type=QuizType.CLOZE)
+            matching = await add_session(quiz_type=QuizType.SENTENCE_ARRANGE)
+            matching.questions_data = {"mode": "matching", "questions": []}
+            add_answer(matching, start - timedelta(hours=1), question_type=QuizType.SENTENCE_ARRANGE)
             await add_session()  # An unanswered quiz has no vocabulary activity.
             foreign = await add_session(owner=other_user_id)
             add_answer(foreign, start + timedelta(hours=1))
@@ -209,6 +242,36 @@ async def test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answ
                 "hasStudied": True,
                 "vocabularyAnsweredCount": 5,
             }
+            week = payload["weeklyQuestionStats"]
+            assert [row["date"] for row in week] == [f"2026-10-{day}" for day in range(26, 32)] + ["2026-11-01"]
+            assert week[2] == {
+                "date": "2026-10-28",
+                "hasStudied": True,
+                "vocabularyAnsweredCount": 0,
+                "grammarAnsweredCount": 0,
+                "sentenceArrangeAnsweredCount": 0,
+            }
+            assert week[3] == {
+                "date": "2026-10-29",
+                "hasStudied": False,
+                "vocabularyAnsweredCount": 2,
+                "grammarAnsweredCount": 1,
+                "sentenceArrangeAnsweredCount": 0,
+            }
+            assert week[4] == {
+                "date": "2026-10-30",
+                "hasStudied": True,
+                "vocabularyAnsweredCount": 5,
+                "grammarAnsweredCount": 1,
+                "sentenceArrangeAnsweredCount": 1,
+            }
+            assert week[5] == {
+                "date": "2026-10-31",
+                "hasStudied": False,
+                "vocabularyAnsweredCount": 0,
+                "grammarAnsweredCount": 0,
+                "sentenceArrangeAnsweredCount": 0,
+            }
             assert payload["showKana"] is False
             assert payload["levelProgress"] == {
                 "vocabulary": {"total": 0, "mastered": 0, "inProgress": 0},
@@ -218,8 +281,26 @@ async def test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answ
                 "hiragana": {"learned": 0, "mastered": 0, "total": 0},
                 "katakana": {"learned": 0, "mastered": 0, "total": 0},
             }
-            assert len(statements) == 12  # Existing reads plus one today and one grouped weekly aggregate.
+            assert len(statements) == 12  # Today's typed goals reuse the grouped query without adding reads.
             assert all(statement.lstrip().upper().startswith("SELECT") for statement in statements)
+            overview_response = await client.get("/api/v1/stats/study-overview")
+            assert overview_response.status_code == 200, overview_response.text
+            overview = overview_response.json()
+            overview_days = overview.pop("daily")
+            assert overview == {"quizzesCompleted": 4, "correctAnswers": 11, "totalAnswers": 13, "conversationCount": 6}
+            assert [row["date"] for row in overview_days] == [f"2026-10-{day}" for day in range(24, 31)]
+            assert overview_days[-3:] == [week[2], {**week[3], "hasStudied": True}, week[4]]
+            assert all(
+                row
+                == {
+                    "date": row["date"],
+                    "hasStudied": False,
+                    "vocabularyAnsweredCount": 0,
+                    "grammarAnsweredCount": 0,
+                    "sentenceArrangeAnsweredCount": 0,
+                }
+                for row in overview_days[:4]
+            )
             preview = await client.get("/api/v1/quiz/smart-preview", params={"category": "VOCABULARY", "jlptLevel": "N5"})
             assert preview.status_code == 200, preview.text
             assert preview.json()["todayCompleted"] == payload["today"]["vocabularyGoal"]["answeredCount"] == 5
@@ -254,6 +335,7 @@ async def test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answ
             next_day = await client.get("/api/v1/stats/dashboard")
             assert next_day.status_code == 200
             assert next_day.json()["today"]["vocabularyGoal"] == {"date": "2026-10-31", "answeredCount": 1}
+            assert next_day.json()["weeklyQuestionStats"][5]["vocabularyAnsweredCount"] == 1
             next_preview = await client.get("/api/v1/quiz/smart-preview", params={"category": "VOCABULARY", "jlptLevel": "N1"})
             assert next_preview.status_code == 200
             assert next_preview.json()["todayCompleted"] == next_day.json()["today"]["vocabularyGoal"]["answeredCount"] == 1
@@ -262,6 +344,24 @@ async def test_dashboard_vocabulary_goal_counts_distinct_saved_words_by_kst_answ
             empty = await client.get("/api/v1/stats/dashboard")
             assert empty.status_code == 200
             assert empty.json()["today"]["vocabularyGoal"] == {"date": "2026-10-31", "answeredCount": 0}
+            empty_overview = await client.get("/api/v1/stats/study-overview")
+            assert empty_overview.status_code == 200
+            assert empty_overview.json() == {
+                "quizzesCompleted": 0,
+                "correctAnswers": 0,
+                "totalAnswers": 0,
+                "conversationCount": 0,
+                "daily": [
+                    {
+                        "date": f"2026-10-{day}",
+                        "hasStudied": False,
+                        "vocabularyAnsweredCount": 0,
+                        "grammarAnsweredCount": 0,
+                        "sentenceArrangeAnsweredCount": 0,
+                    }
+                    for day in range(24, 31)
+                ],
+            }
             empty_preview = await client.get("/api/v1/quiz/smart-preview", params={"category": "VOCABULARY", "jlptLevel": "N5"})
             assert empty_preview.status_code == 200
             assert empty_preview.json()["todayCompleted"] == empty.json()["today"]["vocabularyGoal"]["answeredCount"] == 0
