@@ -151,7 +151,8 @@ jobs:
   admin-e2e:
     needs: changes
     if: needs.changes.outputs.admin == 'true'
-    runs-on: ubuntu-latest
+    # Keep Playwright Chromium on a supported runner image.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
 
@@ -445,8 +446,14 @@ jobs:
         # The Makefile uses a synthetic .invalid URL; HTTP remains adapter-mocked.
         run: make test
 
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - name: Build Android debug APK
         run: |
+          flutter config --jdk-dir="$JAVA_HOME"
           flutter build apk --debug \
             --dart-define=SUPABASE_URL=https://placeholder.supabase.co \
             --dart-define=SUPABASE_ANON_KEY=placeholder \
