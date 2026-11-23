@@ -27,11 +27,13 @@ void main() {
         ],
       );
 
-      expect(find.text('1/2'), findsOneWidget);
+      expect(find.text('완료!'), findsOneWidget);
+      expect(find.text('1 / 10', findRichText: true), findsOneWidget);
 
       final progressTop = tester.getTopLeft(find.text('진행 미션'));
       final doneTop = tester.getTopLeft(find.text('완료 미션'));
-      expect(progressTop.dy, lessThan(doneTop.dy));
+      expect(progressTop.dx, lessThan(doneTop.dx));
+      expect(progressTop.dy, doneTop.dy);
     });
 
     testWidgets('shows locked visual state for zero target missions',
@@ -47,9 +49,9 @@ void main() {
         ],
       );
 
-      expect(find.text('0/1'), findsOneWidget);
-      expect(find.text('0/0'), findsNothing);
-      expect(find.byIcon(LucideIcons.lock), findsNWidgets(2));
+      expect(find.text('잠김'), findsOneWidget);
+      expect(find.text('0 / 0', findRichText: true), findsNothing);
+      expect(find.byIcon(LucideIcons.lock), findsOneWidget);
     });
   });
 }
@@ -72,7 +74,7 @@ Future<void> _pumpCard(
 MissionModel _mission({
   required String id,
   required String label,
-  String missionType = 'quiz_daily',
+  String missionType = 'test_mission',
   String description = '',
   int targetCount = 1,
   int currentCount = 0,

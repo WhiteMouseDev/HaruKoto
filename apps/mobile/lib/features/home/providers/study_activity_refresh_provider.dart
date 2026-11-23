@@ -19,5 +19,7 @@ class StudyActivityRefresh {
     _ref.invalidate(statsHistoryProvider);
     _ref.invalidate(statsMonthHistoryProvider);
     _ref.invalidate(heatmapProvider);
+    _ref.invalidate(jlptProgressProvider);
+    _ref.invalidate(studyOverviewProvider);
   }
 }

@@ -11,7 +11,14 @@ import '../study_entry_flow.dart';
 
 /// Global entry point: changing today's level/category never hides old quizzes.
 class SavedQuizSection extends ConsumerWidget {
-  const SavedQuizSection({super.key});
+  const SavedQuizSection({
+    super.key,
+    this.compact = false,
+    this.padding = EdgeInsets.zero,
+  });
+
+  final bool compact;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,45 +27,62 @@ class SavedQuizSection extends ConsumerWidget {
     if (!_accountCurrent(ref, owner)) return const SizedBox.shrink();
     final data = entries.asData?.value;
     final current = data?.accountId == owner ? data : null;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(children: [
-          Expanded(
-            child:
-                Text('저장된 퀴즈', style: Theme.of(context).textTheme.titleSmall),
-          ),
-          TextButton(
-            key: const ValueKey('saved-quizzes-show-all'),
-            onPressed: () async {
-              if (!_accountCurrent(ref, owner)) return;
-              await Navigator.of(context, rootNavigator: true).push<void>(
-                MaterialPageRoute(builder: (_) => const SavedQuizListPage()),
-              );
-            },
-            child: const Text('전체 보기'),
-          ),
-        ]),
-        if (current != null) ...[
-          if (current.sessions.isNotEmpty) ...[
-            const Text('최근 시작한 퀴즈'),
-            const SizedBox(height: 8),
-            _SavedQuizTile(session: current.sessions.first),
-          ] else
-            const Text('답안을 저장한 퀴즈를 여기에서 이어 풀 수 있어요.'),
-          if (current.error != null)
-            _SavedQuizError(
-              error: current.error!,
-              retry: () => ref.read(savedQuizListProvider.notifier).refresh(),
+    if (compact &&
+        current != null &&
+        current.sessions.isEmpty &&
+        current.nextCursor == null &&
+        current.error == null) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: padding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Expanded(
+              child: Text(
+                '저장된 퀴즈',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontFamily: compact ? 'Pretendard' : null,
+                      fontWeight: compact ? FontWeight.w600 : null,
+                    ),
+              ),
             ),
-        ] else if (entries.hasError)
-          _SavedQuizError(
-            error: savedQuizLoadError(entries.error),
-            retry: () => ref.invalidate(savedQuizListProvider),
-          )
-        else
-          const LinearProgressIndicator(semanticsLabel: '저장된 퀴즈 확인 중'),
-      ],
+            TextButton(
+              key: const ValueKey('saved-quizzes-show-all'),
+              onPressed: () async {
+                if (!_accountCurrent(ref, owner)) return;
+                await Navigator.of(context, rootNavigator: true).push<void>(
+                  MaterialPageRoute(builder: (_) => const SavedQuizListPage()),
+                );
+              },
+              child: const Text('전체 보기'),
+            ),
+          ]),
+          if (current != null) ...[
+            if (current.sessions.isNotEmpty) ...[
+              if (!compact) ...[
+                const Text('최근 시작한 퀴즈'),
+                const SizedBox(height: 8),
+              ],
+              _SavedQuizTile(session: current.sessions.first, compact: compact),
+            ] else if (!compact)
+              const Text('답안을 저장한 퀴즈를 여기에서 이어 풀 수 있어요.'),
+            if (current.error != null)
+              _SavedQuizError(
+                error: current.error!,
+                retry: () => ref.read(savedQuizListProvider.notifier).refresh(),
+              ),
+          ] else if (entries.hasError)
+            _SavedQuizError(
+              error: savedQuizLoadError(entries.error),
+              retry: () => ref.invalidate(savedQuizListProvider),
+            )
+          else
+            const LinearProgressIndicator(semanticsLabel: '저장된 퀴즈 확인 중'),
+        ],
+      ),
     );
   }
 }
@@ -148,8 +172,9 @@ bool _accountCurrent(WidgetRef ref, String? owner) =>
     owner != null && ref.read(currentAccountReaderProvider)() == owner;
 
 class _SavedQuizTile extends ConsumerStatefulWidget {
-  const _SavedQuizTile({required this.session});
+  const _SavedQuizTile({required this.session, this.compact = false});
   final SavedQuizModel session;
+  final bool compact;
 
   @override
   ConsumerState<_SavedQuizTile> createState() => _SavedQuizTileState();
@@ -189,6 +214,50 @@ class _SavedQuizTileState extends ConsumerState<_SavedQuizTile> {
   Widget build(BuildContext context) {
     final session = widget.session;
     final theme = Theme.of(context);
+    final action = TextButton.icon(
+      onPressed: _opening ? null : _open,
+      icon: Icon(session.canResume ? LucideIcons.playCircle : LucideIcons.info),
+      label: Text(session.canResume ? session.actionLabel : '저장 기록 안내'),
+    );
+    if (widget.compact) {
+      return Container(
+        key: ValueKey('saved-quiz-${session.id}'),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: theme.colorScheme.outline),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        child: Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('${session.jlptLevel} · ${session.categoryLabel}',
+                        style: const TextStyle(
+                          fontFamily: 'Pretendard',
+                          fontWeight: FontWeight.w600,
+                        )),
+                    Text(
+                      session.canResume
+                          ? '${session.answeredCount}/${session.totalQuestions}문제 저장됨'
+                          : '이어 풀 수 없는 기록',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Flexible(child: action),
+          ],
+        ),
+      );
+    }
     return Card(
       key: ValueKey('saved-quiz-${session.id}'),
       margin: EdgeInsets.zero,
@@ -222,14 +291,7 @@ class _SavedQuizTileState extends ConsumerState<_SavedQuizTile> {
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                onPressed: _opening ? null : _open,
-                icon: Icon(session.canResume
-                    ? LucideIcons.playCircle
-                    : LucideIcons.info),
-                label:
-                    Text(session.canResume ? session.actionLabel : '저장 기록 안내'),
-              ),
+              child: action,
             ),
           ],
         ),

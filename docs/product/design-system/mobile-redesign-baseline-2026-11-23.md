@@ -60,7 +60,13 @@ git worktree add --detach ../harukoto-before-redesign b3854e9503ca52227a8cb8762f
 
 ## 6. 홈 화면 적용
 
-- [홈 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=93-657)에 맞춰 단어·문법·문장배열 가로 탭과 반원 게이지를 [홈 학습 카드](../../../apps/mobile/lib/features/home/presentation/widgets/quick_start_card.dart)에 적용했다. 선택한 유형의 한국 시간 기준 풀이 수와 목표를 표시하고, 기존 목표 편집과 오답노트로 연결한다. 시안의 ‘복습 정답’에는 별도 집계가 필요해, 현재는 추천에 포함된 실제 ‘복습할 문제’ 수를 표시한다.
-- [학습 시작 시트 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=114-1470)을 단어·문법에 적용했다. [시트](../../../apps/mobile/lib/features/study/presentation/widgets/today_study_sheet.dart)는 실제 새 문제·복습·재도전 수와 시작 분량을 사용한다. 하루 목표와 추천 분량에는 각각 이름을 붙여 유저가 구분할 수 있게 했다.
+- [홈 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=1-2)에 맞춰 단어·문법·문장배열 가로 탭과 반원 게이지를 [홈 학습 카드](../../../apps/mobile/lib/features/home/presentation/widgets/quick_start_card.dart)에 적용했다. 선택한 유형의 한국 시간 기준 풀이 수와 목표를 표시하고, 기존 목표 편집과 오답노트로 연결한다. 시안의 ‘복습 정답’에는 별도 집계가 필요해, 현재는 추천에 포함된 실제 ‘복습할 문제’ 수를 표시한다.
+- [학습 시작 시트 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=114-1470)을 단어·문법에 적용했다. [시트](../../../apps/mobile/lib/features/study/presentation/widgets/today_study_sheet.dart)는 실제 새 문제·복습·재도전 수와 시작 분량을 사용한다. 하루 목표와 시작 분량에는 각각 이름을 붙였다. 홈과 학습 시작 시트에는 라이트 모드에서 Pretendard와 시안의 브랜드 핑크 버튼을 사용한다. `#FF6A87`과 흰 버튼 글자의 명암비는 약 2.74:1이라 색상 변경 여부를 디자인 검토에서 결정한다.
 - 한 줄 벚꽃 카드의 전체 영역을 누르면 [월간 학습 기록](../../../apps/mobile/lib/features/home/presentation/widgets/streak_daily_card.dart)이 열린다. 오늘은 점, 기록이 있는 요일은 분홍 벚꽃잎으로 표시하고, 달력에서는 학습일과 목표 달성 트로피를 기존 서버 기록으로 표시한다. 큰 글씨에서 한 줄에 다 들어가지 않으면 요일을 아래 줄로 배치한다.
 - [이어하기 회귀 테스트](../../../apps/mobile/test/features/study/presentation/saved_quiz_section_test.dart)에서 홈의 저장된 퀴즈가 원래 세션 ID로 열리고 저장된 답안 다음 문제를 복원하는지 확인했다. 홈·달력 테스트는 한국 시간 자정, 계정 전환, 독립 목표 편집과 트로피 표시를 검증한다.
+
+## 7. 학습 통계 적용
+
+- 기간별 탭은 한국 시간 기준 이번 주 풀이량과 연간 학습 기록을, 학습별 탭은 누적 퀴즈·정답률과 최근 7일의 유형별 풀이량, 누적 대화 수를 표시한다.
+- JLPT 진도는 현재 학습 급수에서 열리고 N5~N1 탭은 조회 급수만 바꾼다. 기존 학습 설정은 유지한다. 조회가 실패하면 다시 시도할 수 있고, 기록이 없는 급수는 별도 안내를 표시한다.
+- 주간 그래프는 월요일에 시작한다. 월간 달력은 피그마의 일요일 시작 배열을 따르며, 학습일과 목표 달성일을 민트색 원과 트로피로 표시한다.

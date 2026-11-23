@@ -1,21 +1,69 @@
-import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/core/providers/study_clock_provider.dart';
 import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
 import 'package:harukoto_mobile/features/home/data/models/mission_model.dart';
 import 'package:harukoto_mobile/features/home/data/models/user_profile_model.dart';
 import 'package:harukoto_mobile/features/home/presentation/home_page.dart';
+import 'package:harukoto_mobile/features/home/presentation/widgets/home_header.dart';
 import 'package:harukoto_mobile/features/home/presentation/widgets/streak_daily_card.dart';
 import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
+import 'package:harukoto_mobile/features/notifications/data/models/notification_model.dart';
+import 'package:harukoto_mobile/features/notifications/providers/notification_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('HomePage', () {
+    testWidgets('logo-free header opens notifications from its Figma bell',
+        (tester) async {
+      final router = GoRouter(routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => const Scaffold(body: HomeTitleBar()),
+        ),
+        GoRoute(
+          path: '/notifications',
+          builder: (context, state) => const Scaffold(body: Text('알림 목록')),
+        ),
+      ]);
+      addTearDown(router.dispose);
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          notificationsProvider.overrideWith(
+            (ref) async => const NotificationsResponse(
+              notifications: [],
+              unreadCount: 12,
+            ),
+          ),
+        ],
+        child: MaterialApp.router(routerConfig: router),
+      ));
+      await tester.pumpAndSettle();
+
+      final title = find.text('홈');
+      final bell = find.byType(IconButton);
+      final asset = find.byType(Image);
+      expect(title, findsOneWidget);
+      expect(tester.getCenter(title).dx, lessThan(tester.getCenter(bell).dx));
+      expect(asset, findsOneWidget);
+      expect((tester.widget<Image>(asset).image as AssetImage).assetName,
+          'assets/icons/figma-home-bell.png');
+      expect(find.text('9+'), findsOneWidget);
+      expect(tester.getSemantics(bell).getSemanticsData().tooltip,
+          '알림, 읽지 않은 알림 12개');
+
+      await tester.tap(bell);
+      await tester.pumpAndSettle();
+      expect(find.text('알림 목록'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
     testWidgets('midnight never shows yesterday completion while reloading',
         (tester) async {
       SharedPreferences.setMockInitialValues({});
@@ -188,19 +236,14 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      // Should show a time-based greeting with the nickname
-      final hour = DateTime.now().hour;
-      final String expectedGreeting;
-      if (hour >= 5 && hour < 12) {
-        expectedGreeting = '오늘도 화이팅, TestUser!';
-      } else if (hour >= 12 && hour < 18) {
-        expectedGreeting = '점심은 먹었어, TestUser?';
-      } else if (hour >= 18) {
-        expectedGreeting = '오늘 하루 수고했어, TestUser!';
-      } else {
-        expectedGreeting = '야행성이구나, TestUser!';
-      }
-      expect(find.text(expectedGreeting), findsOneWidget);
+      final title = find.text('홈');
+      final streak = find.text('연속 학습');
+      final greeting = find.text('TestUser님, 오늘도 힘내볼까요?');
+      expect(greeting, findsOneWidget);
+      expect(
+          tester.getTopLeft(title).dy, lessThan(tester.getTopLeft(streak).dy));
+      expect(tester.getTopLeft(streak).dy,
+          lessThan(tester.getTopLeft(greeting).dy));
       // Should NOT show error
       expect(find.text('데이터를 불러올 수 없습니다'), findsNothing);
     });

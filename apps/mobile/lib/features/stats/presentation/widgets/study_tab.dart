@@ -1,688 +1,384 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
-import '../../data/models/by_category_model.dart';
-import '../../data/models/level_progress_model.dart';
-import '../../data/models/stats_history_model.dart';
-import '../../data/models/volume_chart_model.dart';
+import '../../../../core/theme/text_theme.dart';
+import '../../../../shared/widgets/app_error_retry.dart';
+import '../../data/models/study_overview_model.dart';
 import '../../providers/stats_provider.dart';
+import 'stats_bar_chart.dart';
 
 class StudyTab extends ConsumerWidget {
-  final LevelProgressData levelProgress;
-  final List<StatsHistoryRecord> historyRecords;
-
-  const StudyTab({
-    super.key,
-    required this.levelProgress,
-    required this.historyRecords,
-  });
-
-  String _formatTime(int seconds) {
-    final mins = (seconds / 60).round();
-    if (mins < 60) return '$mins분';
-    final hours = mins ~/ 60;
-    final remainder = mins % 60;
-    return remainder > 0 ? '$hours시간 $remainder분' : '$hours시간';
-  }
+  const StudyTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final brightness = theme.brightness;
+    return ref.watch(studyOverviewProvider).when(
+          data: (overview) => _StudyOverviewContent(overview: overview),
+          loading: () => const Padding(
+            padding: EdgeInsets.symmetric(vertical: 40),
+            child: Center(
+              child: CircularProgressIndicator(
+                semanticsLabel: '학습별 통계를 불러오는 중',
+              ),
+            ),
+          ),
+          error: (_, __) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            child: AppErrorRetry(
+              message: '학습별 통계를 불러오지 못했어요',
+              onRetry: () => ref.invalidate(studyOverviewProvider),
+            ),
+          ),
+        );
+  }
+}
 
-    // Cumulative stats from history
-    var totalQuizzes = 0;
-    var totalCorrect = 0;
-    var totalAnswers = 0;
-    var totalConversations = 0;
-    var totalStudySeconds = 0;
+class _StudyOverviewContent extends StatelessWidget {
+  const _StudyOverviewContent({required this.overview});
 
-    for (final r in historyRecords) {
-      totalQuizzes += r.quizzesCompleted;
-      totalCorrect += r.correctAnswers;
-      totalAnswers += r.totalAnswers;
-      totalConversations += r.conversationCount;
-      totalStudySeconds += r.studyTimeSeconds;
+  final StudyOverview overview;
+
+  @override
+  Widget build(BuildContext context) {
+    final format = MaterialLocalizations.of(context).formatDecimal;
+    final accuracy = overview.totalAnswers == 0
+        ? '—'
+        : format((overview.correctAnswers / overview.totalAnswers * 100)
+            .round()
+            .clamp(0, 100));
+
+    var vocabulary = 0;
+    var grammar = 0;
+    var sentences = 0;
+    final days = <StatsBarDay>[];
+    for (final day in overview.daily) {
+      final date = DateTime.tryParse(day.date);
+      if (date == null) continue;
+      vocabulary += day.vocabularyAnsweredCount;
+      grammar += day.grammarAnsweredCount;
+      sentences += day.sentenceArrangeAnsweredCount;
+      days.add(StatsBarDay(
+        date: date,
+        label: '${date.month}/${date.day}',
+        counts: (
+          vocabulary: day.vocabularyAnsweredCount,
+          grammar: day.grammarAnsweredCount,
+          sentences: day.sentenceArrangeAnsweredCount,
+        ),
+      ));
     }
-
-    final accuracy =
-        totalAnswers > 0 ? (totalCorrect / totalAnswers * 100).round() : 0;
-
-    // API data
-    final volumeAsync = ref.watch(volumeChartProvider(7));
-    final categoryAsync = ref.watch(byCategoryProvider);
+    final total = vocabulary + grammar + sentences;
+    final dateRange = days.isEmpty
+        ? ''
+        : '${_shortDate(days.first.date)}~${_shortDate(days.last.date)}';
 
     return Column(
       children: [
-        // Cumulative Summary
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '누적 학습 요약',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _SummaryItem(
-                      icon: LucideIcons.target,
-                      value: '$totalQuizzes',
-                      label: '퀴즈 완료',
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(width: 12),
-                    _SummaryItem(
-                      icon: LucideIcons.zap,
-                      value: '$accuracy%',
-                      label: '정답률',
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(width: 12),
-                    _SummaryItem(
-                      icon: LucideIcons.clock,
-                      value: _formatTime(totalStudySeconds),
-                      label: '총 학습',
-                      color: theme.colorScheme.primary,
-                    ),
-                  ],
-                ),
-              ],
-            ),
+        _StudySection(
+          title: '누적 학습 요약',
+          child: _MetricCard(
+            metrics: [
+              _SummaryMetric(
+                label: '퀴즈 완료',
+                value: format(overview.quizzesCompleted),
+                unit: '회',
+                icon: _StudyMetricIcon.quiz,
+              ),
+              _SummaryMetric(
+                label: '정답률',
+                value: accuracy,
+                unit: overview.totalAnswers == 0 ? '' : '%',
+                icon: _StudyMetricIcon.accuracy,
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 12),
-
-        // Category Comparison (from by-category API)
-        categoryAsync.when(
-          data: (category) => _CategoryComparisonCard(category: category),
-          loading: () => const _CategoryComparisonCard(category: null),
-          error: (_, __) => const _CategoryComparisonCard(category: null),
-        ),
-        const SizedBox(height: 12),
-
-        // Volume Chart (from volume-chart API)
-        volumeAsync.when(
-          data: (response) => _VolumeChartCard(entries: response.data),
-          loading: () => const _VolumeChartCard(entries: []),
-          error: (_, __) => const _VolumeChartCard(entries: []),
-        ),
-        const SizedBox(height: 12),
-
-        // Conversation
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+        const SizedBox(height: 40),
+        _StudySection(
+          title: '카테고리별 학습량',
+          child: _CategoryCard(
+            total: total,
+            categories: [
+              ('단어', vocabulary, AppColors.redesignVocabulary),
+              ('문법', grammar, AppColors.redesignGrammar),
+              ('문장배열', sentences, AppColors.redesignSentence),
+            ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      LucideIcons.messageCircle,
-                      size: 20,
-                      color: AppColors.hkBlue(brightness),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '회화',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '$totalConversations회',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              '총 대화 수',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.5),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _formatTime(totalStudySeconds),
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              '대화 시간',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.5),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+        ),
+        const SizedBox(height: 40),
+        _StudySection(
+          title: '일별 학습량',
+          detail: '최근 7일',
+          child: StatsBarChart(
+            dateRangeLabel: dateRange,
+            days: days,
+            emptyMessage: total == 0 ? '최근 7일간 문제풀이 기록이 없어요' : null,
+          ),
+        ),
+        const SizedBox(height: 40),
+        _StudySection(
+          title: '회화',
+          child: _MetricCard(
+            outlined: true,
+            metrics: [
+              _SummaryMetric(
+                label: '총 대화 수',
+                value: format(overview.conversationCount),
+                unit: '회',
+                icon: _StudyMetricIcon.conversation,
+              ),
+            ],
           ),
         ),
       ],
     );
   }
+
+  String _shortDate(DateTime date) => '${date.month}.${date.day}';
 }
 
-class _SummaryItem extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-  final Color color;
-
-  const _SummaryItem({
-    required this.icon,
-    required this.value,
-    required this.label,
-    required this.color,
+class _StudySection extends StatelessWidget {
+  const _StudySection({
+    required this.title,
+    required this.child,
+    this.detail,
   });
 
+  final String title;
+  final Widget child;
+  final String? detail;
+
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, size: 16, color: color),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.5),
-              ),
-            ),
-          ],
-        ),
+    final detail = this.detail;
+    final title = Semantics(
+      header: true,
+      child: Text(
+        this.title,
+        style: _statsText(context, 16, weight: FontWeight.w600),
       ),
     );
-  }
-}
-
-/// Category comparison card showing vocabulary vs grammar vs sentences
-class _CategoryComparisonCard extends StatelessWidget {
-  final ByCategoryResponse? category;
-
-  const _CategoryComparisonCard({required this.category});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final brightness = theme.brightness;
-
-    final vocabTotal = category?.vocabulary.total ?? 0;
-    final grammarTotal = category?.grammar.total ?? 0;
-    final sentencesTotal = category?.sentences.total ?? 0;
-    final grandTotal = vocabTotal + grammarTotal + sentencesTotal;
-
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '카테고리별 학습량',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 16),
-            if (category == null)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Text(
-                    '데이터를 불러오는 중...',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                    ),
-                  ),
-                ),
-              )
-            else ...[
-              // Stacked bar
-              if (grandTotal > 0) ...[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: SizedBox(
-                    height: 12,
-                    child: Row(
-                      children: [
-                        if (vocabTotal > 0)
-                          Expanded(
-                            flex: vocabTotal,
-                            child: Container(
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                        if (grammarTotal > 0)
-                          Expanded(
-                            flex: grammarTotal,
-                            child: Container(
-                              color: AppColors.success(brightness),
-                            ),
-                          ),
-                        if (sentencesTotal > 0)
-                          Expanded(
-                            flex: sentencesTotal,
-                            child: Container(
-                              color: AppColors.hkBlue(brightness),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-              ],
-              // Legend items
-              _CategoryRow(
-                color: theme.colorScheme.primary,
-                label: '단어',
-                count: vocabTotal,
-                total: grandTotal,
-              ),
-              const SizedBox(height: 8),
-              _CategoryRow(
-                color: AppColors.success(brightness),
-                label: '문법',
-                count: grammarTotal,
-                total: grandTotal,
-              ),
-              const SizedBox(height: 8),
-              _CategoryRow(
-                color: AppColors.hkBlue(brightness),
-                label: '문장',
-                count: sentencesTotal,
-                total: grandTotal,
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CategoryRow extends StatelessWidget {
-  final Color color;
-  final String label;
-  final int count;
-  final int total;
-
-  const _CategoryRow({
-    required this.color,
-    required this.label,
-    required this.count,
-    required this.total,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final pct = total > 0 ? (count / total * 100).round() : 0;
-
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
+        if (detail == null)
+          title
+        else
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: AppSizes.sm,
+            children: [
+              title,
+              Text(detail, style: _statsText(context, 13, muted: true)),
+            ],
           ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-        ),
-        const Spacer(),
-        Text(
-          '$count개',
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(width: 8),
-        SizedBox(
-          width: 40,
-          child: Text(
-            '$pct%',
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-          ),
-        ),
+        const SizedBox(height: AppSizes.gap),
+        child,
       ],
     );
   }
 }
 
-/// Volume chart showing daily study volume breakdown for last 7 days
-class _VolumeChartCard extends StatelessWidget {
-  final List<VolumeChartEntry> entries;
+class _MetricCard extends StatelessWidget {
+  const _MetricCard({required this.metrics, this.outlined = false});
 
-  const _VolumeChartCard({required this.entries});
-
-  static const double _chartHeight = 120;
-
-  String _formatDateLabel(String dateStr) {
-    final parts = dateStr.split('-');
-    if (parts.length >= 3) {
-      return '${int.parse(parts[1])}/${int.parse(parts[2])}';
-    }
-    return dateStr;
-  }
+  final List<_SummaryMetric> metrics;
+  final bool outlined;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final brightness = theme.brightness;
-
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+    final isLight = theme.brightness == Brightness.light;
+    final outline =
+        isLight ? AppColors.redesignOutline : theme.colorScheme.outlineVariant;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: outlined
+            ? theme.colorScheme.surfaceContainerLowest
+            : isLight
+                ? AppColors.redesignSurface
+                : theme.colorScheme.surfaceContainerHigh,
+        border: outlined ? Border.all(color: outline) : null,
+        borderRadius: BorderRadius.circular(AppSizes.gap),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '일별 학습량 (최근 7일)',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            if (entries.isEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
-                  child: Text(
-                    '데이터를 불러오는 중...',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                    ),
-                  ),
-                ),
-              )
-            else ...[
-              SizedBox(
-                height: _chartHeight,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: entries.map((entry) {
-                    final total = entry.wordsStudied +
-                        entry.grammarStudied +
-                        entry.sentencesStudied;
-                    return Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 2),
-                        child: _StackedBar(
-                          wordsStudied: entry.wordsStudied,
-                          grammarStudied: entry.grammarStudied,
-                          sentencesStudied: entry.sentencesStudied,
-                          total: total,
-                          maxTotal: _maxTotal,
-                          chartHeight: _chartHeight,
-                          primaryColor: theme.colorScheme.primary,
-                          successColor: AppColors.success(brightness),
-                          blueColor: AppColors.hkBlue(brightness),
-                          emptyColor: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.1),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: entries.map((entry) {
-                  return Expanded(
-                    child: Text(
-                      _formatDateLabel(entry.date),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 12),
-              // Legend
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _ChartLegendDot(
-                    color: theme.colorScheme.primary,
-                    label: '단어',
-                  ),
-                  const SizedBox(width: 16),
-                  _ChartLegendDot(
-                    color: AppColors.success(brightness),
-                    label: '문법',
-                  ),
-                  const SizedBox(width: 16),
-                  _ChartLegendDot(
-                    color: AppColors.hkBlue(brightness),
-                    label: '문장',
-                  ),
+      child: IntrinsicHeight(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: outlined ? 81 : 79),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var i = 0; i < metrics.length; i++) ...[
+                  if (i > 0)
+                    SizedBox(width: 1, child: ColoredBox(color: outline)),
+                  Expanded(child: metrics[i]),
                 ],
-              ),
-            ],
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
-
-  int get _maxTotal {
-    if (entries.isEmpty) return 1;
-    return entries.fold<int>(1, (m, e) {
-      final t = e.wordsStudied + e.grammarStudied + e.sentencesStudied;
-      return t > m ? t : m;
-    });
-  }
 }
 
-class _StackedBar extends StatelessWidget {
-  final int wordsStudied;
-  final int grammarStudied;
-  final int sentencesStudied;
-  final int total;
-  final int maxTotal;
-  final double chartHeight;
-  final Color primaryColor;
-  final Color successColor;
-  final Color blueColor;
-  final Color emptyColor;
+enum _StudyMetricIcon {
+  quiz('assets/icons/figma-stats-study-quiz.png'),
+  accuracy('assets/icons/figma-stats-study-accuracy.png'),
+  conversation('assets/icons/figma-stats-study-conversation.png');
 
-  const _StackedBar({
-    required this.wordsStudied,
-    required this.grammarStudied,
-    required this.sentencesStudied,
-    required this.total,
-    required this.maxTotal,
-    required this.chartHeight,
-    required this.primaryColor,
-    required this.successColor,
-    required this.blueColor,
-    required this.emptyColor,
+  const _StudyMetricIcon(this.asset);
+
+  final String asset;
+}
+
+class _SummaryMetric extends StatelessWidget {
+  const _SummaryMetric({
+    required this.label,
+    required this.value,
+    required this.unit,
+    required this.icon,
   });
+
+  final String label;
+  final String value;
+  final String unit;
+  final _StudyMetricIcon icon;
 
   @override
   Widget build(BuildContext context) {
-    if (total == 0) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.xs),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            height: 3,
-            decoration: BoxDecoration(
-              color: emptyColor,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(4),
-              ),
+          Image.asset(
+            icon.asset,
+            width: AppSizes.iconLg,
+            height: AppSizes.iconLg,
+            excludeFromSemantics: true,
+          ),
+          const SizedBox(height: AppSizes.xs),
+          Text.rich(
+            TextSpan(
+              text: value,
+              children: [
+                TextSpan(
+                  text: unit,
+                  style: _statsText(context, 13),
+                ),
+              ],
             ),
+            style: _statsText(context, 18, weight: FontWeight.w600),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: _statsText(context, 11, muted: true),
           ),
         ],
-      );
-    }
-
-    final maxBarPx = chartHeight - 20;
-    final ratio = total / maxTotal;
-    final barHeight = (math.sqrt(ratio) * maxBarPx).clamp(16.0, maxBarPx);
-
-    final wordsPx = total > 0 ? (wordsStudied / total * barHeight) : 0.0;
-    final grammarPx = total > 0 ? (grammarStudied / total * barHeight) : 0.0;
-    final sentencesPx = barHeight - wordsPx - grammarPx;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 2),
-          child: Text(
-            '$total',
-            style: TextStyle(
-              fontSize: 9,
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.5),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.clip,
-          ),
-        ),
-        ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
-          child: SizedBox(
-            height: barHeight,
-            child: Column(
-              children: [
-                if (sentencesPx > 0)
-                  Container(height: sentencesPx, color: blueColor),
-                if (grammarPx > 0)
-                  Container(height: grammarPx, color: successColor),
-                if (wordsPx > 0)
-                  Container(height: wordsPx, color: primaryColor),
-              ],
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
 
-class _ChartLegendDot extends StatelessWidget {
-  final Color color;
-  final String label;
+class _CategoryCard extends StatelessWidget {
+  const _CategoryCard({required this.total, required this.categories});
 
-  const _ChartLegendDot({required this.color, required this.label});
+  final int total;
+  final List<(String, int, Color)> categories;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            color:
-                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+    final theme = Theme.of(context);
+    final format = MaterialLocalizations.of(context).formatDecimal;
+    final outline = theme.brightness == Brightness.light
+        ? AppColors.redesignOutline
+        : theme.colorScheme.outlineVariant;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border.all(color: outline),
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+      ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 101),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.gap,
+            vertical: AppSizes.sm,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              for (final (index, (label, count, color))
+                  in categories.indexed) ...[
+                if (index > 0) const SizedBox(height: AppSizes.sm),
+                Row(
+                  children: [
+                    Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: AppSizes.xs),
+                    Expanded(
+                        child: Text(label, style: _statsText(context, 13))),
+                    const SizedBox(width: AppSizes.xs),
+                    Expanded(
+                      child: Wrap(
+                        alignment: WrapAlignment.end,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: AppSizes.sm,
+                        children: [
+                          Text('${format(count)}개',
+                              style: _statsText(context, 13)),
+                          Text(
+                            '${total > 0 ? (count * 100 / total).round() : 0}%',
+                            style: _statsText(context, 11, muted: true),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
+}
+
+TextStyle _statsText(
+  BuildContext context,
+  double size, {
+  bool muted = false,
+  FontWeight weight = FontWeight.w400,
+}) {
+  final theme = Theme.of(context);
+  final isLight = theme.brightness == Brightness.light;
+  return TextStyle(
+    color: muted
+        ? isLight
+            ? AppColors.redesignMutedForeground
+            : theme.colorScheme.onSurfaceVariant
+        : isLight
+            ? AppColors.redesignForeground
+            : theme.colorScheme.onSurface,
+    fontFamily: redesignFontFamily,
+    fontSize: size,
+    fontWeight: weight,
+    height: 1.4,
+    letterSpacing: size * -0.025,
+  );
 }

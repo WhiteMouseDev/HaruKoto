@@ -62,7 +62,9 @@ void main() {
     try {
       await tester.pumpWidget(UncontrolledProviderScope(
         container: container,
-        child: const MaterialApp(home: Scaffold(body: SavedQuizSection())),
+        child: const MaterialApp(
+          home: Scaffold(body: SavedQuizSection(compact: true)),
+        ),
       ));
       await tester.pumpAndSettle();
       final resume = find.descendant(

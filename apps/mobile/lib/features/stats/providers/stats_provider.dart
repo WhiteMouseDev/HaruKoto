@@ -6,6 +6,7 @@ import '../data/models/by_category_model.dart';
 import '../data/models/heatmap_data_model.dart';
 import '../data/models/level_progress_model.dart';
 import '../data/models/stats_history_model.dart';
+import '../data/models/study_overview_model.dart';
 import '../data/models/time_chart_model.dart';
 import '../data/models/volume_chart_model.dart';
 import '../data/stats_repository.dart';
@@ -48,6 +49,12 @@ final jlptProgressProvider = FutureProvider.autoDispose<JlptProgressResponse>(
     return ref.watch(statsRepositoryProvider).fetchJlptProgress();
   },
 );
+
+final studyOverviewProvider = FutureProvider.autoDispose<StudyOverview>((ref) {
+  ref.watch(currentAccountIdProvider);
+  ref.watch(studyDateProvider);
+  return ref.watch(statsRepositoryProvider).fetchStudyOverview();
+});
 
 final timeChartProvider =
     FutureProvider.autoDispose.family<TimeChartResponse, int>(

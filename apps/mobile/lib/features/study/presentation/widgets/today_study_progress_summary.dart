@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../data/models/smart_preview_model.dart';
 
 class TodayStudyProgressSummary extends StatelessWidget {
@@ -18,14 +20,22 @@ class TodayStudyProgressSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
     final subject = category == 'GRAMMAR' ? '문법' : '단어';
+    final labelStyle = theme.textTheme.bodySmall?.copyWith(
+      fontFamily: redesignFontFamily,
+      color: isLight ? AppColors.redesignForeground : null,
+    );
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSizes.gap,
         vertical: AppSizes.sm,
       ),
       decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.outline),
+        border: Border.all(
+          color:
+              isLight ? AppColors.redesignOutline : theme.colorScheme.outline,
+        ),
         borderRadius: BorderRadius.circular(AppSizes.radiusSm),
       ),
       child: Wrap(
@@ -34,12 +44,10 @@ class TodayStudyProgressSummary extends StatelessWidget {
         spacing: AppSizes.sm,
         runSpacing: AppSizes.xs,
         children: [
-          Text('$jlptLevel $subject 학습 현황', style: theme.textTheme.bodySmall),
+          Text('$jlptLevel $subject 학습 현황', style: labelStyle),
           Text(
             '${progress.studied} / ${progress.total}개',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: labelStyle,
           ),
         ],
       ),

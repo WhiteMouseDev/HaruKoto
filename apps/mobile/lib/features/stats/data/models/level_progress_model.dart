@@ -46,7 +46,10 @@ class JlptProgressResponse {
   const JlptProgressResponse({required this.levels});
 
   factory JlptProgressResponse.fromJson(Map<String, dynamic> json) {
-    final list = json['levels'] as List<dynamic>? ?? [];
+    final list = json['levels'];
+    if (list is! List<dynamic>) {
+      throw const FormatException('Invalid JLPT progress levels');
+    }
     return JlptProgressResponse(
       levels: list
           .map((e) => JlptLevelProgress.fromJson(e as Map<String, dynamic>))

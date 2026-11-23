@@ -134,6 +134,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/home',
                 builder: (context, state) => const HomePage(),
               ),
+              _statsRoute('/stats'),
             ],
           ),
 
@@ -351,7 +352,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/my',
                 builder: (context, state) => const MyPage(),
                 // Subscription routes — hidden for free launch
-                routes: const [],
+                routes: [_statsRoute('stats')],
               ),
             ],
           ),
@@ -359,14 +360,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // === Full-screen routes (outside shell) ===
-      GoRoute(
-        path: '/stats',
-        parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => _slideTransitionPage(
-          state: state,
-          child: const StatsPage(),
-        ),
-      ),
       GoRoute(
         path: '/notifications',
         parentNavigatorKey: _rootNavigatorKey,
@@ -401,6 +394,14 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.onDispose(router.dispose);
   return router;
 });
+
+GoRoute _statsRoute(String path) => GoRoute(
+      path: path,
+      pageBuilder: (context, state) => _slideTransitionPage(
+        state: state,
+        child: const StatsPage(),
+      ),
+    );
 
 /// Splash: shows splash animation on cold start (1.5s),
 /// then resolves auth state and navigates.

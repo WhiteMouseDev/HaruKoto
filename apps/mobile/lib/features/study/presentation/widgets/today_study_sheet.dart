@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -6,6 +8,7 @@ import '../../../../core/auth/current_account_provider.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/study_clock_provider.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../../../shared/widgets/app_error_retry.dart';
 import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../../home/data/models/category_goals_model.dart';
@@ -201,34 +204,40 @@ class _TodayStudySheetLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(
-          AppSizes.pageHorizontal,
-          AppSizes.pageHorizontal,
-          AppSizes.pageHorizontal,
-          AppSizes.lg,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const AppSheetHandle(),
-            const SizedBox(height: AppSizes.md),
-            Semantics(
-              header: true,
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+    final theme = Theme.of(context);
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(
+        AppSizes.pageHorizontal,
+        AppSizes.pageHorizontal,
+        AppSizes.pageHorizontal,
+        math.max(AppSizes.lg, MediaQuery.paddingOf(context).bottom),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const AppSheetHandle(),
+          const SizedBox(height: AppSizes.md),
+          Semantics(
+            header: true,
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontFamily: redesignFontFamily,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.5,
+                height: 1.4,
+                color: theme.brightness == Brightness.light
+                    ? AppColors.redesignForeground
+                    : null,
               ),
             ),
-            const SizedBox(height: AppSizes.xs),
-            ...children,
-          ],
-        ),
+          ),
+          const SizedBox(height: AppSizes.xs),
+          ...children,
+        ],
       ),
     );
   }
@@ -248,6 +257,12 @@ class _TodayStudyGoal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final labelStyle = theme.textTheme.labelMedium?.copyWith(
+      fontFamily: redesignFontFamily,
+      color: theme.brightness == Brightness.light
+          ? AppColors.redesignMutedForeground
+          : theme.colorScheme.onSurfaceVariant,
+    );
     return Wrap(
       alignment: WrapAlignment.center,
       crossAxisAlignment: WrapCrossAlignment.center,
@@ -263,7 +278,7 @@ class _TodayStudyGoal extends StatelessWidget {
                 horizontal: AppSizes.sm, vertical: AppSizes.xs),
             child: Text(
               jlptLevel,
-              style: theme.textTheme.labelMedium?.copyWith(
+              style: labelStyle?.copyWith(
                 color: AppColors.sakuraOn,
                 fontWeight: FontWeight.w700,
               ),
@@ -275,25 +290,24 @@ class _TodayStudyGoal extends StatelessWidget {
             TextButton(
               onPressed: onGoalTap,
               style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.onSurfaceVariant,
-                padding: const EdgeInsets.symmetric(horizontal: AppSizes.sm),
+                foregroundColor: labelStyle?.color,
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.xs),
               ),
               child: Wrap(
                 alignment: WrapAlignment.center,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 spacing: AppSizes.xs,
                 children: [
-                  Text('하루 목표 $goal개', textAlign: TextAlign.center),
-                  const Icon(LucideIcons.pencil, size: AppSizes.iconSm),
+                  Text('하루 목표 $goal개',
+                      textAlign: TextAlign.center, style: labelStyle),
+                  const Icon(LucideIcons.pencil, size: 12),
                 ],
               ),
             )
           else
             Text(
               '하루 목표 $goal개',
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: labelStyle,
             ),
       ],
     );

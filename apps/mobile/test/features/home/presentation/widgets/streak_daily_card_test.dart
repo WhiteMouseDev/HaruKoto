@@ -9,10 +9,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/providers/study_clock_provider.dart';
 import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
 import 'package:harukoto_mobile/features/home/presentation/widgets/streak_daily_card.dart';
+import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:harukoto_mobile/features/stats/data/models/stats_history_model.dart';
 import 'package:harukoto_mobile/features/stats/data/stats_repository.dart';
 import 'package:harukoto_mobile/features/stats/providers/stats_provider.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 void main() {
   testWidgets('distinguishes today pending from an already completed streak',
@@ -99,12 +99,12 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     expect(repository.calls, [(2026, 9)]);
-    expect(find.text('체크는 학습한 날 · 트로피는 목표를 달성한 날 · 테두리는 오늘'), findsNothing);
+    expect(find.text('학습한 날'), findsNothing);
 
     pending.completeError(StateError('offline'));
     await tester.pumpAndSettle();
     expect(find.text('학습 기록을 불러오지 못했어요'), findsOneWidget);
-    expect(find.text('체크는 학습한 날 · 트로피는 목표를 달성한 날 · 테두리는 오늘'), findsNothing);
+    expect(find.text('학습한 날'), findsNothing);
     repository.result = Future.value([
       StatsHistoryRecord.fromJson({'date': '2026-09-27', 'hasStudied': true}),
     ]);
@@ -112,13 +112,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(repository.calls, [(2026, 9), (2026, 9)]);
     expect(find.text('학습 기록을 불러오지 못했어요'), findsNothing);
-    expect(find.text('체크는 학습한 날 · 트로피는 목표를 달성한 날 · 테두리는 오늘'), findsOneWidget);
-    expect(find.byIcon(LucideIcons.check), findsOneWidget);
+    expect(find.text('학습한 날'), findsOneWidget);
+    expect(find.bySemanticsLabel('2026년 9월 27일 일요일, 오늘, 학습 기록 있음'),
+        findsOneWidget);
 
     await tester.tap(find.byTooltip('이전 달'));
     await tester.pumpAndSettle();
     expect(repository.calls.last, (2026, 8));
-    expect(find.text('2026년 8월'), findsOneWidget);
+    expect(find.text('2026'), findsOneWidget);
+    expect(find.text('8월'), findsOneWidget);
   });
 
   testWidgets(
@@ -143,7 +145,8 @@ void main() {
           'goalAchieved': true,
         }),
       ]);
-    await _pumpCard(tester, repository: repository);
+    await _pumpCard(tester,
+        repository: repository, streak: _streak(current: 5, longest: 9));
     await tester.tap(find.byKey(const ValueKey('streak-calendar-action')));
     await tester.pumpAndSettle();
     expect(find.bySemanticsLabel('2026년 9월 21일 월요일, 학습 기록 없음'), findsOneWidget);
@@ -153,7 +156,27 @@ void main() {
     expect(find.bySemanticsLabel('2026년 9월 25일 금요일, 학습 기록 있음, 하루 목표 달성'),
         findsOneWidget);
     expect(find.bySemanticsLabel('2026년 9월 28일 월요일, 예정'), findsOneWidget);
-    expect(find.byIcon(LucideIcons.trophy), findsOneWidget);
+    final sheet = find.byType(BottomSheet);
+    final title = find.text('연속 학습 5일');
+    expect(title, findsOneWidget);
+    expect(find.textContaining('최장'), findsNothing);
+    final headers = [
+      for (final label in ['일', '월', '화', '수', '목', '금', '토'])
+        tester
+            .getCenter(find.descendant(of: sheet, matching: find.text(label)))
+            .dx,
+    ];
+    expect(headers, orderedEquals(headers.toList()..sort()));
+    final sunday = find.bySemanticsLabel('2026년 9월 27일 일요일, 오늘, 학습 기록 없음');
+    expect(tester.getCenter(sunday).dx, closeTo(headers.first, 0.1));
+    final goalDay =
+        find.bySemanticsLabel('2026년 9월 25일 금요일, 학습 기록 있음, 하루 목표 달성');
+    expect(find.descendant(of: goalDay, matching: find.text('25')),
+        findsOneWidget);
+    expect(
+      find.descendant(of: goalDay, matching: find.byType(Image)),
+      findsOneWidget,
+    );
     expect(find.textContaining('하루에 한 번만'), findsNothing);
     semantics.dispose();
   });
@@ -178,12 +201,44 @@ void main() {
     container.invalidate(currentAccountIdProvider);
     await tester.pumpAndSettle();
     expect(find.text('계정이 변경됐어요. 학습 기록을 다시 열어주세요.'), findsOneWidget);
-    expect(find.text('최장 0일 · 한국 시간 기준'), findsNothing);
+    expect(find.text('연속 학습 0일'), findsNothing);
     final afterSwitch = repository.calls.length;
     retry();
     await tester.pumpAndSettle();
     expect(repository.calls.length, afterSwitch);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('open calendar refreshes the current streak at Korea midnight',
+      (tester) async {
+    var now = DateTime.utc(2026, 9, 27, 14, 59);
+    final nextStreak = Completer<StreakData>();
+    await _pumpCard(
+      tester,
+      clock: () => now,
+      streak: _streak(current: 5, longest: 9),
+      loadStreak: (date) async =>
+          date.day == 27 ? _streak(current: 5, longest: 9) : nextStreak.future,
+    );
+    final container =
+        ProviderScope.containerOf(tester.element(find.byType(StreakDailyCard)));
+    await tester.tap(find.byKey(const ValueKey('streak-calendar-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('연속 학습 5일'), findsOneWidget);
+
+    now = DateTime.utc(2026, 9, 27, 15);
+    container.read(studyDateProvider.notifier).refresh();
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(BottomSheet), findsOneWidget);
+    expect(find.text('연속 학습 5일'), findsNothing);
+    expect(find.text('연속 학습 —'), findsOneWidget);
+
+    nextStreak.complete(_streak(longest: 9));
+    await tester.pumpAndSettle();
+    expect(find.text('연속 학습 0일'), findsOneWidget);
+    expect(find.bySemanticsLabel('2026년 9월 28일 월요일, 오늘, 학습 기록 없음'),
+        findsOneWidget);
   });
 
   for (final brightness in Brightness.values) {
@@ -238,7 +293,7 @@ void main() {
               action.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
           action.owner!.performAction(action.id, SemanticsAction.tap);
           await tester.pumpAndSettle();
-          expect(find.text('학습 기록'), findsOneWidget);
+          expect(find.text('연속 학습 ${status.current}일'), findsOneWidget);
           expect(tester.takeException(), isNull);
         } finally {
           semantics.dispose();
@@ -268,35 +323,52 @@ Future<void> _pumpCard(
   StreakData? streak,
   List<WeeklyStatEntry> weeklyStats = const [],
   DateTime? now,
+  DateTime Function()? clock,
+  Future<StreakData> Function(DateTime)? loadStreak,
   _HistoryRepository? repository,
   Brightness brightness = Brightness.light,
   double scale = 1,
   String? Function()? account,
 }) async {
+  final initialStreak = streak ?? _streak();
   await tester.pumpWidget(ProviderScope(
     overrides: [
       currentAccountIdProvider
           .overrideWith((ref) => account == null ? 'test-account' : account()),
       currentAccountReaderProvider
           .overrideWithValue(account ?? () => 'test-account'),
-      studyClockProvider
-          .overrideWithValue(() => now ?? DateTime.utc(2026, 9, 27, 3)),
+      studyClockProvider.overrideWithValue(
+          clock ?? () => now ?? DateTime.utc(2026, 9, 27, 3)),
+      dashboardProvider.overrideWith((ref) async {
+        final date = ref.watch(studyDateProvider);
+        return DashboardModel(
+          showKana: false,
+          today: TodayStats.fromJson({}),
+          streak: loadStreak == null ? initialStreak : await loadStreak(date),
+          weeklyStats: weeklyStats,
+        );
+      }),
       statsRepositoryProvider
           .overrideWithValue(repository ?? _HistoryRepository()),
     ],
     child: MaterialApp(
       theme: ThemeData(brightness: brightness),
-      home: MediaQuery(
-        data: MediaQueryData(
-            textScaler: TextScaler.linear(scale), disableAnimations: true),
-        child: Scaffold(
-            body: SingleChildScrollView(
-                child: StreakDailyCard(
-          streak: streak ?? _streak(),
-          today: TodayStats.fromJson({}),
-          weeklyStats: weeklyStats,
-          dailyGoal: 10,
-        ))),
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: TextScaler.linear(scale),
+          disableAnimations: true,
+        ),
+        child: child!,
+      ),
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: StreakDailyCard(
+            streak: initialStreak,
+            today: TodayStats.fromJson({}),
+            weeklyStats: weeklyStats,
+            dailyGoal: 10,
+          ),
+        ),
       ),
     ),
   ));

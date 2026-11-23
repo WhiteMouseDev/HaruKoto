@@ -7,6 +7,7 @@ import 'models/by_category_model.dart';
 import 'models/heatmap_data_model.dart';
 import 'models/level_progress_model.dart';
 import 'models/stats_history_model.dart';
+import 'models/study_overview_model.dart';
 import 'models/time_chart_model.dart';
 import 'models/volume_chart_model.dart';
 
@@ -60,12 +61,19 @@ class StatsRepository {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
         '/stats/jlpt-progress',
+        queryParameters: {'include_all_levels': true},
       );
       return JlptProgressResponse.fromJson(response.data ?? {});
-    } catch (e) {
-      unawaited(Sentry.captureException(e, stackTrace: StackTrace.current));
-      return const JlptProgressResponse(levels: []);
+    } catch (error, stackTrace) {
+      unawaited(Sentry.captureException(error, stackTrace: stackTrace));
+      rethrow;
     }
+  }
+
+  Future<StudyOverview> fetchStudyOverview() async {
+    final response =
+        await _dio.get<Map<String, dynamic>>('/stats/study-overview');
+    return StudyOverview.fromJson(response.data ?? {});
   }
 
   Future<TimeChartResponse> fetchTimeChart(int days) async {

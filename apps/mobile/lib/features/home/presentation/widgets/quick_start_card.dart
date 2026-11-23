@@ -3,14 +3,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/auth/current_account_provider.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/study_clock_provider.dart';
 import '../../../../core/services/haptic_service.dart';
-import '../../../../shared/widgets/app_card.dart';
 import '../../../../shared/widgets/app_segmented_tabs.dart';
 import '../../../my/providers/settings_sync_provider.dart';
 import '../../../study/presentation/study_entry_flow.dart';
@@ -53,6 +51,13 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final border =
+        isLight ? const Color(0xFFE5E5EC) : theme.colorScheme.outline;
+    final foreground =
+        isLight ? const Color(0xFF111111) : theme.colorScheme.onSurface;
+    final secondary =
+        isLight ? const Color(0xFF666666) : theme.colorScheme.onSurfaceVariant;
     const categories = DailyGoalCategory.values;
     final category = categories[_selectedIndex];
     final quizType = category == DailyGoalCategory.sentence
@@ -104,7 +109,6 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
     final ctaLabel = entry.action == StudyEntryActionKind.resumeOrNew
         ? '이어서 학습하기'
         : '오늘의 ${category.label} 학습하기';
-    final remaining = dailyProgress.remainingLabel;
     final savedAnswerLabel = savedQuiz.savedAnswerLabel;
 
     return Padding(
@@ -112,33 +116,46 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AppSegmentedTabs(
-            labels: [for (final category in categories) category.label],
-            tabKeys: [
-              for (final category in categories)
-                ValueKey('quick-start-tab-${category.name}'),
-            ],
-            selectedIndex: _selectedIndex,
-            onChanged: _selectTab,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6.5),
+            child: AppSegmentedTabs(
+              labels: [for (final category in categories) category.label],
+              tabKeys: [
+                for (final category in categories)
+                  ValueKey('quick-start-tab-${category.name}'),
+              ],
+              compact: true,
+              selectedIndex: _selectedIndex,
+              onChanged: _selectTab,
+            ),
           ),
-          const SizedBox(height: AppSizes.md),
+          const SizedBox(height: 20),
           Center(
             child: _DailyGoalGauge(
               category: category,
               progress: dailyProgress,
             ),
           ),
-          const SizedBox(height: AppSizes.md),
-          AppCard(
-            padding: EdgeInsets.zero,
+          const SizedBox(height: AppSizes.lg),
+          Card(
+            margin: EdgeInsets.zero,
+            elevation: 0,
+            color: theme.colorScheme.surfaceContainerLowest,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: border),
+            ),
+            clipBehavior: Clip.antiAlias,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _StudyDetailRow(
-                  icon: LucideIcons.flag,
+                  iconAsset: 'assets/icons/figma-home-goal.png',
                   label: '하루 목표',
-                  value: dailyProgress.countLabel,
-                  valueKey: const ValueKey('quick-start-daily-count'),
+                  labelColor: foreground,
+                  value:
+                      _DailyCount(progress: dailyProgress, color: foreground),
+                  goalDivider: border,
                   onEdit: canEditGoal
                       ? () => _showDailyGoalSheet(
                             context,
@@ -149,45 +166,55 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
                       : null,
                   editLabel: '${category.label} 하루 목표 설정',
                 ),
-                if (reviewCount != null) ...[
-                  const Divider(height: 1),
-                  _StudyDetailRow(
-                    icon: LucideIcons.repeat,
-                    label: '복습할 문제',
-                    value: '$reviewCount문제',
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 9),
+                  child: Column(
+                    children: [
+                      if (reviewCount != null)
+                        _StudyDetailRow(
+                          iconAsset: 'assets/icons/figma-home-review.png',
+                          label: '복습할 문제',
+                          labelColor: secondary,
+                          value: Text(
+                            '$reviewCount문제',
+                            style: _studyText(14, color: secondary),
+                            textAlign: TextAlign.end,
+                          ),
+                        ),
+                      _StudyDetailRow(
+                        iconAsset: 'assets/icons/figma-home-difficulty.png',
+                        iconWidth: 16.25,
+                        label: '난이도',
+                        labelColor: secondary,
+                        value: Text(
+                          jlptLevel,
+                          style: _studyText(14, color: secondary),
+                          textAlign: TextAlign.end,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-                const Divider(height: 1),
-                _StudyDetailRow(
-                  icon: LucideIcons.barChart3,
-                  label: '난이도',
-                  value: jlptLevel,
                 ),
               ],
             ),
           ),
-          if (remaining != null || savedAnswerLabel != null) ...[
+          if (savedAnswerLabel != null) ...[
             const SizedBox(height: AppSizes.sm),
-            if (remaining != null)
-              Text(
-                remaining,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            if (savedAnswerLabel != null)
-              Text(
-                '이번 퀴즈 $savedAnswerLabel',
-                key: const ValueKey('quick-start-saved-progress'),
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
+            Text(
+              '이번 퀴즈 $savedAnswerLabel',
+              key: const ValueKey('quick-start-saved-progress'),
+              textAlign: TextAlign.center,
+              style: _studyText(12, color: secondary),
+            ),
           ],
           const SizedBox(height: AppSizes.sm),
           FilledButton(
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(0, 48),
+              textStyle: _studyText(14, weight: FontWeight.w600),
+              backgroundColor: isLight ? AppColors.brandPink : null,
+              foregroundColor: isLight ? Colors.white : null,
+            ),
             onPressed: () {
               HapticService().light();
               executeStudyEntryDecision(
@@ -208,12 +235,24 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
                 context.push('/study/wrong-answers');
               },
               style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.onSurface,
+                foregroundColor: foreground,
                 minimumSize: const Size(48, 48),
                 iconAlignment: IconAlignment.end,
+                textStyle: _studyText(13, weight: FontWeight.w600),
               ),
               label: const Text('오답노트 확인하기'),
-              icon: const Icon(LucideIcons.chevronRight, size: 16),
+              icon: SizedBox.square(
+                dimension: 16,
+                child: Center(
+                  child: Image.asset(
+                    'assets/icons/figma-home-arrow.png',
+                    width: 6.25,
+                    height: 11,
+                    color: isLight ? null : foreground,
+                    excludeFromSemantics: true,
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -278,65 +317,143 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
 
 class _StudyDetailRow extends StatelessWidget {
   const _StudyDetailRow({
-    required this.icon,
+    required this.iconAsset,
     required this.label,
+    required this.labelColor,
     required this.value,
-    this.valueKey,
+    this.iconWidth = 20,
+    this.goalDivider,
     this.onEdit,
     this.editLabel,
   });
 
-  final IconData icon;
+  final String iconAsset;
+  final double iconWidth;
   final String label;
-  final String value;
-  final Key? valueKey;
+  final Color labelColor;
+  final Widget value;
+  final Color? goalDivider;
   final VoidCallback? onEdit;
   final String? editLabel;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final muted = theme.colorScheme.onSurfaceVariant;
+    final divider = goalDivider;
+    final isGoal = divider != null;
     final row = Container(
-      constraints: BoxConstraints(minHeight: onEdit == null ? 36 : 48),
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSizes.gap,
-        vertical: AppSizes.xs,
+      constraints: BoxConstraints(minHeight: isGoal ? 43 : 28),
+      padding: EdgeInsets.fromLTRB(
+        13,
+        isGoal ? 7 : AppSizes.xs,
+        13,
+        isGoal ? 1 : AppSizes.xs,
       ),
       child: Row(
         children: [
-          Icon(icon, size: AppSizes.iconSm, color: muted),
-          const SizedBox(width: AppSizes.sm),
-          Expanded(child: Text(label, style: theme.textTheme.bodySmall)),
-          const SizedBox(width: AppSizes.sm),
-          Flexible(
-            child: Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: Text(
-                value,
-                key: valueKey,
-                textAlign: TextAlign.end,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+          SizedBox.square(
+            dimension: 20,
+            child: Center(
+              child: Image.asset(
+                iconAsset,
+                width: iconWidth,
+                excludeFromSemantics: true,
               ),
             ),
           ),
-          if (onEdit != null) ...[
-            const SizedBox(width: AppSizes.xs),
-            Icon(LucideIcons.pencil, size: 14, color: muted),
-          ],
+          const SizedBox(width: AppSizes.xs),
+          Expanded(
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: AppSizes.xs,
+              children: [
+                Text(
+                  label,
+                  style: _studyText(
+                    isGoal ? 16 : 14,
+                    color: labelColor,
+                    weight: isGoal ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+                if (onEdit != null)
+                  Image.asset(
+                    'assets/icons/figma-home-edit.png',
+                    width: 16,
+                    excludeFromSemantics: true,
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSizes.sm),
+          Flexible(
+            child:
+                Align(alignment: AlignmentDirectional.centerEnd, child: value),
+          ),
         ],
       ),
     );
-    if (onEdit == null) return row;
+    if (divider == null) return row;
+    final goalRegion = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        row,
+        Divider(
+          height: 1,
+          thickness: 1,
+          indent: 13,
+          endIndent: 13,
+          color: divider,
+        ),
+        // Keep the divider and its adjacent space inside the 48dp edit target.
+        const SizedBox(height: 4),
+      ],
+    );
+    if (onEdit == null) return goalRegion;
     return Tooltip(
       message: editLabel ?? label,
       child: InkWell(
         key: const ValueKey('quick-start-edit-goal'),
         onTap: onEdit,
-        child: row,
+        child: goalRegion,
       ),
+    );
+  }
+}
+
+class _DailyCount extends StatelessWidget {
+  const _DailyCount({required this.progress, required this.color});
+
+  final DailyGoalProgress progress;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    const key = ValueKey('quick-start-daily-count');
+    final accent = Theme.of(context).brightness == Brightness.light
+        ? const Color(0xFFF06292)
+        : AppColors.brandPink;
+    final answeredCount = progress.answeredCount;
+    if (progress.fraction == null || answeredCount == null) {
+      return Text(
+        progress.countLabel,
+        key: key,
+        textAlign: TextAlign.end,
+        style: _studyText(14, color: color),
+      );
+    }
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: '$answeredCount',
+            style: _studyText(16, color: accent, weight: FontWeight.w600),
+          ),
+          TextSpan(text: ' / ${progress.goal}개'),
+        ],
+      ),
+      key: key,
+      textAlign: TextAlign.end,
+      semanticsLabel: progress.countLabel,
+      style: _studyText(14, color: color),
     );
   }
 }
@@ -350,26 +467,29 @@ class _DailyGoalGauge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final accent = theme.brightness == Brightness.light
-        ? AppColors.primaryButton
-        : AppColors.sakura;
+    final isLight = theme.brightness == Brightness.light;
+    final foreground =
+        isLight ? const Color(0xFF111111) : theme.colorScheme.onSurface;
 
     return Semantics(
       label: '${category.label} 하루 목표 진행률',
       value: progress.percentage ?? '확인 필요',
+      hint: progress.remainingLabel,
       excludeSemantics: true,
       child: SizedBox(
         width: 192,
         child: AspectRatio(
-          aspectRatio: 2,
+          aspectRatio: 192 / 101,
           child: CustomPaint(
             painter: _GoalArcPainter(
               progress: progress.fraction ?? 0,
-              trackColor: theme.colorScheme.onSurface.withValues(alpha: 0.1),
-              progressColor: AppColors.sakura,
+              trackColor: isLight
+                  ? const Color(0xFFF1F1F5)
+                  : theme.colorScheme.surfaceContainerHighest,
+              progressColor: const Color(0xFFF59BA7),
             ),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(32, 24, 32, 4),
+              padding: const EdgeInsets.fromLTRB(32, 29, 32, 9),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Column(
@@ -377,17 +497,21 @@ class _DailyGoalGauge extends StatelessWidget {
                   children: [
                     Text(
                       category.label,
-                      style:
-                          theme.textTheme.labelMedium?.copyWith(color: accent),
+                      style: _studyText(
+                        12,
+                        color: isLight
+                            ? const Color(0xFFF06292)
+                            : AppColors.brandPink,
+                      ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
                       progress.percentage ?? '—',
                       key: progress.percentage == null
                           ? null
                           : const ValueKey('quick-start-percentage'),
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: _studyText(24,
+                          color: foreground, weight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -413,10 +537,11 @@ class _GoalArcPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    const strokeWidth = 8.0;
+    const strokeWidth = 10.0;
     final rect = Rect.fromCircle(
       center: Offset(size.width / 2, size.height - strokeWidth / 2),
-      radius: size.height - strokeWidth,
+      radius:
+          math.min(size.width / 2 - strokeWidth / 2, size.height - strokeWidth),
     );
     final paint = Paint()
       ..style = PaintingStyle.stroke
@@ -441,3 +566,17 @@ class _GoalArcPainter extends CustomPainter {
       trackColor != oldDelegate.trackColor ||
       progressColor != oldDelegate.progressColor;
 }
+
+TextStyle _studyText(
+  double size, {
+  Color? color,
+  FontWeight weight = FontWeight.w400,
+}) =>
+    TextStyle(
+      fontFamily: 'Pretendard',
+      fontSize: size,
+      height: 1.4,
+      letterSpacing: -size * 0.025,
+      fontWeight: weight,
+      color: color,
+    );
