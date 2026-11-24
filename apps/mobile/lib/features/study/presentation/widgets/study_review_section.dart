@@ -10,6 +10,7 @@ import '../../../../core/auth/current_account_provider.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/network/api_exception.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../data/models/review_summary_model.dart';
 import '../../providers/lesson_pilot_telemetry_provider.dart';
 import '../../providers/study_provider.dart';
@@ -23,11 +24,13 @@ class StudyReviewSection extends ConsumerStatefulWidget {
     super.key,
     required this.jlptLevel,
     required this.mapEnabled,
+    this.redesigned = false,
     this.routeBuilder = buildQuizPageRoute,
   });
 
   final String jlptLevel;
   final bool mapEnabled;
+  final bool redesigned;
   final QuizRouteBuilder routeBuilder;
 
   @override
@@ -144,32 +147,69 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
         const Text('새 레슨을 배우거나 다음 복습 시간에 다시 만나요.'),
       ]);
     }
-    return _panel(context, [
-      Text('복습할 표현 ${summary.totalDue}개',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontSize: 24, fontWeight: FontWeight.w800, height: 1.3)),
-      const SizedBox(height: 6),
-      Text('단어 ${summary.wordDue}개 · 문법 ${summary.grammarDue}개'),
-      const SizedBox(height: 6),
-      const Text('단어와 문법을 골라 한 번에 최대 10개씩 복습해요.'),
-      const SizedBox(height: 16),
-      if (summary.wordDue > 0)
-        _categoryButton(context,
-            owner: owner,
-            summary: summary,
-            label: '단어',
-            quizType: 'VOCABULARY',
-            due: summary.wordDue),
-      if (summary.wordDue > 0 && summary.grammarDue > 0)
-        const SizedBox(height: 10),
-      if (summary.grammarDue > 0)
-        _categoryButton(context,
-            owner: owner,
-            summary: summary,
-            label: '문법',
-            quizType: 'GRAMMAR',
-            due: summary.grammarDue),
-    ]);
+    final breakdown = '단어 ${summary.wordDue}개 · 문법 ${summary.grammarDue}개';
+    final hasBoth = summary.wordDue > 0 && summary.grammarDue > 0;
+    final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
+    return _panel(
+        context,
+        [
+          if (widget.redesigned) ...[
+            Semantics(
+              header: true,
+              child: Text('오늘 복습할 표현',
+                  style: TextStyle(
+                    fontFamily: redesignFontFamily,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    height: 1.4,
+                    color: light
+                        ? AppColors.redesignForeground
+                        : theme.colorScheme.onSurface,
+                  )),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              hasBoth
+                  ? '단어와 문법을 골라 한 번에 최대 10개씩 복습해요.'
+                  : '학습한 내용을 복습하고, 실력을 키워봐요!',
+              style: TextStyle(
+                fontFamily: redesignFontFamily,
+                fontSize: 12,
+                height: 1.4,
+                color: light
+                    ? AppColors.redesignMutedForeground
+                    : theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 12),
+          ] else ...[
+            Text('복습할 표현 ${summary.totalDue}개',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                    fontSize: 24, fontWeight: FontWeight.w800, height: 1.3)),
+            const SizedBox(height: 6),
+            Text(breakdown),
+            const SizedBox(height: 6),
+            const Text('단어와 문법을 골라 한 번에 최대 10개씩 복습해요.'),
+            const SizedBox(height: 16),
+          ],
+          if (summary.wordDue > 0)
+            _categoryButton(context,
+                owner: owner,
+                summary: summary,
+                label: '단어',
+                quizType: 'VOCABULARY',
+                due: summary.wordDue),
+          if (hasBoth) SizedBox(height: widget.redesigned ? 8 : 10),
+          if (summary.grammarDue > 0)
+            _categoryButton(context,
+                owner: owner,
+                summary: summary,
+                label: '문법',
+                quizType: 'GRAMMAR',
+                due: summary.grammarDue),
+        ],
+        breakdown: widget.redesigned ? breakdown : null);
   }
 
   Color _accent(BuildContext context) => widget.mapEnabled
@@ -184,6 +224,12 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
       required int due}) {
     final batch = math.min(due, 10);
     final level = widget.jlptLevel;
+    final brightness = Theme.of(context).brightness;
+    final light = brightness == Brightness.light;
+    final buttonLabel =
+        widget.redesigned && (summary.wordDue <= 0 || summary.grammarDue <= 0)
+            ? '복습 시작'
+            : '$label 최대 $batch개 복습';
     return SizedBox(
       width: double.infinity,
       child: FilledButton(
@@ -197,38 +243,73 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
                 quizType: quizType,
                 due: due)),
         style: FilledButton.styleFrom(
-          backgroundColor: widget.mapEnabled
-              ? StudyMapColors.button(Theme.of(context).brightness)
-              : AppColors.sakuraContainer,
-          foregroundColor: _accent(context),
-          minimumSize: const Size.fromHeight(48),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          backgroundColor: widget.redesigned
+              ? (light ? AppColors.brandPink : null)
+              : (widget.mapEnabled
+                  ? StudyMapColors.button(brightness)
+                  : AppColors.sakuraContainer),
+          foregroundColor: widget.redesigned
+              ? (light ? Colors.white : null)
+              : _accent(context),
+          minimumSize: Size.fromHeight(widget.redesigned ? 42 : 48),
+          tapTargetSize: MaterialTapTargetSize.padded,
+          padding: EdgeInsets.symmetric(
+              horizontal: widget.redesigned ? 20 : 16,
+              vertical: widget.redesigned ? 10 : 12),
+          textStyle: widget.redesigned
+              ? const TextStyle(
+                  fontFamily: redesignFontFamily,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  height: 1.4,
+                )
+              : null,
         ),
-        child: Text('$label 최대 $batch개 복습',
+        child: Text(buttonLabel,
             semanticsLabel: '$label 복습, 남은 $due개 중 최대 $batch개',
             textAlign: TextAlign.center),
       ),
     );
   }
 
-  Widget _panel(BuildContext context, List<Widget> children) {
+  Widget _panel(BuildContext context, List<Widget> children,
+      {String? breakdown}) {
     final theme = Theme.of(context);
     final light = theme.brightness == Brightness.light;
-    return Semantics(
-      container: true,
-      liveRegion: true,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: light
-              ? AppColors.cardWarm
-              : theme.colorScheme.surfaceContainerLow,
-          border: Border.all(
-              color: light ? AppColors.lightBorder : theme.colorScheme.outline),
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
+    final header = widget.redesigned
+        ? Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              Image.asset('assets/icons/figma-study-review.png',
+                  width: 40, height: 40, excludeFromSemantics: true),
+              if (breakdown != null)
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: light ? Colors.white : theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(AppSizes.radiusFull),
+                  ),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    child: Text(
+                      breakdown,
+                      style: TextStyle(
+                        fontFamily: redesignFontFamily,
+                        fontSize: 12,
+                        height: 1.4,
+                        color: light
+                            ? AppColors.redesignMutedForeground
+                            : theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          )
+        : Row(children: [
             Icon(LucideIcons.rotateCcw, size: 20, color: _accent(context)),
             const SizedBox(width: 8),
             Expanded(
@@ -237,7 +318,29 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
                 child: Text('오늘의 복습', style: theme.textTheme.titleSmall),
               ),
             ),
-          ]),
+          ]);
+    return Semantics(
+      container: true,
+      liveRegion: true,
+      child: Container(
+        padding: EdgeInsets.all(widget.redesigned ? 16 : 20),
+        decoration: BoxDecoration(
+          color: light
+              ? (widget.redesigned
+                  ? AppColors.redesignSurface
+                  : AppColors.cardWarm)
+              : theme.colorScheme.surfaceContainerLow,
+          border: widget.redesigned
+              ? null
+              : Border.all(
+                  color: light
+                      ? AppColors.lightBorder
+                      : theme.colorScheme.outline),
+          borderRadius:
+              BorderRadius.circular(widget.redesigned ? 12 : AppSizes.radiusMd),
+        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          SizedBox(width: double.infinity, child: header),
           const SizedBox(height: 12),
           ...children,
         ]),
