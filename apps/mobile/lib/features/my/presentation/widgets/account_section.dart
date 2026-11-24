@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
-import '../../../../core/constants/sizes.dart';
-import '../../../../shared/widgets/app_section_header.dart';
+import 'my_settings_group.dart';
 
 class AccountSection extends StatelessWidget {
   final VoidCallback onLogout;
@@ -22,73 +21,50 @@ class AccountSection extends StatelessWidget {
     final brightness = theme.brightness;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const AppSectionHeader(label: '계정'),
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              ListTile(
-                leading: Icon(
-                  LucideIcons.logOut,
-                  size: 20,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                ),
-                title: Text(
-                  loggingOut ? '로그아웃 중...' : '로그아웃',
-                  style: const TextStyle(fontSize: 14),
-                ),
-                onTap: loggingOut ? null : onLogout,
+        MySettingsGroup(
+          label: '계정',
+          rows: [
+            ListTile(
+              leading: Icon(
+                LucideIcons.logOut,
+                size: 20,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
-              const Divider(height: 1),
-              ListTile(
-                leading: Icon(
-                  LucideIcons.trash2,
-                  size: 20,
-                  color: AppColors.error(brightness),
-                ),
-                title: Text(
-                  '회원 탈퇴',
-                  style: TextStyle(
-                      fontSize: 14, color: AppColors.error(brightness)),
-                ),
-                onTap: () => _showDeleteDialog(context),
+              title: Text(
+                loggingOut ? '로그아웃 중...' : '로그아웃',
+                style: const TextStyle(fontSize: 14),
               ),
-            ],
-          ),
-        ),
-
-        // Version
-        const SizedBox(height: 16),
-        Center(
-          child: Text(
-            'v0.1.0',
-            style: TextStyle(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+              onTap: loggingOut ? null : onLogout,
             ),
+          ],
+        ),
+        Align(
+          alignment: Alignment.center,
+          child: TextButton(
+            onPressed: () => _showDeleteDialog(context),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.error(brightness),
+            ),
+            child: const Text('회원탈퇴', semanticsLabel: '회원 탈퇴'),
           ),
         ),
       ],
     );
   }
 
-  void _showDeleteDialog(BuildContext context) {
-    showDialog(
+  Future<void> _showDeleteDialog(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => _DeleteAccountDialog(onDelete: onDeleteAccount),
+      builder: (_) => const _DeleteAccountDialog(),
     );
+    if (confirmed == true && context.mounted) onDeleteAccount();
   }
 }
 
 class _DeleteAccountDialog extends StatefulWidget {
-  const _DeleteAccountDialog({required this.onDelete});
-
-  final VoidCallback onDelete;
+  const _DeleteAccountDialog();
 
   @override
   State<_DeleteAccountDialog> createState() => _DeleteAccountDialogState();
@@ -106,6 +82,7 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: const Text('회원 탈퇴'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -141,10 +118,7 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
         ),
         TextButton(
           onPressed: _controller.text == '탈퇴'
-              ? () {
-                  Navigator.pop(context);
-                  widget.onDelete();
-                }
+              ? () => Navigator.pop(context, true)
               : null,
           style: TextButton.styleFrom(
             foregroundColor: AppColors.error(Theme.of(context).brightness),
