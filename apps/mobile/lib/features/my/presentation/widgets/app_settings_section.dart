@@ -6,11 +6,13 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/device_settings_provider.dart';
+import '../../../../core/providers/installed_app_version_provider.dart';
 import '../../../../core/providers/notification_settings_provider.dart';
 import '../../../../core/providers/quiz_settings_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../providers/settings_sync_provider.dart';
+import 'my_settings_group.dart';
 
 class AppSettingsSection extends ConsumerWidget {
   const AppSettingsSection({super.key});
@@ -21,150 +23,139 @@ class AppSettingsSection extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
     final deviceSettings = ref.watch(deviceSettingsProvider);
     final userPreferences = ref.watch(quizSettingsProvider);
+    final version = ref.watch(installedAppVersionProvider).value;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 6),
-          child: Text(
-            '앱 설정',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-          ),
-        ),
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
+    return MySettingsGroup(
+      label: '앱 설정',
+      rows: [
+        ListTile(
+          leading:
+              const Icon(LucideIcons.info, size: 20, color: AppColors.purple),
+          title: Row(
             children: [
-              // Theme
-              ListTile(
-                leading: const Icon(LucideIcons.palette,
-                    size: 20, color: AppColors.purple),
-                title: const Text('테마 선택', style: TextStyle(fontSize: 14)),
-                trailing: Text(
-                  _themeModeLabel(themeMode),
-                  style: TextStyle(
-                      fontSize: 14,
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.6)),
-                ),
-                onTap: () => _showThemeSheet(context, ref, themeMode),
+              const Expanded(
+                child: Text('앱 버전', style: TextStyle(fontSize: 14)),
               ),
-              const Divider(height: 1),
-
-              // Furigana
-              SwitchListTile(
-                secondary: const Icon(LucideIcons.languages,
-                    size: 20, color: AppColors.mintPressed),
-                title:
-                    const Text('읽기(후리가나) 표시', style: TextStyle(fontSize: 14)),
-                subtitle: Text(
-                  '퀴즈에서 한자 위에 히라가나 표시',
-                  style: TextStyle(
-                      fontSize: 12,
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  version ?? '—',
+                  semanticsLabel: version ?? '앱 버전 정보 없음',
+                  textAlign: TextAlign.end,
                 ),
-                value: userPreferences.showFurigana,
-                onChanged: (value) async {
-                  unawaited(HapticService().selection());
-                  try {
-                    await ref
-                        .read(settingsSyncServiceProvider)
-                        .updateShowFurigana(value);
-                  } catch (_) {
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('후리가나 설정 저장에 실패했습니다'),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  }
-                },
-              ),
-              const Divider(height: 1),
-
-              // Sound Effects
-              const _SoundToggle(),
-              const Divider(height: 1),
-
-              // Haptic Feedback
-              const _HapticToggle(),
-              const Divider(height: 1),
-
-              // Study Reminder
-              SwitchListTile(
-                secondary: const Icon(LucideIcons.bell,
-                    size: 20, color: AppColors.sakura),
-                title: const Text('학습 리마인더', style: TextStyle(fontSize: 14)),
-                subtitle: Text(
-                  '매일 설정한 시간에 알림',
-                  style: TextStyle(
-                      fontSize: 12,
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-                ),
-                value: deviceSettings.reminderEnabled,
-                onChanged: (value) {
-                  HapticService().selection();
-                  unawaited(
-                    ref
-                        .read(notificationSettingsProvider.notifier)
-                        .setReminderEnabled(value),
-                  );
-                },
-              ),
-              if (deviceSettings.reminderEnabled) ...[
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(LucideIcons.clock,
-                      size: 20, color: AppColors.sakura),
-                  title: const Text('리마인더 시간', style: TextStyle(fontSize: 14)),
-                  trailing: Text(
-                    deviceSettings.reminderTimeLabel,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.sakura,
-                    ),
-                  ),
-                  onTap: () => _showTimePicker(context, ref),
-                ),
-              ],
-              const Divider(height: 1),
-
-              // Streak Defense
-              SwitchListTile(
-                secondary: const Icon(LucideIcons.flame,
-                    size: 20, color: AppColors.streak),
-                title: const Text('스트릭 방어 알림', style: TextStyle(fontSize: 14)),
-                subtitle: Text(
-                  '매일 22:00에 학습 리마인더',
-                  style: TextStyle(
-                      fontSize: 12,
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-                ),
-                value: deviceSettings.streakDefenseEnabled,
-                onChanged: (value) {
-                  HapticService().selection();
-                  unawaited(
-                    ref
-                        .read(notificationSettingsProvider.notifier)
-                        .setStreakDefenseEnabled(value),
-                  );
-                },
               ),
             ],
           ),
+        ),
+        // Theme
+        ListTile(
+          leading: const Icon(LucideIcons.palette,
+              size: 20, color: AppColors.purple),
+          title: const Text('테마 선택', style: TextStyle(fontSize: 14)),
+          trailing: Text(
+            _themeModeLabel(themeMode),
+            style: TextStyle(
+                fontSize: 14,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
+          ),
+          onTap: () => _showThemeSheet(context, ref, themeMode),
+        ),
+
+        // Furigana
+        SwitchListTile(
+          secondary: const Icon(LucideIcons.languages,
+              size: 20, color: AppColors.mintPressed),
+          title: const Text('읽기(후리가나) 표시', style: TextStyle(fontSize: 14)),
+          subtitle: Text(
+            '퀴즈에서 한자 위에 히라가나 표시',
+            style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+          ),
+          value: userPreferences.showFurigana,
+          onChanged: (value) async {
+            unawaited(HapticService().selection());
+            try {
+              await ref
+                  .read(settingsSyncServiceProvider)
+                  .updateShowFurigana(value);
+            } catch (_) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('후리가나 설정 저장에 실패했습니다'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          },
+        ),
+
+        // Sound Effects
+        const _SoundToggle(),
+
+        // Haptic Feedback
+        const _HapticToggle(),
+
+        // Study Reminder
+        SwitchListTile(
+          secondary:
+              const Icon(LucideIcons.bell, size: 20, color: AppColors.sakura),
+          title: const Text('학습 리마인더', style: TextStyle(fontSize: 14)),
+          subtitle: Text(
+            '매일 설정한 시간에 알림',
+            style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+          ),
+          value: deviceSettings.reminderEnabled,
+          onChanged: (value) {
+            HapticService().selection();
+            unawaited(
+              ref
+                  .read(notificationSettingsProvider.notifier)
+                  .setReminderEnabled(value),
+            );
+          },
+        ),
+        if (deviceSettings.reminderEnabled) ...[
+          ListTile(
+            leading: const Icon(LucideIcons.clock,
+                size: 20, color: AppColors.sakura),
+            title: const Text('리마인더 시간', style: TextStyle(fontSize: 14)),
+            trailing: Text(
+              deviceSettings.reminderTimeLabel,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.sakura,
+              ),
+            ),
+            onTap: () => _showTimePicker(context, ref),
+          ),
+        ],
+
+        // Streak Defense
+        SwitchListTile(
+          secondary:
+              const Icon(LucideIcons.flame, size: 20, color: AppColors.streak),
+          title: const Text('연속학습 알림', style: TextStyle(fontSize: 14)),
+          subtitle: Text(
+            '매일 22:00에 학습 리마인더',
+            style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+          ),
+          value: deviceSettings.streakDefenseEnabled,
+          onChanged: (value) {
+            HapticService().selection();
+            unawaited(
+              ref
+                  .read(notificationSettingsProvider.notifier)
+                  .setStreakDefenseEnabled(value),
+            );
+          },
         ),
       ],
     );

@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/auth/current_account_provider.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/user_preferences_provider.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../providers/settings_sync_provider.dart';
+import 'my_settings_group.dart';
 
 class SettingsMenu extends ConsumerWidget {
   const SettingsMenu({super.key});
@@ -15,93 +17,90 @@ class SettingsMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final preferences = ref.watch(userPreferencesProvider);
+    final theme = Theme.of(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 6),
-          child: Text(
-            '학습 설정',
+    return MySettingsGroup(
+      label: '학습 설정',
+      rows: [
+        // JLPT Level
+        ListTile(
+          leading: Image.asset(
+            'assets/icons/figma-my-jlpt.png',
+            width: 20,
+            height: 20,
+            fit: BoxFit.contain,
+            excludeFromSemantics: true,
+          ),
+          title: const Text('JLPT 레벨', style: TextStyle(fontSize: 14)),
+          trailing: Text(
+            preferences.jlptLevel == 'ABSOLUTE_ZERO'
+                ? '입문'
+                : preferences.jlptLevel,
             style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: theme.brightness == Brightness.light
+                  ? AppColors.redesignMutedForeground
+                  : theme.colorScheme.onSurfaceVariant,
             ),
           ),
+          onTap: () => _showJlptSheet(
+            context,
+            ref,
+            preferences.jlptLevel,
+          ),
         ),
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              // JLPT Level
-              ListTile(
-                leading: const Icon(LucideIcons.graduationCap,
-                    size: 20, color: AppColors.purple),
-                title: const Text('JLPT 레벨', style: TextStyle(fontSize: 14)),
-                trailing: Text(
-                  preferences.jlptLevel,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.purple,
-                  ),
-                ),
-                onTap: () => _showJlptSheet(
-                  context,
-                  ref,
-                  preferences.jlptLevel,
-                ),
-              ),
-              const Divider(height: 1),
 
-              // Show Kana
-              SwitchListTile(
-                secondary: const Icon(LucideIcons.languages,
-                    size: 20, color: AppColors.sakura),
-                title: const Text('가나 학습 표시', style: TextStyle(fontSize: 14)),
-                value: preferences.showKana,
-                onChanged: (value) async {
-                  unawaited(HapticService().selection());
-                  try {
-                    await ref
-                        .read(settingsSyncServiceProvider)
-                        .updateShowKana(value);
-                  } catch (_) {
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('가나 설정 저장에 실패했습니다'),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  }
-                },
-              ),
-            ],
+        // Show Kana
+        SwitchListTile(
+          secondary: Image.asset(
+            'assets/icons/figma-my-kana.png',
+            width: 20,
+            height: 20,
+            fit: BoxFit.contain,
+            excludeFromSemantics: true,
           ),
+          title: const Text('가나 학습 표시', style: TextStyle(fontSize: 14)),
+          value: preferences.showKana,
+          onChanged: (value) async {
+            unawaited(HapticService().selection());
+            try {
+              await ref.read(settingsSyncServiceProvider).updateShowKana(value);
+            } catch (_) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('가나 설정 저장에 실패했습니다'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          },
         ),
       ],
     );
   }
 
-  void _showJlptSheet(
+  Future<void> _showJlptSheet(
     BuildContext context,
     WidgetRef ref,
     String currentJlptLevel,
-  ) {
+  ) async {
+    final owner = ref.read(currentAccountIdProvider);
+    bool accountCurrent() =>
+        context.mounted &&
+        owner != null &&
+        ref.read(currentAccountIdProvider) == owner &&
+        ref.read(currentAccountReaderProvider)() == owner;
+    if (!accountCurrent()) return;
     final theme = Theme.of(context);
-    showModalBottomSheet(
+    final selection = await showModalBottomSheet<String>(
       context: context,
       shape: AppSizes.sheetShape,
       builder: (context) {
         return SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -131,24 +130,7 @@ class SettingsMenu extends ConsumerWidget {
                     ),
                     onTap: () {
                       HapticService().selection();
-                      Navigator.pop(context);
-                      if (level != currentJlptLevel) {
-                        unawaited(() async {
-                          try {
-                            await ref
-                                .read(settingsSyncServiceProvider)
-                                .updateJlptLevel(level);
-                          } catch (_) {
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('JLPT 레벨 저장에 실패했습니다'),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
-                          }
-                        }());
-                      }
+                      Navigator.pop(context, level);
                     },
                   ),
               ],
@@ -157,5 +139,22 @@ class SettingsMenu extends ConsumerWidget {
         );
       },
     );
+    if (selection == null ||
+        selection == currentJlptLevel ||
+        !accountCurrent() ||
+        ref.read(userPreferencesProvider).jlptLevel != currentJlptLevel) {
+      return;
+    }
+    try {
+      await ref.read(settingsSyncServiceProvider).updateJlptLevel(selection);
+    } catch (_) {
+      if (!context.mounted || !accountCurrent()) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('JLPT 레벨 저장에 실패했습니다'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 }

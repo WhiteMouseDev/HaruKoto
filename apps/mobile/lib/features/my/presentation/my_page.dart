@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+
+import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/theme/text_theme.dart';
 import '../../../shared/widgets/app_sheet_handle.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../data/models/profile_detail_model.dart';
@@ -26,30 +29,88 @@ class MyPage extends ConsumerStatefulWidget {
 class _MyPageState extends ConsumerState<MyPage> {
   bool _loggingOut = false;
 
+  bool _isCurrent(String? owner) =>
+      mounted &&
+      owner != null &&
+      ref.read(currentAccountIdProvider) == owner &&
+      ref.read(currentAccountReaderProvider)() == owner;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final owner = ref.watch(currentAccountIdProvider);
+    ref.watch(currentAccountReaderProvider);
     final profileAsync = ref.watch(profileDetailProvider);
 
-    // Keep previous data during refresh to avoid full tree swap
-    final data = profileAsync.hasValue ? profileAsync.value : null;
-    final isInitialLoading = profileAsync.isLoading && data == null;
+    final candidate = profileAsync.value;
+    final data = _isCurrent(owner) &&
+            candidate != null &&
+            (candidate.profile.id == owner ||
+                candidate.profile.id.isEmpty &&
+                    !profileAsync.isLoading &&
+                    !profileAsync.hasError)
+        ? candidate
+        : null;
     final hasError = profileAsync.hasError && data == null;
+    final light = theme.brightness == Brightness.light;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('MY')),
-      body: hasError
-          ? _buildError(context)
-          : isInitialLoading
-              ? _buildSkeleton(context)
-              : data == null
-                  ? _buildSkeleton(context)
-                  : _buildContent(context, theme, data),
+    return Theme(
+      data: theme.copyWith(
+        textTheme: theme.textTheme.apply(fontFamily: redesignFontFamily),
+        switchTheme: light
+            ? theme.switchTheme.copyWith(
+                trackColor: WidgetStateProperty.resolveWith((states) =>
+                    states.contains(WidgetState.selected)
+                        ? AppColors.redesignVocabulary
+                        : null),
+                thumbColor: WidgetStateProperty.resolveWith((states) =>
+                    states.contains(WidgetState.selected)
+                        ? Colors.white
+                        : null),
+              )
+            : theme.switchTheme,
+      ),
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+                child: Semantics(
+                  header: true,
+                  child: Text(
+                    '마이페이지',
+                    style: TextStyle(
+                      fontFamily: redesignFontFamily,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      height: 1.4,
+                      letterSpacing: -0.5,
+                      color: light
+                          ? AppColors.redesignForeground
+                          : theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: hasError
+                    ? _buildError(context)
+                    : data == null || owner == null
+                        ? _buildSkeleton(context)
+                        : _buildContent(context, theme, data, owner),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildContent(
-      BuildContext context, ThemeData theme, ProfileDetailModel data) {
+  Widget _buildContent(BuildContext context, ThemeData theme,
+      ProfileDetailModel data, String owner) {
+    final light = theme.brightness == Brightness.light;
     return RefreshIndicator(
       color: theme.colorScheme.primary,
       onRefresh: () async {
@@ -57,16 +118,17 @@ class _MyPageState extends ConsumerState<MyPage> {
         ref.invalidate(subscriptionStatusProvider);
       },
       child: ListView(
-        padding: const EdgeInsets.all(AppSizes.md),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 2, 20, 40),
         children: [
           // Profile Hero
           ProfileHero(
             profile: data.profile,
             summary: data.summary,
             onEditNickname: () =>
-                _showNicknameSheet(context, data.profile.nickname),
+                _showNicknameSheet(context, owner, data.profile.nickname),
           ),
-          const SizedBox(height: AppSizes.md),
+          const SizedBox(height: 8),
 
           // Subscription — hidden for free launch (re-enable when IAP ready)
           // SubscriptionSection(
@@ -77,46 +139,70 @@ class _MyPageState extends ConsumerState<MyPage> {
 
           // Learning Stats
           Card(
+            margin: EdgeInsets.zero,
+            elevation: 0,
+            color: light
+                ? const Color(0xFFFEF0F2)
+                : theme.colorScheme.surfaceContainerHigh,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+              borderRadius: BorderRadius.circular(12),
             ),
             clipBehavior: Clip.antiAlias,
             child: ListTile(
-              leading: const Icon(LucideIcons.barChart3,
-                  size: 20, color: AppColors.purple),
-              title: const Text('학습 통계', style: TextStyle(fontSize: 14)),
-              trailing: Icon(LucideIcons.chevronRight,
-                  size: 18,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4)),
+              minTileHeight: 48,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              leading: Image.asset(
+                'assets/icons/figma-my-stats.png',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+                excludeFromSemantics: true,
+              ),
+              title: const Text('나의 학습 통계',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+              trailing: Image.asset(
+                'assets/icons/figma-home-arrow.png',
+                width: 6.25,
+                height: 11,
+                color: light ? null : theme.colorScheme.onSurfaceVariant,
+                excludeFromSemantics: true,
+              ),
               onTap: () => context.push('/my/stats'),
             ),
           ),
-          const SizedBox(height: AppSizes.md),
+          const SizedBox(height: 40),
 
           // Settings
           const SettingsMenu(),
-          const SizedBox(height: AppSizes.md),
+          const SizedBox(height: 40),
 
           // App Settings
           const AppSettingsSection(),
-          const SizedBox(height: AppSizes.md),
+          const SizedBox(height: 40),
 
           // Info
           const InfoSection(),
-          const SizedBox(height: AppSizes.md),
+          const SizedBox(height: 40),
 
           // Account
           AccountSection(
-            onLogout: _handleLogout,
+            onLogout: () => _handleLogout(owner),
             loggingOut: _loggingOut,
-            onDeleteAccount: _handleDeleteAccount,
+            onDeleteAccount: () => _handleDeleteAccount(owner),
           ),
           const SizedBox(height: AppSizes.md),
 
           // Footer
-          Padding(
-            padding: const EdgeInsets.only(bottom: 120),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: light
+                  ? AppColors.redesignSurface
+                  : theme.colorScheme.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   '화이트마우스데브 (WhiteMouseDev)',
@@ -180,7 +266,7 @@ class _MyPageState extends ConsumerState<MyPage> {
   Widget _buildSkeleton(BuildContext context) {
     final theme = Theme.of(context);
     return ListView(
-      padding: const EdgeInsets.all(AppSizes.md),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
       children: [
         // Profile skeleton
         Container(
@@ -237,7 +323,8 @@ class _MyPageState extends ConsumerState<MyPage> {
   }
 
   Future<void> _showNicknameSheet(
-      BuildContext context, String currentNickname) async {
+      BuildContext context, String owner, String currentNickname) async {
+    if (!_isCurrent(owner)) return;
     final nickname = await showModalBottomSheet<String>(
       context: context,
       useRootNavigator: true,
@@ -247,35 +334,48 @@ class _MyPageState extends ConsumerState<MyPage> {
       builder: (_) => _NicknameSheet(currentNickname: currentNickname),
     );
 
-    if (nickname == null || nickname.isEmpty || !mounted) return;
-    await ref.read(myRepositoryProvider).updateProfile({'nickname': nickname});
-    if (mounted) ref.invalidate(profileDetailProvider);
+    if (nickname == null || nickname.isEmpty || !_isCurrent(owner)) return;
+    try {
+      await ref
+          .read(myRepositoryProvider)
+          .updateProfile({'nickname': nickname});
+      if (_isCurrent(owner)) ref.invalidate(profileDetailProvider);
+    } catch (_) {
+      if (!_isCurrent(owner) || !context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('닉네임을 변경하지 못했어요. 다시 시도해주세요.')),
+      );
+    }
   }
 
-  Future<void> _handleLogout() async {
+  Future<void> _handleLogout(String owner) async {
+    if (!_isCurrent(owner) || _loggingOut) return;
     setState(() => _loggingOut = true);
     try {
       final repo = ref.read(authRepositoryProvider);
       await repo.signOut();
     } catch (e) {
       debugPrint('[MyPage] Logout failed: $e');
-      if (mounted) {
-        setState(() => _loggingOut = false);
+      if (mounted && _isCurrent(owner)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('로그아웃에 실패했습니다')),
         );
       }
+    } finally {
+      if (mounted) setState(() => _loggingOut = false);
     }
   }
 
-  Future<void> _handleDeleteAccount() async {
+  Future<void> _handleDeleteAccount(String owner) async {
+    if (!_isCurrent(owner)) return;
     try {
       await ref.read(myRepositoryProvider).deleteAccount();
+      if (!_isCurrent(owner)) return;
       final repo = ref.read(authRepositoryProvider);
       await repo.signOut();
     } catch (e) {
       debugPrint('[MyPage] Delete account failed: $e');
-      if (mounted) {
+      if (mounted && _isCurrent(owner)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('계정 삭제에 실패했습니다')),
         );
