@@ -12,10 +12,37 @@ import 'package:harukoto_mobile/features/stats/data/models/stats_history_model.d
 import 'package:harukoto_mobile/features/stats/presentation/stats_page.dart';
 import 'package:harukoto_mobile/features/stats/presentation/widgets/heatmap_widget.dart';
 import 'package:harukoto_mobile/features/stats/presentation/widgets/period_tab.dart';
+import 'package:harukoto_mobile/features/stats/presentation/widgets/stats_bar_chart.dart';
 import 'package:harukoto_mobile/features/stats/providers/stats_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  testWidgets('period keeps the redesigned sections while totals load',
+      (tester) async {
+    final pendingDashboard = Completer<DashboardModel>();
+    final container = await _pump(tester,
+        history: (_) async => [], pendingDashboard: pendingDashboard.future);
+    expect(find.text('기간별'), findsOneWidget);
+    expect(find.text('학습별'), findsOneWidget);
+    expect(find.text('JLPT진도'), findsOneWidget);
+    expect(find.text('오늘의 학습'), findsOneWidget);
+    expect(find.text('요일별 문제풀이'), findsOneWidget);
+    expect(find.text('연간 학습 히트맵'), findsOneWidget);
+    final chart = tester.widget<StatsBarChart>(find.byType(StatsBarChart));
+    expect(chart.isLoading, isTrue);
+    expect(chart.days.every((day) => day.total == null), isTrue);
+    expect(find.text('0문제', findRichText: true), findsNothing);
+    expect(find.text('문제풀이 집계를 확인할 수 없어요'), findsNothing);
+
+    pendingDashboard.complete(DashboardModel.fromJson({}));
+    await tester.pumpAndSettle();
+    expect(tester.widget<StatsBarChart>(find.byType(StatsBarChart)).isLoading,
+        isFalse);
+    expect(find.text('문제풀이 집계를 확인할 수 없어요'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    container.dispose();
+  });
+
   testWidgets('stats requests the KST year and excludes recorded duration',
       (tester) async {
     final years = <int>[];
@@ -128,6 +155,7 @@ Future<ProviderContainer> _pump(
   DateTime? now,
   required Future<List<StatsHistoryRecord>> Function(int) history,
   Map<String, dynamic> dashboard = const {},
+  Future<DashboardModel>? pendingDashboard,
 }) async {
   SharedPreferences.setMockInitialValues({'user_jlpt_level': 'N5'});
   final prefs = await SharedPreferences.getInstance();
@@ -137,8 +165,8 @@ Future<ProviderContainer> _pump(
     sharedPreferencesProvider.overrideWithValue(prefs),
     studyClockProvider
         .overrideWithValue(() => now ?? DateTime.utc(2026, 10, 29, 3)),
-    dashboardProvider
-        .overrideWith((ref) async => DashboardModel.fromJson(dashboard)),
+    dashboardProvider.overrideWith((ref) =>
+        pendingDashboard ?? Future.value(DashboardModel.fromJson(dashboard))),
     statsHistoryProvider.overrideWith((ref, year) => history(year)),
   ]);
   await tester.pumpWidget(UncontrolledProviderScope(

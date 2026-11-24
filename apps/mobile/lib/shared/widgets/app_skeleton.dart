@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/colors.dart';
 import '../../core/constants/sizes.dart';
 
 class AppSkeleton extends StatefulWidget {
@@ -13,6 +14,41 @@ class AppSkeleton extends StatefulWidget {
 
   @override
   State<AppSkeleton> createState() => _AppSkeletonState();
+}
+
+class AppSkeletonBlock extends StatelessWidget {
+  const AppSkeletonBlock({
+    super.key,
+    this.width,
+    this.height,
+    this.radius = 8,
+  });
+
+  final double? width;
+  final double? height;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final fill = theme.brightness == Brightness.light
+        ? AppColors.redesignControl
+        : Color.alphaBlend(
+            colors.onSurface.withValues(alpha: 0.12),
+            colors.surfaceContainerHigh,
+          );
+    return SizedBox(
+      width: width,
+      height: height,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: BorderRadius.circular(radius),
+        ),
+      ),
+    );
+  }
 }
 
 class _AppSkeletonState extends State<AppSkeleton>

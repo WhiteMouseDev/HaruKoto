@@ -204,45 +204,60 @@ class ProfileHero extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color:
-                  light ? AppColors.redesignOutline : theme.colorScheme.outline,
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 13),
-            child: LayoutBuilder(builder: (context, constraints) {
-              final columns = constraints.maxWidth < 280 ||
-                      MediaQuery.textScalerOf(context).scale(14) > 21
-                  ? 2
-                  : 4;
-              return Column(
-                spacing: 12,
-                children: [
-                  for (var offset = 0; offset < stats.length; offset += columns)
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (final stat in stats.skip(offset).take(columns))
-                          Expanded(
-                            child: _ProfileMetric(
-                              iconAsset: stat.$1,
-                              label: stat.$2,
-                              value: stat.$3,
-                            ),
-                          ),
-                      ],
-                    ),
-                ],
-              );
-            }),
-          ),
+        ProfileMetricsCard(
+          metrics: [
+            for (final stat in stats)
+              _ProfileMetric(
+                iconAsset: stat.$1,
+                label: stat.$2,
+                value: stat.$3,
+              ),
+          ],
         ),
       ],
+    );
+  }
+}
+
+class ProfileMetricsCard extends StatelessWidget {
+  const ProfileMetricsCard({super.key, required this.metrics});
+
+  final List<Widget> metrics;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final outline = colors.brightness == Brightness.light
+        ? AppColors.redesignOutline
+        : colors.outline;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: outline),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 13),
+        child: LayoutBuilder(builder: (context, constraints) {
+          final columns = constraints.maxWidth < 280 ||
+                  MediaQuery.textScalerOf(context).scale(14) > 21
+              ? 2
+              : 4;
+          return Column(
+            spacing: 12,
+            children: [
+              for (var offset = 0; offset < metrics.length; offset += columns)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final metric in metrics.skip(offset).take(columns))
+                      Expanded(child: metric),
+                  ],
+                ),
+            ],
+          );
+        }),
+      ),
     );
   }
 }

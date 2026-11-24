@@ -1,222 +1,117 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+
+import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../shared/widgets/app_skeleton.dart';
 
-class HomeSkeleton extends StatefulWidget {
-  const HomeSkeleton({super.key});
-
-  @override
-  State<HomeSkeleton> createState() => _HomeSkeletonState();
-}
-
-class _HomeSkeletonState extends State<HomeSkeleton>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..repeat();
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+class HomeStreakSkeleton extends StatelessWidget {
+  const HomeStreakSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
+    final labelSize = MediaQuery.textScalerOf(context).scale(11);
+    final countWidth = math.max(87.0, labelSize * 5 + 16);
+    final count = SizedBox(
+      width: countWidth,
+      child: AppSkeletonBlock(height: math.max(56.0, labelSize * 2.8 + 18)),
+    );
+    final week = Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(
+        DateTime.daysPerWeek,
+        (_) => const AppSkeletonBlock(width: 18, height: 24, radius: 12),
+      ),
+    );
+    const arrow = AppSkeletonBlock(width: 6.25, height: 11);
 
-    return ListView(
-      padding: const EdgeInsets.only(top: 12, bottom: 32),
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        // 1. Header skeleton (greeting + bell)
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return Semantics(
+      label: '연속 학습 기록을 불러오는 중',
+      container: true,
+      child: Padding(
+        padding: AppSizes.pageHorizontalEdge,
+        child: Container(
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color:
+                  light ? AppColors.redesignControl : theme.colorScheme.outline,
+            ),
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth <
+                  countWidth +
+                      AppSizes.gap +
+                      7 * (labelSize + 8) +
+                      AppSizes.iconSm) {
+                return Column(
                   children: [
-                    _shimmer(theme, width: 80, height: 16),
-                    const SizedBox(height: 6),
-                    _shimmer(theme, width: 140, height: 22),
+                    Row(children: [
+                      Flexible(child: count),
+                      const Spacer(),
+                      arrow
+                    ]),
+                    const SizedBox(height: AppSizes.xs),
+                    week,
                   ],
-                ),
-              ),
-              _shimmerCircle(theme, size: 44),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppSizes.md),
-
-        // 2. Streak card skeleton
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.pageHorizontal,
-          ),
-          child: _shimmerCard(theme, height: 100),
-        ),
-        const SizedBox(height: AppSizes.md),
-
-        // 3. Quick start card skeleton (taller)
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.pageHorizontal,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: _shimmerCard(theme, height: 260)),
-              const SizedBox(width: 0),
-              _shimmerCard(theme, width: 52, height: 156, radius: 12),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppSizes.md),
-
-        // 4. Weekly chart skeleton
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.pageHorizontal,
-          ),
-          child: _shimmerCard(theme, height: 200),
-        ),
-        const SizedBox(height: AppSizes.md),
-
-        // 5. Shortcut grid skeleton
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.pageHorizontal,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(
-              4,
-              (_) => Column(
+                );
+              }
+              return Row(
                 children: [
-                  _shimmerRoundedRect(theme, size: 52),
-                  const SizedBox(height: 8),
-                  _shimmer(theme, width: 40, height: 12),
+                  count,
+                  const SizedBox(width: AppSizes.gap),
+                  Expanded(child: week),
+                  const SizedBox(width: 4),
+                  arrow,
+                  const SizedBox(width: 5),
                 ],
-              ),
-            ),
+              );
+            },
           ),
         ),
-      ],
+      ),
     );
   }
+}
 
-  Widget _shimmer(
-    ThemeData theme, {
-    required double width,
-    required double height,
-  }) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(height / 2),
-            gradient: LinearGradient(
-              begin: Alignment(-1.0 + 2.0 * _animation.value, 0),
-              end: Alignment(-1.0 + 2.0 * _animation.value + 1.0, 0),
-              colors: [
-                theme.colorScheme.surfaceContainerHigh,
-                theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.5),
-                theme.colorScheme.surfaceContainerHigh,
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+class HomeGreetingSkeleton extends StatelessWidget {
+  const HomeGreetingSkeleton({super.key});
 
-  Widget _shimmerCircle(ThemeData theme, {required double size}) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              begin: Alignment(-1.0 + 2.0 * _animation.value, 0),
-              end: Alignment(-1.0 + 2.0 * _animation.value + 1.0, 0),
-              colors: [
-                theme.colorScheme.surfaceContainerHigh,
-                theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.5),
-                theme.colorScheme.surfaceContainerHigh,
-              ],
+  @override
+  Widget build(BuildContext context) {
+    final scaler = MediaQuery.textScalerOf(context);
+    return Padding(
+      padding: AppSizes.pageHorizontalEdge,
+      child: Semantics(
+        label: '인사말을 불러오는 중',
+        container: true,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: scaler.scale(18) * 1.4,
+              child: const Center(
+                widthFactor: 1,
+                child: AppSkeletonBlock(width: 86, height: 14),
+              ),
             ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _shimmerRoundedRect(ThemeData theme, {required double size}) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              begin: Alignment(-1.0 + 2.0 * _animation.value, 0),
-              end: Alignment(-1.0 + 2.0 * _animation.value + 1.0, 0),
-              colors: [
-                theme.colorScheme.surfaceContainerHigh,
-                theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.5),
-                theme.colorScheme.surfaceContainerHigh,
-              ],
+            const SizedBox(height: 5),
+            SizedBox(
+              height: scaler.scale(24) * 1.4,
+              child: const Center(
+                widthFactor: 1,
+                child: AppSkeletonBlock(width: 200, height: 21),
+              ),
             ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _shimmerCard(
-    ThemeData theme, {
-    double? width,
-    required double height,
-    double radius = AppSizes.cardRadius,
-  }) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radius),
-            gradient: LinearGradient(
-              begin: Alignment(-1.0 + 2.0 * _animation.value, 0),
-              end: Alignment(-1.0 + 2.0 * _animation.value + 1.0, 0),
-              colors: [
-                theme.colorScheme.surfaceContainerHigh,
-                theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.5),
-                theme.colorScheme.surfaceContainerHigh,
-              ],
-            ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

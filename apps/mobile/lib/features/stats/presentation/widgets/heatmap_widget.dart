@@ -22,7 +22,7 @@ class HeatmapWidget extends ConsumerStatefulWidget {
 
   final List<StatsHistoryRecord> records;
   final int year;
-  final ValueChanged<int> onYearChange;
+  final ValueChanged<int>? onYearChange;
   final bool isLoading;
   final bool hasError;
   final VoidCallback? onRetry;
@@ -90,8 +90,9 @@ class _HeatmapWidgetState extends ConsumerState<HeatmapWidget> {
                       _YearArrow(
                         label: '이전 연도',
                         icon: LucideIcons.chevronLeft,
-                        onPressed: widget.year > 1
-                            ? () => widget.onYearChange(widget.year - 1)
+                        onPressed: widget.onYearChange != null &&
+                                widget.year > 1
+                            ? () => widget.onYearChange?.call(widget.year - 1)
                             : null,
                       ),
                       Text(
@@ -102,8 +103,9 @@ class _HeatmapWidgetState extends ConsumerState<HeatmapWidget> {
                       _YearArrow(
                         label: '다음 연도',
                         icon: LucideIcons.chevronRight,
-                        onPressed: widget.year < today.year
-                            ? () => widget.onYearChange(widget.year + 1)
+                        onPressed: widget.onYearChange != null &&
+                                widget.year < today.year
+                            ? () => widget.onYearChange?.call(widget.year + 1)
                             : null,
                       ),
                     ],
