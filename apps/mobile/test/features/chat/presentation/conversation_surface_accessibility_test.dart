@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/features/chat/data/models/scenario_model.dart';
 import 'package:harukoto_mobile/features/chat/presentation/chat_hub_page.dart';
@@ -8,6 +9,7 @@ import 'package:harukoto_mobile/features/chat/presentation/voice_call_page.dart'
 import 'package:harukoto_mobile/features/chat/presentation/voice_call_summary_page.dart';
 import 'package:harukoto_mobile/features/chat/presentation/widgets/expression_practice_card.dart';
 import 'package:harukoto_mobile/features/chat/presentation/widgets/scenario_preparation_sheet.dart';
+import 'package:harukoto_mobile/features/chat/presentation/widgets/text_tab.dart';
 import 'package:harukoto_mobile/features/chat/providers/chat_provider.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/wordbook_entry_model.dart';
@@ -38,6 +40,7 @@ void main() {
       final preferences = await SharedPreferences.getInstance();
       await tester.pumpWidget(ProviderScope(
         overrides: [
+          currentAccountIdProvider.overrideWithValue(null),
           sharedPreferencesProvider.overrideWithValue(preferences),
           chatHistoryProvider.overrideWith((ref) async => []),
         ],
@@ -46,6 +49,21 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('회화 연습'), findsOneWidget);
       expect(find.text('친구와 통화'), findsOneWidget);
+      expect(find.text('여행').hitTestable(), findsOneWidget);
+      final freeChat = find.widgetWithText(TextButton, '글로 자유롭게 연습');
+      await tester.scrollUntilVisible(
+        freeChat,
+        80,
+        scrollable: find
+            .descendant(
+                of: find.byType(TextTab), matching: find.byType(Scrollable))
+            .first,
+      );
+      expect(tester.getBottomRight(find.text('자유주제')).dy,
+          lessThan(tester.getTopLeft(freeChat).dy));
+      expect(freeChat.hitTestable(), findsOneWidget);
+      expect(tester.getSize(freeChat).height, greaterThanOrEqualTo(48));
+      await tester.ensureVisible(find.text('친구와 통화'));
       await tester.tap(find.text('친구와 통화'));
       await tester.pumpAndSettle();
       expect(find.text('친구에게 전화하기'), findsOneWidget);
@@ -62,7 +80,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('예약을 확인하고 체크인해 보세요.'), findsNothing);
       expect(find.text('나의 역할: 투숙객\n상대 역할: 프런트 직원'), findsOneWidget);
-      await tester.ensureVisible(find.text('글로 연습'));
+      final textPractice = find.widgetWithText(TextButton, '글로 연습');
+      await tester.ensureVisible(textPractice);
+      expect(textPractice.hitTestable(), findsOneWidget);
+      expect(tester.getSize(textPractice).height, greaterThanOrEqualTo(48));
       expect(tester.takeException(), isNull);
     });
 

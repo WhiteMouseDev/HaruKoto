@@ -3,19 +3,26 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../../core/settings/call_settings.dart';
 import '../../../shared/widgets/call_settings_sheet.dart';
 import '../../my/providers/settings_sync_provider.dart';
+import '../data/models/conversation_journey_episode.dart';
+import '../data/models/scenario_model.dart';
 import '../providers/chat_provider.dart';
 import '../providers/chat_mode_provider.dart';
-import '../data/models/scenario_model.dart';
+import '../providers/conversation_journey_progress_provider.dart';
 import 'chat_entry_mode.dart';
 import 'conversation_launch.dart';
+import 'voice_call_launch.dart';
 import 'widgets/chat_loading_overlay.dart';
+import 'widgets/conversation_journey_card.dart';
+import 'widgets/conversation_journey_sheet.dart';
 import 'widgets/scenario_list_view.dart';
+import 'widgets/scenario_preparation_sheet.dart';
 import 'widgets/voice_tab.dart';
 import 'widgets/text_tab.dart';
 
@@ -32,6 +39,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
   String? _selectedCategory;
   ChatEntryMode _entryMode = ChatEntryMode.text;
   bool _starting = false;
+  bool _openingJourney = false;
   String? _error;
 
   @override
@@ -59,7 +67,10 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
     super.dispose();
   }
 
-  Future<void> _handleStartConversation(ScenarioModel scenario) async {
+  Future<void> _handleStartConversation(
+    ScenarioModel scenario, {
+    String? expectedAccountId,
+  }) async {
     setState(() {
       _starting = true;
       _error = null;
@@ -69,6 +80,10 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
       final result = await repo.startConversation(scenario.id);
       if (!mounted) return;
       setState(() => _starting = false);
+      if (expectedAccountId != null &&
+          ref.read(currentAccountReaderProvider)() != expectedAccountId) {
+        return;
+      }
       openConversationPage(
         context,
         conversationId: result.conversationId,
@@ -108,6 +123,102 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
         _starting = false;
       });
     }
+  }
+
+  Future<void> _openJourney(
+    String accountId,
+    Map<String, ScenarioModel> available,
+    Set<String> practicedIds,
+    ConversationJourneyEpisode recommended, {
+    bool showAll = false,
+  }) async {
+    if (_openingJourney || _starting) return;
+    _openingJourney = true;
+    try {
+      final episode = showAll
+          ? await showModalBottomSheet<ConversationJourneyEpisode>(
+              context: context,
+              useRootNavigator: true,
+              isScrollControlled: true,
+              builder: (_) => ConversationJourneySheet(
+                episodes: tokyoFirstDayEpisodes,
+                practicedIds: practicedIds,
+                recommendedId: recommended.scenarioId,
+              ),
+            )
+          : recommended;
+      if (!mounted ||
+          episode == null ||
+          ref.read(currentAccountReaderProvider)() != accountId) {
+        return;
+      }
+      final scenario = available[episode.scenarioId];
+      if (scenario == null) return;
+      final mode = await showModalBottomSheet<ChatEntryMode>(
+        context: context,
+        useRootNavigator: true,
+        isScrollControlled: true,
+        builder: (_) => ScenarioPreparationSheet(
+          scenario: scenario,
+          journeyEpisode: episode,
+        ),
+      );
+      if (!mounted ||
+          mode == null ||
+          ref.read(currentAccountReaderProvider)() != accountId) {
+        return;
+      }
+      if (mode == ChatEntryMode.voice) {
+        openVoiceCallPage(context, scenarioId: scenario.id, scenario: scenario);
+      } else {
+        await _handleStartConversation(scenario, expectedAccountId: accountId);
+      }
+    } finally {
+      _openingJourney = false;
+    }
+  }
+
+  Widget _buildJourneyCard(BuildContext context, WidgetRef ref, Widget? child) {
+    final accountId = ref.watch(currentAccountIdProvider);
+    if (accountId == null) return const SizedBox.shrink();
+    final catalog = ref.watch(scenariosProvider('TRAVEL'));
+    if (catalog.isLoading || catalog.hasError || !catalog.hasValue) {
+      return const SizedBox.shrink();
+    }
+    final available = {
+      for (final scenario in catalog.requireValue) scenario.id: scenario,
+    };
+    if (!tokyoFirstDayEpisodes
+        .every((episode) => available.containsKey(episode.scenarioId))) {
+      return const SizedBox.shrink();
+    }
+    final progress = ref.watch(conversationJourneyProgressProvider(accountId));
+    if (progress.isLoading || progress.hasError || !progress.hasValue) {
+      return const SizedBox.shrink();
+    }
+    final practicedIds = progress.requireValue;
+    final recommended = tokyoFirstDayEpisodes.firstWhere(
+      (episode) => !practicedIds.contains(episode.scenarioId),
+      orElse: () => tokyoFirstDayEpisodes.first,
+    );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSizes.lg),
+      child: ConversationJourneyCard(
+        episode: recommended,
+        practicedCount: practicedIds.length,
+        totalCount: tokyoFirstDayEpisodes.length,
+        allPracticed: practicedIds.length == tokyoFirstDayEpisodes.length,
+        onPrepare: () =>
+            _openJourney(accountId, available, practicedIds, recommended),
+        onViewAll: () => _openJourney(
+          accountId,
+          available,
+          practicedIds,
+          recommended,
+          showAll: true,
+        ),
+      ),
+    );
   }
 
   Future<void> _showCallSettings(BuildContext context) async {
@@ -269,7 +380,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(LucideIcons.messageCircle, size: 16),
+                                Icon(LucideIcons.mic, size: 16),
                                 SizedBox(width: 6),
                                 Flexible(
                                     child: Text('회화 연습',
@@ -305,6 +416,7 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                     controller: _tabController,
                     children: [
                       TextTab(
+                        journeyCard: Consumer(builder: _buildJourneyCard),
                         onFreeChat: _handleFreeChat,
                         onSelectCategory: (cat) {
                           setState(() {

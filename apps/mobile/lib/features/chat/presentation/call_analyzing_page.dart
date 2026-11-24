@@ -7,6 +7,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/constants/character_assets.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../data/models/conversation_journey_episode.dart';
 import '../providers/call_analysis_provider.dart';
 import '../providers/chat_provider.dart';
 import '../providers/voice_call_session_provider.dart';
@@ -39,6 +40,20 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
   bool _navigated = false;
   CallAnalysisController? _analysisController;
 
+  ConversationJourneyEpisode? get _journeyEpisode {
+    final request = widget.request;
+    if (request.recordSaved ||
+        !request.wasConnected ||
+        !request.transcript.any((turn) =>
+            turn['role'] == 'user' &&
+            (turn['text']?.trim().isNotEmpty ?? false))) {
+      return null;
+    }
+    return tokyoFirstDayEpisodes
+        .where((episode) => episode.scenarioId == request.scenarioId)
+        .firstOrNull;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -68,13 +83,32 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
       await launcher(context, analysis);
       return;
     }
-    if (!widget.request.analysisEnabled) {
+    final episode =
+        analysis.recordSaved && analysis.feedbackError != 'no_transcript'
+            ? _journeyEpisode
+            : null;
+    if (episode != null || !widget.request.analysisEnabled) {
       final saved = widget.request.withConversationId(analysis.conversationId!);
       unawaited(Navigator.of(context).pushReplacement(MaterialPageRoute<void>(
         builder: (summaryContext) => VoiceCallSummaryPage(
           request: saved,
-          onRequestFeedback: () =>
-              openCallAnalysisPage(summaryContext, saved.requestAnalysis()),
+          journeyEpisode: episode,
+          onRequestFeedback: () {
+            if (episode == null) {
+              openCallAnalysisPage(summaryContext, saved.requestAnalysis());
+              return;
+            }
+            if (analysis.feedbackSummary != null) {
+              openConversationFeedbackPage(
+                summaryContext,
+                conversationId: analysis.conversationId!,
+                initialFeedback: analysis.feedbackSummary,
+              );
+              return;
+            }
+            unawaited(Navigator.of(summaryContext)
+                .push(callAnalysisRoute(saved.requestAnalysis())));
+          },
         ),
       )));
       return;
@@ -182,7 +216,10 @@ class _CallAnalyzingPageState extends ConsumerState<CallAnalyzingPage>
 
     ref.listen(callAnalysisProvider, (previous, next) {
       if (!mounted) return;
-      if (next.isCompleted && !_navigated) {
+      final savedPilotWithFeedbackError = next.recordSaved &&
+          next.feedbackError == 'generation_failed' &&
+          _journeyEpisode != null;
+      if ((next.isCompleted || savedPilotWithFeedbackError) && !_navigated) {
         _navigated = true;
         unawaited(_openFeedback(next));
         return;
