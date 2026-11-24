@@ -76,3 +76,17 @@
 ## 남은 리디자인 순서
 
 가입·온보딩은 논의에서 결정한 순서로 진행한다.
+
+## 피그마 재대조 후속 작업
+
+- 4지선다 375×812 시안의 진행 바는 좌우 20dp, 상단 110dp, 높이 8dp다. ‘다음 문제’는 상단 730dp, 높이 48dp로 하단 안전 영역 바로 위에 배치한다. 답안을 선택하기 전에는 버튼의 비활성 상태를 유지한다. [4지선다 풀이 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=242-4337)
+- 기존 학습 탭에서 진입하는 레슨에 공통 헤더와 단계 표시를 적용했다. 개요의 급수·역·예상 시간·단어·문법은 레슨 데이터에 연결한다. 단어·문법 화면의 카드 안에서 항목을 이동하고, 마지막 항목에서 하단 다음 단계 버튼을 활성화한다. 레슨에서 하단 탭을 누르면 진행을 저장한 뒤 이동한다. [레슨 개요](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=278-5625) · [단어](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=319-5363) · [문법](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=325-7064)
+- 대화 단계의 작업 중 시안에서 상황 안내, 실제 문장 개수, 화자와 듣기 버튼이 있는 문장 카드를 반영했다. 전체 듣기·번역·이해 체크로 이어지는 기존 기능도 사용할 수 있다. 이후 레슨 단계의 독립 프레임은 이 파일에서 확인되지 않았다. [대화 단계 작업 중 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=325-7532)
+- ‘학습한 단어’와 알림은 퀴즈의 메뉴 또는 마이페이지 설정 항목으로 확인됐다. 독립 화면 시안은 찾지 못했다. 회화는 퀴즈 예시 내용이 들어간 보류 프레임이다. [회화 보류 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=127-2066)
+- 375×812 iPhone 시뮬레이터에서 진행 바와 ‘다음 문제’의 좌표를 실측했다. 테스트 데이터로 기존 레슨 경로를 열어 학습 시작, 단어 5개 이동, 문법 단계 전환을 확인했다. 캡처는 작업 폴더의 `outputs/harukoto-figma-coverage-2026-11-24/`에 있다.
+
+### 레슨 4단계 번역 ON·OFF
+
+- 대화 전체에 공통 번역 스위치 하나를 사용한다. 기본값은 OFF다. ON이면 각 문장의 번역을 말풍선 안 구분선 아래에 표시한다. [번역 ON 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=325-7532) · [번역 OFF 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=333-8045)
+- 상황 안내는 테두리형 카드로 표시한다. 화자에 따라 말풍선을 왼쪽·오른쪽에 놓고 각 문장의 발음 버튼을 말풍선 아래에 둔다. 전체 듣기는 상단에서 사용할 수 있다.
+- 하단에 ‘이전’·‘다음학습’을 둔다. 문법이 없는 레슨에서는 ‘이전’에서 단어 단계로 돌아간다. 다음 단계를 준비하는 중에는 양쪽 버튼을 잠근다. 화면을 벗어나면 현재 레슨의 재생을 중지한다.

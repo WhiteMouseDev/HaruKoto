@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/sizes.dart';
 import '../../../../core/theme/text_theme.dart';
 
 class QuizProgressBar extends StatelessWidget {
@@ -46,7 +47,7 @@ class QuizProgressBar extends StatelessWidget {
             builder: (context, value, _) {
               return LinearProgressIndicator(
                 value: value,
-                minHeight: hasLabels ? 12 : 6,
+                minHeight: hasLabels ? AppSizes.sm : AppSizes.progressHeight,
                 backgroundColor: hasLabels && isLight
                     ? AppColors.redesignProgressTrack
                     : theme.colorScheme.surfaceContainerHigh,
@@ -59,7 +60,7 @@ class QuizProgressBar extends StatelessWidget {
           ),
         ),
         if (hasLabels) ...[
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSizes.xs),
           ExcludeSemantics(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

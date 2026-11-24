@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/sizes.dart';
 import '../../data/models/quiz_question_model.dart';
 import 'four_choice_quiz.dart';
 import 'quiz_feedback_bar.dart';
@@ -43,14 +44,18 @@ class QuizStandardModeContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final promptInset =
-        (MediaQuery.sizeOf(context).height - 650).clamp(20.0, 100.0);
+        (MediaQuery.sizeOf(context).height - 650).clamp(20.0, 90.0);
     return Scaffold(
       body: SafeArea(
+        minimum: const EdgeInsets.only(bottom: AppSizes.sm),
         child: Column(
           children: [
-            QuizHeader(title: title, onBack: onBack),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.only(top: AppSizes.sm, bottom: 10),
+              child: QuizHeader(title: title, onBack: onBack),
+            ),
+            Padding(
+              padding: AppSizes.pageHorizontalEdge,
               child: QuizProgressBar(
                 progress: progress,
                 currentQuestion: currentQuestion,

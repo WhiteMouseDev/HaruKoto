@@ -3,436 +3,406 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../data/learning_goals.dart';
 import '../../data/models/lesson_models.dart';
-import 'lesson_vocab_preview_chip.dart';
+import 'lesson_stage_actions.dart';
+import 'lesson_vocab_preview_row.dart';
 
-class LessonContextPreviewStep extends StatefulWidget {
-  final LessonDetailModel detail;
-  final VoidCallback onNext;
-
+class LessonContextPreviewStep extends StatelessWidget {
   const LessonContextPreviewStep({
     super.key,
     required this.detail,
     required this.onNext,
+    this.jlptLevel,
+    this.stationNo,
   });
 
-  @override
-  State<LessonContextPreviewStep> createState() =>
-      _LessonContextPreviewStepState();
-}
-
-class _LessonContextPreviewStepState extends State<LessonContextPreviewStep>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _staggerController;
-
-  @override
-  void initState() {
-    super.initState();
-    _staggerController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _staggerController.forward();
-    });
-  }
-
-  @override
-  void dispose() {
-    _staggerController.dispose();
-    super.dispose();
-  }
-
-  Widget _staggered(int index, Widget child) {
-    final start = (index * 0.12).clamp(0.0, 0.7);
-    final end = (start + 0.4).clamp(0.0, 1.0);
-    final animation = CurvedAnimation(
-      parent: _staggerController,
-      curve: Interval(start, end, curve: Curves.easeOutCubic),
-    );
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) => Opacity(
-        opacity: animation.value,
-        child: Transform.translate(
-          offset: Offset(0, 16 * (1 - animation.value)),
-          child: child,
-        ),
-      ),
-      child: child,
-    );
-  }
+  final LessonDetailModel detail;
+  final VoidCallback onNext;
+  final String? jlptLevel;
+  final int? stationNo;
 
   List<VocabItemModel> get _uniqueVocab {
-    final seen = <String>{};
-    return widget.detail.vocabItems.where((vocab) {
-      final key = '${vocab.word}_${vocab.reading}';
-      return seen.add(key);
-    }).toList();
+    final seen = <(String, String)>{};
+    return detail.vocabItems
+        .where((item) => seen.add((item.word, item.reading)))
+        .toList();
   }
 
   List<GrammarItemModel> get _uniqueGrammar {
     final seen = <String>{};
-    return widget.detail.grammarItems.where((grammar) {
-      return seen.add(grammar.normalizedPatternKey);
-    }).toList();
+    return detail.grammarItems
+        .where((item) => seen.add(item.normalizedPatternKey))
+        .toList();
   }
 
-  void _showAllVocabSheet(
-      BuildContext context, List<VocabItemModel> vocabItems) {
+  void _showAllVocabSheet(BuildContext context, List<VocabItemModel> items) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       shape: AppSizes.sheetShape,
-      builder: (context) {
-        return _LessonVocabPreviewSheet(vocabItems: vocabItems);
-      },
+      builder: (context) => _LessonVocabPreviewSheet(items: items),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final detail = widget.detail;
     final theme = Theme.of(context);
-    final reading = detail.content.reading;
-    final learningGoal = getLearningGoal(detail.topic);
-    final vocabItems = _uniqueVocab;
-    final previewVocab = vocabItems.take(3).toList();
-    final grammarItems = _uniqueGrammar;
-    final remainingCount = vocabItems.length - previewVocab.length;
-    final remainingGrammarCount = grammarItems.length - 3;
+    final light = theme.brightness == Brightness.light;
+    final colors = theme.colorScheme;
+    final vocab = _uniqueVocab;
+    final grammar = _uniqueGrammar;
+    final scene = detail.content.reading.scene?.trim();
+    final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final secondary =
+        light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
 
     return Column(
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSizes.lg,
-              vertical: AppSizes.md,
+            padding: const EdgeInsets.fromLTRB(
+              AppSizes.pageHorizontal,
+              AppSizes.md,
+              AppSizes.pageHorizontal,
+              AppSizes.md,
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _staggered(
-                  0,
+                _LessonMetadata(
+                  level: jlptLevel,
+                  stationNo: stationNo,
+                  lessonNo: detail.lessonNo,
+                  chapterLessonNo: detail.chapterLessonNo,
+                  minutes: detail.estimatedMinutes,
+                ),
+                const SizedBox(height: AppSizes.sm),
+                Semantics(
+                  header: true,
+                  child: Text(
+                    detail.title,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontFamily: redesignFontFamily,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: foreground,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSizes.lg),
+                _LessonGoalCard(topic: detail.topic),
+                if (vocab.isNotEmpty) ...[
+                  const SizedBox(height: AppSizes.xl),
                   Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
+                      const Expanded(
+                        child: _SectionTitle(text: '핵심 단어 미리보기'),
+                      ),
+                      const SizedBox(width: AppSizes.sm),
+                      DecoratedBox(
                         decoration: BoxDecoration(
-                          color: AppColors.primaryStrong,
-                          borderRadius:
-                              BorderRadius.circular(AppSizes.radiusFull),
-                        ),
-                        child: Text(
-                          '레슨 ${detail.lessonNo}',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: AppColors.onGradient,
-                            fontWeight: FontWeight.bold,
+                          color: light
+                              ? AppColors.redesignControl
+                              : colors.surfaceContainerHigh,
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusFull,
                           ),
                         ),
-                      ),
-                      const Spacer(),
-                      const Icon(
-                        LucideIcons.clock,
-                        size: 14,
-                        color: AppColors.lightSubtext,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${detail.estimatedMinutes}분',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppColors.lightSubtext,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: AppSizes.xs,
+                          ),
+                          child: Text(
+                            '총 ${vocab.length}개',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontFamily: redesignFontFamily,
+                              color: secondary,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: AppSizes.md),
-                _staggered(
-                  1,
-                  Text(
-                    detail.title,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.lightText,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppSizes.lg),
-                _staggered(
-                  2,
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(AppSizes.md),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.primary.withValues(alpha: 0.12),
-                          AppColors.primary.withValues(alpha: 0.04),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                      border: Border.all(
-                        color: AppColors.primary.withValues(alpha: 0.2),
+                  const SizedBox(height: AppSizes.gap),
+                  for (final item in vocab.take(5)) ...[
+                    LessonVocabPreviewRow(vocab: item),
+                    const SizedBox(height: AppSizes.gap),
+                  ],
+                  if (vocab.length > 5)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton.icon(
+                        onPressed: () => _showAllVocabSheet(context, vocab),
+                        icon: const Icon(LucideIcons.list, size: 18),
+                        label: Text('전체 ${vocab.length}개 보기'),
                       ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              LucideIcons.target,
-                              size: 16,
-                              color: AppColors.primaryStrong,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              '이번 레슨을 끝내면',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: AppColors.primaryStrong,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          learningGoal,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.lightText,
-                            fontWeight: FontWeight.w600,
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (reading.scene != null) ...[
+                ],
+                if (grammar.isNotEmpty) ...[
                   const SizedBox(height: AppSizes.lg),
-                  _staggered(
-                    3,
-                    Row(
-                      children: [
-                        const Icon(
-                          LucideIcons.mapPin,
-                          size: 14,
-                          color: AppColors.lightSubtext,
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            reading.scene!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: AppColors.lightSubtext,
-                            ),
-                          ),
-                        ),
-                      ],
+                  const _SectionTitle(text: '배울 문법'),
+                  const SizedBox(height: AppSizes.gap),
+                  for (final item in grammar.take(3)) ...[
+                    _LessonGrammarOverview(item: item),
+                    const SizedBox(height: AppSizes.gap),
+                  ],
+                  if (grammar.length > 3)
+                    Text(
+                      '+${grammar.length - 3}개',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontFamily: redesignFontFamily,
+                        color: secondary,
+                      ),
+                    ),
+                ],
+                if (scene != null && scene.isNotEmpty) ...[
+                  const SizedBox(height: AppSizes.sm),
+                  Text(
+                    scene,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontFamily: redesignFontFamily,
+                      color: secondary,
                     ),
                   ),
                 ],
-                const SizedBox(height: AppSizes.lg),
-                if (previewVocab.isNotEmpty)
-                  _staggered(
-                    4,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              LucideIcons.bookOpen,
-                              size: 16,
-                              color: AppColors.primaryStrong,
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                '핵심 단어 미리보기',
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            LessonVocabCountPill(count: vocabItems.length),
-                          ],
-                        ),
-                        const SizedBox(height: AppSizes.gap),
-                        SizedBox(
-                          height: LessonVocabPreviewChip.height,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            clipBehavior: Clip.none,
-                            itemCount: previewVocab.length +
-                                (remainingCount > 0 ? 1 : 0),
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(width: AppSizes.sm),
-                            itemBuilder: (context, index) {
-                              if (index < previewVocab.length) {
-                                return LessonVocabPreviewChip(
-                                  vocab: previewVocab[index],
-                                );
-                              }
-                              return LessonVocabPreviewMoreChip(
-                                remainingCount: remainingCount,
-                                totalCount: vocabItems.length,
-                                onTap: () =>
-                                    _showAllVocabSheet(context, vocabItems),
-                              );
-                            },
-                          ),
-                        ),
-                        if (remainingCount > 0) ...[
-                          const SizedBox(height: AppSizes.sm),
-                          TextButton.icon(
-                            onPressed: () =>
-                                _showAllVocabSheet(context, vocabItems),
-                            icon: const Icon(LucideIcons.list),
-                            label: Text('전체 ${vocabItems.length}개 보기'),
-                            style: TextButton.styleFrom(
-                              foregroundColor: AppColors.lightSubtext,
-                              padding: EdgeInsets.zero,
-                              minimumSize: const Size(0, 32),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                if (previewVocab.isNotEmpty && grammarItems.isNotEmpty)
-                  Divider(
-                    color: AppColors.primary.withValues(alpha: 0.12),
-                    height: AppSizes.xl,
-                  ),
-                if (grammarItems.isNotEmpty)
-                  _staggered(
-                    5,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              LucideIcons.braces,
-                              size: 16,
-                              color: AppColors.primaryStrong,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              '배울 문법',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: AppSizes.gap),
-                        ...grammarItems.take(3).map(
-                              (grammar) => Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: AppSizes.sm,
-                                ),
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(AppSizes.gap),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.lightCard,
-                                    borderRadius: BorderRadius.circular(
-                                      AppSizes.radiusSm,
-                                    ),
-                                    border: Border.all(
-                                      color: AppColors.primary.withValues(
-                                        alpha: 0.15,
-                                      ),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        grammar.pattern,
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.primaryStrong,
-                                        ),
-                                      ),
-                                      const SizedBox(width: AppSizes.sm),
-                                      Text(
-                                        '—',
-                                        style:
-                                            theme.textTheme.bodySmall?.copyWith(
-                                          color: AppColors.lightSubtext,
-                                        ),
-                                      ),
-                                      const SizedBox(width: AppSizes.sm),
-                                      Expanded(
-                                        child: Text(
-                                          grammar.meaningKo,
-                                          style: theme.textTheme.bodySmall
-                                              ?.copyWith(
-                                            color: AppColors.lightText,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                        if (remainingGrammarCount > 0)
-                          Text(
-                            '+$remainingGrammarCount개',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: AppColors.lightSubtext,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
               ],
             ),
           ),
         ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSizes.md),
-            child: SizedBox(
-              width: double.infinity,
-              height: AppSizes.buttonHeight,
-              child: FilledButton.icon(
-                onPressed: widget.onNext,
-                icon: const Icon(LucideIcons.sparkles),
-                label: const Text('학습 시작하기'),
-              ),
-            ),
-          ),
-        ),
+        LessonStageActions(nextLabel: '학습 시작', onNext: onNext),
       ],
     );
   }
 }
 
-class _LessonVocabPreviewSheet extends StatelessWidget {
-  final List<VocabItemModel> vocabItems;
+class _LessonMetadata extends StatelessWidget {
+  const _LessonMetadata({
+    required this.level,
+    required this.stationNo,
+    required this.lessonNo,
+    required this.chapterLessonNo,
+    required this.minutes,
+  });
 
-  const _LessonVocabPreviewSheet({required this.vocabItems});
+  final String? level;
+  final int? stationNo;
+  final int lessonNo;
+  final int chapterLessonNo;
+  final int minutes;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
+    final muted = light
+        ? AppColors.redesignMutedForeground
+        : theme.colorScheme.onSurfaceVariant;
+    final style = theme.textTheme.bodySmall?.copyWith(
+      fontFamily: redesignFontFamily,
+      color: muted,
+    );
+    final label = stationNo != null && stationNo! > 0 && chapterLessonNo > 0
+        ? '$stationNo번 역 · $chapterLessonNo번째 레슨'
+        : lessonNo > 0
+            ? '레슨 $lessonNo'
+            : '레슨';
+    final selectedLevel = level?.trim();
 
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: AppSizes.xs,
+            runSpacing: AppSizes.xs,
+            children: [
+              if (selectedLevel != null && selectedLevel.isNotEmpty)
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: light
+                        ? AppColors.redesignVocabulary
+                        : theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(AppSizes.radiusFull),
+                  ),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    child: Text(
+                      selectedLevel,
+                      style: style?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: light
+                            ? AppColors.sakuraOn
+                            : theme.colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ),
+                ),
+              Text(label, style: style),
+            ],
+          ),
+        ),
+        if (minutes > 0) ...[
+          const SizedBox(width: AppSizes.sm),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(LucideIcons.clock, size: 14, color: muted),
+              const SizedBox(width: AppSizes.xs),
+              Text('$minutes분', style: style),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _LessonGoalCard extends StatelessWidget {
+  const _LessonGoalCard({required this.topic});
+
+  final String topic;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
+    final colors = theme.colorScheme;
+    final style = theme.textTheme.bodyMedium?.copyWith(
+      fontFamily: redesignFontFamily,
+      fontSize: 14,
+      color: light ? AppColors.redesignForeground : colors.onPrimaryContainer,
+    );
+    final goal = getLearningGoal(topic.trim());
+    final emphasis = topic.trim();
+    final accent = light ? AppColors.sakuraOn : colors.onPrimaryContainer;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: light ? const Color(0xFFFAEEF0) : colors.primaryContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSizes.md),
+        child: Column(
+          children: [
+            Icon(
+              LucideIcons.bookOpen,
+              size: 18,
+              color: light ? AppColors.brandPink : colors.onPrimaryContainer,
+            ),
+            const SizedBox(height: AppSizes.xs),
+            Text(
+              '이번 레슨에서는',
+              textAlign: TextAlign.center,
+              style: style?.copyWith(fontSize: 12),
+            ),
+            const SizedBox(height: AppSizes.xs),
+            Text.rich(
+              TextSpan(
+                children: [
+                  if (emphasis.isNotEmpty && goal.startsWith(emphasis)) ...[
+                    TextSpan(
+                      text: emphasis,
+                      style: TextStyle(
+                        color: accent,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    TextSpan(text: goal.substring(emphasis.length)),
+                  ] else
+                    TextSpan(text: goal),
+                ],
+              ),
+              textAlign: TextAlign.center,
+              style: style,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Semantics(
+      header: true,
+      child: Text(
+        text,
+        style: theme.textTheme.titleSmall?.copyWith(
+          fontFamily: redesignFontFamily,
+          fontWeight: FontWeight.w700,
+          color: theme.brightness == Brightness.light
+              ? AppColors.redesignForeground
+              : theme.colorScheme.onSurface,
+        ),
+      ),
+    );
+  }
+}
+
+class _LessonGrammarOverview extends StatelessWidget {
+  const _LessonGrammarOverview({required this.item});
+
+  final GrammarItemModel item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
+    return DecoratedBox(
+      decoration: lessonPreviewRowDecoration(theme),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSizes.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              item.pattern,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontFamily: redesignFontFamily,
+                fontWeight: FontWeight.w700,
+                color: light
+                    ? AppColors.redesignForeground
+                    : theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: AppSizes.xs),
+            Text(
+              item.meaningKo,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontFamily: redesignFontFamily,
+                color: light
+                    ? AppColors.redesignMutedForeground
+                    : theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LessonVocabPreviewSheet extends StatelessWidget {
+  const _LessonVocabPreviewSheet({required this.items});
+
+  final List<VocabItemModel> items;
+
+  @override
+  Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       initialChildSize: 0.56,
       minChildSize: 0.35,
@@ -443,51 +413,28 @@ class _LessonVocabPreviewSheet extends StatelessWidget {
           child: ListView.separated(
             controller: scrollController,
             padding: const EdgeInsets.fromLTRB(
-              AppSizes.lg,
+              AppSizes.pageHorizontal,
               AppSizes.md,
-              AppSizes.lg,
+              AppSizes.pageHorizontal,
               AppSizes.lg,
             ),
-            itemCount: vocabItems.length + 1,
+            itemCount: items.length + 1,
             separatorBuilder: (context, index) =>
-                const SizedBox(height: AppSizes.sm),
+                const SizedBox(height: AppSizes.gap),
             itemBuilder: (context, index) {
-              if (index == 0) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AppSheetHandle(),
-                    const SizedBox(height: AppSizes.lg),
-                    Row(
-                      children: [
-                        const Icon(
-                          LucideIcons.bookOpen,
-                          size: 18,
-                          color: AppColors.primaryStrong,
-                        ),
-                        const SizedBox(width: AppSizes.sm),
-                        Text(
-                          '배울 단어 ${vocabItems.length}개',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: AppColors.lightText,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSizes.gap),
-                    Text(
-                      '레슨에서 순서대로 만나게 될 표현입니다.',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.lightSubtext,
-                      ),
-                    ),
-                    const SizedBox(height: AppSizes.md),
-                  ],
-                );
+              if (index > 0) {
+                return LessonVocabPreviewRow(vocab: items[index - 1]);
               }
-
-              return LessonVocabSheetRow(vocab: vocabItems[index - 1]);
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const AppSheetHandle(),
+                  const SizedBox(height: AppSizes.lg),
+                  _SectionTitle(text: '배울 단어 ${items.length}개'),
+                  const SizedBox(height: AppSizes.gap),
+                  const Text('레슨에서 순서대로 만나게 될 표현입니다.'),
+                ],
+              );
             },
           ),
         );

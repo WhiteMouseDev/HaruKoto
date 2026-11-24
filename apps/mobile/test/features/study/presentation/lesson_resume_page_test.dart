@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_sentence_reorder_step.dart';
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
@@ -250,7 +249,7 @@ void main() {
             find.byType(LessonSentenceReorderStep))
         .onAnswer;
     h.store.writeGate = Completer<void>();
-    await tester.tap(find.byIcon(LucideIcons.x));
+    await tester.tap(find.byTooltip('레슨 나가기'));
     await tester.pump();
     oldAnswer({
       'order': 11,
@@ -279,7 +278,7 @@ void main() {
     await h.reorder();
     await _mountRouted(tester, h);
     h.store.failWrite = true;
-    await tester.tap(find.byIcon(LucideIcons.x));
+    await tester.tap(find.byTooltip('레슨 나가기'));
     await tester.pumpAndSettle();
     expect(find.text('최근 진행을 저장하지 못했어요'), findsOneWidget);
     expect(find.byType(LessonPage), findsOneWidget);
@@ -298,6 +297,28 @@ void main() {
     await tester.pumpAndSettle();
     expect(h.state.reorderIndex, 1);
     expect(h.repository.submitCalls, 0);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('home tab waits for lesson progress before leaving',
+      (tester) async {
+    final h = ResumeHarness();
+    addTearDown(h.dispose);
+    await h.reorder();
+    final bank = List<String>.from(h.state.layout.reorderBanks[11]!)
+      ..remove('は');
+    h.controller.updateReorder(selected: ['は'], available: bank);
+    await h.controller.flush();
+    final router = await _mountRouted(tester, h);
+    h.store.writeGate = Completer<void>();
+    await tester.tap(find.bySemanticsLabel('홈 탭'));
+    await tester.pump();
+    expect(find.byType(LessonPage), findsOneWidget);
+    h.store.writeGate!.complete();
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/home');
+    expect(find.byType(LessonPage), findsNothing);
+    expect(h.store.values.values.single, contains('"reorderSelected":["は"]'));
     expect(tester.takeException(), isNull);
   });
 }

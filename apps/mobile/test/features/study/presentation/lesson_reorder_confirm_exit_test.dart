@@ -4,14 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harukoto_mobile/features/study/presentation/lesson_page.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_session_provider.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../fixtures/lesson_activity_fixture.dart';
 
 void main() {
   testWidgets(
-      'real reorder Confirm then immediate X preserves one answer and activity on cold resume',
+      'real reorder Confirm then immediate exit preserves one answer and activity on cold resume',
       (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -53,7 +52,7 @@ void main() {
     // No pump advances the previous 300ms delay before close begins.
     expect(h.state.answers[2]?['submittedOrder'], ['水', 'です']);
     expect(h.state.reorderIndex, 1);
-    await tester.tap(find.byIcon(LucideIcons.x));
+    await tester.tap(find.byTooltip('레슨 나가기'));
     await tester.pumpAndSettle();
     expect(find.byType(LessonPage), findsNothing);
     expect(await h.controller.flush(), isTrue);

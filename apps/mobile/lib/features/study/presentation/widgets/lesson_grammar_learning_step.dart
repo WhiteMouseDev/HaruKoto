@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
-import '../../../../core/constants/colors.dart';
-import '../../../../core/constants/sizes.dart';
 import '../../data/models/lesson_models.dart';
+import 'lesson_learning_card.dart';
+import 'lesson_stage_actions.dart';
 
 class LessonGrammarLearningStep extends StatefulWidget {
   final List<GrammarItemModel> grammarItems;
@@ -42,197 +41,52 @@ class _LessonGrammarLearningStepState extends State<LessonGrammarLearningStep> {
     }).toList();
   }
 
-  void _next() {
-    final items = _uniqueGrammar;
-    if (_currentIndex < items.length - 1) {
-      setState(() => _currentIndex++);
-      widget.onIndexChanged?.call(_currentIndex);
-    } else {
-      widget.onNext();
+  @override
+  void didUpdateWidget(LessonGrammarLearningStep oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialIndex != widget.initialIndex) {
+      _currentIndex = widget.initialIndex;
     }
   }
 
-  void _prev() {
-    if (_currentIndex > 0) {
-      setState(() => _currentIndex--);
-      widget.onIndexChanged?.call(_currentIndex);
-    } else {
-      widget.onBackToPrev?.call();
-    }
+  void _goTo(int index) {
+    setState(() => _currentIndex = index);
+    widget.onIndexChanged?.call(index);
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final items = _uniqueGrammar;
     if (items.isEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => widget.onNext());
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && widget.grammarItems.isEmpty) widget.onNext();
+      });
       return const SizedBox.shrink();
     }
 
-    final item = items[_currentIndex];
-    final isLast = _currentIndex == items.length - 1;
+    final index = _currentIndex.clamp(0, items.length - 1);
+    final item = items[index];
+    final isLast = index == items.length - 1;
+    final explanation = item.explanation.trim();
 
     return Column(
       children: [
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSizes.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      '문법 ${_currentIndex + 1}/${items.length}',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: AppColors.lightSubtext,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      '문법 학습',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: AppColors.primaryStrong,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSizes.sm),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(2),
-                  child: LinearProgressIndicator(
-                    value: (_currentIndex + 1) / items.length,
-                    backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.primaryStrong,
-                    ),
-                    minHeight: 3,
-                  ),
-                ),
-                const Spacer(),
-                Center(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
-                    transitionBuilder: (child, animation) => FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0.05, 0),
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: child,
-                      ),
-                    ),
-                    child: Container(
-                      key: ValueKey('grammar-$_currentIndex'),
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(AppSizes.lg),
-                      decoration: BoxDecoration(
-                        color: AppColors.lightCard,
-                        borderRadius:
-                            BorderRadius.circular(AppSizes.cardRadius),
-                        border: Border.all(
-                          color: AppColors.primary.withValues(alpha: 0.2),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            item.pattern,
-                            style: theme.textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primaryStrong,
-                            ),
-                          ),
-                          const SizedBox(height: AppSizes.md),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSizes.md,
-                              vertical: AppSizes.sm,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.08),
-                              borderRadius:
-                                  BorderRadius.circular(AppSizes.radiusSm),
-                            ),
-                            child: Text(
-                              item.meaningKo,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.lightText,
-                              ),
-                            ),
-                          ),
-                          if (item.explanation.isNotEmpty) ...[
-                            const SizedBox(height: AppSizes.lg),
-                            Text(
-                              item.explanation,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.lightSubtext,
-                                height: 1.5,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const Spacer(),
-              ],
-            ),
+          child: LessonLearningCard(
+            itemType: '문법',
+            itemIndex: index,
+            itemCount: items.length,
+            term: item.pattern,
+            meaning: item.meaningKo,
+            explanation: explanation.isEmpty ? null : explanation,
+            onPrevious: index > 0 ? () => _goTo(index - 1) : null,
+            onNext: isLast ? null : () => _goTo(index + 1),
           ),
         ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSizes.md),
-            child: Row(
-              children: [
-                if (_currentIndex > 0 || widget.onBackToPrev != null)
-                  Expanded(
-                    child: SizedBox(
-                      height: AppSizes.buttonHeight,
-                      child: OutlinedButton.icon(
-                        onPressed: _prev,
-                        icon: const Icon(LucideIcons.chevronLeft),
-                        label: Text(
-                          _currentIndex > 0 ? '이전' : '단어 학습으로',
-                        ),
-                      ),
-                    ),
-                  ),
-                if (_currentIndex > 0 || widget.onBackToPrev != null)
-                  const SizedBox(width: AppSizes.sm),
-                Expanded(
-                  flex: 2,
-                  child: SizedBox(
-                    height: AppSizes.buttonHeight,
-                    child: FilledButton.icon(
-                      onPressed: _next,
-                      icon: Icon(
-                        isLast
-                            ? LucideIcons.bookOpen
-                            : LucideIcons.chevronRight,
-                      ),
-                      label: Text(isLast ? '대화 읽기로' : '다음 문법'),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        LessonStageActions(
+          nextLabel: '다음학습',
+          onPrevious: widget.onBackToPrev,
+          onNext: isLast ? widget.onNext : null,
         ),
       ],
     );

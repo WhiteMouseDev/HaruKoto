@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/services/tts_service.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../data/models/lesson_models.dart';
 import 'lesson_dialogue_bubble.dart';
 import 'lesson_dialogue_audio_control.dart';
+import 'lesson_stage_actions.dart';
 
 class LessonGuidedReadingStep extends StatefulWidget {
   final LessonDetailModel detail;
+  final VoidCallback? onPrevious;
   final VoidCallback? onNext;
   final TtsService? ttsService;
 
   const LessonGuidedReadingStep({
     super.key,
     required this.detail,
+    required this.onPrevious,
     required this.onNext,
     this.ttsService,
   });
@@ -29,7 +32,6 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
     with SingleTickerProviderStateMixin {
   bool _showTranslation = false;
   late final AnimationController _staggerController;
-  late final Map<String, int> _speakerIndex;
 
   @override
   void initState() {
@@ -38,18 +40,9 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
-    _buildSpeakerMap();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _staggerController.forward();
     });
-  }
-
-  void _buildSpeakerMap() {
-    _speakerIndex = {};
-    var index = 0;
-    for (final line in widget.detail.content.reading.script) {
-      _speakerIndex.putIfAbsent(line.speaker, () => index++);
-    }
   }
 
   @override
@@ -59,21 +52,22 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
   }
 
   Widget _staggered(int index, Widget child) {
+    if (MediaQuery.disableAnimationsOf(context)) return child;
     final start = (index * 0.08).clamp(0.0, 0.7);
     final end = (start + 0.4).clamp(0.0, 1.0);
-    final animation = CurvedAnimation(
-      parent: _staggerController,
-      curve: Interval(start, end, curve: Curves.easeOutCubic),
-    );
+    final curve = Interval(start, end, curve: Curves.easeOutCubic);
     return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) => Opacity(
-        opacity: animation.value,
-        child: Transform.translate(
-          offset: Offset(0, 16 * (1 - animation.value)),
-          child: child,
-        ),
-      ),
+      animation: _staggerController,
+      builder: (context, child) {
+        final progress = curve.transform(_staggerController.value);
+        return Opacity(
+          opacity: progress,
+          child: Transform.translate(
+            offset: Offset(0, 16 * (1 - progress)),
+            child: child,
+          ),
+        );
+      },
       child: child,
     );
   }
@@ -81,108 +75,121 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final light = theme.brightness == Brightness.light;
     final reading = widget.detail.content.reading;
+    final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final scene = reading.scene?.trim();
+    final lines = reading.script.asMap().entries.where(
+          (entry) => entry.value.text.trim().isNotEmpty,
+        );
+    final hasTranslation = lines.any(
+      (entry) => entry.value.translation?.trim().isNotEmpty ?? false,
+    );
+    final speakerSides = <String, bool>{};
 
     return Column(
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.all(AppSizes.md),
+            padding: const EdgeInsets.fromLTRB(
+              AppSizes.pageHorizontal,
+              AppSizes.lg,
+              AppSizes.pageHorizontal,
+              AppSizes.lg,
+            ),
             children: [
-              if (reading.scene != null) ...[
+              if (scene != null && scene.isNotEmpty) ...[
                 Container(
-                  padding: const EdgeInsets.all(AppSizes.gap),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                  alignment: Alignment.center,
+                  constraints:
+                      const BoxConstraints(minHeight: AppSizes.buttonHeight),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSizes.md,
+                    vertical: AppSizes.sm,
                   ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        LucideIcons.mapPin,
-                        size: AppSizes.iconSm,
-                        color: AppColors.primaryStrong,
-                      ),
-                      const SizedBox(width: AppSizes.sm),
-                      Expanded(
-                        child: Text(
-                          reading.scene!,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.lightText,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerLowest,
+                    border: Border.all(
+                      color: light
+                          ? AppColors.redesignOutline
+                          : colors.outlineVariant,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    scene,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontFamily: redesignFontFamily,
+                      color: foreground,
+                    ),
                   ),
                 ),
-                const SizedBox(height: AppSizes.sm),
+                const SizedBox(height: AppSizes.lg),
               ],
-              LessonDialogueAudioControl(
-                lessonId: widget.detail.id,
-                reading: reading,
-                ttsService: widget.ttsService,
-              ),
-              const SizedBox(height: AppSizes.sm),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    '번역',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: AppColors.lightText,
-                    ),
-                  ),
-                  const SizedBox(width: AppSizes.xs),
-                  SizedBox(
-                    height: 28,
-                    child: Switch.adaptive(
-                      value: _showTranslation,
-                      onChanged: (value) =>
-                          setState(() => _showTranslation = value),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSizes.sm),
-              ...reading.script.asMap().entries.map(
-                    (entry) => _staggered(
-                      entry.key,
-                      LessonDialogueBubble(
-                        line: entry.value,
-                        ttsService: widget.ttsService,
+              if (lines.isNotEmpty || reading.audioUrl != null)
+                Row(
+                  children: [
+                    Expanded(
+                      child: LessonDialogueAudioControl(
                         lessonId: widget.detail.id,
-                        scriptLineIndex: entry.key,
-                        showTranslation: _showTranslation,
-                        isRightAligned:
-                            (_speakerIndex[entry.value.speaker] ?? 0) == 1,
-                        highlights: reading.highlights,
+                        reading: reading,
+                        ttsService: widget.ttsService,
+                        compact: true,
                       ),
                     ),
+                    if (hasTranslation)
+                      MergeSemantics(
+                        child: Row(
+                          children: [
+                            Text(
+                              '번역',
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                fontFamily: redesignFontFamily,
+                                color: foreground,
+                              ),
+                            ),
+                            const SizedBox(width: AppSizes.xs),
+                            Switch.adaptive(
+                              value: _showTranslation,
+                              activeTrackColor: light
+                                  ? AppColors.redesignVocabulary
+                                  : colors.primary,
+                              onChanged: (value) =>
+                                  setState(() => _showTranslation = value),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              for (final entry in lines)
+                _staggered(
+                  entry.key,
+                  LessonDialogueBubble(
+                    key: ValueKey(entry.key),
+                    line: entry.value,
+                    ttsService: widget.ttsService,
+                    lessonId: widget.detail.id,
+                    scriptLineIndex: entry.key,
+                    showTranslation: _showTranslation,
+                    isRightAligned: speakerSides.putIfAbsent(
+                      entry.value.speaker.trim(),
+                      () => speakerSides.length.isOdd,
+                    ),
+                    audioBelow: true,
+                    highlights: reading.highlights,
                   ),
-              const SizedBox(height: AppSizes.lg),
+                ),
             ],
           ),
         ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSizes.md),
-            child: SizedBox(
-              width: double.infinity,
-              height: AppSizes.buttonHeight,
-              child: FilledButton.icon(
-                onPressed: widget.onNext == null
-                    ? null
-                    : () {
-                        (widget.ttsService ?? TtsService())
-                            .stop(lessonId: widget.detail.id);
-                        widget.onNext!();
-                      },
-                icon: const Icon(LucideIcons.checkCircle),
-                label: const Text('이해 체크로'),
-              ),
-            ),
-          ),
+        LessonStageActions(
+          nextLabel: '다음학습',
+          onPrevious: widget.onPrevious,
+          onNext: widget.onNext,
+          showPrevious: true,
         ),
       ],
     );

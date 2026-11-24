@@ -21,6 +21,8 @@ class LessonStepContent extends ConsumerWidget {
     required this.totalSteps,
     required this.onExit,
     this.ttsService,
+    this.jlptLevel,
+    this.stationNo,
   });
 
   final String lessonId;
@@ -29,6 +31,8 @@ class LessonStepContent extends ConsumerWidget {
   final int totalSteps;
   final VoidCallback onExit;
   final TtsService? ttsService;
+  final String? jlptLevel;
+  final int? stationNo;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,6 +44,8 @@ class LessonStepContent extends ConsumerWidget {
         return LessonContextPreviewStep(
           key: const ValueKey('step-0'),
           detail: detail,
+          jlptLevel: jlptLevel,
+          stationNo: stationNo,
           onNext: sessionNotifier.goToVocabLearning,
         );
       case LessonStep.vocabLearning:
@@ -63,13 +69,27 @@ class LessonStepContent extends ConsumerWidget {
           onNext: sessionNotifier.goToGuidedReading,
         );
       case LessonStep.guidedReading:
+        void moveFromReading(VoidCallback move) {
+          if (!context.mounted || !sessionNotifier.isCurrent) return;
+          final current = ref.read(lessonSessionProvider(lessonId));
+          if (current.step != LessonStep.guidedReading || current.starting) {
+            return;
+          }
+          (ttsService ?? TtsService()).stop(lessonId: detail.id);
+          move();
+        }
+
         return LessonGuidedReadingStep(
           key: const ValueKey('step-1'),
           ttsService: ttsService,
           detail: detail,
+          onPrevious: session.starting
+              ? null
+              : () => moveFromReading(sessionNotifier.goBack),
           onNext: session.starting
               ? null
-              : () => unawaited(sessionNotifier.startPractice(detail)),
+              : () => moveFromReading(
+                  () => unawaited(sessionNotifier.startPractice(detail))),
         );
       case LessonStep.recognition:
         final recognitionQuestions = lessonRecognitionQuestions(detail);
