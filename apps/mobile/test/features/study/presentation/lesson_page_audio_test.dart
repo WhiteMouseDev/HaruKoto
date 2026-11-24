@@ -8,6 +8,7 @@ import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/core/services/tts_service.dart';
 import 'package:harukoto_mobile/features/study/data/lesson_checkpoint_store.dart';
+import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/presentation/lesson_page.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_guided_reading_step.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_session_provider.dart';
@@ -19,7 +20,7 @@ import '../fixtures/lesson_resume_fixture.dart';
 
 void main() {
   testWidgets(
-      'step transition cancels audio and preserves answers without server writes',
+      'reading back button cancels audio and stale footer cannot retreat twice or start',
       (tester) async {
     final h = await _openPage(tester);
     h.actions.goToVocabLearning();
@@ -31,7 +32,13 @@ void main() {
     expect(h.audio.service.playback.value.isActive, isTrue);
     final previousAnswers =
         h.container.read(lessonSessionProvider(resumeLessonId)).answers;
-    h.actions.goBack();
+    final back = find.widgetWithText(OutlinedButton, '이전');
+    final next = find.widgetWithText(FilledButton, '다음학습');
+    final oldBack = tester.widget<OutlinedButton>(back).onPressed!;
+    final oldNext = tester.widget<FilledButton>(next).onPressed!;
+    await tester.tap(back);
+    oldBack();
+    oldNext();
     await tester.pump();
     expect(h.audio.service.playback.value.phase, TtsPlaybackPhase.idle);
     expect(h.audio.players.single.wantsPlayback, isFalse);
@@ -39,7 +46,45 @@ void main() {
     expect(h.repository.submitCalls, 0);
     expect(h.container.read(lessonSessionProvider(resumeLessonId)).answers,
         previousAnswers);
+    expect(h.container.read(lessonSessionProvider(resumeLessonId)).step,
+        LessonStep.grammarLearning);
     await tester.pumpAndSettle();
+    await h.close(tester);
+  });
+
+  testWidgets('reading next stops audio and starts one practice submission',
+      (tester) async {
+    final h = await _openPage(tester);
+    h.actions.goToVocabLearning();
+    h.actions.goToGrammarLearning();
+    h.actions.goToGuidedReading();
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('음성 듣기'));
+    await _pumpTts(tester);
+    expect(h.audio.service.playback.value.isActive, isTrue);
+
+    final gate = Completer<LessonProgressModel>();
+    h.repository.startGate = gate;
+    final previous = find.widgetWithText(OutlinedButton, '이전');
+    final next = find.widgetWithText(FilledButton, '다음학습');
+    final oldBack = tester.widget<OutlinedButton>(previous).onPressed!;
+    final oldNext = tester.widget<FilledButton>(next).onPressed!;
+    await tester.tap(next);
+    oldNext();
+    oldBack();
+    await tester.pump();
+    expect(h.repository.startCalls, 1);
+    expect(h.audio.service.playback.value.phase, TtsPlaybackPhase.idle);
+    expect(h.audio.players.single.wantsPlayback, isFalse);
+    expect(tester.widget<OutlinedButton>(previous).onPressed, isNull);
+    expect(tester.widget<FilledButton>(next).onPressed, isNull);
+
+    gate.complete(inProgress);
+    await tester.pumpAndSettle();
+    expect(h.repository.startCalls, 1);
+    expect(h.repository.submitCalls, 0);
+    expect(h.container.read(lessonSessionProvider(resumeLessonId)).step,
+        LessonStep.recognition);
     await h.close(tester);
   });
 

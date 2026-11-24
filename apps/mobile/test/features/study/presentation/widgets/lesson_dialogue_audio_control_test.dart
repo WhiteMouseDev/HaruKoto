@@ -8,6 +8,7 @@ import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_dialogue_audio_control.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_dialogue_sheet.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_guided_reading_step.dart';
+import 'package:harukoto_mobile/shared/widgets/tts_play_button.dart';
 
 import '../../../../fixtures/fake_tts.dart';
 
@@ -172,17 +173,14 @@ void main() {
   });
 
   testWidgets(
-      'guided reading next cancels before practice callback and manual line replaces queue',
+      'guided reading manual line replaces the compact whole-dialogue queue',
       (tester) async {
     h = TtsHarness();
-    var nextCalled = false;
     await tester.pumpWidget(_app(LessonGuidedReadingStep(
       detail: _detail,
       ttsService: h.service,
-      onNext: () {
-        expect(h.service.playback.value.phase, TtsPlaybackPhase.idle);
-        nextCalled = true;
-      },
+      onPrevious: null,
+      onNext: null,
     )));
     await tester.pump(const Duration(milliseconds: 700));
     await tester.tap(find.text('전체 듣기'));
@@ -191,10 +189,39 @@ void main() {
     await _pumpTts(tester);
     expect(h.players.last.played.single, contains('/script-lines/1/tts'));
     expect(h.service.playback.value.isDialogue, isFalse);
-    await tester.tap(find.text('이해 체크로'));
-    expect(nextCalled, isTrue);
-    expect(h.players.last.wantsPlayback, isFalse);
     await tester.pumpWidget(const SizedBox.shrink());
+    await _dispose(tester, h);
+  });
+
+  testWidgets('guided reading lines and audio keep their speaker alignment',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 812));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    h = TtsHarness();
+    await tester.pumpWidget(_app(LessonGuidedReadingStep(
+      detail: _detail,
+      ttsService: h.service,
+      onPrevious: null,
+      onNext: null,
+    )));
+    await tester.pumpAndSettle();
+
+    final firstAudio = find.byWidgetPredicate(
+        (widget) => widget is TtsPlayButton && widget.scriptLineIndex == 0);
+    final secondAudio = find.byWidgetPredicate(
+        (widget) => widget is TtsPlayButton && widget.scriptLineIndex == 1);
+    final firstLine = find.text('私は映画が好きです。', findRichText: true);
+    final secondLine = find.text('私も映画が好きです。', findRichText: true);
+    expect(tester.getRect(firstAudio).left, 20);
+    expect(tester.getRect(secondAudio).right, 355);
+    expect(tester.getSize(firstAudio), const Size.square(48));
+    expect(tester.getSize(secondAudio), const Size.square(48));
+    expect(tester.getTopLeft(firstAudio).dy,
+        greaterThan(tester.getBottomLeft(firstLine).dy));
+    expect(tester.getTopLeft(secondAudio).dy,
+        greaterThan(tester.getBottomLeft(secondLine).dy));
+    expect(tester.getRect(find.text('キム')).left, 20);
+    expect(tester.getRect(find.text('田中')).right, 355);
     await _dispose(tester, h);
   });
 
@@ -242,6 +269,7 @@ void main() {
           body: LessonGuidedReadingStep(
             detail: detailWithScene,
             ttsService: h.service,
+            onPrevious: () {},
             onNext: () {},
           ),
         ),
@@ -250,8 +278,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('서로 좋아하는 취미를 이야기해요.'), findsOneWidget);
-    expect(find.text('대화'), findsOneWidget);
-    expect(find.text('총 1개'), findsOneWidget);
     expect(find.text('저는 영화를 좋아해요.'), findsNothing);
     final translationSwitch = find.byType(Switch);
     await tester.scrollUntilVisible(translationSwitch, 60);
@@ -260,7 +286,14 @@ void main() {
     final translation = find.text('저는 영화를 좋아해요.');
     await tester.scrollUntilVisible(translation, 60);
     expect(translation, findsOneWidget);
-    expect(find.text('이해 체크로'), findsOneWidget);
+    expect(find.byType(Divider), findsOneWidget);
+    expect(find.text('이전'), findsOneWidget);
+    expect(find.text('다음학습'), findsOneWidget);
+    await tester.ensureVisible(translationSwitch);
+    await tester.tap(translationSwitch);
+    await tester.pumpAndSettle();
+    expect(translation, findsNothing);
+    expect(find.byType(Divider), findsNothing);
     expect(tester.takeException(), isNull);
     await _dispose(tester, h);
   });

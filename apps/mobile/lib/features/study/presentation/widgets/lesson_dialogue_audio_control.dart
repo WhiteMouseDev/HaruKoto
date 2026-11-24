@@ -15,11 +15,13 @@ class LessonDialogueAudioControl extends StatefulWidget {
     required this.lessonId,
     required this.reading,
     this.ttsService,
+    this.compact = false,
   });
 
   final String lessonId;
   final ReadingModel reading;
   final TtsService? ttsService;
+  final bool compact;
 
   @override
   State<LessonDialogueAudioControl> createState() =>
@@ -106,26 +108,59 @@ class _LessonDialogueAudioControlState extends State<LessonDialogueAudioControl>
                 : _hasStarted
                     ? '처음부터 다시 들을 수 있어요'
                     : '문장 순서대로 들어보세요';
+        final callback = active ? () => _tts.stop(owner: _owner) : _start;
+        final icon = loading
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2))
+            : Icon(
+                active
+                    ? LucideIcons.square
+                    : _hasStarted
+                        ? LucideIcons.rotateCcw
+                        : LucideIcons.play,
+                size: 16);
+        final label = Text(active
+            ? '정지'
+            : _hasStarted
+                ? '다시 듣기'
+                : '전체 듣기');
+        final errorMessage = error == null
+            ? null
+            : Text(error.userMessage,
+                key: const ValueKey('dialogue-audio-error'),
+                style: theme.textTheme.bodySmall
+                    ?.copyWith(color: theme.colorScheme.error));
+        if (widget.compact) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextButton.icon(
+                key: const ValueKey('dialogue-audio-toggle'),
+                onPressed: callback,
+                icon: icon,
+                label: label,
+                style: TextButton.styleFrom(
+                  foregroundColor: theme.colorScheme.onSurfaceVariant,
+                  minimumSize: const Size(48, 48),
+                  padding: const EdgeInsetsDirectional.only(end: AppSizes.sm),
+                ),
+              ),
+              if (active)
+                Semantics(
+                  liveRegion: true,
+                  child: Text(status, style: theme.textTheme.bodySmall),
+                ),
+              if (errorMessage != null) errorMessage,
+            ],
+          );
+        }
         final action = FilledButton.tonalIcon(
           key: const ValueKey('dialogue-audio-toggle'),
-          onPressed: active ? () => _tts.stop(owner: _owner) : _start,
-          icon: loading
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2))
-              : Icon(
-                  active
-                      ? LucideIcons.square
-                      : _hasStarted
-                          ? LucideIcons.rotateCcw
-                          : LucideIcons.play,
-                  size: 16),
-          label: Text(active
-              ? '정지'
-              : _hasStarted
-                  ? '다시 듣기'
-                  : '전체 듣기'),
+          onPressed: callback,
+          icon: icon,
+          label: label,
           style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
         );
         final heading = Column(
@@ -165,12 +200,9 @@ class _LessonDialogueAudioControlState extends State<LessonDialogueAudioControl>
                   action
                 ]);
               }),
-              if (error != null) ...[
+              if (errorMessage != null) ...[
                 const SizedBox(height: AppSizes.sm),
-                Text(error.userMessage,
-                    key: const ValueKey('dialogue-audio-error'),
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: theme.colorScheme.error)),
+                errorMessage,
               ],
             ],
           ),

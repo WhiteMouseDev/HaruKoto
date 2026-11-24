@@ -18,7 +18,7 @@ class LessonDialogueBubble extends StatelessWidget {
   final int? scriptLineIndex;
   final bool showTranslation;
   final bool isRightAligned;
-  final bool fullWidth;
+  final bool audioBelow;
   final List<String> highlights;
 
   const LessonDialogueBubble({
@@ -29,7 +29,7 @@ class LessonDialogueBubble extends StatelessWidget {
     this.scriptLineIndex,
     this.showTranslation = true,
     this.isRightAligned = false,
-    this.fullWidth = false,
+    this.audioBelow = false,
     this.highlights = const [],
   });
 
@@ -81,12 +81,17 @@ class LessonDialogueBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final light = theme.brightness == Brightness.light;
     final crossAxisAlignment =
         isRightAligned ? CrossAxisAlignment.end : CrossAxisAlignment.start;
     final hasLessonScriptTarget = lessonId != null && scriptLineIndex != null;
+    final translation = line.translation?.trim();
+    final translated = showTranslation &&
+        translation != null &&
+        (!audioBelow || translation.isNotEmpty);
 
-    final dialogueRadius = isRightAligned
+    final reviewRadius = isRightAligned
         ? const BorderRadius.only(
             topLeft: Radius.circular(AppSizes.radiusMd),
             topRight: Radius.circular(4),
@@ -100,26 +105,66 @@ class LessonDialogueBubble extends StatelessWidget {
             bottomRight: Radius.circular(AppSizes.radiusMd),
           );
 
-    final dialogueColor = isRightAligned
-        ? AppColors.primary.withValues(alpha: 0.08)
-        : theme.colorScheme.surfaceContainerLow;
-
-    final bubbleBorder = isRightAligned || fullWidth
-        ? null
-        : Border.all(
-            color: AppColors.primary.withValues(alpha: 0.12),
-          );
-
     final baseTextStyle = theme.textTheme.bodyLarge?.copyWith(
-          fontFamily: fullWidth ? redesignFontFamily : null,
-          fontSize: fullWidth ? 15 : 18,
+          fontFamily: audioBelow ? redesignFontFamily : null,
+          fontSize: audioBelow ? 15 : 18,
           fontWeight: FontWeight.w500,
           height: 1.5,
-          color: light
-              ? AppColors.redesignForeground
-              : theme.colorScheme.onSurface,
+          color: light ? AppColors.redesignForeground : colors.onSurface,
         ) ??
         const TextStyle();
+    final originalText = RichText(
+      textScaler: MediaQuery.textScalerOf(context),
+      text:
+          TextSpan(children: _buildHighlightedSpans(line.text, baseTextStyle)),
+    );
+    final audio = hasLessonScriptTarget
+        ? TtsPlayButton(
+            lessonId: lessonId,
+            ttsService: ttsService,
+            scriptLineIndex: scriptLineIndex,
+            iconSize: AppSizes.iconSm,
+            iconColor: audioBelow ? AppColors.brandPink : null,
+          )
+        : _canUseKanaTts(line.text)
+            ? TtsPlayButton(
+                text: line.text.trim(),
+                iconSize: AppSizes.iconSm,
+                iconColor: audioBelow ? AppColors.brandPink : null,
+                ttsService: ttsService,
+              )
+            : null;
+    final textContent = Column(
+      crossAxisAlignment:
+          audioBelow ? CrossAxisAlignment.stretch : CrossAxisAlignment.start,
+      children: [
+        if (audioBelow)
+          originalText
+        else
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [Expanded(child: originalText), if (audio != null) audio],
+          ),
+        if (translated) ...[
+          if (audioBelow)
+            Divider(
+              height: AppSizes.md,
+              thickness: 1,
+              color: light ? AppColors.redesignOutline : colors.outlineVariant,
+            )
+          else
+            const SizedBox(height: AppSizes.xs),
+          Text(
+            audioBelow ? translation : line.translation!,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colors.onSurfaceVariant,
+              fontFamily: audioBelow ? redesignFontFamily : null,
+              fontSize: 13,
+            ),
+          ),
+        ],
+      ],
+    );
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSizes.gap),
@@ -129,83 +174,59 @@ class LessonDialogueBubble extends StatelessWidget {
           Text(
             line.speaker,
             style: theme.textTheme.labelSmall?.copyWith(
-              fontFamily: fullWidth ? redesignFontFamily : null,
-              color: fullWidth
-                  ? theme.colorScheme.onSurfaceVariant
-                  : AppColors.primaryStrong,
+              fontFamily: audioBelow ? redesignFontFamily : null,
+              color: audioBelow ? colors.onSurface : AppColors.primaryStrong,
             ),
           ),
           const SizedBox(height: AppSizes.xs),
           ConstrainedBox(
             constraints: BoxConstraints(
-              maxWidth: fullWidth
-                  ? double.infinity
-                  : MediaQuery.sizeOf(context).width * 0.78,
+              maxWidth: MediaQuery.sizeOf(context).width * 0.78,
             ),
             child: Container(
-              padding: fullWidth
-                  ? const EdgeInsetsDirectional.fromSTEB(
-                      AppSizes.md, AppSizes.xs, AppSizes.xs, AppSizes.xs)
-                  : const EdgeInsets.all(AppSizes.gap),
+              padding: const EdgeInsets.all(AppSizes.gap),
               decoration: BoxDecoration(
-                color: fullWidth && light
-                    ? AppColors.redesignControl
-                    : dialogueColor,
+                color: isRightAligned
+                    ? AppColors.primary.withValues(alpha: 0.08)
+                    : audioBelow && light
+                        ? AppColors.redesignControl
+                        : colors.surfaceContainerLow,
                 borderRadius:
-                    fullWidth ? BorderRadius.circular(12) : dialogueRadius,
-                border: bubbleBorder,
+                    audioBelow ? BorderRadius.circular(12) : reviewRadius,
+                border: isRightAligned || audioBelow
+                    ? null
+                    : Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.12)),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child:
+                  audioBelow ? IntrinsicWidth(child: textContent) : textContent,
+            ),
+          ),
+          if (audioBelow && audio != null)
+            SizedBox.square(
+              dimension: AppSizes.buttonHeight,
+              child: Stack(
+                fit: StackFit.expand,
                 children: [
-                  Row(
-                    crossAxisAlignment: fullWidth
-                        ? CrossAxisAlignment.center
-                        : CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: RichText(
-                          textScaler: MediaQuery.textScalerOf(context),
-                          text: TextSpan(
-                            children: _buildHighlightedSpans(
-                              line.text,
-                              baseTextStyle,
-                            ),
-                          ),
+                  Center(
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: colors.surfaceContainerLowest,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: light
+                              ? AppColors.redesignOutline
+                              : colors.outlineVariant,
                         ),
-                      ),
-                      if (hasLessonScriptTarget)
-                        TtsPlayButton(
-                          lessonId: lessonId,
-                          ttsService: ttsService,
-                          scriptLineIndex: scriptLineIndex,
-                          iconSize:
-                              fullWidth ? AppSizes.iconMd : AppSizes.iconSm,
-                          iconColor: fullWidth ? AppColors.brandPink : null,
-                        )
-                      else if (_canUseKanaTts(line.text))
-                        TtsPlayButton(
-                            text: line.text.trim(),
-                            iconSize: 16,
-                            ttsService: ttsService),
-                    ],
-                  ),
-                  if (showTranslation && line.translation != null) ...[
-                    const SizedBox(height: AppSizes.xs),
-                    Text(
-                      line.translation!,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(
-                          alpha: 0.55,
-                        ),
-                        fontSize: 13,
                       ),
                     ),
-                  ],
+                  ),
+                  audio,
                 ],
               ),
             ),
-          ),
         ],
       ),
     );

@@ -11,11 +11,13 @@ class LessonStageActions extends StatelessWidget {
     required this.nextLabel,
     required this.onNext,
     this.onPrevious,
+    this.showPrevious = false,
   });
 
   final String nextLabel;
   final VoidCallback? onNext;
   final VoidCallback? onPrevious;
+  final bool showPrevious;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,7 @@ class LessonStageActions extends StatelessWidget {
     final colors = theme.colorScheme;
     final light = theme.brightness == Brightness.light;
     final back = onPrevious;
+    final hasPreviousButton = back != null || showPrevious;
     final bottomGap = MediaQuery.sizeOf(context).height < 700
         ? AppSizes.md
         : AppSizes.xl + AppSizes.sm;
@@ -53,9 +56,9 @@ class LessonStageActions extends StatelessWidget {
         shape: shape,
         textStyle: textStyle,
       ),
-      child: back == null
-          ? Text(nextLabel, textAlign: TextAlign.center)
-          : _ActionLabel(nextLabel, trailing: LucideIcons.chevronRight),
+      child: hasPreviousButton
+          ? _ActionLabel(nextLabel, trailing: LucideIcons.chevronRight)
+          : Text(nextLabel, textAlign: TextAlign.center),
     );
 
     return SafeArea(
@@ -69,7 +72,7 @@ class LessonStageActions extends StatelessWidget {
         ),
         child: Row(
           children: [
-            if (back != null) ...[
+            if (hasPreviousButton) ...[
               Expanded(
                 child: OutlinedButton(
                   onPressed: back,
