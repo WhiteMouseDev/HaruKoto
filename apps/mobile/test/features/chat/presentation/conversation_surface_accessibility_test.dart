@@ -169,7 +169,7 @@ void main() {
     await tester.ensureVisible(find.text('단어장에서 보기'));
     await tester.tap(find.text('단어장에서 보기'));
     await tester.pumpAndSettle();
-    expect(find.text('내 단어장'), findsOneWidget);
+    expect(find.text('단어장'), findsOneWidget);
     expect(find.text('予約しています。'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

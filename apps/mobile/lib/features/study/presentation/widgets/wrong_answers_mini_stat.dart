@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constants/colors.dart';
+import '../../../../core/theme/text_theme.dart';
 
 class WrongAnswersMiniStat extends StatelessWidget {
-  final String label;
-  final String value;
-  final bool isError;
-
   const WrongAnswersMiniStat({
     super.key,
     required this.label,
@@ -13,30 +11,41 @@ class WrongAnswersMiniStat extends StatelessWidget {
     this.isError = false,
   });
 
+  final String label;
+  final String value;
+  final bool isError;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final light = theme.brightness == Brightness.light;
+    final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final secondary =
+        light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
 
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(8),
-        ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Column(
           children: [
             Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              value,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: redesignFontFamily,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isError ? AppColors.error(theme.brightness) : foreground,
               ),
             ),
             Text(
-              value,
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: isError ? AppColors.error(theme.brightness) : null,
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: redesignFontFamily,
+                fontSize: 11,
+                color: secondary,
               ),
             ),
           ],

@@ -2,15 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../core/constants/sizes.dart';
+
+import '../../../core/constants/colors.dart';
 import '../../../core/providers/user_preferences_provider.dart';
+import '../../../core/theme/text_theme.dart';
 import '../data/models/word_entry_model.dart';
 import '../providers/wrong_answers_provider.dart';
 import 'quiz_launch.dart';
 import 'widgets/wrong_answers_content.dart';
-import 'widgets/wrong_answers_overview.dart';
-import 'widgets/wrong_answers_sort_chips.dart';
 
 class WrongAnswersPage extends ConsumerStatefulWidget {
   const WrongAnswersPage({super.key});
@@ -23,7 +24,10 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
   @override
   void initState() {
     super.initState();
-    unawaited(ref.read(wrongAnswersProvider.notifier).refresh());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(ref.read(wrongAnswersProvider.notifier).refresh());
+    });
   }
 
   Future<void> _saveToWordbook(WrongEntryModel entry) async {
@@ -40,11 +44,8 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
     unawaited(ref.read(wrongAnswersProvider.notifier).changeSort(sort));
   }
 
-  void _startReviewQuiz(WrongAnswersSummary? summary) {
-    if (summary == null || summary.remaining <= 0) {
-      return;
-    }
-
+  void _startReviewQuiz(WrongAnswersSummary summary) {
+    if (summary.remaining <= 0) return;
     final level = ref.read(userPreferencesProvider).jlptLevel;
     openQuizPageForSession(
       context,
@@ -55,61 +56,59 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
     );
   }
 
+  void _openStudy() {
+    final router = GoRouter.maybeOf(context);
+    if (router != null) {
+      router.go('/study');
+    } else {
+      unawaited(Navigator.maybePop(context));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final foreground = theme.brightness == Brightness.light
+        ? AppColors.redesignForeground
+        : theme.colorScheme.onSurface;
     final wrongAnswers = ref.watch(wrongAnswersProvider);
-    final wrongAnswersController = ref.read(wrongAnswersProvider.notifier);
+    final controller = ref.read(wrongAnswersProvider.notifier);
 
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        titleSpacing: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        foregroundColor: foreground,
+        leading: IconButton(
+          onPressed: () => Navigator.maybePop(context),
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          icon: const Icon(LucideIcons.arrowLeft, size: 20),
+        ),
+        title: const Text(
+          '오답노트',
+          style: TextStyle(
+            fontFamily: redesignFontFamily,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(AppSizes.pageHorizontal,
-                  AppSizes.md, AppSizes.pageHorizontal, 0),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: const Icon(LucideIcons.arrowLeft, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    '오답 노트',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (wrongAnswers.summary != null)
-              WrongAnswersOverview(
-                summary: wrongAnswers.summary!,
-                onStartReview: () => _startReviewQuiz(wrongAnswers.summary),
-              ),
-            WrongAnswersSortChips(
-              activeSort: wrongAnswers.sort,
-              onSortChanged: _changeSort,
-            ),
-            Expanded(
-              child: WrongAnswersContent(
-                loading: wrongAnswers.loading,
-                error: wrongAnswers.error,
-                entries: wrongAnswers.entries,
-                totalPages: wrongAnswers.totalPages,
-                page: wrongAnswers.page,
-                expandedId: wrongAnswers.expandedId,
-                savedWords: wrongAnswers.savedWords,
-                onRetry: wrongAnswersController.refresh,
-                onToggleExpand: wrongAnswersController.toggleExpanded,
-                onSaveToWordbook: _saveToWordbook,
-                onPagePrev: wrongAnswersController.previousPage,
-                onPageNext: wrongAnswersController.nextPage,
-              ),
-            ),
-          ],
+        top: false,
+        child: WrongAnswersContent(
+          state: wrongAnswers,
+          onRetry: controller.refresh,
+          onOpenStudy: _openStudy,
+          onStartReview: _startReviewQuiz,
+          onSortChanged: _changeSort,
+          onToggleExpand: controller.toggleExpanded,
+          onSaveToWordbook: _saveToWordbook,
+          onPagePrev: controller.previousPage,
+          onPageNext: controller.nextPage,
         ),
       ),
     );

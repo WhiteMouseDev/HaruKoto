@@ -1,46 +1,78 @@
 import 'package:flutter/material.dart';
 
-class WrongAnswersSummaryCard extends StatelessWidget {
-  final String label;
-  final String value;
-  final Color? valueColor;
+import '../../../../core/constants/colors.dart';
+import '../../../../core/theme/text_theme.dart';
 
+class WrongAnswersSummaryCard extends StatelessWidget {
   const WrongAnswersSummaryCard({
     super.key,
     required this.label,
-    required this.value,
-    this.valueColor,
+    required this.count,
+    required this.icon,
+    required this.iconColor,
   });
+
+  final String label;
+  final int? count;
+  final IconData icon;
+  final Color iconColor;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final colors = Theme.of(context).colorScheme;
+    final light = colors.brightness == Brightness.light;
+    final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final secondary =
+        light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
+    final value = count;
 
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          border: Border.all(color: theme.colorScheme.outline),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                fontSize: 10,
+      child: Semantics(
+        excludeSemantics: true,
+        label: value == null ? '$label 불러오는 중' : '$label $value개',
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Column(
+            children: [
+              Icon(icon, size: 22, color: iconColor),
+              const SizedBox(height: 4),
+              if (value == null)
+                Center(
+                  child: Container(
+                    width: 38,
+                    height: MediaQuery.textScalerOf(context).scale(15) * 1.4,
+                    decoration: BoxDecoration(
+                      color: light
+                          ? AppColors.redesignOutline
+                          : colors.outlineVariant,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ),
+                )
+              else
+                Text(
+                  '$value개',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: redesignFontFamily,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    height: 1.4,
+                    color: foreground,
+                  ),
+                ),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: redesignFontFamily,
+                  fontSize: 11,
+                  height: 1.4,
+                  color: secondary,
+                ),
               ),
-            ),
-            Text(
-              value,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: valueColor,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
