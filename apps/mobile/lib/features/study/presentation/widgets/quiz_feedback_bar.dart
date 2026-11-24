@@ -83,7 +83,7 @@ class QuizFeedbackBar extends StatelessWidget {
     final detail = answered ? _feedbackDetail : null;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,

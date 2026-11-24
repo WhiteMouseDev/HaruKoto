@@ -46,6 +46,31 @@ void main() {
       expect(selectedOptionId, 'o1');
     });
 
+    testWidgets('aligns progress and footer to the iPhone design frame',
+        (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(375, 812);
+      tester.view.padding = const FakeViewPadding(top: 44, bottom: 34);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetPadding);
+
+      await _pumpQuizStandardModeContent(tester);
+
+      final progress = tester.getRect(find.byType(LinearProgressIndicator));
+      expect(progress, const Rect.fromLTWH(20, 110, 335, 8));
+      final badge = find
+          .ancestor(
+            of: find.text('Q1'),
+            matching: find.byType(DecoratedBox),
+          )
+          .first;
+      expect(tester.getTopLeft(badge).dy, closeTo(228, 2));
+      final next = find.byKey(const ValueKey('quiz-next'));
+      expect(tester.getRect(next), const Rect.fromLTWH(20, 730, 335, 48));
+      expect(tester.widget<FilledButton>(next).onPressed, isNull);
+    });
+
     testWidgets('shows feedback bar after answer and forwards next',
         (tester) async {
       var nextCalled = false;
