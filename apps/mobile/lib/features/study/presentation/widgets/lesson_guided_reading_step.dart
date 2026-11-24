@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/services/tts_service.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../data/models/lesson_models.dart';
 import 'lesson_dialogue_bubble.dart';
 import 'lesson_dialogue_audio_control.dart';
+import 'lesson_stage_actions.dart';
 
 class LessonGuidedReadingStep extends StatefulWidget {
   final LessonDetailModel detail;
@@ -29,7 +30,6 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
     with SingleTickerProviderStateMixin {
   bool _showTranslation = false;
   late final AnimationController _staggerController;
-  late final Map<String, int> _speakerIndex;
 
   @override
   void initState() {
@@ -38,18 +38,9 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
-    _buildSpeakerMap();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _staggerController.forward();
     });
-  }
-
-  void _buildSpeakerMap() {
-    _speakerIndex = {};
-    var index = 0;
-    for (final line in widget.detail.content.reading.script) {
-      _speakerIndex.putIfAbsent(line.speaker, () => index++);
-    }
   }
 
   @override
@@ -59,6 +50,7 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
   }
 
   Widget _staggered(int index, Widget child) {
+    if (MediaQuery.disableAnimationsOf(context)) return child;
     final start = (index * 0.08).clamp(0.0, 0.7);
     final end = (start + 0.4).clamp(0.0, 1.0);
     final animation = CurvedAnimation(
@@ -81,40 +73,82 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
     final reading = widget.detail.content.reading;
+    final foreground =
+        light ? AppColors.redesignForeground : theme.colorScheme.onSurface;
+    final scene = reading.scene;
 
     return Column(
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.all(AppSizes.md),
+            padding: const EdgeInsets.fromLTRB(
+              AppSizes.pageHorizontal,
+              AppSizes.lg,
+              AppSizes.pageHorizontal,
+              AppSizes.lg,
+            ),
             children: [
-              if (reading.scene != null) ...[
+              if (scene != null && scene.trim().isNotEmpty) ...[
                 Container(
-                  padding: const EdgeInsets.all(AppSizes.gap),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSizes.md,
+                    vertical: AppSizes.gap,
                   ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        LucideIcons.mapPin,
-                        size: AppSizes.iconSm,
-                        color: AppColors.primaryStrong,
-                      ),
-                      const SizedBox(width: AppSizes.sm),
-                      Expanded(
+                  decoration: BoxDecoration(
+                    color: light
+                        ? AppColors.brandPink.withValues(alpha: 0.12)
+                        : theme.colorScheme.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    scene,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontFamily: redesignFontFamily,
+                      color: foreground,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSizes.lg),
+              ],
+              if (reading.script.isNotEmpty) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: Semantics(
+                        header: true,
                         child: Text(
-                          reading.scene!,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.lightText,
-                            fontWeight: FontWeight.w500,
+                          '대화',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontFamily: redesignFontFamily,
+                            fontWeight: FontWeight.w700,
+                            color: foreground,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSizes.gap,
+                        vertical: AppSizes.xs,
+                      ),
+                      decoration: BoxDecoration(
+                        color: light
+                            ? AppColors.redesignControl
+                            : theme.colorScheme.surfaceContainerHigh,
+                        borderRadius:
+                            BorderRadius.circular(AppSizes.chipRadius),
+                      ),
+                      child: Text(
+                        '총 ${reading.script.length}개',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          fontFamily: redesignFontFamily,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: AppSizes.sm),
               ],
@@ -130,17 +164,14 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
                   Text(
                     '번역',
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: AppColors.lightText,
+                      color: foreground,
                     ),
                   ),
                   const SizedBox(width: AppSizes.xs),
-                  SizedBox(
-                    height: 28,
-                    child: Switch.adaptive(
-                      value: _showTranslation,
-                      onChanged: (value) =>
-                          setState(() => _showTranslation = value),
-                    ),
+                  Switch.adaptive(
+                    value: _showTranslation,
+                    onChanged: (value) =>
+                        setState(() => _showTranslation = value),
                   ),
                 ],
               ),
@@ -154,8 +185,7 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
                         lessonId: widget.detail.id,
                         scriptLineIndex: entry.key,
                         showTranslation: _showTranslation,
-                        isRightAligned:
-                            (_speakerIndex[entry.value.speaker] ?? 0) == 1,
+                        fullWidth: true,
                         highlights: reading.highlights,
                       ),
                     ),
@@ -164,25 +194,15 @@ class _LessonGuidedReadingStepState extends State<LessonGuidedReadingStep>
             ],
           ),
         ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSizes.md),
-            child: SizedBox(
-              width: double.infinity,
-              height: AppSizes.buttonHeight,
-              child: FilledButton.icon(
-                onPressed: widget.onNext == null
-                    ? null
-                    : () {
-                        (widget.ttsService ?? TtsService())
-                            .stop(lessonId: widget.detail.id);
-                        widget.onNext!();
-                      },
-                icon: const Icon(LucideIcons.checkCircle),
-                label: const Text('이해 체크로'),
-              ),
-            ),
-          ),
+        LessonStageActions(
+          nextLabel: '이해 체크로',
+          onNext: widget.onNext == null
+              ? null
+              : () {
+                  (widget.ttsService ?? TtsService())
+                      .stop(lessonId: widget.detail.id);
+                  widget.onNext!();
+                },
         ),
       ],
     );

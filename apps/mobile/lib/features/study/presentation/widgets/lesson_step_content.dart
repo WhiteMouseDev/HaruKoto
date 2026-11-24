@@ -21,6 +21,8 @@ class LessonStepContent extends ConsumerWidget {
     required this.totalSteps,
     required this.onExit,
     this.ttsService,
+    this.jlptLevel,
+    this.stationNo,
   });
 
   final String lessonId;
@@ -29,6 +31,8 @@ class LessonStepContent extends ConsumerWidget {
   final int totalSteps;
   final VoidCallback onExit;
   final TtsService? ttsService;
+  final String? jlptLevel;
+  final int? stationNo;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,6 +44,8 @@ class LessonStepContent extends ConsumerWidget {
         return LessonContextPreviewStep(
           key: const ValueKey('step-0'),
           detail: detail,
+          jlptLevel: jlptLevel,
+          stationNo: stationNo,
           onNext: sessionNotifier.goToVocabLearning,
         );
       case LessonStep.vocabLearning:

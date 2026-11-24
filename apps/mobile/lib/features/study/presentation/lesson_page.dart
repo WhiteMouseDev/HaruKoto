@@ -7,16 +7,32 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../core/auth/current_account_provider.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../core/providers/user_preferences_provider.dart';
 import '../../../core/services/tts_service.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/theme/text_theme.dart';
+import '../../../shared/widgets/bottom_nav.dart';
 import '../providers/lesson_session_provider.dart';
+import '../providers/study_provider.dart';
 import '../data/models/lesson_models.dart';
 import 'widgets/lesson_intro_steps.dart';
 import 'widgets/lesson_step_content.dart';
 import 'widgets/lesson_activity_pending_banner.dart';
 
-/// 레슨 학습 플로우: 6-Step (상황 프리뷰 → 가이드 리딩 → 이해 체크 → 매칭 게임 → 문장 재구성 → 결과)
+final _lessonChapterProvider = FutureProvider.autoDispose
+    .family<ChapterModel?, String>((ref, lessonId) async {
+  final level = ref.watch(userPreferencesProvider.select((p) => p.jlptLevel));
+  final catalogue = await ref.watch(chaptersProvider(level).future);
+  for (final chapter in catalogue.chapters) {
+    if (chapter.lessons.any((lesson) => lesson.id == lessonId)) {
+      return chapter;
+    }
+  }
+  return null;
+}, retry: (_, __) => null);
+
+/// 레슨 학습 플로우. 각 레슨에 해당하는 단계만 실제로 진행한다.
 class LessonPage extends ConsumerStatefulWidget {
   final String lessonId;
   final TtsService? ttsService;
@@ -28,7 +44,8 @@ class LessonPage extends ConsumerStatefulWidget {
 
 class _LessonPageState extends ConsumerState<LessonPage>
     with WidgetsBindingObserver {
-  static const _totalSteps = 8;
+  static const _toolbarHeight = 62.0;
+  static const _tabRoutes = ['/home', '/study', '/practice', '/chat', '/my'];
   bool _exiting = false;
   bool _allowPop = false;
   TtsService get _tts => widget.ttsService ?? TtsService();
@@ -57,7 +74,7 @@ class _LessonPageState extends ConsumerState<LessonPage>
     }
   }
 
-  Future<void> _exit() async {
+  Future<void> _exit({String? destination}) async {
     if (_exiting) return;
     _tts.stop(lessonId: widget.lessonId);
     setState(() => _exiting = true);
@@ -100,8 +117,13 @@ class _LessonPageState extends ConsumerState<LessonPage>
     if (mounted) {
       setState(() => _allowPop = true);
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && ref.read(currentAccountReaderProvider)() == owner) {
+        if (!mounted || ref.read(currentAccountReaderProvider)() != owner) {
+          return;
+        }
+        if (destination == null) {
           context.pop();
+        } else {
+          context.go(destination);
         }
       });
     }
@@ -109,7 +131,13 @@ class _LessonPageState extends ConsumerState<LessonPage>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
     final detailAsync = ref.watch(lessonResumeDetailProvider(widget.lessonId));
+    final detail = detailAsync.asData?.value;
+    final chapter = detail == null
+        ? null
+        : ref.watch(_lessonChapterProvider(widget.lessonId)).asData?.value;
     final session = ref.watch(lessonSessionProvider(widget.lessonId));
     final sessionNotifier =
         ref.read(lessonSessionProvider(widget.lessonId).notifier);
@@ -160,17 +188,48 @@ class _LessonPageState extends ConsumerState<LessonPage>
         }
       },
       child: Scaffold(
+        backgroundColor: theme.colorScheme.surfaceContainerLowest,
         appBar: AppBar(
-          title: detailAsync.when(
-            data: (d) => Text(d?.title ?? '레슨 제출 결과'),
-            loading: () => const Text('레슨'),
-            error: (_, __) => const Text('레슨'),
+          toolbarHeight: _toolbarHeight,
+          backgroundColor: theme.colorScheme.surfaceContainerLowest,
+          scrolledUnderElevation: 0,
+          centerTitle: false,
+          leadingWidth: 52,
+          titleSpacing: 0,
+          titleTextStyle: TextStyle(
+            fontFamily: redesignFontFamily,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+            letterSpacing: -0.5,
+            color: light
+                ? AppColors.redesignForeground
+                : theme.colorScheme.onSurface,
+          ),
+          title: Text(
+            detail == null
+                ? detailAsync.when(
+                    data: (_) => '레슨 제출 결과',
+                    loading: () => '레슨',
+                    error: (_, __) => '레슨',
+                  )
+                : _lessonLabel(detail, chapter),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           leading: IconButton(
-            icon: const Icon(LucideIcons.x),
-            onPressed: () => unawaited(_exit()),
+            tooltip: '레슨 나가기',
+            icon: const Icon(LucideIcons.arrowLeft, size: AppSizes.iconMd),
+            onPressed: _exiting ? null : () => unawaited(_exit()),
           ),
         ),
+        bottomNavigationBar: detail == null
+            ? null
+            : BottomNav(
+                currentIndex: 1,
+                onTap: (index) =>
+                    unawaited(_exit(destination: _tabRoutes[index])),
+              ),
         body: Column(children: [
           const LessonActivityPendingBanner(),
           Expanded(
@@ -211,28 +270,31 @@ class _LessonPageState extends ConsumerState<LessonPage>
                                           .textTheme
                                           .bodySmall)),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppSizes.md,
-                                vertical: AppSizes.sm,
+                              padding: const EdgeInsets.fromLTRB(
+                                AppSizes.pageHorizontal,
+                                AppSizes.xs,
+                                AppSizes.pageHorizontal,
+                                AppSizes.sm,
                               ),
                               child: Row(
                                 children: [
                                   Expanded(
                                     child: LessonStepProgressBar(
                                       currentStep: session.step.index,
-                                      totalSteps: _totalSteps,
+                                      totalSteps: LessonStep.values.length,
                                     ),
                                   ),
                                   if (session.showDialogueShortcut) ...[
                                     const SizedBox(width: AppSizes.sm),
-                                    GestureDetector(
-                                      onTap: () {
+                                    IconButton(
+                                      tooltip: '대화 다시 보기',
+                                      onPressed: () {
                                         _tts.stop(lessonId: widget.lessonId);
                                         unawaited(showLessonDialogueSheet(
                                             context, detail,
                                             ttsService: _tts));
                                       },
-                                      child: const Icon(
+                                      icon: const Icon(
                                         LucideIcons.messageSquare,
                                         size: 18,
                                         color: AppColors.sakura,
@@ -261,7 +323,9 @@ class _LessonPageState extends ConsumerState<LessonPage>
                                         lessonId: widget.lessonId,
                                         detail: detail,
                                         session: session,
-                                        totalSteps: _totalSteps,
+                                        totalSteps: LessonStep.values.length,
+                                        jlptLevel: chapter?.jlptLevel,
+                                        stationNo: chapter?.chapterNo,
                                         onExit: () {
                                           if (sessionActions.isCurrent) {
                                             unawaited(_exit());
@@ -296,6 +360,18 @@ class _LessonPageState extends ConsumerState<LessonPage>
         ]),
       ),
     );
+  }
+
+  String _lessonLabel(LessonDetailModel detail, ChapterModel? chapter) {
+    final stationNo = chapter?.chapterNo ?? 0;
+    if (stationNo > 0 && detail.chapterLessonNo > 0) {
+      return '레슨 ${stationNo.toString().padLeft(2, '0')}-'
+          '${detail.chapterLessonNo.toString().padLeft(2, '0')}';
+    }
+    if (detail.lessonNo > 0) {
+      return '레슨 ${detail.lessonNo.toString().padLeft(2, '0')}';
+    }
+    return detail.title;
   }
 }
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_context_preview_step.dart';
-import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_vocab_preview_chip.dart';
+import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_vocab_preview_row.dart';
 
 void main() {
   group('LessonContextPreviewStep', () {
@@ -52,7 +52,7 @@ void main() {
       expect(find.text('+0개'), findsNothing);
     });
 
-    testWidgets('shows fixed height vocab preview and opens full list',
+    testWidgets('shows Figma vocab rows and opens the full list',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -96,8 +96,24 @@ void main() {
                     meaningKo: '요리',
                     partOfSpeech: 'noun',
                   ),
+                  VocabItemModel(
+                    id: 'vocab-6',
+                    word: '駅',
+                    reading: 'えき',
+                    meaningKo: '역',
+                    partOfSpeech: 'noun',
+                  ),
+                  VocabItemModel(
+                    id: 'duplicate',
+                    word: '駅',
+                    reading: 'えき',
+                    meaningKo: '정거장',
+                    partOfSpeech: 'noun',
+                  ),
                 ],
               ),
+              jlptLevel: 'N4',
+              stationNo: 2,
               onNext: () {},
             ),
           ),
@@ -106,44 +122,86 @@ void main() {
 
       await tester.pumpAndSettle();
 
+      expect(find.text('N4'), findsOneWidget);
+      expect(find.text('2번 역 · 1번째 레슨'), findsOneWidget);
+      expect(find.text('10분'), findsOneWidget);
+      expect(find.text('이번 레슨에서는'), findsOneWidget);
       expect(find.text('핵심 단어 미리보기'), findsOneWidget);
-      expect(find.text('총 5개'), findsWidgets);
-      expect(find.byType(LessonVocabPreviewChip), findsNWidgets(3));
-      expect(find.byType(LessonVocabPreviewMoreChip), findsOneWidget);
+      expect(find.text('총 6개'), findsOneWidget);
+      expect(find.byType(LessonVocabPreviewRow), findsNWidgets(5));
 
-      for (var index = 0; index < 3; index++) {
-        expect(
-          tester.getSize(find.byType(LessonVocabPreviewChip).at(index)).height,
-          LessonVocabPreviewChip.height,
-        );
-      }
+      final word = tester.getRect(find.text('私'));
+      final reading = tester.getRect(find.text('わたし'));
+      final meaning = tester.getRect(find.text('저'));
+      expect(reading.left, greaterThan(word.right));
+      expect(reading.center.dy, closeTo(word.center.dy, 2));
+      expect(meaning.top, greaterThan(word.bottom));
 
-      final wordTop = tester.getTopLeft(find.text('私')).dy;
-      final readingTop = tester.getTopLeft(find.text('わたし')).dy;
-      final meaningTop = tester.getTopLeft(find.text('저')).dy;
-      expect(wordTop, lessThan(readingTop));
-      expect(readingTop, lessThan(meaningTop));
-
-      final noReadingWordTop = tester.getTopLeft(find.text('はじめまして')).dy;
-      final noReadingMeaningTop = tester.getTopLeft(find.text('처음 뵙겠습니다')).dy;
-      expect(noReadingWordTop, lessThan(noReadingMeaningTop));
-
-      await tester.tap(find.byType(LessonVocabPreviewMoreChip));
+      final allVocab = find.text('전체 6개 보기');
+      await tester.ensureVisible(allVocab);
+      await tester.tap(allVocab);
       await tester.pumpAndSettle();
 
-      expect(find.text('배울 단어 5개'), findsOneWidget);
+      expect(find.text('배울 단어 6개'), findsOneWidget);
       await tester.scrollUntilVisible(
-        find.text('大学'),
+        find.text('駅'),
         200,
         scrollable: find.byType(Scrollable).last,
       );
-      expect(find.text('大学'), findsOneWidget);
-      await tester.scrollUntilVisible(
-        find.text('料理'),
-        200,
-        scrollable: find.byType(Scrollable).last,
+      expect(find.text('駅'), findsOneWidget);
+      expect(find.text('정거장'), findsNothing);
+    });
+
+    testWidgets('wraps real lesson content at 2x with a usable start action',
+        (tester) async {
+      await tester.binding.setSurfaceSize(const Size(320, 568));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      var started = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MediaQuery(
+              data: const MediaQueryData(
+                size: Size(320, 568),
+                textScaler: TextScaler.linear(2),
+              ),
+              child: LessonContextPreviewStep(
+                detail: _detailWithGrammar(
+                  const [
+                    GrammarItemModel(
+                      id: 'grammar-long',
+                      pattern: 'この練習で使う長い文法の例です',
+                      meaningKo: '여러 줄에 걸쳐 표시되는 실제 문법의 설명입니다.',
+                      explanation: '설명',
+                    ),
+                  ],
+                  vocabItems: const [
+                    VocabItemModel(
+                      id: 'vocab-long',
+                      word: '繰り返して確認する',
+                      reading: 'くりかえしてかくにんする',
+                      meaningKo: '몇 번이고 반복해서 충분히 익힐 때까지 다시 확인하다',
+                      partOfSpeech: 'expression',
+                    ),
+                  ],
+                  estimatedMinutes: 0,
+                ),
+                onNext: () => started = true,
+              ),
+            ),
+          ),
+        ),
       );
-      expect(find.text('料理'), findsOneWidget);
+
+      expect(find.text('레슨 1'), findsOneWidget);
+      expect(find.text('0분'), findsNothing);
+      await tester.ensureVisible(find.text('배울 문법'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+
+      await tester.tap(find.text('학습 시작'));
+      expect(started, isTrue);
     });
   });
 }
@@ -151,6 +209,7 @@ void main() {
 LessonDetailModel _detailWithGrammar(
   List<GrammarItemModel> grammarItems, {
   List<VocabItemModel> vocabItems = const [],
+  int estimatedMinutes = 10,
 }) {
   return LessonDetailModel(
     id: 'lesson-1',
@@ -158,7 +217,7 @@ LessonDetailModel _detailWithGrammar(
     chapterLessonNo: 1,
     title: '처음 만난 자리',
     topic: '자기소개',
-    estimatedMinutes: 10,
+    estimatedMinutes: estimatedMinutes,
     content: const LessonContentModel(
       reading: ReadingModel(script: []),
       questions: [],

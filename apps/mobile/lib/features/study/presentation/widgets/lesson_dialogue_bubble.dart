@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../../../shared/widgets/tts_play_button.dart';
 import '../../../../core/services/tts_service.dart';
 import '../../data/models/lesson_models.dart';
@@ -17,6 +18,7 @@ class LessonDialogueBubble extends StatelessWidget {
   final int? scriptLineIndex;
   final bool showTranslation;
   final bool isRightAligned;
+  final bool fullWidth;
   final List<String> highlights;
 
   const LessonDialogueBubble({
@@ -27,6 +29,7 @@ class LessonDialogueBubble extends StatelessWidget {
     this.scriptLineIndex,
     this.showTranslation = true,
     this.isRightAligned = false,
+    this.fullWidth = false,
     this.highlights = const [],
   });
 
@@ -78,11 +81,12 @@ class LessonDialogueBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
     final crossAxisAlignment =
         isRightAligned ? CrossAxisAlignment.end : CrossAxisAlignment.start;
     final hasLessonScriptTarget = lessonId != null && scriptLineIndex != null;
 
-    final bubbleRadius = isRightAligned
+    final dialogueRadius = isRightAligned
         ? const BorderRadius.only(
             topLeft: Radius.circular(AppSizes.radiusMd),
             topRight: Radius.circular(4),
@@ -96,21 +100,24 @@ class LessonDialogueBubble extends StatelessWidget {
             bottomRight: Radius.circular(AppSizes.radiusMd),
           );
 
-    final bubbleColor = isRightAligned
+    final dialogueColor = isRightAligned
         ? AppColors.primary.withValues(alpha: 0.08)
         : theme.colorScheme.surfaceContainerLow;
 
-    final bubbleBorder = isRightAligned
+    final bubbleBorder = isRightAligned || fullWidth
         ? null
         : Border.all(
             color: AppColors.primary.withValues(alpha: 0.12),
           );
 
     final baseTextStyle = theme.textTheme.bodyLarge?.copyWith(
-          fontSize: 18,
+          fontFamily: fullWidth ? redesignFontFamily : null,
+          fontSize: fullWidth ? 15 : 18,
           fontWeight: FontWeight.w500,
           height: 1.5,
-          color: AppColors.lightText,
+          color: light
+              ? AppColors.redesignForeground
+              : theme.colorScheme.onSurface,
         ) ??
         const TextStyle();
 
@@ -122,29 +129,43 @@ class LessonDialogueBubble extends StatelessWidget {
           Text(
             line.speaker,
             style: theme.textTheme.labelSmall?.copyWith(
-              color: AppColors.primaryStrong,
+              fontFamily: fullWidth ? redesignFontFamily : null,
+              color: fullWidth
+                  ? theme.colorScheme.onSurfaceVariant
+                  : AppColors.primaryStrong,
             ),
           ),
           const SizedBox(height: AppSizes.xs),
           ConstrainedBox(
             constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.78,
+              maxWidth: fullWidth
+                  ? double.infinity
+                  : MediaQuery.sizeOf(context).width * 0.78,
             ),
             child: Container(
-              padding: const EdgeInsets.all(AppSizes.gap),
+              padding: fullWidth
+                  ? const EdgeInsetsDirectional.fromSTEB(
+                      AppSizes.md, AppSizes.xs, AppSizes.xs, AppSizes.xs)
+                  : const EdgeInsets.all(AppSizes.gap),
               decoration: BoxDecoration(
-                color: bubbleColor,
-                borderRadius: bubbleRadius,
+                color: fullWidth && light
+                    ? AppColors.redesignControl
+                    : dialogueColor,
+                borderRadius:
+                    fullWidth ? BorderRadius.circular(12) : dialogueRadius,
                 border: bubbleBorder,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: fullWidth
+                        ? CrossAxisAlignment.center
+                        : CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: RichText(
+                          textScaler: MediaQuery.textScalerOf(context),
                           text: TextSpan(
                             children: _buildHighlightedSpans(
                               line.text,
@@ -158,7 +179,9 @@ class LessonDialogueBubble extends StatelessWidget {
                           lessonId: lessonId,
                           ttsService: ttsService,
                           scriptLineIndex: scriptLineIndex,
-                          iconSize: 16,
+                          iconSize:
+                              fullWidth ? AppSizes.iconMd : AppSizes.iconSm,
+                          iconColor: fullWidth ? AppColors.brandPink : null,
                         )
                       else if (_canUseKanaTts(line.text))
                         TtsPlayButton(

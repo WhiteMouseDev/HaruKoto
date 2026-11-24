@@ -199,6 +199,73 @@ void main() {
   });
 
   testWidgets(
+      'guided reading exposes actual scene and translations on compact screens',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(320, 568));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    h = TtsHarness();
+    const detailWithScene = LessonDetailModel(
+      id: 'lesson',
+      lessonNo: 4,
+      chapterLessonNo: 4,
+      title: '공통점이 반가울 때',
+      topic: '취미',
+      estimatedMinutes: 10,
+      content: LessonContentModel(
+        reading: ReadingModel(
+          scene: '서로 좋아하는 취미를 이야기해요.',
+          script: [
+            ScriptLineModel(
+              voiceId: 'test',
+              speaker: 'キム',
+              text: '私は映画が好きです。',
+              translation: '저는 영화를 좋아해요.',
+            ),
+          ],
+        ),
+        questions: [],
+      ),
+      vocabItems: [],
+      grammarItems: [],
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData.dark(),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: const TextScaler.linear(2),
+            disableAnimations: true,
+          ),
+          child: child!,
+        ),
+        home: Scaffold(
+          body: LessonGuidedReadingStep(
+            detail: detailWithScene,
+            ttsService: h.service,
+            onNext: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('서로 좋아하는 취미를 이야기해요.'), findsOneWidget);
+    expect(find.text('대화'), findsOneWidget);
+    expect(find.text('총 1개'), findsOneWidget);
+    expect(find.text('저는 영화를 좋아해요.'), findsNothing);
+    final translationSwitch = find.byType(Switch);
+    await tester.scrollUntilVisible(translationSwitch, 60);
+    await tester.tap(translationSwitch);
+    await tester.pumpAndSettle();
+    final translation = find.text('저는 영화를 좋아해요.');
+    await tester.scrollUntilVisible(translation, 60);
+    expect(translation, findsOneWidget);
+    expect(find.text('이해 체크로'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await _dispose(tester, h);
+  });
+
+  testWidgets(
       'sheet pop cancels immediately before reverse transition and late lookup',
       (tester) async {
     h = TtsHarness();
