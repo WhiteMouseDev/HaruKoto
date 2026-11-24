@@ -20,6 +20,7 @@ import '../../features/kana/presentation/kana_quiz_page.dart';
 import '../../features/kana/presentation/kana_chart_page.dart';
 import '../../features/kana/presentation/katakana_pilot_page.dart';
 import '../../features/my/presentation/my_page.dart';
+import '../../features/my/presentation/achievements_page.dart';
 // Hidden for free launch — re-enable when IAP ready
 // import '../../features/my/presentation/payments_page.dart';
 // import '../../features/my/presentation/subscription_manage_page.dart';
@@ -133,6 +134,15 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/home',
                 builder: (context, state) => const HomePage(),
+                routes: [
+                  GoRoute(
+                    path: 'achievements',
+                    pageBuilder: (context, state) => _slideTransitionPage(
+                      state: state,
+                      child: const AchievementsPage(),
+                    ),
+                  ),
+                ],
               ),
               _statsRoute('/stats'),
             ],
