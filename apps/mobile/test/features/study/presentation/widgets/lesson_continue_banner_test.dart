@@ -10,6 +10,25 @@ import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_conti
 import 'package:harukoto_mobile/features/study/providers/study_map_config.dart';
 
 void main() {
+  for (final target in ['공통점이 반가울 때', '이어하기']) {
+    testWidgets('redesigned $target opens the same lesson once',
+        (tester) async {
+      final observer = _PushObserver();
+      await _pump(tester, redesigned: true, observer: observer);
+      observer.pushCount = 0;
+
+      await tester.tap(find.text('이어할 레슨'));
+      await tester.pumpAndSettle();
+      expect(observer.pushCount, 0);
+      expect(find.text('공감 · 10분'), findsOneWidget);
+
+      await tester.tap(find.text(target));
+      await tester.pumpAndSettle();
+      expect(find.text('Opened lesson-4'), findsOneWidget);
+      expect(observer.pushCount, 1);
+    });
+  }
+
   for (final (status, label, action) in [
     ('IN_PROGRESS', '이어할 레슨', '이어하기'),
     ('NOT_STARTED', '추천 레슨', '시작하기'),
@@ -72,6 +91,7 @@ Future<void> _pump(
   NavigatorObserver? observer,
   Brightness brightness = Brightness.light,
   double textScale = 1,
+  bool redesigned = false,
 }) async {
   final lesson = LessonSummaryModel(
     id: 'lesson-4',
@@ -107,7 +127,8 @@ Future<void> _pump(
           body: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: LessonContinueBanner(target: target),
+              child:
+                  LessonContinueBanner(target: target, redesigned: redesigned),
             ),
           ),
         ),

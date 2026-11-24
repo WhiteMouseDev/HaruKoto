@@ -432,7 +432,7 @@ void main() {
           dashboard: () async => throw _transportError(),
           chapterRead: (_) async => throw _transportError());
       expect(find.text('레슨을 불러오지 못했어요.'), findsOneWidget);
-      expect(find.text('복습할 표현 5개'), findsOneWidget);
+      expect(find.text('단어 2개 · 문법 3개'), findsOneWidget);
       await _openKana(tester);
       expect(f.repository.writes, 0);
     });
