@@ -77,6 +77,7 @@ class SettingsSyncService {
       await save();
       if (!_ref.mounted || !notifier.isCurrentAccount(scope)) return;
       _ref.invalidate(dashboardProvider);
+      _ref.invalidate(statsHistoryProvider);
       _ref.invalidate(statsMonthHistoryProvider);
       if (category == DailyGoalCategory.grammar) {
         _ref.read(grammarPreviewRefreshProvider.notifier).refresh();
@@ -105,6 +106,7 @@ class SettingsSyncService {
         return;
       }
       _invalidateDependents();
+      _ref.invalidate(statsHistoryProvider);
       _ref.invalidate(statsMonthHistoryProvider);
       _ref.read(vocabularyPreviewRefreshProvider.notifier).refresh();
     } catch (_) {

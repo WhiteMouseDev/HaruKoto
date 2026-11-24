@@ -77,6 +77,41 @@ void main() {
     });
   });
 
+  test('weekly question projection preserves complete and unknown counts', () {
+    final week = [
+      for (var day = 2; day <= 8; day++)
+        {
+          'date': '2026-11-0$day',
+          'hasStudied': day == 2,
+          'vocabularyAnsweredCount': 0,
+          'grammarAnsweredCount': day == 2 ? 10 : 0,
+          'sentenceArrangeAnsweredCount': day == 2 ? 3 : 0,
+        },
+    ];
+    final parsed = DashboardModel.fromJson({'weeklyQuestionStats': week})
+        .weeklyQuestionStats;
+    expect(parsed, hasLength(7));
+    expect(parsed!.first.grammarAnsweredCount, 10);
+    expect(parsed.first.sentenceArrangeAnsweredCount, 3);
+    expect(parsed.last.vocabularyAnsweredCount, 0);
+    expect(DashboardModel.fromJson({}).weeklyQuestionStats, isNull);
+    expect(
+      DashboardModel.fromJson({
+        'weeklyQuestionStats': [...week.skip(1), week.last],
+      }).weeklyQuestionStats,
+      isNull,
+    );
+    expect(
+      DashboardModel.fromJson({
+        'weeklyQuestionStats': [
+          {...week.first, 'grammarAnsweredCount': -1},
+          ...week.skip(1),
+        ],
+      }).weeklyQuestionStats,
+      isNull,
+    );
+  });
+
   group('WeeklyStatEntry', () {
     test(
         'saved vocabulary answer count preserves known zero and positive counts',

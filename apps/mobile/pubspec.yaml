@@ -86,5 +86,14 @@ flutter:
     - assets/sounds/
     - assets/icons/
     - assets/images/characters/
+  fonts:
+    # https://github.com/orioncactus/pretendard/releases/tag/v1.3.9
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Regular.otf
+          weight: 400
+        - asset: assets/fonts/Pretendard-SemiBold.otf
+          weight: 600
   licenses:
     - assets/licenses/strokesvg.txt
+    - assets/licenses/pretendard.txt

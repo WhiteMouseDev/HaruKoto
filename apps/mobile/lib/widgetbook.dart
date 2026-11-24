@@ -5,7 +5,9 @@ import 'package:widgetbook/widgetbook.dart';
 import 'core/theme/app_theme.dart';
 import 'features/home/presentation/widgets/home_header.dart';
 import 'features/study/presentation/widgets/quiz_progress_bar.dart';
+import 'shared/widgets/app_card.dart';
 import 'shared/widgets/app_error_retry.dart';
+import 'shared/widgets/app_segmented_tabs.dart';
 import 'shared/widgets/app_skeleton.dart';
 import 'shared/widgets/bottom_nav.dart';
 
@@ -31,6 +33,71 @@ class HarukotoWidgetbook extends StatelessWidget {
         WidgetbookFolder(
           name: 'Shared',
           children: [
+            WidgetbookComponent(
+              name: 'Primary Button',
+              useCases: [
+                WidgetbookUseCase(
+                  name: 'Enabled and Disabled',
+                  builder: (_) => Scaffold(
+                    body: ListView(
+                      padding: const EdgeInsets.all(20),
+                      children: [
+                        FilledButton(
+                          onPressed: () {},
+                          child: const Text('오늘의 단어 학습하기'),
+                        ),
+                        const SizedBox(height: 12),
+                        const FilledButton(
+                          onPressed: null,
+                          child: Text('학습할 단어가 없습니다'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            WidgetbookComponent(
+              name: 'AppCard',
+              useCases: [
+                WidgetbookUseCase(
+                  name: 'Default',
+                  builder: (_) => const Scaffold(
+                    body: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: AppCard(
+                        child: Text('오늘의 학습 · 20문제'),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            WidgetbookComponent(
+              name: 'AppSegmentedTabs',
+              useCases: [
+                WidgetbookUseCase(
+                  name: 'Study Statistics',
+                  builder: (_) {
+                    var selectedIndex = 0;
+                    return Scaffold(
+                      body: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: StatefulBuilder(
+                          builder: (_, setState) => AppSegmentedTabs(
+                            labels: const ['기간별', '학습별', 'JLPT 진도'],
+                            selectedIndex: selectedIndex,
+                            onChanged: (index) {
+                              setState(() => selectedIndex = index);
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
             WidgetbookComponent(
               name: 'AppErrorRetry',
               useCases: [

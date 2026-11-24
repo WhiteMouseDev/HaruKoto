@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
 
+const redesignFontFamily = 'Pretendard';
+
 TextTheme appTextTheme(Brightness brightness) {
   final base = GoogleFonts.notoSansKrTextTheme();
   final jpFontFamily = GoogleFonts.notoSansJp().fontFamily;

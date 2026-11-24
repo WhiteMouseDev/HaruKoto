@@ -21,7 +21,7 @@ void main() {
       await tester.pumpWidget(UncontrolledProviderScope(
           container: container, child: const MaterialApp(home: HomePage())));
       await tester.pumpAndSettle();
-      expect(find.text('오늘 10/20개'), findsNothing);
+      expect(find.text('10 / 20개'), findsNothing);
       expect(find.text('50%'), findsNothing);
       expect(find.text('0%'), findsNothing);
       expect(find.text('오늘 학습량 확인 필요'), findsOneWidget);
@@ -46,7 +46,7 @@ void main() {
         await tester.pumpWidget(UncontrolledProviderScope(
             container: container, child: const MaterialApp(home: HomePage())));
         await tester.pumpAndSettle();
-        expect(find.text('오늘 10/30개'), findsOneWidget);
+        expect(find.text('10 / 30개'), findsOneWidget);
         expect(find.text('33%'), findsOneWidget);
         expect(find.text('50%'), findsNothing);
       } finally {

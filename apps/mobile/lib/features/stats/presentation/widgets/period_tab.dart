@@ -1,378 +1,217 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+
 import '../../../../core/constants/colors.dart';
-import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/study_clock_provider.dart';
+import '../../../../core/services/haptic_service.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../../home/data/models/dashboard_model.dart';
-import '../../data/models/heatmap_data_model.dart';
 import '../../data/models/stats_history_model.dart';
-import '../../data/models/time_chart_model.dart';
-import '../../providers/stats_provider.dart';
 import 'heatmap_widget.dart';
 import 'stats_bar_chart.dart';
 
-class PeriodTab extends ConsumerWidget {
-  final TodayStats today;
-  final List<StatsHistoryRecord> historyRecords;
-  final int heatmapYear;
-  final ValueChanged<int> onHeatmapYearChange;
-
+class PeriodTab extends ConsumerStatefulWidget {
   const PeriodTab({
     super.key,
     required this.today,
+    this.questionStats,
     required this.historyRecords,
     required this.heatmapYear,
     required this.onHeatmapYearChange,
+    this.isHistoryLoading = false,
+    this.hasHistoryError = false,
+    this.onRetryHistory,
   });
 
+  final TodayStats today;
+  final List<WeeklyQuestionStatEntry>? questionStats;
+  final List<StatsHistoryRecord> historyRecords;
+  final int heatmapYear;
+  final ValueChanged<int> onHeatmapYearChange;
+  final bool isHistoryLoading;
+  final bool hasHistoryError;
+  final VoidCallback? onRetryHistory;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PeriodTab> createState() => _PeriodTabState();
+}
+
+class _PeriodTabState extends ConsumerState<PeriodTab> {
+  DateTime? _selectedDate;
+
+  @override
+  Widget build(BuildContext context) {
+    final today = ref.watch(studyDateProvider);
+    final week = _QuestionWeek(
+      today: today,
+      todayStats: widget.today,
+      questionStats: widget.questionStats,
+    );
+    final selectedDay = week.days
+            .where((day) => day.date == _selectedDate && day.total != null)
+            .firstOrNull ??
+        (week.today.total == null ? null : week.today);
+    final first = week.days.first.date;
+    final last = week.days.last.date;
     final theme = Theme.of(context);
-
-    final todayStr = studyDateKey(ref.watch(studyDateProvider));
-    final todayRecord = historyRecords.cast<StatsHistoryRecord?>().firstWhere(
-          (r) => r?.date == todayStr,
-          orElse: () => null,
-        );
-    final studyMinutes =
-        todayRecord != null ? (todayRecord.studyTimeSeconds / 60).round() : 0;
-    final totalQuizzes = today.quizzesCompleted;
-
-    // Use heatmap API instead of deriving from history
-    final heatmapAsync = ref.watch(heatmapProvider(heatmapYear));
-    final heatmapRecords = heatmapAsync.when(
-      data: (response) => response.data,
-      loading: () => historyRecords
-          .map((r) => HeatmapData(date: r.date, wordsStudied: r.wordsStudied))
-          .toList(),
-      error: (_, __) => historyRecords
-          .map((r) => HeatmapData(date: r.date, wordsStudied: r.wordsStudied))
-          .toList(),
+    final foreground = theme.brightness == Brightness.light
+        ? AppColors.redesignForeground
+        : theme.colorScheme.onSurface;
+    final titleStyle = _periodText(
+      16,
+      foreground,
+      weight: FontWeight.w600,
     );
 
-    // Use time-chart API for daily study minutes
-    final timeChartAsync = ref.watch(timeChartProvider(7));
-
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Today's Summary
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '오늘의 학습',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.primary
-                                    .withValues(alpha: 0.2),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                LucideIcons.clock,
-                                size: 20,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '총 시간',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: theme.colorScheme.onSurface
-                                        .withValues(alpha: 0.5),
-                                  ),
-                                ),
-                                Text(
-                                  '$studyMinutes분',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: AppColors.hkBlue(theme.brightness)
-                                    .withValues(alpha: 0.2),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                LucideIcons.fileText,
-                                size: 20,
-                                color: AppColors.hkBlue(theme.brightness),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '총 문제',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: theme.colorScheme.onSurface
-                                        .withValues(alpha: 0.5),
-                                  ),
-                                ),
-                                Text(
-                                  '$totalQuizzes개',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+        Text('오늘의 학습', style: titleStyle),
+        const SizedBox(height: 12),
+        _QuestionSummary(today: week.today.total, week: week.total),
+        const SizedBox(height: 40),
+        Text('요일별 문제풀이', style: titleStyle),
+        const SizedBox(height: 12),
+        StatsBarChart(
+          dateRangeLabel:
+              '${first.month}.${first.day}~${last.month}.${last.day}',
+          days: week.days,
+          selectedDate: selectedDay?.date,
+          today: today,
+          onDateSelected: (date) {
+            if (date == selectedDay?.date) return;
+            HapticService().selection();
+            setState(() => _selectedDate = date);
+          },
+          emptyMessage: week.days.any((day) => day.total != null)
+              ? null
+              : '문제풀이 집계를 확인할 수 없어요',
         ),
-        const SizedBox(height: AppSizes.md),
-
-        // Heatmap
+        if (selectedDay != null) ...[
+          const SizedBox(height: 8),
+          _DayQuestions(day: selectedDay),
+        ],
+        const SizedBox(height: 40),
+        Text('연간 학습 히트맵', style: titleStyle),
+        const SizedBox(height: 12),
         HeatmapWidget(
-          records: heatmapRecords,
-          year: heatmapYear,
-          onYearChange: onHeatmapYearChange,
+          records: widget.historyRecords,
+          year: widget.heatmapYear,
+          onYearChange: widget.onHeatmapYearChange,
+          isLoading: widget.isHistoryLoading,
+          hasError: widget.hasHistoryError,
+          onRetry: widget.onRetryHistory,
         ),
-        const SizedBox(height: AppSizes.md),
-
-        // Time Chart (daily study minutes for last 7 days)
-        timeChartAsync.when(
-          data: (response) => _TimeChartCard(entries: response.data),
-          loading: () => const _TimeChartCard(entries: []),
-          error: (_, __) => const _TimeChartCard(entries: []),
-        ),
-        const SizedBox(height: AppSizes.md),
-
-        // Bar Chart (existing, from history)
-        StatsBarChart(records: historyRecords),
       ],
     );
   }
 }
 
-class _TimeChartCard extends StatelessWidget {
-  final List<TimeChartEntry> entries;
+const _weekdays = ['월', '화', '수', '목', '금', '토', '일'];
 
-  const _TimeChartCard({required this.entries});
-
-  static const double _chartHeight = 120;
-  static const double _minBarPx = 16;
-  static const double _maxBarPx = _chartHeight - 20;
-
-  String _formatMinutes(int minutes) {
-    if (minutes < 60) return '$minutes분';
-    final hours = minutes ~/ 60;
-    final remainder = minutes % 60;
-    return remainder > 0 ? '$hours시간 $remainder분' : '$hours시간';
-  }
-
-  String _formatDateLabel(String dateStr) {
-    final parts = dateStr.split('-');
-    if (parts.length >= 3) {
-      return '${int.parse(parts[1])}/${int.parse(parts[2])}';
-    }
-    return dateStr;
-  }
-
-  double _calcBarPx(int value, int maxValue) {
-    if (value <= 0) return 0;
-    if (maxValue <= 0) return _minBarPx;
-    final ratio = value / maxValue;
-    final scaled = math.sqrt(ratio) * _maxBarPx;
-    return scaled.clamp(_minBarPx, _maxBarPx);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    if (entries.isEmpty) {
-      return Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+class _QuestionWeek {
+  factory _QuestionWeek({
+    required DateTime today,
+    required TodayStats todayStats,
+    required List<WeeklyQuestionStatEntry>? questionStats,
+  }) {
+    final monday = today.subtract(Duration(days: today.weekday - 1));
+    final byDate = <String, StatsBarCounts>{
+      for (final day in questionStats ?? const <WeeklyQuestionStatEntry>[])
+        day.date: (
+          vocabulary: day.vocabularyAnsweredCount,
+          grammar: day.grammarAnsweredCount,
+          sentences: day.sentenceArrangeAnsweredCount,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '일별 학습 시간 (최근 7일)',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Center(
-                child: Text(
-                  '데이터를 불러오는 중...',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
+    };
+    final goals = todayStats.categoryGoals;
+    final todayKey = studyDateKey(today);
+    if (goals != null && goals.date == todayKey) {
+      byDate.putIfAbsent(
+        todayKey,
+        () => (
+          vocabulary: goals.vocabulary.answeredCount,
+          grammar: goals.grammar.answeredCount,
+          sentences: goals.sentence.answeredCount,
         ),
       );
     }
 
-    final maxMinutes =
-        entries.fold<int>(1, (m, e) => e.minutes > m ? e.minutes : m);
-    final totalMinutes = entries.fold<int>(0, (s, e) => s + e.minutes);
+    return _QuestionWeek._(
+      List.generate(DateTime.daysPerWeek, (index) {
+        final date = monday.add(Duration(days: index));
+        final future = date.isAfter(today);
+        return StatsBarDay(
+          date: date,
+          label: _weekdays[index],
+          isFuture: future,
+          counts: future ? null : byDate[studyDateKey(date)],
+        );
+      }),
+      today.weekday - 1,
+    );
+  }
 
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+  const _QuestionWeek._(this.days, this._todayIndex);
+
+  final List<StatsBarDay> days;
+  final int _todayIndex;
+
+  StatsBarDay get today => days[_todayIndex];
+
+  int? get total {
+    var total = 0;
+    for (final day in days.take(_todayIndex + 1)) {
+      final count = day.total;
+      if (count == null) return null;
+      total += count;
+    }
+    return total;
+  }
+}
+
+class _QuestionSummary extends StatelessWidget {
+  const _QuestionSummary({required this.today, required this.week});
+
+  final int? today;
+  final int? week;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isLight
+            ? AppColors.redesignSurface
+            : theme.colorScheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              '일별 학습 시간 (최근 7일)',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
+            Expanded(
+              child: _QuestionMetric(
+                count: today,
+                label: '오늘 푼 문제',
+                iconAsset: 'assets/icons/figma-stats-period-today.png',
               ),
             ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: _chartHeight,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: entries.map((entry) {
-                  final minutes = entry.minutes;
-                  final barPx = _calcBarPx(minutes, maxMinutes);
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          if (minutes > 0)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Text(
-                                _formatMinutes(minutes),
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  color: theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.5),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.clip,
-                              ),
-                            ),
-                          Container(
-                            height: minutes > 0 ? barPx : 3,
-                            decoration: BoxDecoration(
-                              color: minutes > 0
-                                  ? AppColors.hkBlue(theme.brightness)
-                                  : theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.1),
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(4),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
+            VerticalDivider(
+              width: 1,
+              thickness: 1,
+              color: isLight
+                  ? AppColors.redesignOutline
+                  : theme.colorScheme.outline,
             ),
-            const SizedBox(height: 4),
-            Row(
-              children: entries.map((entry) {
-                return Expanded(
-                  child: Text(
-                    _formatDateLabel(entry.date),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 8),
-            Center(
-              child: Text.rich(
-                TextSpan(
-                  text: '7일 총 학습 시간 ',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                  ),
-                  children: [
-                    TextSpan(
-                      text: _formatMinutes(totalMinutes),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
+            Expanded(
+              child: _QuestionMetric(
+                count: week,
+                label: '이번 주 푼 문제',
+                iconAsset: 'assets/icons/figma-stats-period-week.png',
               ),
             ),
           ],
@@ -381,3 +220,126 @@ class _TimeChartCard extends StatelessWidget {
     );
   }
 }
+
+class _QuestionMetric extends StatelessWidget {
+  const _QuestionMetric({
+    required this.count,
+    required this.label,
+    required this.iconAsset,
+  });
+
+  final int? count;
+  final String label;
+  final String iconAsset;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final foreground =
+        isLight ? AppColors.redesignForeground : theme.colorScheme.onSurface;
+    final muted = isLight
+        ? AppColors.redesignMutedForeground
+        : theme.colorScheme.onSurfaceVariant;
+
+    return Semantics(
+      container: true,
+      label: '$label, ${count == null ? '집계 확인 필요' : '$count문제'}',
+      excludeSemantics: true,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              iconAsset,
+              width: 24,
+              height: 24,
+              excludeFromSemantics: true,
+            ),
+            const SizedBox(height: 2),
+            Text.rich(
+              TextSpan(
+                text: count == null ? '—' : '$count',
+                children: [
+                  if (count != null)
+                    TextSpan(
+                      text: '문제',
+                      style: _periodText(12, foreground),
+                    ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+              style: _periodText(18, foreground, weight: FontWeight.w600),
+            ),
+            const SizedBox(height: 1),
+            Text(label,
+                style: _periodText(12, muted), textAlign: TextAlign.center),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DayQuestions extends StatelessWidget {
+  const _DayQuestions({required this.day});
+
+  final StatsBarDay day;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final foreground =
+        isLight ? AppColors.redesignForeground : theme.colorScheme.onSurface;
+    final muted = isLight
+        ? AppColors.redesignMutedForeground
+        : theme.colorScheme.onSurfaceVariant;
+    final date = day.date;
+    final counts = day.counts!;
+    return Semantics(
+      liveRegion: true,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color:
+                isLight ? AppColors.redesignOutline : theme.colorScheme.outline,
+          ),
+        ),
+        child: Column(
+          children: [
+            Text(
+              '${date.month}월 ${date.day}일 (${day.label}) · ${day.total}문제',
+              textAlign: TextAlign.center,
+              style: _periodText(14, foreground, weight: FontWeight.w600),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '단어 ${counts.vocabulary} · 문법 ${counts.grammar} · 문장배열 ${counts.sentences}',
+              textAlign: TextAlign.center,
+              style: _periodText(12, muted),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+TextStyle _periodText(
+  double size,
+  Color color, {
+  FontWeight weight = FontWeight.w400,
+}) =>
+    TextStyle(
+      fontFamily: redesignFontFamily,
+      fontSize: size,
+      fontWeight: weight,
+      height: 1.4,
+      letterSpacing: -size * 0.025,
+      color: color,
+    );

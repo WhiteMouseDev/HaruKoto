@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/services/haptic_service.dart';
+import '../../../../shared/widgets/app_card.dart';
 import '../../../../shared/widgets/app_progress_bar.dart';
 import '../../data/models/dashboard_model.dart';
 
@@ -23,73 +24,58 @@ class KanaCtaCard extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSizes.pageHorizontal),
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-          border: Border.all(color: theme.colorScheme.outline),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-            onTap: () {
-              HapticService().selection();
-              context.go('/study/kana');
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
+      child: AppCard(
+        onTap: () {
+          HapticService().selection();
+          context.go('/study/kana');
+        },
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.sakuraContainer,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(
+                LucideIcons.languages,
+                color: AppColors.sakuraOn,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: AppColors.sakuraContainer,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(
-                      LucideIcons.languages,
-                      color: AppColors.sakuraOn,
-                      size: 24,
+                  Text(
+                    '가나 문자 학습',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '가나 문자 학습',
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '$totalLearned/$totalChars 학습 완료',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.6),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        AppProgressBar(
-                          value: progress,
-                          backgroundColor: AppColors.sakuraTrack,
-                        ),
-                      ],
+                  const SizedBox(height: 4),
+                  Text(
+                    '$totalLearned/$totalChars 학습 완료',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    LucideIcons.chevronRight,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                  const SizedBox(height: 8),
+                  AppProgressBar(
+                    value: progress,
+                    backgroundColor: AppColors.sakuraTrack,
                   ),
                 ],
               ),
             ),
-          ),
+            const SizedBox(width: 8),
+            Icon(
+              LucideIcons.chevronRight,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+            ),
+          ],
         ),
       ),
     );

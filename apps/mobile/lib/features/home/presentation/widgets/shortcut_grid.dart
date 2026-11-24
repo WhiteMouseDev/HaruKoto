@@ -16,78 +16,56 @@ class ShortcutGrid extends ConsumerWidget {
 
     final shortcuts = [
       _ShortcutItem(
-        icon: LucideIcons.bookMarked,
+        iconAsset: 'assets/icons/figma-home-shortcut-words.png',
         label: '단어장',
-        color: theme.colorScheme.primary,
         onTap: () => context.push('/study/wordbook'),
       ),
       _ShortcutItem(
-        icon: LucideIcons.fileX,
+        iconAsset: 'assets/icons/figma-home-shortcut-review.png',
         label: '오답노트',
-        color: const Color(0xFFEF8354),
         onTap: () => context.push('/study/wrong-answers'),
       ),
       _ShortcutItem(
-        icon: LucideIcons.trophy,
+        iconAsset: 'assets/icons/figma-home-shortcut-challenges.png',
         label: '도전과제',
-        color: const Color(0xFFEAB308),
         onTap: () => _showAchievements(context, ref),
       ),
       _ShortcutItem(
-        icon: LucideIcons.grid,
-        label: '가나 차트',
-        color: const Color(0xFF6DB3CE),
+        iconAsset: 'assets/icons/figma-home-shortcut-kana.png',
+        label: '가나차트',
         onTap: () => context.push('/study/kana/chart'),
       ),
     ];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.pageHorizontal),
+      padding: AppSizes.pageHorizontalEdge,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: shortcuts.map((item) {
-              return Expanded(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () {
-                      HapticService().selection();
-                      item.onTap();
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 52,
-                          height: 52,
-                          decoration: BoxDecoration(
-                            color: item.color.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Icon(
-                            item.icon,
-                            size: 24,
-                            color: item.color,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          item.label,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+          Text(
+            '학습 도우미',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontFamily: 'Pretendard',
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              height: 1.4,
+              letterSpacing: -0.5,
+              color: _shortcutForeground(theme),
+            ),
           ),
+          const SizedBox(height: 16),
+          for (var row = 0; row < 2; row++) ...[
+            if (row != 0) const SizedBox(height: 8),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(child: _ShortcutTile(item: shortcuts[2 * row])),
+                  const SizedBox(width: 8),
+                  Expanded(child: _ShortcutTile(item: shortcuts[2 * row + 1])),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -297,16 +275,77 @@ class ShortcutGrid extends ConsumerWidget {
   }
 }
 
+class _ShortcutTile extends StatelessWidget {
+  const _ShortcutTile({required this.item});
+
+  final _ShortcutItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final borderColor = theme.brightness == Brightness.light
+        ? const Color(0xFFE5E5EC)
+        : theme.colorScheme.outline;
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+      side: BorderSide(color: borderColor),
+    );
+
+    return Material(
+      color: theme.colorScheme.surfaceContainerLowest,
+      shape: shape,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          HapticService().selection();
+          item.onTap();
+        },
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 66),
+          padding: const EdgeInsets.fromLTRB(22, 12, 20, 12),
+          child: Row(
+            children: [
+              Image.asset(
+                item.iconAsset,
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+                excludeFromSemantics: true,
+              ),
+              const SizedBox(width: 11),
+              Flexible(
+                child: Text(
+                  item.label,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontFamily: 'Pretendard',
+                    fontSize: 14,
+                    height: 1.4,
+                    letterSpacing: -0.35,
+                    color: _shortcutForeground(theme),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _ShortcutItem {
-  final IconData icon;
+  final String iconAsset;
   final String label;
-  final Color color;
   final VoidCallback onTap;
 
   const _ShortcutItem({
-    required this.icon,
+    required this.iconAsset,
     required this.label,
-    required this.color,
     required this.onTap,
   });
 }
+
+Color _shortcutForeground(ThemeData theme) =>
+    theme.brightness == Brightness.light
+        ? const Color(0xFF111111)
+        : theme.colorScheme.onSurface;

@@ -15,19 +15,61 @@ import 'package:harukoto_mobile/features/study/data/models/smart_preview_model.d
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 
 void main() {
+  testWidgets('375dp learning area matches the home design geometry',
+      (tester) async {
+    tester.view.physicalSize = const Size(375, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await _pumpCard(tester);
+
+    final area = tester.getRect(find.byType(QuickStartCard));
+    final track = tester.getRect(find.byWidgetPredicate(
+      (widget) =>
+          widget is DecoratedBox &&
+          widget.decoration is BoxDecoration &&
+          (widget.decoration as BoxDecoration).color == const Color(0xFFF1F1F5),
+    ));
+    final edit = find.byKey(const ValueKey('quick-start-edit-goal'));
+    final details = tester.getRect(
+      find.ancestor(of: edit, matching: find.byType(Card)),
+    );
+    final divider = tester.getRect(
+      find.descendant(of: edit, matching: find.byType(Divider)),
+    );
+    final start = tester.getRect(
+      find.widgetWithText(FilledButton, '오늘의 단어 학습하기'),
+    );
+    final log = tester.getRect(
+      find.widgetWithText(TextButton, '오답노트 확인하기'),
+    );
+
+    expect(track.topLeft - area.topLeft, const Offset(26.5, 4));
+    expect(track.size, const Size(322, 40));
+    expect(details.topLeft - area.topLeft, const Offset(20, 193));
+    expect(details.size, const Size(335, 113));
+    expect(divider.top - details.top, 43);
+    expect(tester.getSize(edit).height, 48);
+    expect(start.top - details.bottom, 8);
+    expect(start.height, 48);
+    expect(log.top, start.bottom);
+    expect(log.bottom, area.bottom);
+    expect(area.height, 410);
+  });
+
   for (final count in [0, 8, 20, 24]) {
     testWidgets('vocabulary always shows today $count/20 goal progress',
         (tester) async {
       await _pumpCard(tester, count: count);
-      expect(find.text('오늘 목표'), findsOneWidget);
-      expect(find.text('오늘 $count/20개'), findsOneWidget);
+      expect(find.text('하루 목표'), findsOneWidget);
+      expect(find.text('$count / 20개'), findsOneWidget);
       expect(find.text('${(count / 20 * 100).clamp(0, 100).round()}%'),
           findsOneWidget);
       expect(find.text('N5 숙련도'), findsNothing);
-      expect(
-        find.text(count >= 20 ? '오늘 목표를 달성했어요' : '목표까지 ${20 - count}개 남았어요'),
-        findsOneWidget,
+      final countText = tester.widget<Text>(
+        find.byKey(const ValueKey('quick-start-daily-count')),
       );
+      expect(countText.semanticsLabel, '오늘 $count/20개');
     });
   }
 
@@ -35,7 +77,7 @@ void main() {
       (tester) async {
     await _pumpCard(tester, incomplete: _session());
     expect(find.text('이번 퀴즈 1/10문제 저장됨'), findsOneWidget);
-    expect(find.text('오늘 8/20개'), findsOneWidget);
+    expect(find.text('8 / 20개'), findsOneWidget);
     expect(find.text('40%'), findsOneWidget);
     expect(find.text('10%'), findsNothing);
     expect(find.byKey(const ValueKey('quick-start-edit-goal')), findsOneWidget);
@@ -48,23 +90,39 @@ void main() {
 
   testWidgets('switching categories shows only the selected daily progress',
       (tester) async {
-    await _pumpCard(tester, incomplete: _session(), hasCategoryGoals: true);
+    await _pumpCard(
+      tester,
+      incomplete: _session(),
+      hasCategoryGoals: true,
+      grammarPreview: Future.value(_preview(reviewCount: 5)),
+    );
+    final wordTab = find.byKey(const ValueKey('quick-start-tab-vocabulary'));
+    final grammarTab = find.byKey(const ValueKey('quick-start-tab-grammar'));
+    final sentenceTab = find.byKey(const ValueKey('quick-start-tab-sentence'));
+    expect(tester.getCenter(wordTab).dy, tester.getCenter(grammarTab).dy);
+    expect(tester.getCenter(grammarTab).dy, tester.getCenter(sentenceTab).dy);
+    expect(tester.getCenter(wordTab).dx,
+        lessThan(tester.getCenter(grammarTab).dx));
+    expect(tester.getSize(wordTab).height, greaterThanOrEqualTo(48));
+    expect(find.text('0문제'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('quick-start-tab-grammar')));
     await tester.pumpAndSettle();
     expect(find.text('이번 퀴즈 1/10문제 저장됨'), findsNothing);
-    expect(find.text('오늘 8/20개'), findsNothing);
+    expect(find.text('8 / 20개'), findsNothing);
     expect(find.text('이어서 학습하기'), findsNothing);
-    expect(find.text('오늘의 문법'), findsOneWidget);
+    expect(find.text('오늘의 문법 학습하기'), findsOneWidget);
     expect(find.text('N5 숙련도'), findsNothing);
-    expect(find.text('오늘 3/15개'), findsOneWidget);
+    expect(find.text('3 / 15개'), findsOneWidget);
     expect(find.text('20%'), findsOneWidget);
+    expect(find.text('5문제'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('quick-start-tab-sentence')));
     await tester.pumpAndSettle();
-    expect(find.text('오늘 7/10개'), findsOneWidget);
+    expect(find.text('7 / 10개'), findsOneWidget);
     expect(find.text('70%'), findsOneWidget);
+    expect(find.text('복습할 문제'), findsNothing);
     expect(find.text('N5 숙련도'), findsNothing);
-    expect(find.text('오늘의 문장배열'), findsOneWidget);
+    expect(find.text('오늘의 문장배열 학습하기'), findsOneWidget);
   });
 
   testWidgets('grammar still shows its own saved quiz progress',
@@ -74,7 +132,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('quick-start-tab-grammar')));
     await tester.pumpAndSettle();
     expect(find.text('이번 퀴즈 1/10문제 저장됨'), findsOneWidget);
-    expect(find.text('오늘 3/15개'), findsOneWidget);
+    expect(find.text('3 / 15개'), findsOneWidget);
     expect(find.text('20%'), findsOneWidget);
     expect(find.text('10%'), findsNothing);
     expect(find.text('이어서 학습하기'), findsOneWidget);
@@ -96,7 +154,7 @@ void main() {
         expect(find.text('진행 중인 학습이 있어요'), findsOneWidget);
         await tester.tap(find.text('오늘의 학습 보기'));
       } else {
-        await tester.tap(find.text('오늘의 문법'));
+        await tester.tap(find.text('오늘의 문법 학습하기'));
       }
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
@@ -104,7 +162,7 @@ void main() {
 
       pending.complete(_preview());
       await tester.pumpAndSettle();
-      expect(find.text('오늘의 학습'), findsOneWidget);
+      expect(find.text('오늘의 문법'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
   }
@@ -115,7 +173,7 @@ void main() {
     expect(
         find.byKey(const ValueKey('quick-start-saved-progress')), findsNothing);
     expect(find.text('이어서 학습하기'), findsNothing);
-    expect(find.text('오늘 8/20개'), findsOneWidget);
+    expect(find.text('8 / 20개'), findsOneWidget);
     expect(find.text('40%'), findsOneWidget);
   });
 
@@ -123,13 +181,13 @@ void main() {
       (tester) async {
     final pending = Completer<IncompleteSessionModel?>();
     await _pumpCard(tester, future: pending.future);
-    expect(find.text('오늘 8/20개'), findsOneWidget);
+    expect(find.text('8 / 20개'), findsOneWidget);
     expect(find.text('40%'), findsOneWidget);
     expect(find.text('이어서 학습하기'), findsNothing);
 
     pending.completeError(StateError('synthetic unavailable saved quiz'));
     await tester.pumpAndSettle();
-    expect(find.text('오늘 8/20개'), findsOneWidget);
+    expect(find.text('8 / 20개'), findsOneWidget);
     expect(find.text('40%'), findsOneWidget);
     expect(find.text('이어서 학습하기'), findsNothing);
   });
@@ -145,7 +203,7 @@ void main() {
     ]) {
       await _pumpCard(tester,
           hasGoal: state.hasGoal, date: state.date, dailyGoal: state.goal);
-      expect(find.text('오늘 목표'), findsOneWidget);
+      expect(find.text('하루 목표'), findsOneWidget);
       expect(find.text('오늘 학습량 확인 필요'), findsOneWidget);
       expect(
           find.byKey(const ValueKey('quick-start-percentage')), findsNothing);
@@ -172,7 +230,7 @@ void main() {
     Navigator.of(tester.element(find.text('하루 목표 설정'))).pop();
     await tester.pumpAndSettle();
     expect(settings.goals, isEmpty);
-    expect(find.text('오늘 8/20개'), findsOneWidget);
+    expect(find.text('8 / 20개'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('quick-start-edit-goal')));
     await tester.pumpAndSettle();
@@ -212,7 +270,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('quick-start-edit-goal')), findsNothing);
       expect(find.text('오늘 학습량 확인 필요'), findsOneWidget);
-      expect(find.text('오늘 8/20개'), findsNothing);
+      expect(find.text('8 / 20개'), findsNothing);
     }
   });
 
@@ -223,8 +281,8 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await _pumpCard(tester, incomplete: _session(), textScale: 1.6);
-    expect(find.text('이번 퀴즈\n1/10문제 저장됨'), findsOneWidget);
-    expect(find.text('오늘 8/20개'), findsOneWidget);
+    expect(find.text('이번 퀴즈 1/10문제 저장됨'), findsOneWidget);
+    expect(find.text('8 / 20개'), findsOneWidget);
     expect(find.text('40%'), findsOneWidget);
     final editSize =
         tester.getSize(find.byKey(const ValueKey('quick-start-edit-goal')));
@@ -291,12 +349,6 @@ Future<void> _pumpCard(
                             'answeredCount': count
                           },
                       }),
-                      levelProgress: const LevelProgressData(
-                        vocabulary: ProgressStat(
-                            total: 200, mastered: 0, inProgress: 1),
-                        grammar: ProgressStat(
-                            total: 100, mastered: 25, inProgress: 5),
-                      ),
                     ),
                   ),
                 ),
@@ -322,9 +374,15 @@ IncompleteSessionModel _session({
       startedAt: '2026-10-19T01:00:00Z',
     );
 
-SmartPreviewModel _preview() => SmartPreviewModel.fromJson({
+SmartPreviewModel _preview({int reviewCount = 0}) =>
+    SmartPreviewModel.fromJson({
       'poolSize': {'newReady': 10, 'reviewDue': 0, 'retryDue': 0},
-      'sessionDistribution': {'new': 10, 'review': 0, 'retry': 0, 'total': 10},
+      'sessionDistribution': {
+        'new': 10 - reviewCount,
+        'review': reviewCount,
+        'retry': 0,
+        'total': 10,
+      },
       'dailyGoal': 10,
       'todayCompleted': 0,
       'overallProgress': {

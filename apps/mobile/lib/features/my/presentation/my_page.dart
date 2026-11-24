@@ -88,7 +88,7 @@ class _MyPageState extends ConsumerState<MyPage> {
               trailing: Icon(LucideIcons.chevronRight,
                   size: 18,
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.4)),
-              onTap: () => context.push('/stats'),
+              onTap: () => context.push('/my/stats'),
             ),
           ),
           const SizedBox(height: AppSizes.md),

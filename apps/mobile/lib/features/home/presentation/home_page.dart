@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/providers/study_clock_provider.dart';
 import '../../study/presentation/widgets/saved_quiz_section.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../study/providers/quiz_progress_refresh_provider.dart';
@@ -89,6 +90,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final profileAsync = ref.watch(profileProvider);
     final missionsAsync = ref.watch(missionsProvider);
     final preferences = ref.watch(userPreferencesProvider);
+    final studyDate = ref.watch(studyDateProvider);
 
     // Multi-provider composition: manual AsyncValue handling is used instead
     // of .when() because loading/error states are combined across 3 providers.
@@ -146,36 +148,27 @@ class _HomePageState extends ConsumerState<HomePage>
       });
     }
 
+    final topInset = MediaQuery.paddingOf(context).top;
+    final minimumTopInset =
+        Theme.of(context).platform == TargetPlatform.iOS && topInset >= 44
+            ? 54.0
+            : 0.0;
+
     return Scaffold(
       body: SafeArea(
+        minimum: EdgeInsets.only(top: minimumTopInset),
         child: RefreshIndicator(
           color: Theme.of(context).colorScheme.primary,
           onRefresh: () async => _refresh(),
           child: ListView(
-            padding: const EdgeInsets.only(top: 12, bottom: 32),
+            padding: const EdgeInsets.only(bottom: 72),
             children: [
-              // 1. Header
-              _staggered(0, HomeHeader(nickname: profile?.nickname ?? '학습자')),
-              const SizedBox(height: AppSizes.md),
+              const HomeTitleBar(),
               const LessonActivityPendingBanner(),
-
-              // 2. AI Phone Call CTA (주석 처리 — 추후 다시 활성화 가능)
-              // const PhoneCallCta(),
-              // const SizedBox(height: AppSizes.md),
-
-              // 3. Kana CTA (conditional)
-              if (preferences.showKana &&
-                  dashboard?.kanaProgress != null &&
-                  !dashboard!.kanaProgress!.completed) ...[
-                _staggered(
-                    1, KanaCtaCard(kanaProgress: dashboard.kanaProgress!)),
-                const SizedBox(height: AppSizes.md),
-              ],
-
-              // 4. Streak + Daily Stats
+              const SizedBox(height: AppSizes.sm),
               if (dashboard != null) ...[
                 _staggered(
-                  2,
+                  0,
                   StreakDailyCard(
                     streak: dashboard.streak,
                     today: dashboard.today,
@@ -185,7 +178,6 @@ class _HomePageState extends ConsumerState<HomePage>
                         : 0,
                   ),
                 ),
-                const SizedBox(height: AppSizes.md),
               ] else ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -206,14 +198,20 @@ class _HomePageState extends ConsumerState<HomePage>
                           ],
                         ),
                 ),
+              ],
+              const SizedBox(height: AppSizes.lg),
+              _staggered(1, HomeHeader(nickname: profile?.nickname ?? '학습자')),
+              const SizedBox(height: 11),
+              if (preferences.showKana &&
+                  dashboard?.kanaProgress != null &&
+                  !dashboard!.kanaProgress!.completed) ...[
+                _staggered(
+                    2, KanaCtaCard(kanaProgress: dashboard.kanaProgress!)),
                 const SizedBox(height: AppSizes.md),
               ],
-
-              // 5. Study Card with category tabs
               _staggered(
                 3,
                 QuickStartCard(
-                  levelProgress: dashboard?.levelProgress,
                   today: dashboard?.today,
                   dailyGoal: preferences.dailyGoal,
                   dailyGoalKnown:
@@ -222,35 +220,28 @@ class _HomePageState extends ConsumerState<HomePage>
                   showSavedQuiz: false,
                 ),
               ),
-              const SizedBox(height: AppSizes.md),
-
-              // 6. Daily Missions
-              const Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: AppSizes.pageHorizontal),
-                child: SavedQuizSection(),
-              ),
-              const SizedBox(height: AppSizes.md),
+              const SizedBox(height: AppSizes.xl),
               if (missions != null && missions.isNotEmpty) ...[
                 _staggered(4, DailyMissionsCard(missions: missions)),
-                const SizedBox(height: AppSizes.md),
+                const SizedBox(height: 40),
               ],
-
-              // 7. Weekly Chart — 회고 영역 (빈 상태도 표시)
-              if (dashboard != null)
-                _staggered(
-                  5,
-                  WeeklyChart(
-                    weeklyStats: dashboard.weeklyStats,
-                    dailyGoal: preferences.dailyGoalConfirmed
-                        ? preferences.dailyGoal
-                        : 0,
-                  ),
+              _staggered(
+                5,
+                WeeklyChart(
+                  key: ValueKey(owner),
+                  weeklyStats: dashboard?.weeklyStats ?? const [],
+                  questionStats: dashboard?.weeklyQuestionStats,
+                  studyDate: studyDate,
+                  isLoading: dashboardAsync.isLoading,
+                  hasError: dashboardAsync.hasError,
                 ),
-              const SizedBox(height: AppSizes.md),
-
-              // 8. Shortcut Grid — 유틸리티 영역
+              ),
+              const SizedBox(height: 33),
               _staggered(6, const ShortcutGrid()),
+              const SavedQuizSection(
+                compact: true,
+                padding: EdgeInsets.fromLTRB(20, 32, 20, 0),
+              ),
             ],
           ),
         ),
