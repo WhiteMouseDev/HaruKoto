@@ -60,7 +60,25 @@ void main() {
       expect(find.text('오답을 불러오지 못했어요'), findsOneWidget);
       expect(find.text('다시 불러오기'), findsOneWidget);
       expect(find.text('이번 퀴즈에는 오답이 없어요'), findsNothing);
-      expect(find.text('오답 복습 →'), findsNothing);
+      expect(find.text('오답 복습하기'), findsNothing);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump(const Duration(milliseconds: 1));
+    });
+
+    testWidgets('score uses the submitted result, separate from wrong details',
+        (tester) async {
+      await _pumpResult(tester, _FakeStudyRepository(), correctCount: 6);
+      await tester.pumpAndSettle();
+
+      expect(find.text('퀴즈 결과'), findsOneWidget);
+      expect(find.text('60%'), findsOneWidget);
+      expect(find.text('6개'), findsOneWidget);
+      expect(find.text('4개'), findsOneWidget);
+      expect(find.text('12'), findsOneWidget);
+      expect(find.text('틀린 문제 1개'), findsOneWidget);
+      expect(find.text('다음 레벨까지 58XP'), findsOneWidget);
+      expect(find.text('42/100 XP'), findsOneWidget);
+
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pump(const Duration(milliseconds: 1));
     });
@@ -73,12 +91,12 @@ void main() {
       await _pumpResult(tester, repository,
           reviewLauncher: (_) async => reviews++);
       expect(find.text('이번 퀴즈의 오답을 불러오고 있어요'), findsOneWidget);
-      expect(find.text('오답 복습 →'), findsNothing);
+      expect(find.text('오답 복습하기'), findsNothing);
       expect(reviews, 0);
       repository.gate!.complete(repository.answers);
       await tester.pump();
       await tester.pump();
-      expect(find.text('틀린 단어 1개'), findsOneWidget);
+      expect(find.text('틀린 문제 1개'), findsOneWidget);
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pump(const Duration(milliseconds: 1));
     });
@@ -92,14 +110,14 @@ void main() {
       expect(find.text('오답을 불러오지 못했어요'), findsOneWidget);
       expect(find.text('로그인이 필요합니다.'), findsOneWidget);
       expect(find.text('이번 퀴즈에는 오답이 없어요'), findsNothing);
-      expect(find.text('오답 복습 →'), findsNothing);
+      expect(find.text('오답 복습하기'), findsNothing);
       expect(reviews, 0);
       await tester.ensureVisible(find.text('다시 불러오기'));
       await tester.tap(find.text('다시 불러오기'));
       await tester.pump();
       await tester.pump();
       expect(repository.sessionIds, ['session-1', 'session-1']);
-      expect(find.text('틀린 단어 1개'), findsOneWidget);
+      expect(find.text('틀린 문제 1개'), findsOneWidget);
       expect(find.text('오답을 불러오지 못했어요'), findsNothing);
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pump(const Duration(milliseconds: 1));
@@ -110,7 +128,7 @@ void main() {
       final repository = _FakeStudyRepository();
       await _pumpResult(tester, repository, correctCount: 10);
       expect(find.text('이번 퀴즈에는 오답이 없어요'), findsOneWidget);
-      expect(find.text('오답 복습 →'), findsNothing);
+      expect(find.text('오답 복습하기'), findsNothing);
       expect(find.text('다시 불러오기'), findsNothing);
       expect(repository.fetchWrongAnswersCalls, 0);
       await tester.pumpWidget(const SizedBox.shrink());
@@ -167,11 +185,11 @@ void main() {
       await tester.pump();
 
       expect(repository.fetchWrongAnswersCalls, 1);
-      expect(find.text('오답 복습 →'), findsOneWidget);
+      expect(find.text('오답 복습하기'), findsOneWidget);
 
-      await tester.ensureVisible(find.text('오답 복습 →'));
+      await tester.ensureVisible(find.text('오답 복습하기'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('오답 복습 →'));
+      await tester.tap(find.text('오답 복습하기'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 

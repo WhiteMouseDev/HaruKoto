@@ -10,7 +10,8 @@ class QuizStandardModeContent extends StatelessWidget {
   const QuizStandardModeContent({
     super.key,
     required this.title,
-    required this.count,
+    required this.currentQuestion,
+    required this.totalQuestions,
     required this.question,
     required this.progress,
     required this.streak,
@@ -25,7 +26,8 @@ class QuizStandardModeContent extends StatelessWidget {
   });
 
   final String title;
-  final String count;
+  final int currentQuestion;
+  final int totalQuestions;
   final QuizQuestionModel question;
   final double progress;
   final int streak;
@@ -40,54 +42,45 @@ class QuizStandardModeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final promptInset =
+        (MediaQuery.sizeOf(context).height - 650).clamp(20.0, 100.0);
     return Scaffold(
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            Column(
-              children: [
-                QuizHeader(
-                  title: title,
-                  count: count,
-                  onBack: onBack,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: QuizProgressBar(
-                    progress: progress,
-                    streak: streak,
-                    showStreak: answered,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: FourChoiceQuiz(
-                      question: question,
-                      selectedOptionId: selectedOptionId,
-                      answered: answered,
-                      isCorrect: isCorrect,
-                      showFurigana: showFurigana,
-                      onSelect: onAnswer,
-                    ),
-                  ),
-                ),
-              ],
+            QuizHeader(title: title, onBack: onBack),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: QuizProgressBar(
+                progress: progress,
+                currentQuestion: currentQuestion,
+                totalQuestions: totalQuestions,
+                streak: streak,
+                showStreak: answered,
+              ),
             ),
-            if (answered)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: QuizFeedbackBar(
+            Expanded(
+              child: SingleChildScrollView(
+                key: ValueKey('quiz-options-${question.questionId}'),
+                padding: EdgeInsets.fromLTRB(20, promptInset, 20, 16),
+                child: FourChoiceQuiz(
                   question: question,
+                  questionNumber: currentQuestion,
+                  selectedOptionId: selectedOptionId,
+                  answered: answered,
                   isCorrect: isCorrect,
-                  streak: streak,
-                  isLastQuestion: isLastQuestion,
-                  onNext: onNext,
+                  showFurigana: showFurigana,
+                  onSelect: onAnswer,
                 ),
               ),
+            ),
+            QuizFeedbackBar(
+              question: question,
+              answered: answered,
+              isCorrect: isCorrect,
+              isLastQuestion: isLastQuestion,
+              onNext: onNext,
+            ),
           ],
         ),
       ),
