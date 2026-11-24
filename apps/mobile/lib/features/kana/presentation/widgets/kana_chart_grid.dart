@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/theme/text_theme.dart';
+import '../../../../shared/widgets/app_skeleton.dart';
 import '../../data/models/kana_character_model.dart';
 
 class KanaChartGrid extends StatelessWidget {
@@ -11,12 +12,16 @@ class KanaChartGrid extends StatelessWidget {
     super.key,
     required this.characters,
     required this.katakana,
-    required this.onCharacterTap,
-  });
+    required ValueChanged<KanaCharacterModel> onCharacterTap,
+  }) : _onCharacterTap = onCharacterTap;
+
+  const KanaChartGrid.loading({super.key, required this.katakana})
+      : characters = const [],
+        _onCharacterTap = null;
 
   final List<KanaCharacterModel> characters;
   final bool katakana;
-  final ValueChanged<KanaCharacterModel> onCharacterTap;
+  final ValueChanged<KanaCharacterModel>? _onCharacterTap;
 
   static const _rows = [
     ('a', 'あ', 'ア', '아'),
@@ -54,6 +59,9 @@ class KanaChartGrid extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final light = colors.brightness == Brightness.light;
     final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final onCharacterTap = _onCharacterTap;
+    final loading = onCharacterTap == null;
+    const placeholder = AppSkeletonBlock(radius: 4);
     final scaler = MediaQuery.textScalerOf(context);
     final cells = {
       for (final character in characters)
@@ -81,12 +89,15 @@ class KanaChartGrid extends StatelessWidget {
               cells: [
                 const SizedBox.shrink(),
                 for (final (_, hiragana, katakanaGlyph, korean) in _columns)
-                  _KanaAxisCell(
-                    kana: katakana ? katakanaGlyph : hiragana,
-                    reading: korean,
-                    color: AppColors.redesignVocabulary.withValues(alpha: 0.32),
-                    foreground: foreground,
-                  ),
+                  loading
+                      ? placeholder
+                      : _KanaAxisCell(
+                          kana: katakana ? katakanaGlyph : hiragana,
+                          reading: korean,
+                          color: AppColors.redesignVocabulary
+                              .withValues(alpha: 0.32),
+                          foreground: foreground,
+                        ),
               ],
             ),
             for (final (row, hiragana, katakanaGlyph, korean) in _rows) ...[
@@ -94,17 +105,23 @@ class KanaChartGrid extends StatelessWidget {
               _KanaChartRow(
                 height: rowHeight,
                 cells: [
-                  _KanaAxisCell(
-                    kana: katakana ? katakanaGlyph : hiragana,
-                    reading: korean,
-                    color: AppColors.redesignGrammar.withValues(alpha: 0.24),
-                    foreground: foreground,
-                  ),
+                  if (loading)
+                    placeholder
+                  else
+                    _KanaAxisCell(
+                      kana: katakana ? katakanaGlyph : hiragana,
+                      reading: korean,
+                      color: AppColors.redesignGrammar.withValues(alpha: 0.24),
+                      foreground: foreground,
+                    ),
                   for (final (column, _, _, _) in _columns)
-                    if (!_emptyCells.contains((row, column)) &&
-                        cells[(row, column)] != null)
+                    if (_emptyCells.contains((row, column)))
+                      const SizedBox.shrink()
+                    else if (onCharacterTap == null)
+                      placeholder
+                    else if (cells[(row, column)] case final character?)
                       _KanaCell(
-                        character: cells[(row, column)]!,
+                        character: character,
                         onTap: onCharacterTap,
                       )
                     else
@@ -120,7 +137,9 @@ class KanaChartGrid extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(width: slotWidth + _gap),
-                  if (nasal != null)
+                  if (onCharacterTap == null)
+                    const Expanded(child: placeholder)
+                  else if (nasal != null)
                     Expanded(
                       child: _KanaCell(
                         character: nasal,

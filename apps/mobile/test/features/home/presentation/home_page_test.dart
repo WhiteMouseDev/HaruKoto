@@ -12,10 +12,12 @@ import 'package:harukoto_mobile/features/home/data/models/mission_model.dart';
 import 'package:harukoto_mobile/features/home/data/models/user_profile_model.dart';
 import 'package:harukoto_mobile/features/home/presentation/home_page.dart';
 import 'package:harukoto_mobile/features/home/presentation/widgets/home_header.dart';
+import 'package:harukoto_mobile/features/home/presentation/widgets/home_skeleton.dart';
 import 'package:harukoto_mobile/features/home/presentation/widgets/streak_daily_card.dart';
 import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:harukoto_mobile/features/notifications/data/models/notification_model.dart';
 import 'package:harukoto_mobile/features/notifications/providers/notification_provider.dart';
+import 'package:harukoto_mobile/shared/widgets/app_segmented_tabs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -115,7 +117,7 @@ void main() {
       );
     });
 
-    testWidgets('shows skeleton when all providers are loading',
+    testWidgets('keeps the redesigned home layout through partial loading',
         (tester) async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
@@ -146,17 +148,48 @@ void main() {
         ),
       );
 
-      // While loading, the Scaffold with AppSkeleton should be shown
-      expect(find.byType(Scaffold), findsOneWidget);
-      // The error widget should NOT be present
+      expect(find.text('홈'), findsOneWidget);
+      expect(find.byType(HomeStreakSkeleton), findsOneWidget);
+      expect(find.byType(HomeGreetingSkeleton), findsOneWidget);
+      expect(find.byKey(const ValueKey('quick-start-tab-vocabulary')),
+          findsOneWidget);
+      expect(find.byKey(const ValueKey('quick-start-tab-grammar')),
+          findsOneWidget);
+      expect(find.byKey(const ValueKey('quick-start-tab-sentence')),
+          findsOneWidget);
+      expect(find.text('0%'), findsNothing);
       expect(find.text('데이터를 불러올 수 없습니다'), findsNothing);
-      // Neither should data-dependent widgets
-      expect(find.text('학습자'), findsNothing);
 
-      // Clean up: complete the futures to avoid pending timers
-      dashboardCompleter.completeError('cancelled');
-      profileCompleter.completeError('cancelled');
-      missionsCompleter.completeError('cancelled');
+      await tester.tap(find.byKey(const ValueKey('quick-start-tab-grammar')));
+      await tester.pump();
+      expect(
+          tester
+              .widget<AppSegmentedTabs>(find.byType(AppSegmentedTabs))
+              .selectedIndex,
+          1);
+
+      profileCompleter.complete(const UserProfileModel(
+        nickname: '테스트',
+        dailyGoal: 20,
+        showKana: false,
+        jlptLevel: 'N5',
+      ));
+      await tester.pump();
+      expect(find.text('테스트님, 오늘도 힘내볼까요?'), findsOneWidget);
+      expect(find.byType(HomeGreetingSkeleton), findsNothing);
+      expect(find.byType(HomeStreakSkeleton), findsOneWidget);
+      expect(find.text('0%'), findsNothing);
+      expect(find.text('오늘 학습량 확인 필요'), findsNothing);
+
+      dashboardCompleter.complete(DashboardModel.fromJson({}));
+      missionsCompleter.complete([]);
+      await tester.pumpAndSettle();
+      expect(find.byType(HomeStreakSkeleton), findsNothing);
+      expect(
+          tester
+              .widget<AppSegmentedTabs>(find.byType(AppSegmentedTabs))
+              .selectedIndex,
+          1);
     });
 
     testWidgets('shows error state when providers fail with no data',
@@ -231,8 +264,7 @@ void main() {
         ),
       );
 
-      // Pump a few frames to let providers resolve (no pumpAndSettle
-      // because AppSkeleton has a repeating animation)
+      // Let the provider results reach the home screen.
       await tester.pump();
       await tester.pump();
 

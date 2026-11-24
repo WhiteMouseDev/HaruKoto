@@ -3,12 +3,18 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../shared/widgets/app_skeleton.dart';
 import '../../data/models/mission_model.dart';
 
 class DailyMissionsCard extends StatelessWidget {
-  const DailyMissionsCard({super.key, required this.missions});
+  const DailyMissionsCard({
+    super.key,
+    required this.missions,
+    this.isLoading = false,
+  });
 
   final List<MissionModel> missions;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +40,20 @@ class DailyMissionsCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
+          if (isLoading)
+            Semantics(
+              label: '오늘의 미션을 불러오는 중',
+              container: true,
+              child: const Row(
+                children: [
+                  Expanded(child: _MissionPlaceholder()),
+                  SizedBox(width: 8),
+                  Expanded(child: _MissionPlaceholder()),
+                  SizedBox(width: 8),
+                  Expanded(child: _MissionPlaceholder()),
+                ],
+              ),
+            ),
           for (var i = 0; i < ordered.length; i += 3) ...[
             if (i != 0) const SizedBox(height: 8),
             IntrinsicHeight(
@@ -52,6 +72,43 @@ class DailyMissionsCard extends StatelessWidget {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _MissionPlaceholder extends StatelessWidget {
+  const _MissionPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scale = MediaQuery.textScalerOf(context);
+    return Container(
+      constraints: const BoxConstraints(minHeight: 143),
+      padding: const EdgeInsets.fromLTRB(6, 12, 6, 11),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: theme.brightness == Brightness.light
+              ? AppColors.redesignOutline
+              : theme.colorScheme.outline,
+        ),
+      ),
+      child: Column(
+        children: [
+          const AppSkeletonBlock(width: 64, height: 64, radius: 32),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: scale.scale(14) * 1.4,
+            child: const Center(child: AppSkeletonBlock(width: 48, height: 11)),
+          ),
+          const SizedBox(height: 4),
+          SizedBox(
+            height: scale.scale(16) * 1.4,
+            child: const Center(child: AppSkeletonBlock(width: 32, height: 13)),
+          ),
         ],
       ),
     );

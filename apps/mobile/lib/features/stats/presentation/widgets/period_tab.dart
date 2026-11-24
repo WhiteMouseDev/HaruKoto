@@ -5,6 +5,7 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/providers/study_clock_provider.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../../../core/theme/text_theme.dart';
+import '../../../../shared/widgets/app_skeleton.dart';
 import '../../../home/data/models/dashboard_model.dart';
 import '../../data/models/stats_history_model.dart';
 import 'heatmap_widget.dart';
@@ -15,6 +16,7 @@ class PeriodTab extends ConsumerStatefulWidget {
     super.key,
     required this.today,
     this.questionStats,
+    this.isDashboardLoading = false,
     required this.historyRecords,
     required this.heatmapYear,
     required this.onHeatmapYearChange,
@@ -23,11 +25,12 @@ class PeriodTab extends ConsumerStatefulWidget {
     this.onRetryHistory,
   });
 
-  final TodayStats today;
+  final TodayStats? today;
+  final bool isDashboardLoading;
   final List<WeeklyQuestionStatEntry>? questionStats;
   final List<StatsHistoryRecord> historyRecords;
   final int heatmapYear;
-  final ValueChanged<int> onHeatmapYearChange;
+  final ValueChanged<int>? onHeatmapYearChange;
   final bool isHistoryLoading;
   final bool hasHistoryError;
   final VoidCallback? onRetryHistory;
@@ -68,7 +71,11 @@ class _PeriodTabState extends ConsumerState<PeriodTab> {
       children: [
         Text('오늘의 학습', style: titleStyle),
         const SizedBox(height: 12),
-        _QuestionSummary(today: week.today.total, week: week.total),
+        _QuestionSummary(
+          today: week.today.total,
+          week: week.total,
+          isLoading: widget.isDashboardLoading,
+        ),
         const SizedBox(height: 40),
         Text('요일별 문제풀이', style: titleStyle),
         const SizedBox(height: 12),
@@ -76,6 +83,7 @@ class _PeriodTabState extends ConsumerState<PeriodTab> {
           dateRangeLabel:
               '${first.month}.${first.day}~${last.month}.${last.day}',
           days: week.days,
+          isLoading: widget.isDashboardLoading,
           selectedDate: selectedDay?.date,
           today: today,
           onDateSelected: (date) {
@@ -87,7 +95,7 @@ class _PeriodTabState extends ConsumerState<PeriodTab> {
               ? null
               : '문제풀이 집계를 확인할 수 없어요',
         ),
-        if (selectedDay != null) ...[
+        if (widget.isDashboardLoading || selectedDay != null) ...[
           const SizedBox(height: 8),
           _DayQuestions(day: selectedDay),
         ],
@@ -112,7 +120,7 @@ const _weekdays = ['월', '화', '수', '목', '금', '토', '일'];
 class _QuestionWeek {
   factory _QuestionWeek({
     required DateTime today,
-    required TodayStats todayStats,
+    required TodayStats? todayStats,
     required List<WeeklyQuestionStatEntry>? questionStats,
   }) {
     final monday = today.subtract(Duration(days: today.weekday - 1));
@@ -124,7 +132,7 @@ class _QuestionWeek {
           sentences: day.sentenceArrangeAnsweredCount,
         ),
     };
-    final goals = todayStats.categoryGoals;
+    final goals = todayStats?.categoryGoals;
     final todayKey = studyDateKey(today);
     if (goals != null && goals.date == todayKey) {
       byDate.putIfAbsent(
@@ -171,10 +179,15 @@ class _QuestionWeek {
 }
 
 class _QuestionSummary extends StatelessWidget {
-  const _QuestionSummary({required this.today, required this.week});
+  const _QuestionSummary({
+    required this.today,
+    required this.week,
+    required this.isLoading,
+  });
 
   final int? today;
   final int? week;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -196,6 +209,7 @@ class _QuestionSummary extends StatelessWidget {
             Expanded(
               child: _QuestionMetric(
                 count: today,
+                isLoading: isLoading,
                 label: '오늘 푼 문제',
                 iconAsset: 'assets/icons/figma-stats-period-today.png',
               ),
@@ -210,6 +224,7 @@ class _QuestionSummary extends StatelessWidget {
             Expanded(
               child: _QuestionMetric(
                 count: week,
+                isLoading: isLoading,
                 label: '이번 주 푼 문제',
                 iconAsset: 'assets/icons/figma-stats-period-week.png',
               ),
@@ -224,11 +239,13 @@ class _QuestionSummary extends StatelessWidget {
 class _QuestionMetric extends StatelessWidget {
   const _QuestionMetric({
     required this.count,
+    required this.isLoading,
     required this.label,
     required this.iconAsset,
   });
 
   final int? count;
+  final bool isLoading;
   final String label;
   final String iconAsset;
 
@@ -242,9 +259,14 @@ class _QuestionMetric extends StatelessWidget {
         ? AppColors.redesignMutedForeground
         : theme.colorScheme.onSurfaceVariant;
 
+    final status = isLoading
+        ? '불러오는 중'
+        : count == null
+            ? '집계 확인 필요'
+            : '$count문제';
     return Semantics(
       container: true,
-      label: '$label, ${count == null ? '집계 확인 필요' : '$count문제'}',
+      label: '$label, $status',
       excludeSemantics: true,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
@@ -259,20 +281,27 @@ class _QuestionMetric extends StatelessWidget {
               excludeFromSemantics: true,
             ),
             const SizedBox(height: 2),
-            Text.rich(
-              TextSpan(
-                text: count == null ? '—' : '$count',
-                children: [
-                  if (count != null)
-                    TextSpan(
-                      text: '문제',
-                      style: _periodText(12, foreground),
-                    ),
-                ],
+            if (isLoading)
+              SizedBox(
+                height: MediaQuery.textScalerOf(context).scale(18) * 1.4,
+                child: const Center(
+                    child: AppSkeletonBlock(width: 46, height: 14)),
+              )
+            else
+              Text.rich(
+                TextSpan(
+                  text: count == null ? '—' : '$count',
+                  children: [
+                    if (count != null)
+                      TextSpan(
+                        text: '문제',
+                        style: _periodText(12, foreground),
+                      ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+                style: _periodText(18, foreground, weight: FontWeight.w600),
               ),
-              textAlign: TextAlign.center,
-              style: _periodText(18, foreground, weight: FontWeight.w600),
-            ),
             const SizedBox(height: 1),
             Text(label,
                 style: _periodText(12, muted), textAlign: TextAlign.center),
@@ -286,7 +315,7 @@ class _QuestionMetric extends StatelessWidget {
 class _DayQuestions extends StatelessWidget {
   const _DayQuestions({required this.day});
 
-  final StatsBarDay day;
+  final StatsBarDay? day;
 
   @override
   Widget build(BuildContext context) {
@@ -297,10 +326,11 @@ class _DayQuestions extends StatelessWidget {
     final muted = isLight
         ? AppColors.redesignMutedForeground
         : theme.colorScheme.onSurfaceVariant;
-    final date = day.date;
-    final counts = day.counts!;
+    final day = this.day;
+    final textScale = MediaQuery.textScalerOf(context);
     return Semantics(
       liveRegion: true,
+      label: day == null ? '선택 날짜의 문제풀이를 불러오는 중' : null,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
@@ -312,17 +342,31 @@ class _DayQuestions extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Text(
-              '${date.month}월 ${date.day}일 (${day.label}) · ${day.total}문제',
-              textAlign: TextAlign.center,
-              style: _periodText(14, foreground, weight: FontWeight.w600),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '단어 ${counts.vocabulary} · 문법 ${counts.grammar} · 문장배열 ${counts.sentences}',
-              textAlign: TextAlign.center,
-              style: _periodText(12, muted),
-            ),
+            if (day == null) ...[
+              SizedBox(
+                height: textScale.scale(14) * 1.4,
+                child: const Center(
+                    child: AppSkeletonBlock(width: 100, height: 12)),
+              ),
+              const SizedBox(height: 4),
+              SizedBox(
+                height: textScale.scale(12) * 1.4,
+                child: const Center(
+                    child: AppSkeletonBlock(width: 142, height: 10)),
+              ),
+            ] else ...[
+              Text(
+                '${day.date.month}월 ${day.date.day}일 (${day.label}) · ${day.total}문제',
+                textAlign: TextAlign.center,
+                style: _periodText(14, foreground, weight: FontWeight.w600),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '단어 ${day.counts!.vocabulary} · 문법 ${day.counts!.grammar} · 문장배열 ${day.counts!.sentences}',
+                textAlign: TextAlign.center,
+                style: _periodText(12, muted),
+              ),
+            ],
           ],
         ),
       ),

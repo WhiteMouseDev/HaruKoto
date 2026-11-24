@@ -1,12 +1,39 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/kana/data/models/kana_character_model.dart';
 import 'package:harukoto_mobile/features/kana/presentation/kana_chart_page.dart';
+import 'package:harukoto_mobile/features/kana/presentation/widgets/kana_chart_grid.dart';
 import 'package:harukoto_mobile/features/kana/providers/kana_provider.dart';
 import 'package:harukoto_mobile/shared/widgets/tts_play_button.dart';
 
 void main() {
+  testWidgets('pending characters preserve the grid dimensions without cells',
+      (tester) async {
+    final semantics = tester.ensureSemantics();
+    final hiragana = Completer<List<KanaCharacterModel>>();
+    await _pumpChart(
+      tester,
+      load: (type) async =>
+          type == 'HIRAGANA' ? await hiragana.future : _characters(type),
+    );
+
+    final grid = find.byType(KanaChartGrid);
+    final pendingSize = tester.getSize(grid);
+    expect(find.bySemanticsLabel('히라가나 표를 불러오는 중'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('문자 상세')), findsNothing);
+    expect(find.text('か'), findsNothing);
+
+    hiragana.complete(_characters('HIRAGANA'));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(grid), pendingSize);
+    expect(find.bySemanticsLabel('히라가나 표를 불러오는 중'), findsNothing);
+    expect(find.bySemanticsLabel('か, 카, 미학습, 문자 상세'), findsOneWidget);
+    semantics.dispose();
+  });
+
   testWidgets('both scripts place Korean readings on axes and keep real cells',
       (tester) async {
     final semantics = tester.ensureSemantics();

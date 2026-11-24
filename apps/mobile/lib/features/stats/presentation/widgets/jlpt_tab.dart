@@ -8,6 +8,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/theme/text_theme.dart';
+import '../../../../shared/widgets/app_skeleton.dart';
 import '../../data/models/level_progress_model.dart';
 import '../../providers/stats_provider.dart';
 
@@ -110,13 +111,16 @@ class _JlptTabState extends ConsumerState<JlptTab> {
                     )
                   : _LevelProgress(
                       progress: selected,
+                      level: level,
                       description: _levelDescriptions[_selectedIndex],
                     );
             },
-            loading: () => _StatusCard(
-              color: surface,
-              child: const CircularProgressIndicator(
-                semanticsLabel: '급수별 진도를 불러오는 중',
+            loading: () => Semantics(
+              label: '급수별 진도를 불러오는 중',
+              container: true,
+              child: _LevelProgress(
+                level: level,
+                description: _levelDescriptions[_selectedIndex],
               ),
             ),
             error: (_, __) => _StatusCard(
@@ -229,9 +233,14 @@ class _StatusCard extends StatelessWidget {
 }
 
 class _LevelProgress extends StatelessWidget {
-  const _LevelProgress({required this.progress, required this.description});
+  const _LevelProgress({
+    this.progress,
+    required this.level,
+    required this.description,
+  });
 
-  final JlptLevelProgress progress;
+  final JlptLevelProgress? progress;
+  final String level;
   final String description;
 
   @override
@@ -243,15 +252,12 @@ class _LevelProgress extends StatelessWidget {
         light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
     final formatCount = MaterialLocalizations.of(context).formatDecimal;
     final brand = colors.primary;
-    final vocabulary = progress.vocabulary;
-    final grammar = progress.grammar;
-    final total = vocabulary.total + grammar.total;
-    final mastered = vocabulary.mastered + grammar.mastered;
-    final percentage = _masteryRatio(mastered, total);
-    final wordsRemaining =
-        (vocabulary.total - vocabulary.mastered).clamp(0, vocabulary.total);
-    final grammarRemaining =
-        (grammar.total - grammar.mastered).clamp(0, grammar.total);
+    final progress = this.progress;
+    final vocabulary = progress?.vocabulary;
+    final grammar = progress?.grammar;
+    final total = (vocabulary?.total ?? 0) + (grammar?.total ?? 0);
+    final mastered = (vocabulary?.mastered ?? 0) + (grammar?.mastered ?? 0);
+    final textScale = MediaQuery.textScalerOf(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -274,9 +280,7 @@ class _LevelProgress extends StatelessWidget {
                   children: [
                     Text.rich(
                       TextSpan(children: [
-                        TextSpan(
-                            text: progress.level,
-                            style: TextStyle(color: brand)),
+                        TextSpan(text: level, style: TextStyle(color: brand)),
                         const TextSpan(text: ' 난이도'),
                       ]),
                       style: _text(18, weight: FontWeight.w700),
@@ -286,27 +290,40 @@ class _LevelProgress extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSizes.sm),
                 _OverallProgress(
-                  ratio: percentage,
+                  ratio:
+                      progress == null ? null : _masteryRatio(mastered, total),
                   color: brand,
                   track: light
                       ? AppColors.redesignProgressTrack
                       : colors.surfaceContainerLowest,
                 ),
                 const SizedBox(height: AppSizes.xs),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(child: Text('${formatCount(mastered)}개')),
-                    const SizedBox(width: AppSizes.sm),
-                    Flexible(
-                      child: Text(
-                        '${formatCount(total)}개',
-                        textAlign: TextAlign.end,
-                        style: TextStyle(color: muted),
-                      ),
+                if (progress == null)
+                  SizedBox(
+                    height: textScale.scale(13) * 1.4,
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AppSkeletonBlock(width: 26, height: 11),
+                        AppSkeletonBlock(width: 30, height: 11),
+                      ],
                     ),
-                  ],
-                ),
+                  )
+                else
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(child: Text('${formatCount(mastered)}개')),
+                      const SizedBox(width: AppSizes.sm),
+                      Flexible(
+                        child: Text(
+                          '${formatCount(total)}개',
+                          textAlign: TextAlign.end,
+                          style: TextStyle(color: muted),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),
@@ -341,28 +358,40 @@ class _LevelProgress extends StatelessWidget {
               color: light ? AppColors.redesignOutline : colors.outline,
             ),
           ),
-          child: Text.rich(
-            TextSpan(children: [
-              TextSpan(text: '• ', style: TextStyle(color: brand)),
-              TextSpan(
-                text: '${progress.level} 마스터까지 ',
-                style: TextStyle(color: muted),
-              ),
-              TextSpan(
-                text: '단어 ${formatCount(wordsRemaining)}개, '
-                    '문법 ${formatCount(grammarRemaining)}개',
-              ),
-              TextSpan(text: ' 남았어요', style: TextStyle(color: muted)),
-              TextSpan(text: ' •', style: TextStyle(color: brand)),
-            ]),
-            textAlign: TextAlign.center,
-            style: _text(12),
-          ),
+          child: progress == null
+              ? SizedBox(
+                  height: textScale.scale(13) * 1.4,
+                  child: const Align(
+                    alignment: Alignment.centerLeft,
+                    child: AppSkeletonBlock(width: 172, height: 11),
+                  ),
+                )
+              : Text.rich(
+                  TextSpan(children: [
+                    TextSpan(text: '• ', style: TextStyle(color: brand)),
+                    TextSpan(
+                      text: '$level 마스터까지 ',
+                      style: TextStyle(color: muted),
+                    ),
+                    TextSpan(
+                      text:
+                          '단어 ${formatCount(_remaining(progress.vocabulary))}개, '
+                          '문법 ${formatCount(_remaining(progress.grammar))}개',
+                    ),
+                    TextSpan(text: ' 남았어요', style: TextStyle(color: muted)),
+                    TextSpan(text: ' •', style: TextStyle(color: brand)),
+                  ]),
+                  textAlign: TextAlign.center,
+                  style: _text(12),
+                ),
         ),
       ],
     );
   }
 }
+
+int _remaining(ProgressCategory value) =>
+    (value.total - value.mastered).clamp(0, value.total);
 
 class _OverallProgress extends StatelessWidget {
   const _OverallProgress({
@@ -371,7 +400,7 @@ class _OverallProgress extends StatelessWidget {
     required this.track,
   });
 
-  final double ratio;
+  final double? ratio;
   final Color color;
   final Color track;
 
@@ -382,6 +411,21 @@ class _OverallProgress extends StatelessWidget {
     final badge =
         light ? AppColors.redesignStrong : theme.colorScheme.onSurface;
     final onBadge = light ? Colors.white : theme.colorScheme.surface;
+    final ratio = this.ratio;
+    if (ratio == null) {
+      final height = MediaQuery.textScalerOf(context).scale(10) * 1.4;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: AppSkeletonBlock(width: 38, height: height + 17),
+          ),
+          const SizedBox(height: 5),
+          const AppSkeletonBlock(height: AppSizes.gap),
+        ],
+      );
+    }
     final label = '${(ratio * 100).round()}%';
 
     return Column(
@@ -463,7 +507,7 @@ class _CategoryProgress extends StatelessWidget {
   });
 
   final String title;
-  final ProgressCategory category;
+  final ProgressCategory? category;
   final Color color;
 
   @override
@@ -471,6 +515,7 @@ class _CategoryProgress extends StatelessWidget {
     final theme = Theme.of(context);
     final light = theme.brightness == Brightness.light;
     final formatCount = MaterialLocalizations.of(context).formatDecimal;
+    final category = this.category;
     return Column(
       children: [
         Row(
@@ -478,34 +523,43 @@ class _CategoryProgress extends StatelessWidget {
           children: [
             Text(title),
             const SizedBox(width: AppSizes.sm),
-            Flexible(
-              child: Text.rich(
-                TextSpan(children: [
-                  TextSpan(text: formatCount(category.mastered)),
-                  TextSpan(
-                    text: ' / ${formatCount(category.total)}',
-                    style: TextStyle(
-                      color: light
-                          ? AppColors.redesignMutedForeground
-                          : theme.colorScheme.onSurfaceVariant,
+            if (category == null)
+              const AppSkeletonBlock(width: 49, height: 11)
+            else
+              Flexible(
+                child: Text.rich(
+                  TextSpan(children: [
+                    TextSpan(text: formatCount(category.mastered)),
+                    TextSpan(
+                      text: ' / ${formatCount(category.total)}',
+                      style: TextStyle(
+                        color: light
+                            ? AppColors.redesignMutedForeground
+                            : theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-                ]),
-                textAlign: TextAlign.end,
+                  ]),
+                  textAlign: TextAlign.end,
+                ),
               ),
-            ),
           ],
         ),
         const SizedBox(height: 6),
-        _Bar(
-          ratio: _masteryRatio(category.mastered, category.total),
-          color: color,
-          track: light
-              ? AppColors.redesignDetailTrack
-              : theme.colorScheme.surfaceContainerHigh,
-          height: AppSizes.progressHeight,
-          semanticLabel: '$title 진도',
-        ),
+        if (category == null)
+          const AppSkeletonBlock(
+            width: double.infinity,
+            height: AppSizes.progressHeight,
+          )
+        else
+          _Bar(
+            ratio: _masteryRatio(category.mastered, category.total),
+            color: color,
+            track: light
+                ? AppColors.redesignDetailTrack
+                : theme.colorScheme.surfaceContainerHigh,
+            height: AppSizes.progressHeight,
+            semanticLabel: '$title 진도',
+          ),
       ],
     );
   }

@@ -11,6 +11,7 @@ import '../../../shared/widgets/app_sheet_handle.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../data/models/profile_detail_model.dart';
 import '../providers/my_provider.dart';
+import 'widgets/my_page_skeleton.dart';
 import 'widgets/profile_hero.dart';
 // Hidden for free launch
 // import 'widgets/subscription_section.dart';
@@ -98,7 +99,7 @@ class _MyPageState extends ConsumerState<MyPage> {
                 child: hasError
                     ? _buildError(context)
                     : data == null || owner == null
-                        ? _buildSkeleton(context)
+                        ? const MyPageSkeleton()
                         : _buildContent(context, theme, data, owner),
               ),
             ],
@@ -260,39 +261,6 @@ class _MyPageState extends ConsumerState<MyPage> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildSkeleton(BuildContext context) {
-    final theme = Theme.of(context);
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
-      children: [
-        // Profile skeleton
-        Container(
-          height: 160,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          height: 80,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          height: 200,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-          ),
-        ),
-      ],
     );
   }
 

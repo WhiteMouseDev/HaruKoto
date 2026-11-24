@@ -10,6 +10,7 @@ import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/study_clock_provider.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../../../shared/widgets/app_segmented_tabs.dart';
+import '../../../../shared/widgets/app_skeleton.dart';
 import '../../../my/providers/settings_sync_provider.dart';
 import '../../../study/presentation/study_entry_flow.dart';
 import '../../../study/presentation/widgets/today_study_goal_picker.dart';
@@ -23,6 +24,7 @@ class QuickStartCard extends ConsumerStatefulWidget {
   const QuickStartCard({
     super.key,
     this.today,
+    this.isLoading = false,
     this.dailyGoal = 10,
     this.dailyGoalKnown = true,
     this.jlptLevel = 'N5',
@@ -30,6 +32,7 @@ class QuickStartCard extends ConsumerStatefulWidget {
   });
 
   final TodayStats? today;
+  final bool isLoading;
   final int dailyGoal;
   final bool dailyGoalKnown;
   final String jlptLevel;
@@ -50,6 +53,9 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
 
   @override
   Widget build(BuildContext context) {
+    final owner = ref.watch(currentAccountIdProvider);
+    final canStart =
+        owner != null && ref.watch(currentAccountReaderProvider)() == owner;
     final theme = Theme.of(context);
     final isLight = theme.brightness == Brightness.light;
     final border =
@@ -134,6 +140,7 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
             child: _DailyGoalGauge(
               category: category,
               progress: dailyProgress,
+              isLoading: widget.isLoading,
             ),
           ),
           const SizedBox(height: AppSizes.lg),
@@ -153,8 +160,12 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
                   iconAsset: 'assets/icons/figma-home-goal.png',
                   label: '하루 목표',
                   labelColor: foreground,
-                  value:
-                      _DailyCount(progress: dailyProgress, color: foreground),
+                  value: widget.isLoading
+                      ? Semantics(
+                          label: '하루 목표를 불러오는 중',
+                          child: const AppSkeletonBlock(width: 72, height: 14),
+                        )
+                      : _DailyCount(progress: dailyProgress, color: foreground),
                   goalDivider: border,
                   onEdit: canEditGoal
                       ? () => _showDailyGoalSheet(
@@ -170,16 +181,22 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
                   padding: const EdgeInsets.only(bottom: 9),
                   child: Column(
                     children: [
-                      if (reviewCount != null)
+                      if (reviewCount != null || preview?.isLoading == true)
                         _StudyDetailRow(
                           iconAsset: 'assets/icons/figma-home-review.png',
                           label: '복습할 문제',
                           labelColor: secondary,
-                          value: Text(
-                            '$reviewCount문제',
-                            style: _studyText(14, color: secondary),
-                            textAlign: TextAlign.end,
-                          ),
+                          value: reviewCount == null
+                              ? Semantics(
+                                  label: '복습할 문제를 불러오는 중',
+                                  child: const AppSkeletonBlock(
+                                      width: 48, height: 12),
+                                )
+                              : Text(
+                                  '$reviewCount문제',
+                                  style: _studyText(14, color: secondary),
+                                  textAlign: TextAlign.end,
+                                ),
                         ),
                       _StudyDetailRow(
                         iconAsset: 'assets/icons/figma-home-difficulty.png',
@@ -215,17 +232,23 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
               backgroundColor: isLight ? AppColors.brandPink : null,
               foregroundColor: isLight ? Colors.white : null,
             ),
-            onPressed: () {
-              HapticService().light();
-              executeStudyEntryDecision(
-                context,
-                decision: entry,
-                category: quizType,
-                jlptLevel: jlptLevel,
-                incomplete: savedQuiz.session,
-                canShowPreview: canShowPreview,
-              );
-            },
+            onPressed: canStart
+                ? () {
+                    if (ref.read(currentAccountIdProvider) != owner ||
+                        ref.read(currentAccountReaderProvider)() != owner) {
+                      return;
+                    }
+                    HapticService().light();
+                    executeStudyEntryDecision(
+                      context,
+                      decision: entry,
+                      category: quizType,
+                      jlptLevel: jlptLevel,
+                      incomplete: savedQuiz.session,
+                      canShowPreview: canShowPreview,
+                    );
+                  }
+                : null,
             child: Text(ctaLabel, textAlign: TextAlign.center),
           ),
           Center(
@@ -459,10 +482,15 @@ class _DailyCount extends StatelessWidget {
 }
 
 class _DailyGoalGauge extends StatelessWidget {
-  const _DailyGoalGauge({required this.category, required this.progress});
+  const _DailyGoalGauge({
+    required this.category,
+    required this.progress,
+    required this.isLoading,
+  });
 
   final DailyGoalCategory category;
   final DailyGoalProgress progress;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -473,8 +501,8 @@ class _DailyGoalGauge extends StatelessWidget {
 
     return Semantics(
       label: '${category.label} 하루 목표 진행률',
-      value: progress.percentage ?? '확인 필요',
-      hint: progress.remainingLabel,
+      value: isLoading ? '불러오는 중' : progress.percentage ?? '확인 필요',
+      hint: isLoading ? null : progress.remainingLabel,
       excludeSemantics: true,
       child: SizedBox(
         width: 192,
@@ -482,7 +510,7 @@ class _DailyGoalGauge extends StatelessWidget {
           aspectRatio: 192 / 101,
           child: CustomPaint(
             painter: _GoalArcPainter(
-              progress: progress.fraction ?? 0,
+              progress: isLoading ? 0 : progress.fraction ?? 0,
               trackColor: isLight
                   ? const Color(0xFFF1F1F5)
                   : theme.colorScheme.surfaceContainerHighest,
@@ -505,14 +533,22 @@ class _DailyGoalGauge extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    Text(
-                      progress.percentage ?? '—',
-                      key: progress.percentage == null
-                          ? null
-                          : const ValueKey('quick-start-percentage'),
-                      style: _studyText(24,
-                          color: foreground, weight: FontWeight.w600),
-                    ),
+                    if (isLoading)
+                      const SizedBox(
+                        height: 33.6,
+                        child: Center(
+                          child: AppSkeletonBlock(width: 55, height: 18),
+                        ),
+                      )
+                    else
+                      Text(
+                        progress.percentage ?? '—',
+                        key: progress.percentage == null
+                            ? null
+                            : const ValueKey('quick-start-percentage'),
+                        style: _studyText(24,
+                            color: foreground, weight: FontWeight.w600),
+                      ),
                   ],
                 ),
               ),

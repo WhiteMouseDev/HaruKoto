@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/providers/study_clock_provider.dart';
 import '../../../../core/theme/text_theme.dart';
 import '../../../../shared/widgets/app_error_retry.dart';
+import '../../../../shared/widgets/app_skeleton.dart';
+import '../../../home/data/models/dashboard_model.dart';
 import '../../data/models/study_overview_model.dart';
 import '../../providers/stats_provider.dart';
 import 'stats_bar_chart.dart';
@@ -16,13 +19,8 @@ class StudyTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(studyOverviewProvider).when(
           data: (overview) => _StudyOverviewContent(overview: overview),
-          loading: () => const Padding(
-            padding: EdgeInsets.symmetric(vertical: 40),
-            child: Center(
-              child: CircularProgressIndicator(
-                semanticsLabel: '학습별 통계를 불러오는 중',
-              ),
-            ),
+          loading: () => _StudyOverviewContent(
+            loadingDate: ref.watch(studyDateProvider),
           ),
           error: (_, __) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 40),
@@ -36,24 +34,29 @@ class StudyTab extends ConsumerWidget {
 }
 
 class _StudyOverviewContent extends StatelessWidget {
-  const _StudyOverviewContent({required this.overview});
+  const _StudyOverviewContent({this.overview, this.loadingDate});
 
-  final StudyOverview overview;
+  final StudyOverview? overview;
+  final DateTime? loadingDate;
 
   @override
   Widget build(BuildContext context) {
     final format = MaterialLocalizations.of(context).formatDecimal;
-    final accuracy = overview.totalAnswers == 0
-        ? '—'
-        : format((overview.correctAnswers / overview.totalAnswers * 100)
-            .round()
-            .clamp(0, 100));
+    final overview = this.overview;
+    final isLoading = overview == null;
+    final accuracy = overview == null
+        ? null
+        : overview.totalAnswers == 0
+            ? '—'
+            : format((overview.correctAnswers / overview.totalAnswers * 100)
+                .round()
+                .clamp(0, 100));
 
     var vocabulary = 0;
     var grammar = 0;
     var sentences = 0;
     final days = <StatsBarDay>[];
-    for (final day in overview.daily) {
+    for (final day in overview?.daily ?? const <WeeklyQuestionStatEntry>[]) {
       final date = DateTime.tryParse(day.date);
       if (date == null) continue;
       vocabulary += day.vocabularyAnsweredCount;
@@ -69,6 +72,13 @@ class _StudyOverviewContent extends StatelessWidget {
         ),
       ));
     }
+    if (loadingDate case final date?) {
+      for (var offset = DateTime.daysPerWeek - 1; offset >= 0; offset--) {
+        final day = date.subtract(Duration(days: offset));
+        days.add(StatsBarDay(
+            date: day, label: '${day.month}/${day.day}', counts: null));
+      }
+    }
     final total = vocabulary + grammar + sentences;
     final dateRange = days.isEmpty
         ? ''
@@ -82,14 +92,15 @@ class _StudyOverviewContent extends StatelessWidget {
             metrics: [
               _SummaryMetric(
                 label: '퀴즈 완료',
-                value: format(overview.quizzesCompleted),
+                value:
+                    overview == null ? null : format(overview.quizzesCompleted),
                 unit: '회',
                 icon: _StudyMetricIcon.quiz,
               ),
               _SummaryMetric(
                 label: '정답률',
                 value: accuracy,
-                unit: overview.totalAnswers == 0 ? '' : '%',
+                unit: overview?.totalAnswers == 0 ? '' : '%',
                 icon: _StudyMetricIcon.accuracy,
               ),
             ],
@@ -100,6 +111,7 @@ class _StudyOverviewContent extends StatelessWidget {
           title: '카테고리별 학습량',
           child: _CategoryCard(
             total: total,
+            isLoading: isLoading,
             categories: [
               ('단어', vocabulary, AppColors.redesignVocabulary),
               ('문법', grammar, AppColors.redesignGrammar),
@@ -114,6 +126,7 @@ class _StudyOverviewContent extends StatelessWidget {
           child: StatsBarChart(
             dateRangeLabel: dateRange,
             days: days,
+            isLoading: isLoading,
             emptyMessage: total == 0 ? '최근 7일간 문제풀이 기록이 없어요' : null,
           ),
         ),
@@ -125,7 +138,9 @@ class _StudyOverviewContent extends StatelessWidget {
             metrics: [
               _SummaryMetric(
                 label: '총 대화 수',
-                value: format(overview.conversationCount),
+                value: overview == null
+                    ? null
+                    : format(overview.conversationCount),
                 unit: '회',
                 icon: _StudyMetricIcon.conversation,
               ),
@@ -245,7 +260,7 @@ class _SummaryMetric extends StatelessWidget {
   });
 
   final String label;
-  final String value;
+  final String? value;
   final String unit;
   final _StudyMetricIcon icon;
 
@@ -263,19 +278,29 @@ class _SummaryMetric extends StatelessWidget {
             excludeFromSemantics: true,
           ),
           const SizedBox(height: AppSizes.xs),
-          Text.rich(
-            TextSpan(
-              text: value,
-              children: [
-                TextSpan(
-                  text: unit,
-                  style: _statsText(context, 13),
-                ),
-              ],
+          if (value == null)
+            Semantics(
+              label: '$label 집계를 불러오는 중',
+              child: SizedBox(
+                height: MediaQuery.textScalerOf(context).scale(18) * 1.4,
+                child: const Center(
+                    child: AppSkeletonBlock(width: 36, height: 14)),
+              ),
+            )
+          else
+            Text.rich(
+              TextSpan(
+                text: value,
+                children: [
+                  TextSpan(
+                    text: unit,
+                    style: _statsText(context, 13),
+                  ),
+                ],
+              ),
+              style: _statsText(context, 18, weight: FontWeight.w600),
+              textAlign: TextAlign.center,
             ),
-            style: _statsText(context, 18, weight: FontWeight.w600),
-            textAlign: TextAlign.center,
-          ),
           const SizedBox(height: 2),
           Text(
             label,
@@ -289,9 +314,11 @@ class _SummaryMetric extends StatelessWidget {
 }
 
 class _CategoryCard extends StatelessWidget {
-  const _CategoryCard({required this.total, required this.categories});
+  const _CategoryCard(
+      {required this.total, required this.categories, required this.isLoading});
 
   final int total;
+  final bool isLoading;
   final List<(String, int, Color)> categories;
 
   @override
@@ -339,12 +366,20 @@ class _CategoryCard extends StatelessWidget {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         spacing: AppSizes.sm,
                         children: [
-                          Text('${format(count)}개',
-                              style: _statsText(context, 13)),
-                          Text(
-                            '${total > 0 ? (count * 100 / total).round() : 0}%',
-                            style: _statsText(context, 11, muted: true),
-                          ),
+                          if (isLoading)
+                            Semantics(
+                              label: '$label 학습량을 불러오는 중',
+                              child:
+                                  const AppSkeletonBlock(width: 54, height: 12),
+                            )
+                          else ...[
+                            Text('${format(count)}개',
+                                style: _statsText(context, 13)),
+                            Text(
+                              '${total > 0 ? (count * 100 / total).round() : 0}%',
+                              style: _statsText(context, 11, muted: true),
+                            ),
+                          ],
                         ],
                       ),
                     ),

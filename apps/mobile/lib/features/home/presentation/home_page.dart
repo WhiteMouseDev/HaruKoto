@@ -52,16 +52,20 @@ class _HomePageState extends ConsumerState<HomePage>
   }
 
   Widget _staggered(int index, Widget child) {
-    if (_hasAnimated || MediaQuery.disableAnimationsOf(context)) return child;
-
+    final animate = !_hasAnimated &&
+        _animationScheduled &&
+        !MediaQuery.disableAnimationsOf(context);
     final start = (index * 0.12).clamp(0.0, 0.7);
     final end = (start + 0.4).clamp(0.0, 1.0);
 
     return AnimatedBuilder(
       animation: _staggerController,
-      builder: (context, _) {
-        final t = Interval(start, end, curve: Curves.easeOutCubic)
-            .transform(_staggerController.value);
+      child: child,
+      builder: (context, child) {
+        final t = animate
+            ? Interval(start, end, curve: Curves.easeOutCubic)
+                .transform(_staggerController.value)
+            : 1.0;
         return Opacity(
           opacity: t,
           child: Transform.translate(
@@ -92,22 +96,6 @@ class _HomePageState extends ConsumerState<HomePage>
     final preferences = ref.watch(userPreferencesProvider);
     final studyDate = ref.watch(studyDateProvider);
 
-    // Multi-provider composition: manual AsyncValue handling is used instead
-    // of .when() because loading/error states are combined across 3 providers.
-    final allLoading = dashboardAsync.isLoading &&
-        profileAsync.isLoading &&
-        missionsAsync.isLoading;
-
-    if (allLoading) {
-      return const Scaffold(
-        body: SafeArea(
-            child: Column(children: [
-          LessonActivityPendingBanner(),
-          Expanded(child: HomeSkeleton()),
-        ])),
-      );
-    }
-
     // Show error if ANY provider has error and NO provider has data yet
     final hasAnyError = dashboardAsync.hasError ||
         profileAsync.hasError ||
@@ -133,11 +121,12 @@ class _HomePageState extends ConsumerState<HomePage>
         accountCurrent && !dashboardAsync.isLoading && !dashboardAsync.hasError
             ? dashboardAsync.value
             : null;
+    final dashboardLoading = dashboardAsync.isLoading;
     final profile = profileAsync.hasValue ? profileAsync.value : null;
     final missions = missionsAsync.hasValue ? missionsAsync.value : null;
 
     // Trigger stagger animation on first data load
-    if (!_hasAnimated && !_animationScheduled) {
+    if (dashboard != null && !_hasAnimated && !_animationScheduled) {
       _animationScheduled = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && !_hasAnimated) {
@@ -178,29 +167,29 @@ class _HomePageState extends ConsumerState<HomePage>
                         : 0,
                   ),
                 ),
-              ] else ...[
+              ] else if (dashboardLoading)
+                const HomeStreakSkeleton()
+              else
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: AppSizes.pageHorizontal, vertical: 16),
-                  child: dashboardAsync.isLoading
-                      ? const Center(
-                          child: CircularProgressIndicator(
-                              semanticsLabel: '학습 기록 확인 중'))
-                      : Column(
-                          children: [
-                            const Text('학습 기록을 확인하지 못했어요'),
-                            TextButton(
-                              style: TextButton.styleFrom(
-                                  minimumSize: const Size(48, 48)),
-                              onPressed: _refresh,
-                              child: const Text('다시 확인'),
-                            ),
-                          ],
-                        ),
+                  child: Column(
+                    children: [
+                      const Text('학습 기록을 확인하지 못했어요'),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                            minimumSize: const Size(48, 48)),
+                        onPressed: _refresh,
+                        child: const Text('다시 확인'),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
               const SizedBox(height: AppSizes.lg),
-              _staggered(1, HomeHeader(nickname: profile?.nickname ?? '학습자')),
+              if (profile == null && profileAsync.isLoading)
+                const HomeGreetingSkeleton()
+              else
+                _staggered(1, HomeHeader(nickname: profile?.nickname ?? '학습자')),
               const SizedBox(height: 11),
               if (preferences.showKana &&
                   dashboard?.kanaProgress != null &&
@@ -213,6 +202,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 3,
                 QuickStartCard(
                   today: dashboard?.today,
+                  isLoading: dashboardLoading,
                   dailyGoal: preferences.dailyGoal,
                   dailyGoalKnown:
                       accountCurrent && preferences.dailyGoalConfirmed,
@@ -224,6 +214,9 @@ class _HomePageState extends ConsumerState<HomePage>
               if (missions != null && missions.isNotEmpty) ...[
                 _staggered(4, DailyMissionsCard(missions: missions)),
                 const SizedBox(height: 40),
+              ] else if (missions == null && missionsAsync.isLoading) ...[
+                const DailyMissionsCard(missions: [], isLoading: true),
+                const SizedBox(height: 40),
               ],
               _staggered(
                 5,
@@ -232,7 +225,7 @@ class _HomePageState extends ConsumerState<HomePage>
                   weeklyStats: dashboard?.weeklyStats ?? const [],
                   questionStats: dashboard?.weeklyQuestionStats,
                   studyDate: studyDate,
-                  isLoading: dashboardAsync.isLoading,
+                  isLoading: dashboardLoading,
                   hasError: dashboardAsync.hasError,
                 ),
               ),
