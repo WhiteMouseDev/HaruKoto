@@ -26,6 +26,15 @@ void main() {
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
       expect(find.byType(FourChoiceQuiz), findsOneWidget);
       expect(find.text('食べる'), findsOneWidget);
+      final badge = find
+          .ancestor(
+            of: find.text('Q1'),
+            matching: find.byType(DecoratedBox),
+          )
+          .first;
+      final badgeBottom = tester.getBottomLeft(badge).dy;
+      final promptTop = tester.getTopLeft(find.text('食べる')).dy;
+      expect(promptTop - badgeBottom, closeTo(24, 0.01));
       expect(find.text('たべる'), findsOneWidget);
       expect(find.byTooltip('음성 듣기'), findsOneWidget);
       final next = find.byKey(const ValueKey('quiz-next'));

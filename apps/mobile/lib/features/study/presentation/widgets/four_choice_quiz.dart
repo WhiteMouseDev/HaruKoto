@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/sizes.dart';
 import '../../../../core/theme/text_theme.dart';
 import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/quiz_question_model.dart';
@@ -109,7 +110,7 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSizes.lg),
         Text(
           widget.question.questionText,
           style: theme.textTheme.headlineMedium?.copyWith(
