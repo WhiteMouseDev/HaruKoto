@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../data/models/lesson_models.dart';
 import '../../domain/lesson_recommendation.dart';
 import 'lesson_station_tile.dart';
@@ -17,11 +18,13 @@ class LessonStationList extends StatefulWidget {
     required this.chapters,
     required this.padding,
     this.recommendedLessonId,
+    this.redesigned = false,
   });
 
   final List<ChapterModel> chapters;
   final EdgeInsetsGeometry padding;
   final String? recommendedLessonId;
+  final bool redesigned;
 
   @override
   State<LessonStationList> createState() => _LessonStationListState();
@@ -59,7 +62,8 @@ class _LessonStationListState extends State<LessonStationList> {
     final subtext = theme.brightness == Brightness.light
         ? AppColors.lightSubtext
         : AppColors.darkSubtext;
-    final completed = widget.chapters.where(_isChapterComplete).length;
+    final completed =
+        widget.chapters.where((chapter) => chapter.isComplete).length;
     final multipleParts =
         widget.chapters.map((chapter) => chapter.partNo).toSet().length > 1;
 
@@ -68,51 +72,52 @@ class _LessonStationListState extends State<LessonStationList> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(2, 2, 2, 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 4,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: StudyMapColors.panel(theme.brightness),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        widget.chapters.first.jlptLevel,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: theme.colorScheme.onSurface,
+          if (!widget.redesigned)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(2, 2, 2, 18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: StudyMapColors.panel(theme.brightness),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          widget.chapters.first.jlptLevel,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: theme.colorScheme.onSurface,
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      '$completed / ${widget.chapters.length}개 역 완료',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: subtext,
+                      Text(
+                        '$completed / ${widget.chapters.length}개 역 완료',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: subtext,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  '관심 있는 역부터 자유롭게 학습해요',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: subtext,
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 5),
+                  Text(
+                    '관심 있는 역부터 자유롭게 학습해요',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: subtext,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
           for (var index = 0; index < widget.chapters.length; index++)
             _StationRow(
               key: ValueKey('station-${widget.chapters[index].id}'),
@@ -122,6 +127,7 @@ class _LessonStationListState extends State<LessonStationList> {
               showPart: multipleParts,
               recommendedLessonId: _recommendedId,
               isExpanded: _expandedChapterId == widget.chapters[index].id,
+              redesigned: widget.redesigned,
               onToggle: () {
                 setState(() {
                   final id = widget.chapters[index].id;
@@ -134,11 +140,6 @@ class _LessonStationListState extends State<LessonStationList> {
     );
   }
 }
-
-bool _isChapterComplete(ChapterModel chapter) =>
-    chapter.totalLessons > 0 &&
-    chapter.completedLessons >= chapter.totalLessons &&
-    chapter.lessons.every((lesson) => lesson.status == 'COMPLETED');
 
 enum _StationState { complete, resume, recommended, learning, idle }
 
@@ -158,6 +159,7 @@ class _StationRow extends StatelessWidget {
     required this.showPart,
     required this.recommendedLessonId,
     required this.isExpanded,
+    required this.redesigned,
     required this.onToggle,
   });
 
@@ -167,10 +169,11 @@ class _StationRow extends StatelessWidget {
   final bool showPart;
   final String? recommendedLessonId;
   final bool isExpanded;
+  final bool redesigned;
   final VoidCallback onToggle;
 
   _StationState get _state {
-    if (_isChapterComplete(chapter)) return _StationState.complete;
+    if (chapter.isComplete) return _StationState.complete;
     final recommended = chapter.lessons
         .where((lesson) => lesson.id == recommendedLessonId)
         .firstOrNull;
@@ -194,7 +197,11 @@ class _StationRow extends StatelessWidget {
         state == _StationState.resume || state == _StationState.recommended;
     final accent = StudyMapColors.accent(theme.brightness);
     final completeColor = isLight ? AppColors.mintOn : AppColors.mintContainer;
-    final subtext = isLight ? AppColors.lightSubtext : AppColors.darkSubtext;
+    final subtext = isLight
+        ? redesigned
+            ? AppColors.redesignMutedForeground
+            : AppColors.lightSubtext
+        : AppColors.darkSubtext;
     final background = isRecommended
         ? isLight
             ? AppColors.lightCard
@@ -206,12 +213,20 @@ class _StationRow extends StatelessWidget {
     final signLevel = showPart
         ? '${chapter.jlptLevel} · ${chapter.partNo}부'
         : chapter.jlptLevel;
+    final count = chapter.completedLessons.clamp(0, chapter.totalLessons);
+    final fraction =
+        chapter.totalLessons > 0 ? count / chapter.totalLessons : 0.0;
     final signSide = _StationSign.measureSide(
       context,
       level: signLevel,
       number: stationNumber,
+      redesigned: redesigned,
     );
-    final nodeCenter = _verticalInset + signSide / 2;
+    final verticalInset = redesigned ? 10.0 : _verticalInset;
+    final railCenter = redesigned ? 12.0 : _railCenter;
+    final railWidth = redesigned ? 2.0 : _railWidth;
+    final nodeCenter = verticalInset + signSide / 2;
+    final cardOffset = redesigned ? 36.0 : 0.0;
     final stationLabel =
         showPart ? '${chapter.partNo}-$stationNumber' : stationNumber;
     final stateLabel = switch (state) {
@@ -221,16 +236,17 @@ class _StationRow extends StatelessWidget {
       _StationState.learning => '학습 중',
       _StationState.idle => '시작 전',
     };
-    final count = chapter.completedLessons.clamp(0, chapter.totalLessons);
     final sign = _StationSign(
       level: signLevel,
       number: stationNumber,
       side: signSide,
+      redesigned: redesigned,
+      progress: fraction,
     );
     final chevron = Icon(
       isExpanded ? LucideIcons.chevronUp : LucideIcons.chevronDown,
       color: subtext,
-      size: 18,
+      size: redesigned ? 16 : 18,
     );
     final titleAndStatus = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,12 +255,18 @@ class _StationRow extends StatelessWidget {
         Text(
           chapter.title,
           style: theme.textTheme.titleMedium?.copyWith(
-            fontSize: 18,
-            fontWeight: isRecommended ? FontWeight.w800 : FontWeight.w700,
+            color: redesigned && isLight ? AppColors.redesignForeground : null,
+            fontFamily: redesigned ? redesignFontFamily : null,
+            fontSize: redesigned ? 14 : 18,
+            fontWeight: redesigned
+                ? FontWeight.w600
+                : isRecommended
+                    ? FontWeight.w800
+                    : FontWeight.w700,
             height: 1.35,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: redesigned ? 4 : 8),
         Wrap(
           spacing: 8,
           runSpacing: 6,
@@ -254,25 +276,33 @@ class _StationRow extends StatelessWidget {
               '$count/${chapter.totalLessons} 레슨',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: subtext,
-                fontSize: 13,
+                fontFamily: redesigned ? redesignFontFamily : null,
+                fontSize: redesigned ? 12 : 13,
               ),
             ),
-            if (state != _StationState.idle)
+            if (redesigned ? isRecommended : state != _StationState.idle)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                padding: EdgeInsets.symmetric(
+                    horizontal: redesigned ? 6 : 7,
+                    vertical: redesigned ? 2 : 3),
                 decoration: isRecommended
                     ? BoxDecoration(
-                        color: StudyMapColors.button(theme.brightness),
-                        borderRadius: BorderRadius.circular(6),
+                        color: redesigned && isLight
+                            ? AppColors.sakuraTrack
+                            : StudyMapColors.button(theme.brightness),
+                        borderRadius:
+                            BorderRadius.circular(redesigned ? 999 : 6),
                       )
                     : null,
                 child: Text(
                   stateLabel,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    fontSize: 12,
+                    fontFamily: redesigned ? redesignFontFamily : null,
+                    fontSize: redesigned ? 10 : 12,
                     height: 1.2,
-                    fontWeight:
-                        isRecommended ? FontWeight.w800 : FontWeight.w600,
+                    fontWeight: isRecommended && !redesigned
+                        ? FontWeight.w800
+                        : FontWeight.w600,
                     color: state == _StationState.complete
                         ? completeColor
                         : isRecommended
@@ -288,113 +318,123 @@ class _StationRow extends StatelessWidget {
 
     return Stack(
       children: [
-        // A single brand-colored route connects every station, independent of
-        // completion. Only the recommended header covers the rail with a card.
+        // The rail guides navigation independently of completion.
         Positioned(
-          left: _railCenter - _railWidth / 2,
+          left: railCenter - railWidth / 2,
           top: isFirst ? nodeCenter : 0,
           bottom: isLast ? null : 0,
           height: isLast ? (isFirst ? 0 : nodeCenter) : null,
-          width: _railWidth,
+          width: railWidth,
           child: const ColoredBox(color: StudyMapColors.route),
         ),
         Column(
           children: [
-            Material(
-              key: isRecommended
-                  ? ValueKey('station-highlight-${chapter.id}')
-                  : null,
-              color: isRecommended ? background : Colors.transparent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: BorderSide(
-                  color: isRecommended
-                      ? theme.colorScheme.outline
-                      : Colors.transparent,
+            Padding(
+              padding: EdgeInsets.only(left: cardOffset),
+              child: Material(
+                key: isRecommended
+                    ? ValueKey('station-highlight-${chapter.id}')
+                    : null,
+                color: redesigned || isRecommended
+                    ? background
+                    : Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(redesigned ? 12 : 20),
+                  side: BorderSide(
+                    color: redesigned && isLight
+                        ? AppColors.redesignOutline
+                        : redesigned || isRecommended
+                            ? theme.colorScheme.outline
+                            : Colors.transparent,
+                  ),
                 ),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: Semantics(
-                key: ValueKey('station-semantics-${chapter.id}'),
-                button: true,
-                onTap: onToggle,
-                expanded: isExpanded,
-                label: '${chapter.jlptLevel} $stationLabel역, '
-                    '${chapter.title}, $stateLabel, '
-                    '$count/${chapter.totalLessons} 레슨 완료',
-                child: InkWell(
-                  key: ValueKey('station-toggle-${chapter.id}'),
+                clipBehavior: Clip.antiAlias,
+                child: Semantics(
+                  key: ValueKey('station-semantics-${chapter.id}'),
+                  button: true,
                   onTap: onToggle,
-                  excludeFromSemantics: true,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                        _leftInset, _verticalInset, 12, _verticalInset),
-                    child: ExcludeSemantics(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: _markerWidth,
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                top: (signSide - (isRecommended ? 50 : 34)) / 2,
-                              ),
-                              child: _StationNode(
-                                state: state,
-                                background: background,
-                                color: state == _StationState.complete
-                                    ? completeColor
-                                    : isRecommended
-                                        ? accent
-                                        : subtext,
-                                borderColor: state == _StationState.complete
-                                    ? completeColor
-                                    : isRecommended
-                                        ? StudyMapColors.route
-                                        : subtext,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: _markerGap),
-                          Expanded(
-                            child: stackTitle
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          sign,
-                                          const Spacer(),
-                                          chevron,
-                                        ],
-                                      ),
-                                      const SizedBox(height: 12),
-                                      titleAndStatus,
-                                    ],
-                                  )
-                                : Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      sign,
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                              minHeight: signSide),
-                                          child: titleAndStatus,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      SizedBox(
-                                        height: signSide,
-                                        child: Center(child: chevron),
-                                      ),
-                                    ],
+                  expanded: isExpanded,
+                  label: '${chapter.jlptLevel} $stationLabel역, '
+                      '${chapter.title}, $stateLabel, '
+                      '$count/${chapter.totalLessons} 레슨 완료',
+                  child: InkWell(
+                    key: ValueKey('station-toggle-${chapter.id}'),
+                    onTap: onToggle,
+                    excludeFromSemantics: true,
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(redesigned ? 12 : _leftInset,
+                          verticalInset, 12, verticalInset),
+                      child: ExcludeSemantics(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (!redesigned) ...[
+                              SizedBox(
+                                width: _markerWidth,
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                    top:
+                                        (signSide - (isRecommended ? 50 : 34)) /
+                                            2,
                                   ),
-                          ),
-                        ],
+                                  child: _StationNode(
+                                    state: state,
+                                    background: background,
+                                    color: state == _StationState.complete
+                                        ? completeColor
+                                        : isRecommended
+                                            ? accent
+                                            : subtext,
+                                    borderColor: state == _StationState.complete
+                                        ? completeColor
+                                        : isRecommended
+                                            ? StudyMapColors.route
+                                            : subtext,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: _markerGap),
+                            ],
+                            Expanded(
+                              child: stackTitle
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            sign,
+                                            const Spacer(),
+                                            chevron,
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        titleAndStatus,
+                                      ],
+                                    )
+                                  : Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        sign,
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                                minHeight: signSide),
+                                            child: titleAndStatus,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        SizedBox(
+                                          height: signSide,
+                                          child: Center(child: chevron),
+                                        ),
+                                      ],
+                                    ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -406,8 +446,10 @@ class _StationRow extends StatelessWidget {
               alignment: Alignment.topCenter,
               child: isExpanded
                   ? Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        _leftInset + _markerWidth + _markerGap,
+                      padding: EdgeInsets.fromLTRB(
+                        redesigned
+                            ? cardOffset
+                            : _leftInset + _markerWidth + _markerGap,
                         0,
                         0,
                         12,
@@ -419,15 +461,32 @@ class _StationRow extends StatelessWidget {
                               lesson: lesson,
                               isRecommended: isRecommended &&
                                   lesson.id == recommendedLessonId,
+                              redesigned: redesigned,
                             ),
                         ],
                       ),
                     )
                   : const SizedBox.shrink(),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: redesigned ? 8 : 6),
           ],
         ),
+        if (redesigned)
+          Positioned(
+            left: 0,
+            width: railCenter * 2,
+            top: nodeCenter - 12,
+            height: 24,
+            child: ExcludeSemantics(
+              child: _StationNode(
+                state: state,
+                background: theme.colorScheme.surface,
+                color: accent,
+                borderColor: StudyMapColors.route,
+                compact: true,
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -438,11 +497,15 @@ class _StationSign extends StatelessWidget {
     required this.level,
     required this.number,
     required this.side,
+    required this.redesigned,
+    required this.progress,
   });
 
   final String level;
   final String number;
   final double side;
+  final bool redesigned;
+  final double progress;
 
   static TextStyle _levelStyle(ThemeData theme) =>
       theme.textTheme.labelSmall!.copyWith(
@@ -452,17 +515,22 @@ class _StationSign extends StatelessWidget {
         fontWeight: FontWeight.w800,
       );
 
-  static TextStyle _numberStyle(ThemeData theme) =>
+  static TextStyle _numberStyle(ThemeData theme, {required bool redesigned}) =>
       theme.textTheme.titleMedium!.copyWith(
-        fontSize: 24,
-        height: 1,
-        fontWeight: FontWeight.w900,
+        color: redesigned && theme.brightness == Brightness.light
+            ? AppColors.redesignForeground
+            : null,
+        fontFamily: redesigned ? redesignFontFamily : null,
+        fontSize: redesigned ? 15 : 24,
+        height: redesigned ? 1.25 : 1,
+        fontWeight: redesigned ? FontWeight.w600 : FontWeight.w900,
       );
 
   static double measureSide(
     BuildContext context, {
     required String level,
     required String number,
+    required bool redesigned,
   }) {
     final theme = Theme.of(context);
     Size measure(String value, TextStyle style) {
@@ -477,8 +545,10 @@ class _StationSign extends StatelessWidget {
       return size;
     }
 
+    final numberSize =
+        measure(number, _numberStyle(theme, redesigned: redesigned));
+    if (redesigned) return math.max(44, numberSize.longestSide + 12);
     final levelSize = measure(level, _levelStyle(theme));
-    final numberSize = measure(number, _numberStyle(theme));
     // Include padding and border on both axes, then grow the square to fit.
     return math.max(
       56,
@@ -492,6 +562,34 @@ class _StationSign extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final numberLabel = Text(
+      number,
+      style: _numberStyle(theme, redesigned: redesigned),
+    );
+    if (redesigned) {
+      final light = theme.brightness == Brightness.light;
+      return SizedBox.square(
+        key: ValueKey('station-sign-$level-$number'),
+        dimension: side,
+        child: Stack(
+          alignment: Alignment.center,
+          fit: StackFit.expand,
+          children: [
+            CircularProgressIndicator(
+              value: progress,
+              strokeWidth: 2,
+              trackGap: 0,
+              backgroundColor: light
+                  ? AppColors.redesignDetailTrack
+                  : theme.colorScheme.surfaceContainerHighest,
+              color: light ? AppColors.brandPink : AppColors.sakuraContainer,
+              strokeCap: StrokeCap.round,
+            ),
+            Center(child: numberLabel),
+          ],
+        ),
+      );
+    }
     return Container(
       key: ValueKey('station-sign-$level-$number'),
       width: side,
@@ -510,10 +608,7 @@ class _StationSign extends StatelessWidget {
             level,
             style: _levelStyle(theme),
           ),
-          Text(
-            number,
-            style: _numberStyle(theme),
-          ),
+          numberLabel,
         ],
       ),
     );
@@ -526,12 +621,14 @@ class _StationNode extends StatelessWidget {
     required this.background,
     required this.color,
     required this.borderColor,
+    this.compact = false,
   });
 
   final _StationState state;
   final Color background;
   final Color color;
   final Color borderColor;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -540,8 +637,8 @@ class _StationNode extends StatelessWidget {
       return Center(
         key: const ValueKey('station-train'),
         child: SizedBox(
-          width: 40,
-          height: 50,
+          width: compact ? 18 : 40,
+          height: compact ? 22.5 : 50,
           child: CustomPaint(
             key: ValueKey('station-node-${state.name}'),
             painter: _StationTrainPainter(
@@ -557,21 +654,23 @@ class _StationNode extends StatelessWidget {
     return Center(
       child: Container(
         key: ValueKey('station-node-${state.name}'),
-        width: 34,
-        height: 34,
+        width: compact ? 10 : 34,
+        height: compact ? 10 : 34,
         decoration: BoxDecoration(
           color: background,
           shape: BoxShape.circle,
-          border: Border.all(color: borderColor, width: 4),
+          border: Border.all(color: borderColor, width: compact ? 1.5 : 4),
         ),
-        child: switch (state) {
-          _StationState.complete =>
-            Icon(LucideIcons.check, size: 18, color: color),
-          _StationState.resume || _StationState.recommended => null,
-          _StationState.learning =>
-            Center(child: Icon(Icons.circle, size: 8, color: color)),
-          _StationState.idle => null,
-        },
+        child: compact
+            ? null
+            : switch (state) {
+                _StationState.complete =>
+                  Icon(LucideIcons.check, size: 18, color: color),
+                _StationState.resume || _StationState.recommended => null,
+                _StationState.learning =>
+                  Center(child: Icon(Icons.circle, size: 8, color: color)),
+                _StationState.idle => null,
+              },
       ),
     );
   }

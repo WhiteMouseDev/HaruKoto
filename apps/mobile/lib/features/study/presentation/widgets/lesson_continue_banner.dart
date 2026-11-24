@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../domain/lesson_recommendation.dart';
 import '../../providers/study_map_config.dart';
 import '../study_map_colors.dart';
@@ -14,16 +15,19 @@ class LessonContinueBanner extends ConsumerWidget {
     super.key,
     required this.target,
     this.compact = false,
+    this.redesigned = false,
     this.onTap,
   });
 
   final RecommendedLessonTarget target;
   final bool compact;
+  final bool redesigned;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    if (redesigned) return _buildRecommendation(context, theme);
     if (ref.watch(studyMapEnabledProvider)) {
       return _buildMapBanner(context, theme);
     }
@@ -150,6 +154,141 @@ class LessonContinueBanner extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRecommendation(BuildContext context, ThemeData theme) {
+    final lesson = target.lesson;
+    final chapter = target.chapter;
+    final (heading, action) = switch (lesson.status) {
+      'IN_PROGRESS' => ('이어할 레슨', '이어하기'),
+      'COMPLETED' => ('다시 볼 레슨', '다시 학습'),
+      _ => ('추천 레슨', '학습 시작'),
+    };
+    final light = theme.brightness == Brightness.light;
+    final colors = theme.colorScheme;
+    final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final muted =
+        light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
+    final location = [
+      if (chapter.partNo > 1) '${chapter.partNo}부',
+      '${chapter.chapterNo}번 역',
+      '${lesson.chapterLessonNo}번째 레슨',
+    ].join(' · ');
+    final details = [
+      if (lesson.topic.trim().isNotEmpty) lesson.topic,
+      if (lesson.estimatedMinutes > 0) '${lesson.estimatedMinutes}분',
+    ].join(' · ');
+    final open = onTap ??
+        () {
+          context.push('/study/lessons/${lesson.id}');
+        };
+
+    return Column(
+      key: const ValueKey('recommended-lesson'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(heading,
+            style: TextStyle(
+              fontFamily: redesignFontFamily,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: foreground,
+            )),
+        const SizedBox(height: 12),
+        Material(
+          color: light ? AppColors.lightCard : colors.surfaceContainerLow,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+              color: light ? AppColors.redesignOutline : colors.outline,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: open,
+            excludeFromSemantics: true,
+            canRequestFocus: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: light
+                              ? AppColors.sakuraTrack
+                              : colors.primaryContainer,
+                          borderRadius:
+                              BorderRadius.circular(AppSizes.radiusFull),
+                        ),
+                        child: Text(
+                          chapter.jlptLevel,
+                          style: TextStyle(
+                            fontFamily: redesignFontFamily,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: light
+                                ? AppColors.sakuraOn
+                                : colors.onPrimaryContainer,
+                          ),
+                        ),
+                      ),
+                      Text(location,
+                          style: TextStyle(
+                            fontFamily: redesignFontFamily,
+                            fontSize: 12,
+                            color: muted,
+                          )),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(lesson.title,
+                      style: TextStyle(
+                        fontFamily: redesignFontFamily,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: foreground,
+                      )),
+                  if (details.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(details,
+                        style: TextStyle(
+                          fontFamily: redesignFontFamily,
+                          fontSize: 13,
+                          color: muted,
+                        )),
+                  ],
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    key: const ValueKey('lesson-continue-action'),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 42),
+                      backgroundColor: light ? AppColors.brandPink : null,
+                      foregroundColor: light ? Colors.white : null,
+                      shape: const StadiumBorder(),
+                      textStyle: const TextStyle(
+                        fontFamily: redesignFontFamily,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    onPressed: open,
+                    child: Text(action),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
