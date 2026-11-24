@@ -37,7 +37,11 @@ class WordbookEntryCard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
-          border: Border.all(color: theme.colorScheme.outline),
+          border: Border.all(
+            color: theme.brightness == Brightness.light
+                ? AppColors.redesignOutline
+                : theme.colorScheme.outline,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: WordbookEntryCardContent(entry: entry),

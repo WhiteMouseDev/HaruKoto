@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../shared/widgets/app_error_retry.dart';
 import '../../data/models/wordbook_entry_model.dart';
 import 'wordbook_empty_state.dart';
 import 'wordbook_list.dart';
@@ -42,10 +41,10 @@ class WordbookContent extends StatelessWidget {
       return const WordbookLoadingList();
     }
 
-    if (error != null) {
-      return AppErrorRetry(
+    if (error case final message?) {
+      return WordbookErrorState(
         onRetry: onRetry,
-        message: error,
+        message: message,
       );
     }
 

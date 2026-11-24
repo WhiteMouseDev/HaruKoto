@@ -2,7 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+
+import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
+import '../../../core/theme/text_theme.dart';
 import '../providers/wordbook_provider.dart';
 import 'widgets/add_word_dialog.dart';
 import 'widgets/wordbook_content.dart';
@@ -69,57 +72,72 @@ class _WordbookPageState extends ConsumerState<WordbookPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final foreground = theme.brightness == Brightness.light
+        ? AppColors.redesignForeground
+        : theme.colorScheme.onSurface;
     final wordbook = ref.watch(wordbookProvider);
     final wordbookController = ref.read(wordbookProvider.notifier);
+    final showListControls = wordbook.loading ||
+        wordbook.entries.isNotEmpty ||
+        wordbook.search.isNotEmpty ||
+        wordbook.filter != 'ALL' ||
+        wordbook.page > 1;
 
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        titleSpacing: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        foregroundColor: foreground,
+        leading: IconButton(
+          onPressed: () => Navigator.maybePop(context),
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          icon: const Icon(LucideIcons.arrowLeft, size: 20),
+        ),
+        title: const Text(
+          '단어장',
+          style: TextStyle(
+            fontFamily: redesignFontFamily,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        actions: [
+          if (showListControls)
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSizes.pageHorizontal,
-                  AppSizes.md, AppSizes.pageHorizontal, 0),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: const Icon(LucideIcons.arrowLeft, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      '내 단어장',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  FilledButton.icon(
-                    onPressed: _showAddDialog,
-                    icon: const Icon(LucideIcons.plus, size: 16),
-                    label: const Text('추가'),
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      minimumSize: const Size(0, 36),
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsetsDirectional.only(end: 12),
+              child: TextButton.icon(
+                onPressed: _showAddDialog,
+                icon: const Icon(LucideIcons.plus, size: 16),
+                label: const Text('추가'),
+                style: TextButton.styleFrom(
+                  foregroundColor: foreground,
+                  minimumSize: const Size(48, kMinInteractiveDimension),
+                ),
               ),
             ),
-            const SizedBox(height: 12),
-
-            WordbookSearchField(
-              controller: _searchController,
-              onChanged: _onSearchChanged,
-            ),
-            const SizedBox(height: 8),
-            WordbookFilterChips(
-              activeFilter: wordbook.filter,
-              onFilterChanged: _changeFilter,
-            ),
-            const SizedBox(height: 12),
-
+        ],
+      ),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            if (showListControls) ...[
+              const SizedBox(height: AppSizes.sm),
+              WordbookSearchField(
+                controller: _searchController,
+                onChanged: _onSearchChanged,
+              ),
+              const SizedBox(height: AppSizes.xs),
+              WordbookFilterChips(
+                activeFilter: wordbook.filter,
+                onFilterChanged: _changeFilter,
+              ),
+              const SizedBox(height: AppSizes.sm),
+            ],
             Expanded(
               child: WordbookContent(
                 loading: wordbook.loading,
