@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/providers/study_clock_provider.dart';
 import '../../../../core/theme/text_theme.dart';
+import '../../../../shared/widgets/app_skeleton.dart';
 
 typedef StatsBarCounts = ({int vocabulary, int grammar, int sentences});
 
@@ -37,6 +38,7 @@ class StatsBarChart extends StatelessWidget {
     this.today,
     this.onDateSelected,
     this.emptyMessage,
+    this.isLoading = false,
   });
 
   final String dateRangeLabel;
@@ -45,6 +47,7 @@ class StatsBarChart extends StatelessWidget {
   final DateTime? today;
   final ValueChanged<DateTime>? onDateSelected;
   final String? emptyMessage;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -82,44 +85,51 @@ class StatsBarChart extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          Stack(
-            children: [
-              Row(
-                children: [
-                  for (final day in days)
-                    Expanded(
-                      child: _DayColumn(
-                        day: day,
-                        selected: day.date == selectedDate,
-                        isToday: day.date == today,
-                        plotHeight: plotHeight,
-                        maxCount: maxCount,
-                        foreground: foreground,
-                        muted: muted,
-                        onTap: onDateSelected != null && day.total != null
-                            ? () => onDateSelected!(day.date)
-                            : null,
+          Semantics(
+            label: isLoading ? '문제풀이 그래프를 불러오는 중' : null,
+            excludeSemantics: isLoading,
+            child: Stack(
+              children: [
+                Row(
+                  children: [
+                    for (final day in days)
+                      Expanded(
+                        child: _DayColumn(
+                          day: day,
+                          selected: day.date == selectedDate,
+                          isToday: day.date == today,
+                          plotHeight: plotHeight,
+                          maxCount: maxCount,
+                          foreground: foreground,
+                          muted: muted,
+                          isLoading: isLoading,
+                          onTap: !isLoading &&
+                                  onDateSelected != null &&
+                                  day.total != null
+                              ? () => onDateSelected!(day.date)
+                              : null,
+                        ),
                       ),
-                    ),
-                ],
-              ),
-              if (emptyMessage case final message?)
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: plotHeight,
-                  child: IgnorePointer(
-                    child: Center(
-                      child: Text(
-                        message,
-                        textAlign: TextAlign.center,
-                        style: _labelStyle(muted, size: 13),
+                  ],
+                ),
+                if (!isLoading && emptyMessage != null)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: plotHeight,
+                    child: IgnorePointer(
+                      child: Center(
+                        child: Text(
+                          emptyMessage!,
+                          textAlign: TextAlign.center,
+                          style: _labelStyle(muted, size: 13),
+                        ),
                       ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -188,6 +198,7 @@ class _DayColumn extends StatelessWidget {
     required this.foreground,
     required this.muted,
     required this.onTap,
+    required this.isLoading,
   });
 
   final StatsBarDay day;
@@ -198,6 +209,7 @@ class _DayColumn extends StatelessWidget {
   final Color foreground;
   final Color muted;
   final VoidCallback? onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -215,20 +227,24 @@ class _DayColumn extends StatelessWidget {
           height: plotHeight,
           child: Align(
             alignment: Alignment.bottomCenter,
-            child: switch (total) {
-              0 => Container(
-                  key: ValueKey('stats-zero-${studyDateKey(day.date)}'),
-                  width: 12,
-                  height: 1,
-                  color: muted,
-                ),
-              final count? => _StackedBar(
-                  key: ValueKey('stats-bar-${studyDateKey(day.date)}'),
-                  counts: day.counts!,
-                  height: plotHeight * count / maxCount,
-                ),
-              null => null,
-            },
+            child: isLoading
+                ? (day.isFuture
+                    ? null
+                    : const AppSkeletonBlock(width: 12, height: 64, radius: 4))
+                : switch (total) {
+                    0 => Container(
+                        key: ValueKey('stats-zero-${studyDateKey(day.date)}'),
+                        width: 12,
+                        height: 1,
+                        color: muted,
+                      ),
+                    final count? => _StackedBar(
+                        key: ValueKey('stats-bar-${studyDateKey(day.date)}'),
+                        counts: day.counts!,
+                        height: plotHeight * count / maxCount,
+                      ),
+                    null => null,
+                  },
           ),
         ),
         const SizedBox(height: 4),

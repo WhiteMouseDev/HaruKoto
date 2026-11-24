@@ -6,10 +6,113 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/theme/text_theme.dart';
+import '../../../../shared/widgets/app_skeleton.dart';
 import '../../data/models/lesson_models.dart';
 import '../../domain/lesson_recommendation.dart';
 import 'lesson_station_tile.dart';
 import '../study_map_colors.dart';
+
+const _routeRailCenter = 12.0;
+const _routeRailWidth = 2.0;
+const _routeCardOffset = 36.0;
+const _routeCardRadius = 12.0;
+const _routeCardInset = 10.0;
+const _routeRowGap = 8.0;
+
+class LessonStationListSkeleton extends StatelessWidget {
+  const LessonStationListSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final outline = theme.brightness == Brightness.light
+        ? AppColors.redesignOutline
+        : theme.colorScheme.outline;
+    final signSide = _StationSign.measureSide(
+      context,
+      level: '',
+      number: '00',
+      redesigned: true,
+    );
+    final nodeCenter = _routeCardInset + signSide / 2;
+    final stackTitle = MediaQuery.textScalerOf(context).scale(16) > 21;
+    final sign = AppSkeletonBlock(
+      width: signSide,
+      height: signSide,
+      radius: signSide / 2,
+    );
+    const labels = Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppSkeletonBlock(width: 112, height: 12),
+        SizedBox(height: 8),
+        AppSkeletonBlock(width: 64, height: 8),
+      ],
+    );
+    final card = Padding(
+      padding:
+          const EdgeInsets.only(left: _routeCardOffset, bottom: _routeRowGap),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(_routeCardRadius),
+          border: Border.all(color: outline),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: _routeCardInset,
+          ),
+          child: stackTitle
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [sign, const SizedBox(height: 12), labels],
+                )
+              : Row(
+                  children: [
+                    sign,
+                    const SizedBox(width: 12),
+                    const Expanded(child: labels),
+                  ],
+                ),
+        ),
+      ),
+    );
+    return Semantics(
+      container: true,
+      liveRegion: true,
+      label: '레슨 불러오는 중',
+      excludeSemantics: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final first in [true, false])
+            Stack(
+              children: [
+                Positioned(
+                  left: _routeRailCenter - _routeRailWidth / 2,
+                  top: first ? nodeCenter : 0,
+                  bottom: first ? 0 : null,
+                  width: _routeRailWidth,
+                  height: first ? null : nodeCenter,
+                  child: ColoredBox(color: outline),
+                ),
+                card,
+                Positioned(
+                  left: _routeRailCenter - 5,
+                  top: nodeCenter - 5,
+                  child:
+                      const AppSkeletonBlock(width: 10, height: 10, radius: 5),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+}
 
 /// The line is a curriculum guide, never a sequential progress indicator.
 class LessonStationList extends StatefulWidget {
@@ -222,11 +325,11 @@ class _StationRow extends StatelessWidget {
       number: stationNumber,
       redesigned: redesigned,
     );
-    final verticalInset = redesigned ? 10.0 : _verticalInset;
-    final railCenter = redesigned ? 12.0 : _railCenter;
-    final railWidth = redesigned ? 2.0 : _railWidth;
+    final verticalInset = redesigned ? _routeCardInset : _verticalInset;
+    final railCenter = redesigned ? _routeRailCenter : _railCenter;
+    final railWidth = redesigned ? _routeRailWidth : _railWidth;
     final nodeCenter = verticalInset + signSide / 2;
-    final cardOffset = redesigned ? 36.0 : 0.0;
+    final cardOffset = redesigned ? _routeCardOffset : 0.0;
     final stationLabel =
         showPart ? '${chapter.partNo}-$stationNumber' : stationNumber;
     final stateLabel = switch (state) {
@@ -339,7 +442,8 @@ class _StationRow extends StatelessWidget {
                     ? background
                     : Colors.transparent,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(redesigned ? 12 : 20),
+                  borderRadius:
+                      BorderRadius.circular(redesigned ? _routeCardRadius : 20),
                   side: BorderSide(
                     color: redesigned && isLight
                         ? AppColors.redesignOutline
@@ -468,7 +572,7 @@ class _StationRow extends StatelessWidget {
                     )
                   : const SizedBox.shrink(),
             ),
-            SizedBox(height: redesigned ? 8 : 6),
+            SizedBox(height: redesigned ? _routeRowGap : 6),
           ],
         ),
         if (redesigned)

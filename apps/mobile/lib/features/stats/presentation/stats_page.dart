@@ -9,7 +9,6 @@ import '../../../core/providers/user_preferences_provider.dart';
 import '../../../core/theme/text_theme.dart';
 import '../../../shared/widgets/app_error_retry.dart';
 import '../../../shared/widgets/app_segmented_tabs.dart';
-import '../../../shared/widgets/app_skeleton.dart';
 import '../../home/providers/home_provider.dart';
 import '../providers/stats_provider.dart';
 import 'widgets/period_tab.dart';
@@ -32,22 +31,23 @@ class _StatsPageState extends ConsumerState<StatsPage> {
     final owner = ref.watch(currentAccountIdProvider);
     final accountCurrent =
         owner != null && ref.watch(currentAccountReaderProvider)() == owner;
-    if (!accountCurrent) {
-      return Scaffold(
-        appBar: _buildStatsAppBar(context),
-        body: _skeleton,
-      );
-    }
-
     const tabLabels = ['기간별', '학습별', 'JLPT진도'];
-    final content = switch (_selectedTab) {
-      0 => _buildPeriod(owner),
+    final activeTab = accountCurrent ? _selectedTab : 0;
+    final content = switch (activeTab) {
+      0 => _buildPeriod(accountCurrent ? owner : null),
       1 => _scroll(StudyTab(key: ValueKey(owner))),
       _ => _scroll(JlptTab(
           key: ValueKey(owner),
           currentLevel: ref.watch(userPreferencesProvider).jlptLevel,
         )),
     };
+
+    final tabs = AppSegmentedTabs(
+      labels: tabLabels,
+      compact: true,
+      selectedIndex: activeTab,
+      onChanged: (index) => setState(() => _selectedTab = index),
+    );
 
     return Scaffold(
       appBar: _buildStatsAppBar(context),
@@ -56,12 +56,18 @@ class _StatsPageState extends ConsumerState<StatsPage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(
                 AppSizes.pageHorizontal, 6, AppSizes.pageHorizontal, 20),
-            child: AppSegmentedTabs(
-              labels: tabLabels,
-              compact: true,
-              selectedIndex: _selectedTab,
-              onChanged: (index) => setState(() => _selectedTab = index),
-            ),
+            child: accountCurrent
+                ? tabs
+                : Semantics(
+                    label: '학습 통계 메뉴를 준비하는 중',
+                    enabled: false,
+                    excludeSemantics: true,
+                    child: ExcludeFocus(
+                      child: IgnorePointer(
+                        child: Opacity(opacity: 0.55, child: tabs),
+                      ),
+                    ),
+                  ),
           ),
           Expanded(
             child: SafeArea(
@@ -76,11 +82,6 @@ class _StatsPageState extends ConsumerState<StatsPage> {
     );
   }
 
-  static const _skeleton = AppSkeleton(
-    itemCount: 4,
-    itemHeights: [48, 140, 140, 140],
-  );
-
   Widget _scroll(Widget child) => ListView(
         key: ValueKey(_selectedTab),
         padding: const EdgeInsets.fromLTRB(
@@ -90,27 +91,34 @@ class _StatsPageState extends ConsumerState<StatsPage> {
 
   Widget _buildPeriod(String? owner) {
     final currentYear = ref.watch(studyDateProvider).year;
-    final year = _selectedHeatmapYear ?? currentYear;
-    final dashboard = ref.watch(dashboardProvider);
-    final history = ref.watch(statsHistoryProvider(year));
-    if (dashboard.isLoading) return _skeleton;
-    if (dashboard.hasError) {
+    final year =
+        owner == null ? currentYear : _selectedHeatmapYear ?? currentYear;
+    final dashboard = owner == null ? null : ref.watch(dashboardProvider);
+    final history =
+        owner == null ? null : ref.watch(statsHistoryProvider(year));
+    if (dashboard != null && !dashboard.isLoading && dashboard.hasError) {
       return AppErrorRetry(onRetry: () => ref.invalidate(dashboardProvider));
     }
-    final snapshot = dashboard.requireValue;
+    final dashboardLoading = dashboard?.isLoading ?? true;
+    final historyLoading = history?.isLoading ?? true;
+    final snapshot = dashboardLoading ? null : dashboard?.value;
     return _scroll(PeriodTab(
       key: ValueKey(owner),
-      today: snapshot.today,
-      questionStats: snapshot.weeklyQuestionStats,
-      historyRecords:
-          history.isLoading || history.hasError ? [] : history.requireValue,
-      isHistoryLoading: history.isLoading,
-      hasHistoryError: history.hasError,
+      today: snapshot?.today,
+      questionStats: snapshot?.weeklyQuestionStats,
+      isDashboardLoading: dashboardLoading,
+      historyRecords: history != null && !history.isLoading && !history.hasError
+          ? history.requireValue
+          : [],
+      isHistoryLoading: historyLoading,
+      hasHistoryError: history?.hasError ?? false,
       onRetryHistory: () => ref.invalidate(statsHistoryProvider(year)),
       heatmapYear: year,
-      onHeatmapYearChange: (year) => setState(
-        () => _selectedHeatmapYear = year == currentYear ? null : year,
-      ),
+      onHeatmapYearChange: owner == null
+          ? null
+          : (year) => setState(
+                () => _selectedHeatmapYear = year == currentYear ? null : year,
+              ),
     ));
   }
 

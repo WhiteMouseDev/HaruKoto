@@ -11,11 +11,42 @@ import 'package:harukoto_mobile/features/my/data/models/profile_detail_model.dar
 import 'package:harukoto_mobile/features/my/data/my_repository.dart';
 import 'package:harukoto_mobile/features/my/presentation/my_page.dart';
 import 'package:harukoto_mobile/features/my/presentation/widgets/account_section.dart';
+import 'package:harukoto_mobile/features/my/presentation/widgets/profile_hero.dart';
 import 'package:harukoto_mobile/features/my/providers/my_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('MyPage', () {
+    testWidgets('profile loading keeps the metrics card without showing data',
+        (tester) async {
+      final semantics = tester.ensureSemantics();
+      await tester.binding.setSurfaceSize(const Size(320, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final pending = Completer<ProfileDetailModel>();
+      final repository = _FakeMyRepository()..profileLoad = pending;
+      await tester.pumpWidget(await _buildMyPage(
+        repository,
+        brightness: Brightness.dark,
+        textScale: 2,
+      ));
+      await tester.pump();
+
+      final metrics = find.byType(ProfileMetricsCard);
+      final pendingWidth = tester.getSize(metrics).width;
+      expect(find.bySemanticsLabel('프로필 정보를 불러오는 중'), findsOneWidget);
+      expect(find.byTooltip('닉네임 변경'), findsNothing);
+      expect(find.text('320/1000 XP'), findsNothing);
+      expect(tester.takeException(), isNull);
+
+      pending.complete(_profileDetail);
+      await tester.pumpAndSettle();
+      expect(tester.getSize(metrics).width, pendingWidth);
+      expect(find.bySemanticsLabel('프로필 정보를 불러오는 중'), findsNothing);
+      expect(find.bySemanticsLabel('총 학습일 5일'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      semantics.dispose();
+    });
+
     testWidgets('shows loaded profile content', (tester) async {
       final semantics = tester.ensureSemantics();
       final repository = _FakeMyRepository();
@@ -254,9 +285,12 @@ class _FakeMyRepository extends MyRepository {
 
   final ProfileDetailModel detail;
   final updatedProfiles = <Map<String, dynamic>>[];
+  Completer<ProfileDetailModel>? profileLoad;
 
   @override
   Future<ProfileDetailModel> fetchProfileDetail() async {
+    final pending = profileLoad;
+    if (pending != null) return pending.future;
     return detail;
   }
 

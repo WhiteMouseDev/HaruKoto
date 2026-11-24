@@ -53,7 +53,8 @@ void main() {
       await tester.pump();
       expect(find.text('20 / 20개'), findsNothing);
       expect(find.text('100%'), findsNothing);
-      expect(find.text('오늘 학습량 확인 필요'), findsOneWidget);
+      expect(find.text('오늘 학습량 확인 필요'), findsNothing);
+      expect(find.text('0%'), findsNothing);
       failed.completeError(StateError('synthetic unavailable dashboard'));
       await tester.pumpAndSettle();
       expect(find.text('오늘 학습량 확인 필요'), findsOneWidget);
@@ -115,6 +116,8 @@ void main() {
       expect(find.text('20 / 20개'), findsNothing);
       expect(find.text('100%'), findsNothing);
       expect(find.text('오늘 학습량 확인 필요'), findsOneWidget);
+      final start = find.widgetWithText(FilledButton, '오늘의 단어 학습하기');
+      expect(tester.widget<FilledButton>(start).onPressed, isNull);
     } finally {
       await tester.pumpWidget(const SizedBox());
       container.dispose();

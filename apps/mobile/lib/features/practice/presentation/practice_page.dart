@@ -6,6 +6,7 @@ import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../../core/theme/text_theme.dart';
+import '../../../shared/widgets/app_skeleton.dart';
 import '../../home/data/models/dashboard_model.dart';
 import '../../home/providers/home_provider.dart';
 import '../../study/presentation/quiz_launch.dart';
@@ -394,6 +395,10 @@ class _TodayRecord extends StatelessWidget {
     final light = theme.brightness == Brightness.light;
     final total = today?.totalAnswers;
     final correct = today?.correctAnswers;
+    final counts =
+        total != null && correct != null && total >= correct && correct >= 0
+            ? (total: total, correct: correct, wrong: total - correct)
+            : null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -416,50 +421,48 @@ class _TodayRecord extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 17.5),
-            child: total != null &&
-                    correct != null &&
-                    total >= correct &&
-                    correct >= 0
+            child: counts != null || loading
                 ? Semantics(
                     container: true,
-                    label: '오늘 완료한 전체 유형의 퀴즈',
+                    liveRegion: counts == null,
+                    label:
+                        counts == null ? '오늘의 기록 불러오는 중' : '오늘 완료한 전체 유형의 퀴즈',
+                    excludeSemantics: counts == null,
                     child: Row(
                       children: [
                         Expanded(
-                            child: _RecordMetric(
-                                label: '푼 문제', count: total, emphasized: true)),
+                          child: _RecordMetric(
+                            label: '푼 문제',
+                            count: counts?.total,
+                            emphasized: true,
+                          ),
+                        ),
                         Expanded(
-                            child: _RecordMetric(label: '정답', count: correct)),
+                          child: _RecordMetric(
+                              label: '정답', count: counts?.correct),
+                        ),
                         Expanded(
-                            child: _RecordMetric(
-                                label: '오답', count: total - correct)),
+                          child:
+                              _RecordMetric(label: '오답', count: counts?.wrong),
+                        ),
                       ],
                     ),
                   )
-                : loading
-                    ? const SizedBox(
-                        height: 46,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            semanticsLabel: '오늘의 기록 불러오는 중',
-                          ),
-                        ),
-                      )
-                    : Column(
-                        children: [
-                          Text(
-                            '오늘의 기록을 확인하지 못했어요',
-                            style: _practiceText(theme, 13, muted: true),
-                            textAlign: TextAlign.center,
-                          ),
-                          if (onRetry != null)
-                            TextButton(
-                              key: const ValueKey('practice-today-retry'),
-                              onPressed: onRetry,
-                              child: const Text('다시 확인'),
-                            ),
-                        ],
+                : Column(
+                    children: [
+                      Text(
+                        '오늘의 기록을 확인하지 못했어요',
+                        style: _practiceText(theme, 13, muted: true),
+                        textAlign: TextAlign.center,
                       ),
+                      if (onRetry != null)
+                        TextButton(
+                          key: const ValueKey('practice-today-retry'),
+                          onPressed: onRetry,
+                          child: const Text('다시 확인'),
+                        ),
+                    ],
+                  ),
           ),
         ),
       ],
@@ -475,7 +478,7 @@ class _RecordMetric extends StatelessWidget {
   });
 
   final String label;
-  final int count;
+  final int? count;
   final bool emphasized;
 
   @override
@@ -484,21 +487,30 @@ class _RecordMetric extends StatelessWidget {
     final accent = theme.brightness == Brightness.light
         ? AppColors.brandPink
         : AppColors.sakuraContainer;
+    final countStyle = _practiceText(theme, 17, strong: true).copyWith(
+      color: emphasized ? accent : null,
+    );
     return Semantics(
       container: true,
-      label: '$label $count개',
+      label: count == null ? null : '$label $count개',
       excludeSemantics: true,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 3),
         child: Column(
           children: [
-            Text(
-              '$count개',
-              textAlign: TextAlign.center,
-              style: _practiceText(theme, 17, strong: true).copyWith(
-                color: emphasized ? accent : null,
+            if (count == null)
+              SizedBox(
+                height: MediaQuery.textScalerOf(context).scale(17) * 1.4,
+                child: const Center(
+                  child: AppSkeletonBlock(width: 36, height: 12),
+                ),
+              )
+            else
+              Text(
+                '$count개',
+                textAlign: TextAlign.center,
+                style: countStyle,
               ),
-            ),
             const SizedBox(height: 4),
             Text(
               label,

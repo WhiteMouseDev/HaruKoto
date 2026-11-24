@@ -18,6 +18,7 @@ import 'package:harukoto_mobile/features/study/presentation/widgets/free_quiz_sh
 import 'package:harukoto_mobile/features/study/providers/quiz_session_service.dart';
 import 'package:harukoto_mobile/features/study/providers/saved_quiz_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
+import 'package:harukoto_mobile/shared/widgets/app_skeleton.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _start = ValueKey('practice-start-quiz');
@@ -148,23 +149,24 @@ void main() {
 
     testWidgets('today records distinguish loading, error and retry',
         (tester) async {
+      final semantics = tester.ensureSemantics();
       final first = Completer<DashboardModel>();
       var reads = 0;
       await _pumpPracticePage(tester, loadDashboard: () async {
         reads++;
         return reads == 1 ? first.future : _dashboard(total: 5, correct: 5);
       });
-      expect(
-        find.byWidgetPredicate((widget) =>
-            widget is CircularProgressIndicator &&
-            widget.semanticsLabel == '오늘의 기록 불러오는 중'),
-        findsOneWidget,
-      );
+      expect(find.bySemanticsLabel('오늘의 기록 불러오는 중'), findsOneWidget);
+      expect(find.byType(AppSkeletonBlock), findsNWidgets(3));
+      expect(find.text('푼 문제'), findsOneWidget);
+      expect(find.text('정답'), findsOneWidget);
+      expect(find.text('오답'), findsOneWidget);
       expect(find.text('0개'), findsNothing);
 
       first.completeError(StateError('offline'));
       await tester.pumpAndSettle();
       expect(find.text('오늘의 기록을 확인하지 못했어요'), findsOneWidget);
+      expect(find.byType(AppSkeletonBlock), findsNothing);
       expect(find.text('0개'), findsNothing);
 
       await tester.tap(find.byKey(const ValueKey('practice-today-retry')));
@@ -172,6 +174,7 @@ void main() {
       expect(reads, 2);
       expect(find.bySemanticsLabel('푼 문제 5개'), findsOneWidget);
       expect(find.bySemanticsLabel('오답 0개'), findsOneWidget);
+      semantics.dispose();
     });
 
     testWidgets('five category controls fit narrow dark mode and larger text',

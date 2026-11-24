@@ -9,6 +9,7 @@ import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../../core/theme/text_theme.dart';
 import '../../../shared/widgets/app_sheet_handle.dart';
+import '../../../shared/widgets/app_skeleton.dart';
 import '../../home/data/models/dashboard_model.dart';
 import '../../home/providers/home_provider.dart';
 import '../../my/providers/settings_sync_provider.dart';
@@ -21,6 +22,7 @@ import 'study_map_colors.dart';
 import 'widgets/lesson_chapter_list.dart';
 import 'widgets/lesson_level_empty_state.dart';
 import 'widgets/lesson_read_status.dart';
+import 'widgets/lesson_station_list.dart';
 import 'widgets/study_kana_section.dart';
 import 'widgets/study_review_section.dart';
 import 'widgets/saved_lesson_section.dart';
@@ -60,12 +62,12 @@ class _StudyPageState extends ConsumerState<StudyPage> {
 
     // Watch chapters for inline lesson list
     final chaptersAsync = ref.watch(chaptersProvider(jlptLevel));
+    final chaptersLoading = !accountCurrent || chaptersAsync.isLoading;
     // Refreshes retain old data/errors. Display only the current successful
     // read so a pending/error state cannot expose a stale lesson action.
-    final chapterList =
-        accountCurrent && !chaptersAsync.isLoading && !chaptersAsync.hasError
-            ? chaptersAsync.value
-            : null;
+    final chapterList = !chaptersLoading && !chaptersAsync.hasError
+        ? chaptersAsync.value
+        : null;
     final recommendedLesson = chapterList == null
         ? null
         : findRecommendedLesson(chapterList.chapters);
@@ -187,7 +189,10 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: mapEnabled
-                      ? _StudyRouteHeading(chapters: chapterList)
+                      ? _StudyRouteHeading(
+                          chapters: chapterList,
+                          loading: chaptersLoading,
+                        )
                       : Row(children: [
                           Row(
                             mainAxisSize: MainAxisSize.min,
@@ -216,10 +221,12 @@ class _StudyPageState extends ConsumerState<StudyPage> {
 
               // Inline chapter cards
               SliverToBoxAdapter(
-                child: !accountCurrent || chaptersAsync.isLoading
-                    ? const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: LessonReadStatus(loading: true),
+                child: chaptersLoading
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: mapEnabled
+                            ? const LessonStationListSkeleton()
+                            : const LessonReadStatus(loading: true),
                       )
                     : chaptersAsync.hasError
                         ? Padding(
@@ -322,9 +329,10 @@ class _StudyPageState extends ConsumerState<StudyPage> {
 // ── Kana Bootcamp Card ──
 
 class _StudyRouteHeading extends StatelessWidget {
-  const _StudyRouteHeading({required this.chapters});
+  const _StudyRouteHeading({required this.chapters, required this.loading});
 
   final ChapterListModel? chapters;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -354,7 +362,13 @@ class _StudyRouteHeading extends StatelessWidget {
                       : theme.colorScheme.onSurface,
                 )),
           ),
-          if (stations.isNotEmpty)
+          if (loading)
+            AppSkeletonBlock(
+              width: 88,
+              height: MediaQuery.textScalerOf(context).scale(12) * 1.4 + 12,
+              radius: AppSizes.radiusFull,
+            )
+          else if (stations.isNotEmpty)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(

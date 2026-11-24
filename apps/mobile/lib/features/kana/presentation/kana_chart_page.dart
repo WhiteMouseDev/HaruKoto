@@ -7,7 +7,6 @@ import '../../../core/constants/colors.dart';
 import '../../../core/theme/text_theme.dart';
 import '../../../shared/widgets/app_error_retry.dart';
 import '../../../shared/widgets/app_segmented_tabs.dart';
-import '../../../shared/widgets/app_skeleton.dart';
 import '../data/models/kana_character_model.dart';
 import '../providers/kana_provider.dart';
 import 'widgets/kana_character_card.dart';
@@ -87,9 +86,15 @@ class _KanaChartPageState extends ConsumerState<KanaChartPage> {
             const SizedBox(height: 20),
             Expanded(
               child: active.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: AppSkeleton(itemCount: 11),
+                loading: () => _chartViewport(
+                  activeType,
+                  Semantics(
+                    label: '${_labels[_selectedIndex]} 표를 불러오는 중',
+                    liveRegion: true,
+                    excludeSemantics: true,
+                    child: KanaChartGrid.loading(
+                        katakana: activeType == 'KATAKANA'),
+                  ),
                 ),
                 error: (error, stackTrace) => AppErrorRetry(
                   message: '${_labels[_selectedIndex]}를 불러오지 못했어요.',
@@ -99,11 +104,9 @@ class _KanaChartPageState extends ConsumerState<KanaChartPage> {
                     ? Center(
                         child: Text('표시할 ${_labels[_selectedIndex]}가 없어요.'),
                       )
-                    : SingleChildScrollView(
-                        key: ValueKey(activeType),
-                        primary: false,
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                        child: KanaChartGrid(
+                    : _chartViewport(
+                        activeType,
+                        KanaChartGrid(
                           characters: characters,
                           katakana: activeType == 'KATAKANA',
                           onCharacterTap: (character) =>
@@ -117,6 +120,13 @@ class _KanaChartPageState extends ConsumerState<KanaChartPage> {
       ),
     );
   }
+
+  Widget _chartViewport(String type, Widget child) => SingleChildScrollView(
+        key: ValueKey(type),
+        primary: false,
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        child: child,
+      );
 
   void _showCharacterSheet(
     BuildContext context,
