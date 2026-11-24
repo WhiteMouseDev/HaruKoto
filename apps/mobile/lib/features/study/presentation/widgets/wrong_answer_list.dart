@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/quiz_result_model.dart';
+import 'quiz_result_wrong_icon.dart';
 
 class WrongAnswerList extends StatefulWidget {
   final List<WrongAnswerModel> wrongAnswers;
@@ -10,6 +12,7 @@ class WrongAnswerList extends StatefulWidget {
   final void Function(WrongAnswerModel item)? onSaveToWordbook;
   final void Function()? onSaveAll;
   final Set<String> savedWords;
+  final bool redesigned;
 
   const WrongAnswerList({
     super.key,
@@ -18,6 +21,7 @@ class WrongAnswerList extends StatefulWidget {
     this.onSaveToWordbook,
     this.onSaveAll,
     this.savedWords = const {},
+    this.redesigned = false,
   });
 
   @override
@@ -31,47 +35,74 @@ class _WrongAnswerListState extends State<WrongAnswerList> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     if (widget.wrongAnswers.isEmpty) return const SizedBox.shrink();
+    final light = theme.brightness == Brightness.light;
+    final redesigned = widget.redesigned;
+    final foreground = redesigned && light
+        ? AppColors.redesignForeground
+        : theme.colorScheme.onSurface;
+    final muted = redesigned && light
+        ? AppColors.redesignMutedForeground
+        : theme.colorScheme.onSurfaceVariant;
+    final outline = redesigned && light
+        ? AppColors.redesignOutline
+        : theme.colorScheme.outline;
+    final audioColor = redesigned
+        ? (light ? AppColors.brandPink : theme.colorScheme.primary)
+        : null;
+    final corners = BorderRadius.circular(redesigned ? 12 : 24);
+    final answerLabel =
+        redesigned ? '문제' : (widget.quizType == 'GRAMMAR' ? '문법' : '단어');
 
     final allSaved = widget.wrongAnswers
         .every((w) => widget.savedWords.contains(w.questionId));
 
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        border: Border.all(color: theme.colorScheme.outline),
-        borderRadius: BorderRadius.circular(24),
+        color: redesigned && light ? Colors.white : theme.colorScheme.surface,
+        border: Border.all(color: outline),
+        borderRadius: corners,
       ),
       child: Column(
         children: [
           // Header
-          InkWell(
-            borderRadius: BorderRadius.circular(24),
-            onTap: () => setState(() => _expanded = !_expanded),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(LucideIcons.trophy,
-                      size: 16, color: AppColors.error(theme.brightness)),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      '틀린 ${widget.quizType == 'GRAMMAR' ? '문법' : '단어'} ${widget.wrongAnswers.length}개',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+          Material(
+            type: MaterialType.transparency,
+            child: Semantics(
+              expanded: _expanded,
+              child: InkWell(
+                borderRadius: corners,
+                onTap: () => setState(() => _expanded = !_expanded),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      if (redesigned)
+                        const QuizResultWrongIcon(size: 20)
+                      else
+                        Icon(LucideIcons.trophy,
+                            size: 16, color: AppColors.error(theme.brightness)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '틀린 $answerLabel ${widget.wrongAnswers.length}개',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontFamily: redesigned ? redesignFontFamily : null,
+                            color: foreground,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
+                      AnimatedRotation(
+                        turns: _expanded ? 0.5 : 0,
+                        duration: MediaQuery.disableAnimationsOf(context)
+                            ? Duration.zero
+                            : const Duration(milliseconds: 200),
+                        child: Icon(LucideIcons.chevronDown,
+                            size: 16, color: muted),
+                      ),
+                    ],
                   ),
-                  AnimatedRotation(
-                    turns: _expanded ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 200),
-                    child: Icon(
-                      LucideIcons.chevronDown,
-                      size: 16,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -81,48 +112,69 @@ class _WrongAnswerListState extends State<WrongAnswerList> {
             ...widget.wrongAnswers.map((item) {
               final isSaved = widget.savedWords.contains(item.questionId);
               return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16, vertical: redesigned ? 0 : 4),
                 child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  padding: redesigned
+                      ? const EdgeInsets.symmetric(vertical: 10)
+                      : const EdgeInsets.all(12),
+                  decoration: redesigned
+                      ? BoxDecoration(
+                          border: Border(top: BorderSide(color: outline)),
+                        )
+                      : BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHigh,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
                           Expanded(
-                            child: Row(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  item.word,
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                TtsPlayButton(
-                                  vocabId: item.questionId,
-                                  iconSize: 16,
-                                ),
-                                if (item.reading != null) ...[
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    item.reading!,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurface
-                                          .withValues(alpha: 0.5),
+                                Wrap(
+                                  spacing: 8,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                      item.word,
+                                      style:
+                                          theme.textTheme.bodyLarge?.copyWith(
+                                        color: foreground,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
+                                    if (item.reading case final reading?)
+                                      Text(
+                                        reading,
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(color: muted),
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  item.meaningKo,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: muted,
+                                    fontFamily:
+                                        redesigned ? redesignFontFamily : null,
                                   ),
-                                ],
+                                ),
                               ],
                             ),
                           ),
+                          TtsPlayButton(
+                            vocabId: item.questionId,
+                            iconSize: redesigned ? 24 : 16,
+                            iconColor: audioColor,
+                          ),
                           if (widget.quizType == 'VOCABULARY')
                             IconButton(
+                              tooltip: isSaved ? '단어장에 저장됨' : '단어장에 저장',
                               icon: Icon(
                                 isSaved
                                     ? LucideIcons.check
@@ -140,14 +192,6 @@ class _WrongAnswerListState extends State<WrongAnswerList> {
                                   : () => widget.onSaveToWordbook?.call(item),
                             ),
                         ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        item.meaningKo,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.6),
-                        ),
                       ),
                       if (item.exampleSentence != null) ...[
                         const SizedBox(height: 8),

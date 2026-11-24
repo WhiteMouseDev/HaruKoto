@@ -76,9 +76,25 @@ void main() {
               questionType: 'VOCABULARY',
             );
         await tester.pump();
-        tester
+        void requestExit() => tester
             .widget<QuizPageContent>(find.byType(QuizPageContent))
             .onBackRequested();
+
+        requestExit();
+        if (!failFirstSave) {
+          requestExit();
+          await tester.pumpAndSettle();
+          expect(find.byType(Dialog), findsOneWidget);
+          expect(tester.getCenter(find.text('종료')).dx,
+              lessThan(tester.getCenter(find.text('취소')).dx));
+          await tester.tap(find.text('취소'));
+          await tester.pumpAndSettle();
+          expect(find.byType(Dialog), findsNothing);
+          expect(find.byType(QuizPage), findsOneWidget);
+          expect(container.read(quizSessionProvider).sessionId, 'same-session');
+          expect(find.text('답안을 저장하고 있어요'), findsNothing);
+          requestExit();
+        }
         await tester.pumpAndSettle();
         await tester.tap(find.text('종료'));
         await tester.pump();

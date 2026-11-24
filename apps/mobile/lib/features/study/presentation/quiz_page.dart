@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/constants/colors.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../core/theme/text_theme.dart';
 import '../providers/quiz_progress_refresh_provider.dart';
 import '../providers/quiz_runtime_coordinators.dart';
 import '../providers/quiz_session_provider.dart';
@@ -43,6 +45,7 @@ class QuizPage extends ConsumerStatefulWidget {
 class _QuizPageState extends ConsumerState<QuizPage>
     with WidgetsBindingObserver {
   bool _foreground = true;
+  bool _requestingExit = false;
   bool _savingOnExit = false;
   ProviderContainer? _container;
   late final QuizTimerCoordinator _timerCoordinator;
@@ -189,47 +192,39 @@ class _QuizPageState extends ConsumerState<QuizPage>
   }
 
   Future<void> _requestPop() async {
-    if (_savingOnExit || ref.read(quizSessionProvider).completing) return;
-    await _exitCoordinator.requestExit(
-      confirmExit: () async {
-        if (!await _confirmExit() || !mounted) return false;
-        setState(() => _savingOnExit = true);
-        try {
-          await ref.read(quizSessionProvider.notifier).flushPendingAnswers();
-          return true;
-        } on ApiException catch (error) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(error.userMessage)),
-            );
+    if (_requestingExit || ref.read(quizSessionProvider).completing) return;
+    _requestingExit = true;
+    try {
+      await _exitCoordinator.requestExit(
+        confirmExit: () async {
+          if (!await _confirmExit() || !mounted) return false;
+          setState(() => _savingOnExit = true);
+          try {
+            await ref.read(quizSessionProvider.notifier).flushPendingAnswers();
+            return true;
+          } on ApiException catch (error) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(error.userMessage)),
+              );
+            }
+            return false;
+          } finally {
+            if (mounted) setState(() => _savingOnExit = false);
           }
-          return false;
-        } finally {
-          if (mounted) setState(() => _savingOnExit = false);
-        }
-      },
-      isActive: () => mounted,
-      exit: () => Navigator.of(context).pop(),
-    );
+        },
+        isActive: () => mounted,
+        exit: () => Navigator.of(context).pop(),
+      );
+    } finally {
+      _requestingExit = false;
+    }
   }
 
   Future<bool> _confirmExit() async {
     final shouldPop = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('퀴즈를 종료할까요?'),
-        content: const Text('저장된 답안부터 이어서 학습할 수 있어요. 저장하지 못한 답안은 다시 풀어야 해요.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('취소'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('종료'),
-          ),
-        ],
-      ),
+      builder: (_) => const _QuizExitDialog(),
     );
     return shouldPop ?? false;
   }
@@ -316,6 +311,110 @@ class _QuizPageState extends ConsumerState<QuizPage>
         }
       },
       child: child,
+    );
+  }
+}
+
+class _QuizExitDialog extends StatelessWidget {
+  const _QuizExitDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final light = theme.brightness == Brightness.light;
+    final ink = light ? AppColors.redesignForeground : colors.onSurface;
+    const buttonText = TextStyle(
+      fontFamily: redesignFontFamily,
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      height: 1.4,
+    );
+    const buttonShape = StadiumBorder();
+    const buttonPadding = EdgeInsets.symmetric(horizontal: 12, vertical: 10);
+
+    return Dialog(
+      constraints: const BoxConstraints(maxWidth: 335),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+      ),
+      backgroundColor: light ? Colors.white : colors.surfaceContainer,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 32, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Semantics(
+              header: true,
+              child: Text(
+                '퀴즈를 종료할까요?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: redesignFontFamily,
+                  color: ink,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  height: 1.4,
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '저장된 답안부터 이어서 학습할 수 있어요.\n'
+              '저장하지 못한 답안은 다시 풀어야 해요.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: redesignFontFamily,
+                color:
+                    light ? const Color(0xFF505050) : colors.onSurfaceVariant,
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: ink,
+                      side: BorderSide(
+                        color:
+                            light ? AppColors.redesignOutline : colors.outline,
+                      ),
+                      minimumSize: const Size(0, 48),
+                      padding: buttonPadding,
+                      shape: buttonShape,
+                      textStyle: buttonText,
+                    ),
+                    child: const Text('종료', textAlign: TextAlign.center),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: light ? AppColors.brandPink : null,
+                      foregroundColor: light ? Colors.white : null,
+                      minimumSize: const Size(0, 48),
+                      padding: buttonPadding,
+                      shape: buttonShape,
+                      textStyle: buttonText,
+                    ),
+                    child: const Text('취소', textAlign: TextAlign.center),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
