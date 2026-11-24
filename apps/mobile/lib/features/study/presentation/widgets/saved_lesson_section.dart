@@ -6,23 +6,25 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/auth/current_account_provider.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/providers/user_preferences_provider.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../../../shared/widgets/app_sheet_handle.dart';
 import '../../domain/lesson_recommendation.dart';
 import '../../domain/saved_lesson_entry.dart';
 import '../../providers/saved_lesson_entry_provider.dart';
 import 'lesson_continue_banner.dart';
 
-/// One continuation card; server recommendations remain the fallback and
-/// curriculum/station guidance retains its original order.
+/// Displays the current level's local checkpoints and server recommendation.
 class SavedLessonSection extends ConsumerStatefulWidget {
   const SavedLessonSection(
       {super.key,
       required this.jlptLevel,
       this.recommendedLesson,
-      this.compact = false});
+      this.compact = false,
+      this.redesigned = false});
   final String jlptLevel;
   final RecommendedLessonTarget? recommendedLesson;
   final bool compact;
+  final bool redesigned;
 
   @override
   ConsumerState<SavedLessonSection> createState() => _SavedLessonSectionState();
@@ -37,12 +39,16 @@ class _SavedLessonSectionState extends ConsumerState<SavedLessonSection> {
     final owner = ref.watch(currentAccountIdProvider);
     final entries = ref.watch(savedLessonEntriesProvider(jlptLevel));
     ref.watch(userPreferencesProvider);
-    if (!_scopeCurrent(owner)) return const SizedBox.shrink();
-    return entries.when(
+    if (owner == null || !_scopeCurrent(owner)) return const SizedBox.shrink();
+    Widget? unavailable({VoidCallback? retry}) => widget.redesigned
+        ? (retry == null ? null : _retry(context, retry))
+        : _fallback(context, owner, retry: retry);
+
+    final saved = entries.when<Widget?>(
       skipLoadingOnRefresh: false,
       skipLoadingOnReload: false,
-      loading: () => _fallback(context, owner!),
-      error: (_, __) => _fallback(context, owner!, retry: () {
+      loading: unavailable,
+      error: (_, __) => unavailable(retry: () {
         if (!mounted || !_scopeCurrent(owner)) return;
         ref.invalidate(savedLessonEntriesProvider(jlptLevel));
       }),
@@ -51,19 +57,35 @@ class _SavedLessonSectionState extends ConsumerState<SavedLessonSection> {
             data.jlptLevel != jlptLevel ||
             data.entries.any((entry) =>
                 entry.accountId != owner || entry.jlptLevel != jlptLevel)) {
-          return const SizedBox.shrink();
+          return null;
         }
         void retry() {
           if (!mounted || !_scopeCurrent(owner)) return;
           for (final id in data.failedLessonIds) {
             ref.invalidate(
-                savedLessonLookupProvider((accountId: owner!, lessonId: id)));
+                savedLessonLookupProvider((accountId: owner, lessonId: id)));
           }
         }
 
         if (data.entries.isEmpty) {
-          return _fallback(context, owner!,
+          return unavailable(
               retry: data.failedLessonIds.isEmpty ? null : retry);
+        }
+        if (widget.redesigned) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _SavedLessonExpansion(
+                key: PageStorageKey((owner, jlptLevel)),
+                entries: data.entries,
+                onOpen: (entry) => _open(context, ref, entry),
+              ),
+              if (data.failedLessonIds.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                _retry(context, retry),
+              ],
+            ],
+          );
         }
         final theme = Theme.of(context);
         return Padding(
@@ -99,11 +121,35 @@ class _SavedLessonSectionState extends ConsumerState<SavedLessonSection> {
         );
       },
     );
+    if (!widget.redesigned) return saved ?? const SizedBox.shrink();
+
+    final target = _recommendation;
+    if (target == null && saved == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (target != null)
+            LessonContinueBanner(
+              target: target,
+              redesigned: true,
+              onTap: () => _openRecommended(context, owner, target),
+            ),
+          if (target != null && saved != null) const SizedBox(height: 12),
+          if (saved != null) saved,
+        ],
+      ),
+    );
+  }
+
+  RecommendedLessonTarget? get _recommendation {
+    final candidate = widget.recommendedLesson;
+    return candidate?.chapter.jlptLevel == jlptLevel ? candidate : null;
   }
 
   Widget _fallback(BuildContext context, String owner, {VoidCallback? retry}) {
-    final candidate = widget.recommendedLesson;
-    final target = candidate?.chapter.jlptLevel == jlptLevel ? candidate : null;
+    final target = _recommendation;
     if (target == null && retry == null) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 18),
@@ -210,6 +256,109 @@ class _SavedLessonSectionState extends ConsumerState<SavedLessonSection> {
       return;
     }
     await _open(context, ref, selected);
+  }
+}
+
+class _SavedLessonExpansion extends StatelessWidget {
+  const _SavedLessonExpansion({
+    super.key,
+    required this.entries,
+    required this.onOpen,
+  });
+
+  final List<SavedLessonEntry> entries;
+  final ValueChanged<SavedLessonEntry> onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
+    final colors = theme.colorScheme;
+    final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final muted =
+        light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
+    final surface = light ? AppColors.lightCard : colors.surfaceContainerLow;
+    final border = BorderSide(
+      color: light ? AppColors.redesignOutline : colors.outline,
+    );
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+      side: border,
+    );
+
+    return ExpansionTile(
+      minTileHeight: 48,
+      tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+      backgroundColor: surface,
+      collapsedBackgroundColor: surface,
+      iconColor: muted,
+      collapsedIconColor: muted,
+      shape: shape,
+      collapsedShape: shape,
+      clipBehavior: Clip.antiAlias,
+      expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+      childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      title: Text('이 기기에 저장된 레슨',
+          style: TextStyle(
+            fontFamily: redesignFontFamily,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: foreground,
+          )),
+      children: [
+        for (final entry in entries) ...[
+          Divider(height: 1, color: border.color),
+          Padding(
+            key: ValueKey(entry.lesson.id),
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(entry.lesson.title,
+                          style: TextStyle(
+                            fontFamily: redesignFontFamily,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: foreground,
+                          )),
+                      const SizedBox(height: 4),
+                      Text(entry.hint.label,
+                          style: TextStyle(
+                            fontFamily: redesignFontFamily,
+                            fontSize: 12,
+                            color: muted,
+                          )),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(0, 32),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    foregroundColor: foreground,
+                    shape: const StadiumBorder(),
+                    side: border,
+                    iconAlignment: IconAlignment.end,
+                    textStyle: const TextStyle(
+                      fontFamily: redesignFontFamily,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  onPressed: () => onOpen(entry),
+                  icon: const Icon(LucideIcons.chevronRight, size: 14),
+                  label: const Text('열기'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
+    );
   }
 }
 

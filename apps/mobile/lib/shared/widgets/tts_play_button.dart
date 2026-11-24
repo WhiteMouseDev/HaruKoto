@@ -12,6 +12,7 @@ class TtsPlayButton extends StatefulWidget {
   final String? text;
   final String? url;
   final double iconSize;
+  final Color? iconColor;
   final TtsService? ttsService;
 
   const TtsPlayButton({
@@ -22,6 +23,7 @@ class TtsPlayButton extends StatefulWidget {
     this.text,
     this.url,
     this.iconSize = 20,
+    this.iconColor,
     this.ttsService,
   }) : assert(
           vocabId != null ||
@@ -126,7 +128,8 @@ class _TtsPlayButtonState extends State<TtsPlayButton>
                   child: const CircularProgressIndicator(strokeWidth: 2))
               : Icon(active ? LucideIcons.square : LucideIcons.volume2,
                   size: widget.iconSize,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                  color: widget.iconColor ??
+                      theme.colorScheme.onSurface.withValues(alpha: 0.5)),
         );
       },
     );

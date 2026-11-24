@@ -23,7 +23,10 @@ class _FreeQuizSheetState extends ConsumerState<FreeQuizSheet> {
   @override
   void initState() {
     super.initState();
-    _selection = widget.initialSelection;
+    final initial = widget.initialSelection;
+    _selection = FreeQuizSelection.jlptLevels.contains(initial.level)
+        ? initial
+        : initial.copyWith(level: FreeQuizSelection.jlptLevels.first);
   }
 
   void _submitSelection() {
@@ -32,19 +35,19 @@ class _FreeQuizSheetState extends ConsumerState<FreeQuizSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final statsAsync = ref.watch(
-      quizStatsProvider((level: _selection.level, type: _selection.type)),
-    );
-    final stats = statsAsync.hasValue ? statsAsync.value : null;
+    final statsProvider =
+        quizStatsProvider((level: _selection.level, type: _selection.type));
+    final stats = ref.watch(statsProvider);
 
     return FreeQuizSheetContent(
       selection: _selection,
-      stats: stats,
+      stats: stats.value,
+      statsLoading: stats.isLoading,
+      onRetryStats: stats.hasError && !stats.isLoading
+          ? () => ref.invalidate(statsProvider)
+          : null,
       onLevelChanged: (level) {
         setState(() => _selection = _selection.copyWith(level: level));
-      },
-      onTypeChanged: (type) {
-        setState(() => _selection = _selection.selectType(type));
       },
       onModeChanged: (mode) {
         setState(() => _selection = _selection.copyWith(mode: mode));

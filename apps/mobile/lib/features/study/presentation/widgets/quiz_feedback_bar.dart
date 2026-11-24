@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../data/models/quiz_question_model.dart';
 
 class QuizFeedbackBar extends StatelessWidget {
   final QuizQuestionModel question;
   final bool isCorrect;
-  final int streak;
+  final bool answered;
   final bool isLastQuestion;
   final VoidCallback onNext;
 
@@ -14,7 +15,7 @@ class QuizFeedbackBar extends StatelessWidget {
     super.key,
     required this.question,
     required this.isCorrect,
-    required this.streak,
+    required this.answered,
     required this.isLastQuestion,
     required this.onNext,
   });
@@ -68,124 +69,98 @@ class QuizFeedbackBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final brightness = theme.brightness;
-    final isLight = brightness == Brightness.light;
+    final light = theme.brightness == Brightness.light;
+    final muted = light
+        ? AppColors.redesignMutedForeground
+        : theme.colorScheme.onSurfaceVariant;
+    final statusColor = isCorrect
+        ? light
+            ? AppColors.quizCorrectText
+            : AppColors.quizCorrectTextDark
+        : light
+            ? AppColors.quizWrongText
+            : AppColors.quizWrongTextDark;
+    final detail = answered ? _feedbackDetail : null;
 
-    // 듀오링고 스타일: 정답/오답 시맨틱 컬러
-    final bgColor = isCorrect
-        ? (isLight ? AppColors.quizCorrectBg : AppColors.quizCorrectBgDark)
-        : (isLight ? AppColors.quizWrongBg : AppColors.quizWrongBgDark);
-
-    final accentColor = isCorrect
-        ? (isLight ? AppColors.quizCorrectText : AppColors.quizCorrectTextDark)
-        : (isLight ? AppColors.quizWrongText : AppColors.quizWrongTextDark);
-
-    final buttonColor = isCorrect
-        ? (isLight
-            ? AppColors.quizCorrectButton
-            : AppColors.quizCorrectButtonDark)
-        : (isLight ? AppColors.quizWrongButton : AppColors.quizWrongButtonDark);
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.overlay(0.08),
-            blurRadius: 16,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 상단 accent 라인
-          Center(
-            child: Container(
-              width: 48,
-              height: 4,
-              margin: const EdgeInsets.only(top: 12, bottom: 16),
-              decoration: BoxDecoration(
-                color: accentColor.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          Row(
-            children: [
-              Icon(
-                isCorrect ? LucideIcons.checkCircle2 : LucideIcons.xCircle,
-                size: 24,
-                color: accentColor,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                isCorrect
-                    ? (streak >= 5
-                        ? '대단해요!'
-                        : streak >= 3
-                            ? '연속 정답!'
-                            : '정답이에요!')
-                    : '아쉬워요!',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: accentColor,
-                ),
-              ),
-              if (isCorrect && streak >= 3) ...[
-                const Spacer(),
-                Icon(LucideIcons.flame,
-                    size: 16, color: AppColors.warning(brightness)),
-                const SizedBox(width: 4),
-                Text(
-                  '$streak',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.warning(brightness),
-                    fontWeight: FontWeight.bold,
+          if (detail != null) ...[
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 72),
+              child: SingleChildScrollView(
+                child: Text(
+                  detail,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: redesignFontFamily,
+                    fontSize: 12,
+                    height: 1.45,
+                    letterSpacing: -0.3,
+                    color: muted,
                   ),
                 ),
-              ],
-            ],
-          ),
-          // 보충 정보: 정답이든 오답이든 학습 강화용 한 줄 표시
-          if (_feedbackDetail != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              _feedbackDetail!,
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: accentColor.withValues(alpha: 0.7),
-                fontWeight: FontWeight.w600,
               ),
             ),
+            const SizedBox(height: 6),
           ],
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: FilledButton(
-              onPressed: onNext,
-              style: FilledButton.styleFrom(
-                backgroundColor: buttonColor,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+          if (answered) ...[
+            Semantics(
+              liveRegion: true,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    isCorrect ? LucideIcons.checkCircle2 : LucideIcons.xCircle,
+                    size: 14,
+                    color: statusColor,
+                  ),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      isCorrect ? '정답이에요!' : '아쉬워요!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: redesignFontFamily,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        height: 1.4,
+                        letterSpacing: -0.325,
+                        color: statusColor,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              child: Text(
-                isLastQuestion ? '결과 보기' : '다음 문제 →',
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+          ],
+          FilledButton(
+            key: const ValueKey('quiz-next'),
+            onPressed: answered ? onNext : null,
+            style: FilledButton.styleFrom(
+              backgroundColor: light ? AppColors.brandPink : null,
+              foregroundColor: light ? Colors.white : null,
+              disabledBackgroundColor:
+                  light ? AppColors.brandPink.withValues(alpha: 0.28) : null,
+              disabledForegroundColor: light ? Colors.white : null,
+              minimumSize: const Size(0, 48),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              shape: const StadiumBorder(),
+              textStyle: const TextStyle(
+                fontFamily: redesignFontFamily,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                height: 1.4,
+                letterSpacing: -0.35,
               ),
+            ),
+            child: Text(
+              isLastQuestion && answered ? '결과 보기' : '다음 문제',
+              textAlign: TextAlign.center,
             ),
           ),
         ],

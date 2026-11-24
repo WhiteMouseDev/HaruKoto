@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/colors.dart';
+import '../../../../core/theme/text_theme.dart';
+
 class QuizWrongAnswersStatus extends StatelessWidget {
   const QuizWrongAnswersStatus({
     super.key,
@@ -17,6 +20,7 @@ class QuizWrongAnswersStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
     final noWrongAnswers = !loading && error == null && wrongCount == 0;
     final title = loading
         ? '이번 퀴즈의 오답을 불러오고 있어요'
@@ -30,9 +34,11 @@ class QuizWrongAnswersStatus extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        border: Border.all(color: theme.colorScheme.outline),
-        borderRadius: BorderRadius.circular(16),
+        color: light ? Colors.white : theme.colorScheme.surface,
+        border: Border.all(
+          color: light ? AppColors.redesignOutline : theme.colorScheme.outline,
+        ),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +61,15 @@ class QuizWrongAnswersStatus extends StatelessWidget {
                 ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(title, style: theme.textTheme.titleSmall),
+                child: Text(
+                  title,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontFamily: redesignFontFamily,
+                    color: light
+                        ? AppColors.redesignForeground
+                        : theme.colorScheme.onSurface,
+                  ),
+                ),
               ),
             ],
           ),

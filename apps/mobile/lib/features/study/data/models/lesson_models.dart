@@ -39,6 +39,11 @@ class ChapterModel {
     required this.totalLessons,
   });
 
+  bool get isComplete =>
+      totalLessons > 0 &&
+      completedLessons >= totalLessons &&
+      lessons.every((lesson) => lesson.status == 'COMPLETED');
+
   factory ChapterModel.fromJson(Map<String, dynamic> json) {
     return ChapterModel(
       id: json['id'] as String,
