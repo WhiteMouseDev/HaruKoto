@@ -216,7 +216,7 @@ class _TodayStudySheetLayout extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const AppSheetHandle(),
+          const AppSheetHandle.todayStudy(),
           const SizedBox(height: AppSizes.md),
           Semantics(
             header: true,
