@@ -150,6 +150,28 @@ class HarukotoWidgetbook extends StatelessWidget {
                     ),
                   ),
                 ),
+                WidgetbookUseCase(
+                  name: 'Compact Surface',
+                  builder: (context) {
+                    final colors = Theme.of(context).colorScheme;
+                    return Scaffold(
+                      body: ListView(
+                        padding: const EdgeInsets.all(20),
+                        children: [
+                          AppCard.compactSurface(
+                            darkSurface: colors.surfaceContainerLow,
+                            child: const Text('오늘 복습할 표현'),
+                          ),
+                          const SizedBox(height: 16),
+                          AppCard.compactSurface(
+                            darkSurface: colors.surfaceContainerHigh,
+                            child: const Text('단어 퀴즈 풀기'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
             WidgetbookComponent(

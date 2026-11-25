@@ -11,6 +11,7 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/haru_typography.dart';
+import '../../../../shared/widgets/app_card.dart';
 import '../../../../shared/widgets/haru_button_styles.dart';
 import '../../data/models/review_summary_model.dart';
 import '../../providers/lesson_pilot_telemetry_provider.dart';
@@ -307,35 +308,41 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
               ),
             ),
           ]);
-    return Semantics(
-      container: true,
-      liveRegion: true,
-      child: Container(
-        padding: widget.redesigned
-            ? EdgeInsets.fromLTRB(16, 16, 16,
-                breakdown == null ? 16 : 16 - HaruButtonStyles.compactHitInset)
-            : const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: light
-              ? (widget.redesigned
-                  ? AppColors.redesignSurface
-                  : AppColors.cardWarm)
-              : theme.colorScheme.surfaceContainerLow,
-          border: widget.redesigned
-              ? null
-              : Border.all(
-                  color: light
-                      ? AppColors.lightBorder
-                      : theme.colorScheme.outline),
-          borderRadius:
-              BorderRadius.circular(widget.redesigned ? 12 : AppSizes.radiusMd),
-        ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          SizedBox(width: double.infinity, child: header),
-          const SizedBox(height: 12),
-          ...children,
-        ]),
-      ),
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(width: double.infinity, child: header),
+        const SizedBox(height: 12),
+        ...children,
+      ],
     );
+    final panel = widget.redesigned
+        ? AppCard.compactSurface(
+            darkSurface: theme.colorScheme.surfaceContainerLow,
+            padding: EdgeInsets.fromLTRB(
+              AppSizes.md,
+              AppSizes.md,
+              AppSizes.md,
+              breakdown == null
+                  ? AppSizes.md
+                  : AppSizes.md - HaruButtonStyles.compactHitInset,
+            ),
+            child: content,
+          )
+        : Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: light
+                  ? AppColors.cardWarm
+                  : theme.colorScheme.surfaceContainerLow,
+              border: Border.all(
+                color:
+                    light ? AppColors.lightBorder : theme.colorScheme.outline,
+              ),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            ),
+            child: content,
+          );
+    return Semantics(container: true, liveRegion: true, child: panel);
   }
 }

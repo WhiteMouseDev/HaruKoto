@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../core/constants/colors.dart';
+import '../../../core/constants/sizes.dart';
+import '../../../shared/widgets/app_sheet_handle.dart';
 import '../data/models/quiz_session_model.dart';
 import '../domain/quiz_resume_exception.dart';
 import 'quiz_launch.dart';
@@ -76,9 +78,7 @@ Future<void> showTodayStudySheetModal(
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
+    shape: AppSizes.sheetShape,
     builder: (_) => TodayStudySheet(
       jlptLevel: jlptLevel,
       category: category,
@@ -102,9 +102,7 @@ Future<void> showResumeOrNewStudySheet(
 
   return showModalBottomSheet<void>(
     context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
+    shape: AppSizes.sheetShape,
     builder: (ctx) {
       return SafeArea(
         child: Padding(
@@ -112,14 +110,7 @@ Future<void> showResumeOrNewStudySheet(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
+              const AppSheetHandle(),
               const SizedBox(height: 20),
               Text(
                 '진행 중인 학습이 있어요',
