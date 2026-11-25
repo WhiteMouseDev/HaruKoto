@@ -20,7 +20,20 @@ void main() {
       await tester.tap(find.text('이어할 레슨'));
       await tester.pumpAndSettle();
       expect(observer.pushCount, 0);
-      expect(find.text('공감 · 10분'), findsOneWidget);
+      final topic = find.text('공감');
+      final duration = find.text('10분');
+      expect(topic, findsOneWidget);
+      expect(duration, findsOneWidget);
+      expect(
+        tester.getCenter(duration).dx,
+        greaterThan(tester.getCenter(topic).dx),
+      );
+      expect(
+        tester.getCenter(duration).dy,
+        lessThan(tester.getCenter(topic).dy),
+      );
+      final action = find.byKey(const ValueKey('lesson-continue-action'));
+      expect(tester.getSize(action).height, greaterThanOrEqualTo(48));
 
       await tester.tap(find.text(target));
       await tester.pumpAndSettle();
@@ -28,6 +41,27 @@ void main() {
       expect(observer.pushCount, 1);
     });
   }
+
+  testWidgets('redesigned card omits missing topic and duration',
+      (tester) async {
+    await _pump(tester, redesigned: true, topic: ' ', estimatedMinutes: 0);
+    expect(find.textContaining('분'), findsNothing);
+    expect(find.text(' '), findsNothing);
+    expect(find.text('공통점이 반가울 때'), findsOneWidget);
+    expect(find.text('이어하기'), findsOneWidget);
+  });
+
+  testWidgets('redesigned card fits topic, route and time on a small screen',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(320, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await _pump(tester, redesigned: true, textScale: 2);
+    expect(tester.takeException(), isNull);
+    expect(find.text('1번 역 · 4번째 레슨'), findsOneWidget);
+    expect(find.text('공감'), findsOneWidget);
+    expect(find.text('10분'), findsOneWidget);
+    expect(find.text('이어하기'), findsOneWidget);
+  });
 
   for (final (status, label, action) in [
     ('IN_PROGRESS', '이어할 레슨', '이어하기'),
@@ -92,14 +126,16 @@ Future<void> _pump(
   Brightness brightness = Brightness.light,
   double textScale = 1,
   bool redesigned = false,
+  String topic = '공감',
+  int estimatedMinutes = 10,
 }) async {
   final lesson = LessonSummaryModel(
     id: 'lesson-4',
     lessonNo: 4,
     chapterLessonNo: 4,
     title: '공통점이 반가울 때',
-    topic: '공감',
-    estimatedMinutes: 10,
+    topic: topic,
+    estimatedMinutes: estimatedMinutes,
     status: status,
     scoreCorrect: 0,
     scoreTotal: 0,

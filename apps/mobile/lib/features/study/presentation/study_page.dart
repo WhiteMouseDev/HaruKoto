@@ -110,7 +110,7 @@ class _StudyPageState extends ConsumerState<StudyPage> {
               // 1. App Bar area
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  padding: EdgeInsets.fromLTRB(20, mapEnabled ? 10 : 8, 20, 0),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -165,7 +165,7 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                 ),
               ),
 
-              const SliverToBoxAdapter(child: SizedBox(height: 16)),
+              SliverToBoxAdapter(child: SizedBox(height: mapEnabled ? 8 : 16)),
 
               // 2. Review reads and retries stay independent of lesson reads.
               SliverToBoxAdapter(
@@ -218,6 +218,9 @@ class _StudyPageState extends ConsumerState<StudyPage> {
               ),
 
               if (!mapEnabled && savedLessons != null) savedLessons,
+
+              if (mapEnabled)
+                const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
               // Inline chapter cards
               SliverToBoxAdapter(
@@ -366,15 +369,15 @@ class _StudyRouteHeading extends StatelessWidget {
           if (loading)
             AppSkeletonBlock(
               width: 88,
-              height: MediaQuery.textScalerOf(context).scale(13) * 1.5 + 12,
+              height: MediaQuery.textScalerOf(context).scale(13) * 1.5 + 8,
               radius: AppSizes.radiusFull,
             )
           else if (stations.isNotEmpty)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
               decoration: BoxDecoration(
                 color: light
-                    ? AppColors.redesignSurface
+                    ? AppColors.redesignControl
                     : theme.colorScheme.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(AppSizes.radiusFull),
               ),
@@ -387,7 +390,7 @@ class _StudyRouteHeading extends StatelessWidget {
                     height: 1.5,
                     letterSpacing: -0.325,
                     color: light
-                        ? AppColors.redesignMutedForeground
+                        ? const Color(0xFF505050)
                         : theme.colorScheme.onSurfaceVariant,
                   )),
             ),
@@ -577,7 +580,7 @@ class _JlptLevelChip extends StatelessWidget {
                 : AppColors.sakura.withValues(alpha: 0.35),
           ),
           shape: const StadiumBorder(),
-          minimumSize: const Size(0, 36),
+          minimumSize: Size(mapEnabled ? 76 : 0, 36),
           padding: const EdgeInsets.symmetric(horizontal: 16),
           tapTargetSize: MaterialTapTargetSize.padded,
           textStyle: TextStyle(
@@ -591,13 +594,31 @@ class _JlptLevelChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(title),
-            const SizedBox(width: 4),
-            Icon(
-              LucideIcons.chevronDown,
-              size: 14,
-              color: mapEnabled ? chevron : theme.colorScheme.primary,
-            ),
+            if (mapEnabled)
+              Transform.translate(
+                offset: const Offset(-2, -2),
+                child: Text(title),
+              )
+            else
+              Text(title),
+            SizedBox(width: mapEnabled ? 10 : 4),
+            if (mapEnabled)
+              RotatedBox(
+                quarterTurns: 1,
+                child: Image.asset(
+                  'assets/icons/figma-home-arrow.png',
+                  width: 6.25,
+                  height: 11,
+                  color: chevron,
+                  excludeFromSemantics: true,
+                ),
+              )
+            else
+              Icon(
+                LucideIcons.chevronDown,
+                size: 14,
+                color: theme.colorScheme.primary,
+              ),
           ],
         ),
       ),

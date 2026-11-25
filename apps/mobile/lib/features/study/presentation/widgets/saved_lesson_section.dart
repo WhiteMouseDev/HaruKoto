@@ -126,7 +126,7 @@ class _SavedLessonSectionState extends ConsumerState<SavedLessonSection> {
     final target = _recommendation;
     if (target == null && saved == null) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -136,7 +136,7 @@ class _SavedLessonSectionState extends ConsumerState<SavedLessonSection> {
               redesigned: true,
               onTap: () => _openRecommended(context, owner, target),
             ),
-          if (target != null && saved != null) const SizedBox(height: 12),
+          if (target != null && saved != null) const SizedBox(height: 8),
           if (saved != null) saved,
         ],
       ),
@@ -277,6 +277,7 @@ class _SavedLessonExpansion extends StatelessWidget {
     final foreground = light ? AppColors.redesignForeground : colors.onSurface;
     final muted =
         light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
+    final chevron = light ? const Color(0xFF545461) : colors.onSurfaceVariant;
     final surface = light ? AppColors.lightCard : colors.surfaceContainerLow;
     final border = BorderSide(
       color: light ? AppColors.redesignOutline : colors.outline,
@@ -286,27 +287,26 @@ class _SavedLessonExpansion extends StatelessWidget {
       side: border,
     );
 
-    return ExpansionTile(
+    final tile = ExpansionTile(
       minTileHeight: 48,
-      tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-      backgroundColor: surface,
-      collapsedBackgroundColor: surface,
-      iconColor: muted,
-      collapsedIconColor: muted,
-      shape: shape,
-      collapsedShape: shape,
-      clipBehavior: Clip.antiAlias,
+      tilePadding: const EdgeInsets.fromLTRB(17, 0, 13, 0),
+      iconColor: chevron,
+      collapsedIconColor: chevron,
+      shape: const RoundedRectangleBorder(),
+      collapsedShape: const RoundedRectangleBorder(),
       expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
-      childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      title: Text('이 기기에 저장된 레슨',
-          style: TextStyle(
-            fontFamily: redesignFontFamily,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            height: 1.5,
-            letterSpacing: -0.35,
-            color: foreground,
-          )),
+      childrenPadding: const EdgeInsets.fromLTRB(17, 0, 17, 9),
+      title: Text(
+        '이 기기에 저장된 레슨',
+        style: TextStyle(
+          fontFamily: redesignFontFamily,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          height: 1.5,
+          letterSpacing: -0.35,
+          color: foreground,
+        ),
+      ),
       children: [
         for (final entry in entries) ...[
           Divider(height: 1, color: border.color),
@@ -367,6 +367,13 @@ class _SavedLessonExpansion extends StatelessWidget {
           ),
         ],
       ],
+    );
+    // An ExpansionTile border adds padding inside its minimum tile height.
+    return Material(
+      color: surface,
+      shape: shape,
+      clipBehavior: Clip.antiAlias,
+      child: tile,
     );
   }
 }

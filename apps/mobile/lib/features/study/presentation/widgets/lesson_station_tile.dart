@@ -30,7 +30,7 @@ class LessonStationTile extends StatelessWidget {
     final doneColor = isLight ? AppColors.mintOn : AppColors.mintContainer;
     final subtext = isLight
         ? redesigned
-            ? AppColors.redesignMutedForeground
+            ? const Color(0xFF505050)
             : AppColors.lightSubtext
         : AppColors.darkSubtext;
     final showScore = complete && lesson.scoreTotal > 0;
@@ -41,7 +41,7 @@ class LessonStationTile extends StatelessWidget {
             : '학습 시작';
 
     return Padding(
-      padding: const EdgeInsets.only(top: 6),
+      padding: EdgeInsets.only(top: redesigned ? 0 : 6),
       child: Material(
         color: redesigned
             ? isLight
@@ -58,67 +58,103 @@ class LessonStationTile extends StatelessWidget {
           child: Semantics(
             hint: redesigned ? action : null,
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: 12, vertical: redesigned ? 9 : 12),
+              padding: const EdgeInsets.all(12),
               child: Row(
                 crossAxisAlignment: redesigned
                     ? CrossAxisAlignment.center
                     : CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Icon(
-                      redesigned
-                          ? Icons.circle
-                          : complete
-                              ? LucideIcons.checkCircle2
-                              : inProgress
-                                  ? LucideIcons.playCircle
-                                  : LucideIcons.circle,
-                      color: redesigned && isLight
-                          ? isRecommended || inProgress || complete
-                              ? AppColors.brandPink
-                              : AppColors.redesignDetailTrack
-                          : complete
-                              ? doneColor
-                              : isRecommended
-                                  ? accent
-                                  : subtext,
-                      size: redesigned ? 6 : 18,
+                  if (!redesigned) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Icon(
+                        complete
+                            ? LucideIcons.checkCircle2
+                            : inProgress
+                                ? LucideIcons.playCircle
+                                : LucideIcons.circle,
+                        color: complete
+                            ? doneColor
+                            : isRecommended
+                                ? accent
+                                : subtext,
+                        size: 18,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
+                    const SizedBox(width: 10),
+                  ],
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          lesson.title,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: redesigned && isLight
-                                ? AppColors.redesignForeground
-                                : null,
-                            fontFamily: redesigned ? redesignFontFamily : null,
-                            fontSize: redesigned ? 14 : null,
-                            fontWeight: redesigned
-                                ? FontWeight.w500
-                                : isRecommended
-                                    ? FontWeight.w700
-                                    : FontWeight.w600,
-                            height: redesigned ? 1.5 : null,
-                            letterSpacing: redesigned ? -0.35 : null,
+                        if (redesigned)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 6,
+                                height:
+                                    MediaQuery.textScalerOf(context).scale(14) *
+                                        1.5,
+                                child: Center(
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: inProgress || complete
+                                          ? isLight
+                                              ? AppColors.brandPink
+                                              : accent
+                                          : isLight
+                                              ? const Color(0xFFA5A5AF)
+                                              : subtext,
+                                    ),
+                                    child: const SizedBox.square(dimension: 6),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  lesson.title,
+                                  style: TextStyle(
+                                    color: isLight
+                                        ? AppColors.redesignForeground
+                                        : theme.colorScheme.onSurface,
+                                    fontFamily: redesignFontFamily,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.5,
+                                    letterSpacing: -0.35,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        else
+                          Text(
+                            lesson.title,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: isRecommended
+                                  ? FontWeight.w700
+                                  : FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${lesson.estimatedMinutes}분 · ${lesson.topic}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: subtext,
-                            fontFamily: redesigned ? redesignFontFamily : null,
-                            fontSize: redesigned ? 12 : null,
-                            fontWeight: redesigned ? FontWeight.w400 : null,
-                            height: redesigned ? 1.5 : null,
-                            letterSpacing: redesigned ? -0.3 : null,
+                        SizedBox(height: redesigned ? 2 : 4),
+                        Padding(
+                          padding: EdgeInsets.only(left: redesigned ? 12 : 0),
+                          child: Text(
+                            redesigned
+                                ? '${lesson.topic} · ${lesson.estimatedMinutes}분'
+                                : '${lesson.estimatedMinutes}분 · ${lesson.topic}',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: subtext,
+                              fontFamily:
+                                  redesigned ? redesignFontFamily : null,
+                              fontSize: redesigned ? 12 : null,
+                              fontWeight: redesigned ? FontWeight.w400 : null,
+                              height: redesigned ? 1.5 : null,
+                              letterSpacing: redesigned ? -0.3 : null,
+                            ),
                           ),
                         ),
                         if (!redesigned || showScore) ...[
@@ -128,10 +164,14 @@ class LessonStationTile extends StatelessWidget {
                             runSpacing: 4,
                             children: [
                               if (showScore)
-                                Text(
-                                  '${lesson.scoreCorrect}/${lesson.scoreTotal} 정답',
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: doneColor,
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: redesigned ? 12 : 0),
+                                  child: Text(
+                                    '${lesson.scoreCorrect}/${lesson.scoreTotal} 정답',
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: doneColor,
+                                    ),
                                   ),
                                 ),
                               if (!redesigned)
@@ -171,11 +211,20 @@ class LessonStationTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Icon(
-                    LucideIcons.chevronRight,
-                    size: 16,
-                    color: isRecommended && !redesigned ? accent : subtext,
-                  ),
+                  if (redesigned)
+                    Image.asset(
+                      'assets/icons/figma-home-arrow.png',
+                      width: 6.25,
+                      height: 11,
+                      color: isLight ? const Color(0xFF545461) : subtext,
+                      excludeFromSemantics: true,
+                    )
+                  else
+                    Icon(
+                      LucideIcons.chevronRight,
+                      size: 16,
+                      color: isRecommended ? accent : subtext,
+                    ),
                 ],
               ),
             ),

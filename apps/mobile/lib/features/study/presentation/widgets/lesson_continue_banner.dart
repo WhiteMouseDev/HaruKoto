@@ -24,6 +24,9 @@ class LessonContinueBanner extends ConsumerWidget {
   final bool redesigned;
   final VoidCallback? onTap;
 
+  // Keep a 48-point tap target around the 42-point Figma button.
+  static const _recommendationButtonHitInset = 3.0;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -168,17 +171,22 @@ class LessonContinueBanner extends ConsumerWidget {
     final light = theme.brightness == Brightness.light;
     final colors = theme.colorScheme;
     final foreground = light ? AppColors.redesignForeground : colors.onSurface;
-    final muted =
-        light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
+    final muted = light ? const Color(0xFF505050) : colors.onSurfaceVariant;
+    final metadataStyle = TextStyle(
+      fontFamily: redesignFontFamily,
+      fontSize: 13,
+      fontWeight: FontWeight.w400,
+      height: 1.5,
+      letterSpacing: -0.325,
+      color: muted,
+    );
     final location = [
       if (chapter.partNo > 1) '${chapter.partNo}부',
       '${chapter.chapterNo}번 역',
       '${lesson.chapterLessonNo}번째 레슨',
     ].join(' · ');
-    final details = [
-      if (lesson.topic.trim().isNotEmpty) lesson.topic,
-      if (lesson.estimatedMinutes > 0) '${lesson.estimatedMinutes}분',
-    ].join(' · ');
+    final topic = lesson.topic.trim();
+    final minutes = lesson.estimatedMinutes;
     final open = onTap ??
         () {
           context.push('/study/lessons/${lesson.id}');
@@ -212,48 +220,73 @@ class LessonContinueBanner extends ConsumerWidget {
             excludeFromSemantics: true,
             canRequestFocus: false,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.fromLTRB(
+                17,
+                17,
+                17,
+                17 - _recommendationButtonHitInset,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 4,
-                    crossAxisAlignment: WrapCrossAlignment.center,
+                  Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: light
-                              ? AppColors.sakuraTrack
-                              : colors.primaryContainer,
-                          borderRadius:
-                              BorderRadius.circular(AppSizes.radiusFull),
-                        ),
-                        child: Text(
-                          chapter.jlptLevel,
-                          style: TextStyle(
-                            fontFamily: redesignFontFamily,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            height: 1.4,
-                            letterSpacing: -0.3,
-                            color: light
-                                ? AppColors.sakuraOn
-                                : colors.onPrimaryContainer,
-                          ),
+                      Expanded(
+                        child: Wrap(
+                          spacing: 4,
+                          runSpacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Container(
+                              constraints: const BoxConstraints(
+                                minWidth: 32,
+                                minHeight: 21,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: light
+                                    ? AppColors.redesignVocabulary
+                                    : colors.primaryContainer,
+                                borderRadius:
+                                    BorderRadius.circular(AppSizes.radiusFull),
+                              ),
+                              child: Center(
+                                widthFactor: 1,
+                                heightFactor: 1,
+                                child: Text(
+                                  chapter.jlptLevel,
+                                  style: TextStyle(
+                                    fontFamily: redesignFontFamily,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.4,
+                                    letterSpacing: -0.3,
+                                    color: light
+                                        ? Colors.white
+                                        : colors.onPrimaryContainer,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Text(location, style: metadataStyle),
+                          ],
                         ),
                       ),
-                      Text(location,
-                          style: TextStyle(
-                            fontFamily: redesignFontFamily,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                            height: 1.5,
-                            letterSpacing: -0.325,
-                            color: muted,
-                          )),
+                      if (minutes > 0) ...[
+                        const SizedBox(width: 8),
+                        Image.asset(
+                          'assets/icons/figma-study-recommendation-clock.png',
+                          width: 14,
+                          height: 14,
+                          color: light ? null : muted,
+                          excludeFromSemantics: true,
+                        ),
+                        const SizedBox(width: 3),
+                        Text('$minutes분', style: metadataStyle),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -266,25 +299,52 @@ class LessonContinueBanner extends ConsumerWidget {
                         letterSpacing: -0.45,
                         color: foreground,
                       )),
-                  if (details.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(details,
-                        style: TextStyle(
-                          fontFamily: redesignFontFamily,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                          height: 1.5,
-                          letterSpacing: -0.325,
-                          color: muted,
-                        )),
+                  if (topic.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      constraints: const BoxConstraints(minHeight: 33),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 13.5,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: light
+                            ? const Color(0xFFFEF0F2)
+                            : colors.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            'assets/icons/home-nav-study.png',
+                            width: 17,
+                            color: light ? AppColors.brandPink : colors.primary,
+                            excludeFromSemantics: true,
+                          ),
+                          const SizedBox(width: 5.5),
+                          Expanded(
+                            child: Text(
+                              topic,
+                              style: metadataStyle.copyWith(color: foreground),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 12 - _recommendationButtonHitInset),
                   FilledButton(
                     key: const ValueKey('lesson-continue-action'),
                     style: FilledButton.styleFrom(
                       minimumSize: const Size(0, 42),
                       backgroundColor: light ? AppColors.brandPink : null,
                       foregroundColor: light ? Colors.white : null,
+                      tapTargetSize: MaterialTapTargetSize.padded,
+                      visualDensity: VisualDensity.standard,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       shape: const StadiumBorder(),
                       textStyle: const TextStyle(
                         fontFamily: redesignFontFamily,

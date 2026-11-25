@@ -22,7 +22,7 @@ enum _QuizCategory {
   grammar('문법', 'GRAMMAR', '문장에 쓰이는 문법을 익혀요.', 63),
   kanji('한자', 'KANJI', '한자의 뜻과 읽는 법을 확인해요.', 63),
   listening('리스닝', 'LISTENING', '일본어 음성을 듣고 알맞은 답을 골라요.', 74),
-  sentenceArrange('문장배열', 'SENTENCE_ARRANGE', '단어를 배열해 문장을 완성해요.', 86);
+  sentenceArrange('문장배열', 'SENTENCE_ARRANGE', '단어를 배열해 문장을 완성해요.', 84);
 
   final String label;
   final String apiType;
@@ -269,10 +269,8 @@ class _QuizCategoryTabs extends StatelessWidget {
                 minimumSize: Size(category.tabWidth, 32),
                 tapTargetSize: MaterialTapTargetSize.padded,
                 visualDensity: VisualDensity.standard,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                // Align the Pretendard glyphs to the center of the capsule.
+                padding: const EdgeInsets.fromLTRB(12, 5, 12, 7),
                 textStyle: const TextStyle(
                   fontFamily: redesignFontFamily,
                   fontSize: 13,
@@ -597,7 +595,7 @@ class _RecordTile extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 66),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 20, 10),
+            padding: const EdgeInsets.fromLTRB(16, 10, 21.5, 10),
             child: Row(
               children: [
                 SizedBox.square(
