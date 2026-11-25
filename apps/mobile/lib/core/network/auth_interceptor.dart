@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 
 import '../auth/auth_session_manager.dart';
 import 'app_http_client.dart';
@@ -14,57 +13,58 @@ class AuthInterceptor extends Interceptor {
 
   final AuthSessionManager _authSessionManager;
   final ReplayRequest _replayRequest;
+  static const _bearerPrefix = 'Bearer ';
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final accessToken = _authSessionManager.currentAccessToken;
     if (accessToken != null) {
-      options.headers['Authorization'] = 'Bearer $accessToken';
+      options.headers['Authorization'] = '$_bearerPrefix$accessToken';
     }
     handler.next(options);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    final metadata = err.requestOptions.extra;
+    final requestOptions = err.requestOptions;
+    final metadata = requestOptions.extra;
+    final authorization = requestOptions.headers['Authorization'];
     if (err.response?.statusCode != 401 ||
-        metadata[RequestMetadata.skipAuthRefresh] == true) {
+        metadata[RequestMetadata.skipAuthRefresh] == true ||
+        requestOptions.cancelToken?.isCancelled == true ||
+        authorization is! String ||
+        !authorization.startsWith(_bearerPrefix) ||
+        authorization.length == _bearerPrefix.length) {
       handler.next(err);
       return;
     }
 
+    String? newToken;
     try {
-      final newToken = await _authSessionManager.refreshAccessToken();
-      if (newToken == null) {
-        await _signOutQuietly();
-        handler.next(err);
-        return;
-      }
-
-      final requestOptions = err.requestOptions;
-      requestOptions.headers['Authorization'] = 'Bearer $newToken';
-      requestOptions.extra[RequestMetadata.retryReason] = 'auth_refresh';
-
-      try {
-        final retryResponse = await _replayRequest(requestOptions);
-        handler.resolve(retryResponse);
-        return;
-      } on DioException catch (retryError) {
-        handler.next(retryError);
-        return;
-      }
-    } catch (e) {
-      debugPrint('[AuthInterceptor] Token refresh failed: $e');
-      await _signOutQuietly();
+      newToken = await _authSessionManager.recoverAccessToken(
+        authorization.substring(_bearerPrefix.length),
+      );
+    } catch (_) {
+      // Supabase owns session invalidation. A temporary refresh error must
+      // leave the existing session available so the screen can offer a retry.
       handler.next(err);
+      return;
     }
-  }
+    if (newToken == null ||
+        newToken != _authSessionManager.currentAccessToken ||
+        requestOptions.cancelToken?.isCancelled == true) {
+      handler.next(err);
+      return;
+    }
 
-  Future<void> _signOutQuietly() async {
+    requestOptions.headers['Authorization'] = '$_bearerPrefix$newToken';
+    metadata[RequestMetadata.retryReason] = 'auth_refresh';
     try {
-      await _authSessionManager.signOut();
-    } catch (e) {
-      debugPrint('[AuthInterceptor] Sign-out failed: $e');
+      handler.resolve(await _replayRequest(requestOptions));
+    } on DioException catch (retryError) {
+      handler.next(retryError);
+    } catch (_) {
+      handler.next(err);
     }
   }
 }
