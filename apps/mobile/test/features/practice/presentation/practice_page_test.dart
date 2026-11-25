@@ -43,6 +43,20 @@ void main() {
       expect(titleStyle.fontSize, 18);
       expect(titleStyle.fontWeight, FontWeight.w600);
       expect(titleStyle.letterSpacing, closeTo(-0.45, 0.001));
+
+      for (final (type, label) in [
+        ('VOCABULARY', '단어'),
+        ('GRAMMAR', '문법'),
+        ('KANJI', '한자'),
+        ('LISTENING', '리스닝'),
+        ('SENTENCE_ARRANGE', '문장배열'),
+      ]) {
+        final tab = find.byKey(ValueKey('practice-category-$type'));
+        final text = find.descendant(of: tab, matching: find.text(label));
+        expect(tester.getCenter(text).dy,
+            closeTo(tester.getCenter(tab).dy - 1, 0.001));
+        if (type == 'SENTENCE_ARRANGE') expect(tester.getSize(tab).width, 84);
+      }
     });
 
     for (final category in ['VOCABULARY', 'GRAMMAR']) {
