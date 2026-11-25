@@ -12,6 +12,8 @@ import 'package:harukoto_mobile/core/network/network_base.dart';
 import 'package:harukoto_mobile/features/kana/data/kana_repository.dart';
 import 'package:harukoto_mobile/features/kana/domain/kana_card_progress.dart';
 
+import '../../../core/auth/auth_session_fixture.dart';
+
 enum _Write { progress, start, answer, quiz, stage }
 
 const _cardOwner = '11111111-1111-4111-8111-111111111111';
@@ -44,7 +46,7 @@ void main() {
 
       expect(h.transport.requests, hasLength(1));
       expect(h.transport.requests.single['authorization'],
-          'Bearer fixture-learner-a');
+          'Bearer ${_learnerToken('learner-a', 1)}');
       expect(h.transport.requests.single['skipAuthRefresh'], isTrue);
       expect(h.transport.requests.single['skipNetworkRetry'], isTrue);
       h.expectNoAuthMutation();
@@ -226,7 +228,7 @@ void main() {
     expect(h.auth.signOuts, 0);
     expect(h.transport.requests.first['skipAuthRefresh'], isNull);
     expect(h.transport.requests.last['authorization'],
-        'Bearer refreshed-learner-a');
+        'Bearer ${_learnerToken('learner-a', 2)}');
   });
 
   for (final invalid in [
@@ -309,18 +311,26 @@ Future<Object?> _perform(KanaRepository repository, _Write write) =>
         repository.completeStage(stageId: 'stage-1', quizScore: 80),
     };
 
+String _learnerToken(String learner, int version) =>
+    fixtureAccessToken(learner, version, userId: learner);
+
 class _AuthStore implements AuthSessionStore {
   String? owner = 'learner-a';
+  int _tokenVersion = 1;
   int refreshes = 0;
   int signOuts = 0;
 
   @override
-  String? get currentAccessToken => owner == null ? null : 'fixture-$owner';
+  String? get currentAccessToken {
+    final learner = owner;
+    return learner == null ? null : _learnerToken(learner, _tokenVersion);
+  }
 
   @override
   Future<String?> refreshAccessToken() async {
     refreshes++;
-    return owner == null ? null : 'refreshed-$owner';
+    _tokenVersion++;
+    return currentAccessToken;
   }
 
   @override
