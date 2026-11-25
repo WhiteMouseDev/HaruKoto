@@ -173,7 +173,7 @@ class LessonContextPreviewStep extends StatelessWidget {
             ),
           ),
         ),
-        LessonStageActions(nextLabel: '학습 시작', onNext: onNext),
+        LessonStageActions(nextLabel: '학습 시작', onNext: onNext, compact: true),
       ],
     );
   }
@@ -291,8 +291,8 @@ class _LessonGoalCard extends StatelessWidget {
         padding: const EdgeInsets.all(AppSizes.md),
         child: Column(
           children: [
-            Icon(
-              LucideIcons.bookOpen,
+            ImageIcon(
+              const AssetImage('assets/icons/home-nav-study.png'),
               size: 18,
               color: light ? AppColors.brandPink : colors.onPrimaryContainer,
             ),

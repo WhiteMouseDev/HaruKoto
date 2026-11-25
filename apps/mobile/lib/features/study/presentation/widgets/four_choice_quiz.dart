@@ -101,7 +101,7 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
                 style: TextStyle(
                   fontFamily: redesignFontFamily,
                   fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   height: 1.35,
                   letterSpacing: -0.3,
                   color: light ? Colors.white : accent,
@@ -114,11 +114,11 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
         Text(
           widget.question.questionText,
           style: theme.textTheme.headlineMedium?.copyWith(
-            fontFamily: redesignFontFamily,
-            fontSize: 26,
+            fontFamily: redesignJapaneseFontFamily,
+            fontSize: 28,
             fontWeight: FontWeight.w600,
             height: 1.4,
-            letterSpacing: -0.65,
+            letterSpacing: -0.7,
             color: foreground,
           ),
           textAlign: TextAlign.center,
@@ -126,16 +126,16 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
         if (widget.showFurigana &&
             reading != null &&
             reading != widget.question.questionText) ...[
-          const SizedBox(height: 2),
+          const SizedBox(height: 3.2),
           Text(
             reading,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontFamily: redesignFontFamily,
-              fontSize: 14,
+              fontFamily: redesignJapaneseFontFamily,
+              fontSize: 12,
               height: 1.4,
-              letterSpacing: -0.35,
+              letterSpacing: -0.3,
               color: light
-                  ? AppColors.redesignMutedForeground
+                  ? const Color(0xFF767676)
                   : theme.colorScheme.onSurfaceVariant,
             ),
             textAlign: TextAlign.center,
@@ -145,11 +145,11 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
         Center(
           child: TtsPlayButton(
             vocabId: widget.question.questionId,
-            iconSize: 20,
+            iconSize: 22,
             iconColor: accent,
           ),
         ),
-        const SizedBox(height: 21),
+        const SizedBox(height: 9),
         Column(
           spacing: 6,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -215,7 +215,7 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
                 ),
               ),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 42),
+                constraints: const BoxConstraints(minHeight: 40),
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -225,6 +225,7 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontFamily: redesignFontFamily,
                         fontSize: 14,
+                        fontWeight: FontWeight.w500,
                         height: 1.4,
                         letterSpacing: -0.35,
                         color: light

@@ -49,7 +49,7 @@ class QuizProgressBar extends StatelessWidget {
                 value: value,
                 minHeight: hasLabels ? AppSizes.sm : AppSizes.progressHeight,
                 backgroundColor: hasLabels && isLight
-                    ? AppColors.redesignProgressTrack
+                    ? AppColors.redesignDetailTrack
                     : theme.colorScheme.surfaceContainerHigh,
                 borderRadius: hasLabels ? BorderRadius.circular(500) : null,
                 trackGap: hasLabels ? 0 : null,
@@ -65,7 +65,12 @@ class QuizProgressBar extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('$current개', style: labelStyle),
+                Text(
+                  '$current개',
+                  style: isLight
+                      ? labelStyle.copyWith(color: AppColors.redesignForeground)
+                      : labelStyle,
+                ),
                 Text('$total개', style: labelStyle),
               ],
             ),

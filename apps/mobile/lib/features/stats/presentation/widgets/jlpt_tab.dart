@@ -70,6 +70,8 @@ class _JlptTabState extends ConsumerState<JlptTab> {
     final foreground = light ? AppColors.redesignForeground : colors.onSurface;
     final surface =
         light ? AppColors.redesignSurface : colors.surfaceContainerHigh;
+    final compact = MediaQuery.sizeOf(context).height < 812 ||
+        MediaQuery.textScalerOf(context).scale(16) > 16;
 
     return DefaultTextStyle.merge(
       style: _text(13).copyWith(color: foreground),
@@ -138,10 +140,7 @@ class _JlptTabState extends ConsumerState<JlptTab> {
             ),
           ),
           if (nextLevelIndex > 0 && nextLevelIndex < _levels.length) ...[
-            SizedBox(
-              height:
-                  MediaQuery.sizeOf(context).height < 830 ? AppSizes.xl : 40,
-            ),
+            SizedBox(height: compact ? AppSizes.xl : 40),
             _NextGoal(
               level: _levels[nextLevelIndex],
               description: _levelDescriptions[nextLevelIndex],
@@ -349,6 +348,7 @@ class _LevelProgress extends StatelessWidget {
         ),
         const SizedBox(height: AppSizes.md),
         Container(
+          key: const ValueKey('jlpt-remaining-summary'),
           constraints: const BoxConstraints(minHeight: 36),
           padding: const EdgeInsets.symmetric(
               horizontal: AppSizes.gap, vertical: AppSizes.sm),

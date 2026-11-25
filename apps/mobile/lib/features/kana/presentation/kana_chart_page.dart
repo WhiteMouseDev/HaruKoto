@@ -43,15 +43,23 @@ class _KanaChartPageState extends ConsumerState<KanaChartPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsetsDirectional.only(
+                top: 8,
+                end: 20,
+                bottom: 2,
+              ),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(LucideIcons.arrowLeft, size: 20),
-                    color: foreground,
-                    onPressed: () => context.pop(),
-                    tooltip:
-                        MaterialLocalizations.of(context).backButtonTooltip,
+                  SizedBox(
+                    width: 52,
+                    child: IconButton(
+                      padding: const EdgeInsetsDirectional.only(start: 8),
+                      icon: const Icon(LucideIcons.arrowLeft, size: 20),
+                      color: foreground,
+                      onPressed: () => context.pop(),
+                      tooltip:
+                          MaterialLocalizations.of(context).backButtonTooltip,
+                    ),
                   ),
                   Expanded(
                     child: Semantics(
@@ -65,6 +73,7 @@ class _KanaChartPageState extends ConsumerState<KanaChartPage> {
                             fontSize: 20,
                             height: 1.4,
                             fontWeight: FontWeight.w600,
+                            letterSpacing: -0.5,
                             color: foreground,
                           ),
                         ),
@@ -79,6 +88,7 @@ class _KanaChartPageState extends ConsumerState<KanaChartPage> {
               child: AppSegmentedTabs(
                 labels: _labels,
                 compact: true,
+                labelFontWeight: FontWeight.w500,
                 selectedIndex: _selectedIndex,
                 onChanged: (index) => setState(() => _selectedIndex = index),
               ),

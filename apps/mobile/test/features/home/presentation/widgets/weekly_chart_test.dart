@@ -61,6 +61,12 @@ void main() {
     expect(find.text('오늘 단어 1개만 학습해도 그래프가 채워져요!'), findsOneWidget);
     expect(find.text('0개'), findsOneWidget);
     expect(find.text('0일'), findsOneWidget);
+    final emptyMessage =
+        tester.widget<Text>(find.text('이번 주 학습 기록이 아직 없어요')).style!;
+    expect(emptyMessage.fontSize, 14);
+    expect(emptyMessage.fontWeight, FontWeight.w500);
+    expect(emptyMessage.letterSpacing, closeTo(-0.35, 0.001));
+    expect(emptyMessage.height, 1.5);
 
     await _pumpChart(tester, isLoading: true);
     expect(find.text('주간 학습 기록을 불러오는 중이에요'), findsOneWidget);

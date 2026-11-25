@@ -145,16 +145,20 @@ void main() {
     final nextItem = find.widgetWithText(OutlinedButton, '다음 단어');
     final advance = find.widgetWithText(FilledButton, '다음학습');
 
-    final count = find.text('단어 1/2');
+    final count = find.text('단어 1 / 2');
     expect(count, findsOneWidget);
     expect(tester.getTopRight(count).dx,
         tester.getTopRight(find.byType(Scaffold)).dx - 40);
     expect(tester.widget<OutlinedButton>(previousItem).onPressed, isNull);
     expect(tester.widget<FilledButton>(advance).onPressed, isNull);
+    final advanceSurface =
+        find.descendant(of: advance, matching: find.byType(Material));
+    expect(tester.getSize(advanceSurface).height, 42);
+    expect(tester.getSize(advance).height, 48);
 
     await tester.tap(nextItem);
     await tester.pumpAndSettle();
-    expect(find.text('단어 2/2'), findsOneWidget);
+    expect(find.text('단어 2 / 2'), findsOneWidget);
     expect(find.text('나형용사'), findsOneWidget);
     expect(tester.widget<OutlinedButton>(nextItem).onPressed, isNull);
     expect(tester.widget<FilledButton>(advance).onPressed, isNotNull);

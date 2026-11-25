@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import 'my_settings_group.dart';
 
@@ -27,25 +26,29 @@ class AccountSection extends StatelessWidget {
           label: '계정',
           rows: [
             ListTile(
-              leading: Icon(
-                LucideIcons.logOut,
-                size: 20,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              leading: const MySettingsIcon('logout'),
               title: Text(
                 loggingOut ? '로그아웃 중...' : '로그아웃',
                 style: const TextStyle(fontSize: 14),
               ),
+              trailing: const MySettingsChevron(),
               onTap: loggingOut ? null : onLogout,
             ),
           ],
         ),
         Align(
-          alignment: Alignment.center,
+          alignment: AlignmentDirectional.centerStart,
           child: TextButton(
             onPressed: () => _showDeleteDialog(context),
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.error(brightness),
+              padding: const EdgeInsetsDirectional.only(start: 4, end: 20),
+              foregroundColor: brightness == Brightness.light
+                  ? AppColors.redesignMutedForeground
+                  : theme.colorScheme.onSurfaceVariant,
+              textStyle: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+              ),
             ),
             child: const Text('회원탈퇴', semanticsLabel: '회원 탈퇴'),
           ),

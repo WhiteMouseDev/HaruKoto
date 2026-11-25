@@ -37,6 +37,12 @@ void main() {
       expect(find.text('0개'), findsNWidgets(3));
       expect(find.text('오늘의 단어 학습'), findsNothing);
       expect(find.text('학습 관리'), findsNothing);
+
+      final titleStyle = tester.widget<Text>(find.text('단어 퀴즈 풀기')).style!;
+      expect(titleStyle.fontFamily, 'Pretendard');
+      expect(titleStyle.fontSize, 18);
+      expect(titleStyle.fontWeight, FontWeight.w600);
+      expect(titleStyle.letterSpacing, closeTo(-0.45, 0.001));
     });
 
     for (final category in ['VOCABULARY', 'GRAMMAR']) {
@@ -118,6 +124,14 @@ void main() {
       expect(find.bySemanticsLabel('정답 8개'), findsOneWidget);
       expect(find.bySemanticsLabel('오답 2개'), findsOneWidget);
 
+      final metric = tester.widget<Text>(find.text('10개'));
+      final unitStyle = (metric.textSpan! as TextSpan).children!.single.style!;
+      expect(metric.style!.fontSize, 18);
+      expect(metric.style!.fontWeight, FontWeight.w600);
+      expect(unitStyle.fontSize, 13);
+      expect(unitStyle.fontWeight, FontWeight.w400);
+      expect(unitStyle.letterSpacing, closeTo(-0.325, 0.001));
+
       await tester.tap(find.byKey(const ValueKey('practice-category-GRAMMAR')));
       await tester.pumpAndSettle();
 
@@ -158,7 +172,7 @@ void main() {
       });
       expect(find.bySemanticsLabel('오늘의 기록 불러오는 중'), findsOneWidget);
       expect(find.byType(AppSkeletonBlock), findsNWidgets(3));
-      expect(find.text('푼 문제'), findsOneWidget);
+      expect(find.text('오늘 푼 퀴즈'), findsOneWidget);
       expect(find.text('정답'), findsOneWidget);
       expect(find.text('오답'), findsOneWidget);
       expect(find.text('0개'), findsNothing);

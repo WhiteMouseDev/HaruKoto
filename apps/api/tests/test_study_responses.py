@@ -131,6 +131,7 @@ def test_to_study_wrong_answers_response_builds_entries_and_summary() -> None:
             "mastered": 2,
             "remaining": 4,
         },
+        "supportsSearchAndStatus": True,
     }
 
 

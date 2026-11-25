@@ -12,12 +12,14 @@ class LessonStageActions extends StatelessWidget {
     required this.onNext,
     this.onPrevious,
     this.showPrevious = false,
+    this.compact = false,
   });
 
   final String nextLabel;
   final VoidCallback? onNext;
   final VoidCallback? onPrevious;
   final bool showPrevious;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,9 @@ class LessonStageActions extends StatelessWidget {
       horizontal: AppSizes.gap,
       vertical: AppSizes.sm,
     );
-    const minimumSize = Size(0, AppSizes.buttonHeight);
+    final minimumSize = Size(0, compact ? 42 : AppSizes.buttonHeight);
+    final tapTargetSize = compact ? MaterialTapTargetSize.padded : null;
+    final visualDensity = compact ? VisualDensity.standard : null;
     final next = FilledButton(
       onPressed: onNext,
       style: FilledButton.styleFrom(
@@ -52,6 +56,8 @@ class LessonStageActions extends StatelessWidget {
             light ? AppColors.redesignControl : colors.surfaceContainerHigh,
         disabledForegroundColor: colors.onSurfaceVariant,
         minimumSize: minimumSize,
+        tapTargetSize: tapTargetSize,
+        visualDensity: visualDensity,
         padding: padding,
         shape: shape,
         textStyle: textStyle,
@@ -84,6 +90,8 @@ class LessonStageActions extends StatelessWidget {
                         color:
                             light ? AppColors.redesignOutline : colors.outline),
                     minimumSize: minimumSize,
+                    tapTargetSize: tapTargetSize,
+                    visualDensity: visualDensity,
                     padding: padding,
                     shape: shape,
                     textStyle: textStyle,

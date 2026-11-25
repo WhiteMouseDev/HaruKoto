@@ -55,10 +55,21 @@ void main() {
           container: container,
           child: MaterialApp.router(routerConfig: router)));
       await tester.pumpAndSettle();
-      tester.widget<BottomNav>(find.byType(BottomNav)).onTap(1);
+      final dock = find.byType(BottomNav);
+      final homeLabel = find.descendant(of: dock, matching: find.text('홈'));
+      final studyLabel = find.descendant(of: dock, matching: find.text('학습'));
+      expect(tester.widget<Text>(homeLabel).style?.fontWeight, FontWeight.w600);
+      final studyStyle = tester.widget<Text>(studyLabel).style!;
+      expect(studyStyle.fontSize, 11);
+      expect(studyStyle.fontWeight, FontWeight.w500);
+      expect(studyStyle.letterSpacing, -0.275);
+      expect(studyStyle.height, 1.4);
+      tester.widget<BottomNav>(dock).onTap(1);
       await tester.pumpAndSettle();
       expect(refresh.calls, 0);
-      tester.widget<BottomNav>(find.byType(BottomNav)).onTap(0);
+      expect(
+          tester.widget<Text>(studyLabel).style?.fontWeight, FontWeight.w600);
+      tester.widget<BottomNav>(dock).onTap(0);
       await tester.pumpAndSettle();
       expect(refresh.calls, 1);
       now = DateTime.utc(2026, 9, 27, 15);

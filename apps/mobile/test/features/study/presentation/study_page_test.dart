@@ -106,6 +106,14 @@ void main() {
       expect(find.text('전체 보기'), findsNothing);
       expect(find.text('추천 역'), findsOneWidget);
       expect(find.text('학습 시작'), findsOneWidget);
+      final lessonTitle = tester.widget<Text>(find.text('Lesson 2')).style!;
+      expect(lessonTitle.fontSize, 18);
+      expect(lessonTitle.fontWeight, FontWeight.w600);
+      expect(lessonTitle.letterSpacing, -0.45);
+      final location = tester.widget<Text>(find.text('1번 역 · 2번째 레슨')).style!;
+      expect(location.fontSize, 13);
+      expect(location.fontWeight, FontWeight.w400);
+      expect(location.letterSpacing, -0.325);
       final station = find.byKey(const ValueKey('station-toggle-chapter-1'));
       final inlineLesson =
           find.byKey(const ValueKey('station-lesson-lesson-2'));

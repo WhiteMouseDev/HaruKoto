@@ -51,7 +51,7 @@ class QuizStandardModeContent extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: AppSizes.sm, bottom: 10),
+              padding: const EdgeInsets.only(top: 10, bottom: AppSizes.sm),
               child: QuizHeader(title: title, onBack: onBack),
             ),
             Padding(

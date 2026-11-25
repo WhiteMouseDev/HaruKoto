@@ -12,9 +12,11 @@ class MySettingsGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final outline = theme.brightness == Brightness.light
-        ? AppColors.redesignOutline
-        : theme.colorScheme.outline;
+    final light = theme.brightness == Brightness.light;
+    final foreground =
+        light ? AppColors.redesignForeground : theme.colorScheme.onSurface;
+    final outline =
+        light ? AppColors.redesignOutline : theme.colorScheme.outline;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -26,7 +28,9 @@ class MySettingsGroup extends StatelessWidget {
               fontFamily: redesignFontFamily,
               fontSize: 16,
               fontWeight: FontWeight.w600,
+              height: 1.4,
               letterSpacing: -0.4,
+              color: foreground,
             ),
           ),
         ),
@@ -40,9 +44,79 @@ class MySettingsGroup extends StatelessWidget {
             side: BorderSide(color: outline),
           ),
           clipBehavior: Clip.antiAlias,
-          child: Column(children: rows),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 9),
+            child: ListTileTheme(
+              data: ListTileTheme.of(context).copyWith(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 17),
+                minLeadingWidth: 24,
+                horizontalTitleGap: 8,
+                minTileHeight: 56,
+                titleTextStyle: TextStyle(
+                  fontFamily: redesignFontFamily,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: foreground,
+                  height: 1.5,
+                  letterSpacing: -0.35,
+                ),
+                subtitleTextStyle: TextStyle(
+                  fontFamily: redesignFontFamily,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: light
+                      ? AppColors.redesignMutedForeground
+                      : theme.colorScheme.onSurfaceVariant,
+                  height: 1.4,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              child: Column(children: rows),
+            ),
+          ),
         ),
       ],
+    );
+  }
+}
+
+class MySettingsIcon extends StatelessWidget {
+  const MySettingsIcon(this.name, {super.key, this.size = 24});
+
+  final String name;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      dimension: 24,
+      child: Center(
+        child: Image.asset(
+          'assets/icons/figma-my-$name.png',
+          width: size,
+          height: size,
+          fit: BoxFit.contain,
+          excludeFromSemantics: true,
+        ),
+      ),
+    );
+  }
+}
+
+class MySettingsChevron extends StatelessWidget {
+  const MySettingsChevron({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Image.asset(
+      'assets/icons/figma-my-settings-chevron.png',
+      width: 16,
+      height: 16,
+      color:
+          colors.brightness == Brightness.dark ? colors.onSurfaceVariant : null,
+      excludeFromSemantics: true,
+      matchTextDirection: true,
     );
   }
 }

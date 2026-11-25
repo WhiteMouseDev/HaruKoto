@@ -8,11 +8,13 @@ class WrongAnswersMiniStat extends StatelessWidget {
     super.key,
     required this.label,
     required this.value,
+    required this.unit,
     this.isError = false,
   });
 
   final String label;
-  final String value;
+  final int value;
+  final String unit;
   final bool isError;
 
   @override
@@ -29,22 +31,40 @@ class WrongAnswersMiniStat extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Column(
           children: [
-            Text(
-              value,
+            Text.rich(
+              TextSpan(
+                text: '$value',
+                style: TextStyle(
+                  color: isError
+                      ? (light ? const Color(0xFFD32F2F) : colors.error)
+                      : foreground,
+                ),
+                children: [
+                  TextSpan(
+                    text: unit,
+                    style: TextStyle(
+                      color: foreground,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: redesignFontFamily,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: isError ? AppColors.error(theme.brightness) : foreground,
+                height: 1.5,
               ),
             ),
+            const SizedBox(height: 4),
             Text(
               label,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: redesignFontFamily,
                 fontSize: 11,
+                height: 1.5,
                 color: secondary,
               ),
             ),

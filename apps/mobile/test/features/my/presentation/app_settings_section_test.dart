@@ -1,3 +1,5 @@
+import 'dart:ui' show Tristate;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/features/my/presentation/widgets/app_settings_section.dart';
+import 'package:harukoto_mobile/features/my/presentation/widgets/my_settings_toggle_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _channel = MethodChannel('com.harukoto.app/app_version');
@@ -55,6 +58,49 @@ void main() {
 
     expect(find.text('—'), findsOneWidget);
     expect(find.text('테마 선택'), findsOneWidget);
+  });
+
+  testWidgets('uses the settings row grid and keeps the sound switch tappable',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 812));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await _pumpSettings(tester);
+
+    final card = tester.getRect(find.byType(Card));
+    final versionRow = tester.getRect(find.widgetWithText(ListTile, '앱 버전'));
+    final themeRow = tester.getRect(find.widgetWithText(ListTile, '테마 선택'));
+    expect(versionRow.top - card.top, 9);
+    expect(versionRow.height, 56);
+    expect(themeRow.top, versionRow.bottom);
+    expect(tester.getTopLeft(find.text('앱 버전')).dx - card.left, 49);
+
+    final soundTile = find.widgetWithText(MySettingsToggleTile, '효과음');
+    final soundToggle = find.descendant(
+      of: soundTile,
+      matching: find.byType(Switch),
+    );
+    final track = tester.getRect(find.descendant(
+      of: soundTile,
+      matching: find.byType(AnimatedContainer),
+    ));
+    expect(track.size, const Size(50, 28));
+    expect(track.right, card.right - 17);
+    expect(track.center.dy, tester.getRect(soundTile).center.dy);
+    final enabled = tester.widget<Switch>(soundToggle).value;
+    expect(
+      tester
+          .getSemantics(soundTile)
+          .getSemanticsData()
+          .flagsCollection
+          .isToggled,
+      enabled ? Tristate.isTrue : Tristate.isFalse,
+    );
+    await tester.tap(find.text('효과음'));
+    await tester.pumpAndSettle();
+    expect(tester.widget<Switch>(soundToggle).value, !enabled);
+    await tester.tap(soundToggle);
+    await tester.pumpAndSettle();
+    expect(tester.widget<Switch>(soundToggle).value, enabled);
   });
 }
 

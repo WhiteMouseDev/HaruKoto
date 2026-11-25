@@ -160,9 +160,10 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
               child: Text('오늘 복습할 표현',
                   style: TextStyle(
                     fontFamily: redesignFontFamily,
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.w600,
                     height: 1.4,
+                    letterSpacing: -0.45,
                     color: light
                         ? AppColors.redesignForeground
                         : theme.colorScheme.onSurface,
@@ -175,8 +176,10 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
                   : '학습한 내용을 복습하고, 실력을 키워봐요!',
               style: TextStyle(
                 fontFamily: redesignFontFamily,
-                fontSize: 12,
-                height: 1.4,
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+                letterSpacing: -0.325,
                 color: light
                     ? AppColors.redesignMutedForeground
                     : theme.colorScheme.onSurfaceVariant,
@@ -260,8 +263,9 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
               ? const TextStyle(
                   fontFamily: redesignFontFamily,
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   height: 1.4,
+                  letterSpacing: -0.35,
                 )
               : null,
         ),
@@ -298,8 +302,10 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
                       breakdown,
                       style: TextStyle(
                         fontFamily: redesignFontFamily,
-                        fontSize: 12,
-                        height: 1.4,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        height: 1.5,
+                        letterSpacing: -0.325,
                         color: light
                             ? AppColors.redesignMutedForeground
                             : theme.colorScheme.onSurfaceVariant,

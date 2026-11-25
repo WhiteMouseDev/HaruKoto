@@ -360,8 +360,9 @@ class _PracticeResumeCard extends StatelessWidget {
           title,
           style: TextStyle(
             fontFamily: redesignFontFamily,
-            fontSize: 16,
+            fontSize: 18,
             height: 1.4,
+            letterSpacing: -0.45,
             fontWeight: FontWeight.w600,
             color: light
                 ? AppColors.redesignForeground
@@ -372,8 +373,10 @@ class _PracticeResumeCard extends StatelessWidget {
         DefaultTextStyle(
           style: TextStyle(
             fontFamily: redesignFontFamily,
-            fontSize: 12,
-            height: 1.4,
+            fontSize: 13,
+            height: 1.5,
+            fontWeight: FontWeight.w400,
+            letterSpacing: -0.325,
             color: light
                 ? AppColors.redesignMutedForeground
                 : theme.colorScheme.onSurfaceVariant,
@@ -396,8 +399,10 @@ class _PracticeResumeCard extends StatelessWidget {
                   child: Text(
                     session.jlptLevel,
                     style: TextStyle(
-                      height: 1.25,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      height: 1.4,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: -0.3,
                       color: light
                           ? Colors.white
                           : theme.colorScheme.onPrimaryContainer,
@@ -427,9 +432,10 @@ class _PracticeResumeCard extends StatelessWidget {
         shape: const StadiumBorder(),
         textStyle: const TextStyle(
           fontFamily: redesignFontFamily,
-          fontSize: 12,
+          fontSize: 13,
           height: 1.4,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
+          letterSpacing: -0.325,
         ),
       ),
       child: Text(

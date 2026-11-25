@@ -44,6 +44,7 @@ class FreeQuizSheetContent extends StatelessWidget {
       fontSize: 16,
       height: 1.4,
       fontWeight: FontWeight.w600,
+      letterSpacing: -0.4,
     );
 
     return SafeArea(
@@ -61,7 +62,7 @@ class FreeQuizSheetContent extends StatelessWidget {
               child: Text(
                 '${selection.contentLabel} 퀴즈 풀기',
                 textAlign: TextAlign.center,
-                style: heading.copyWith(fontSize: 20),
+                style: heading.copyWith(fontSize: 20, letterSpacing: -0.5),
               ),
             ),
             const SizedBox(height: 20),
@@ -71,6 +72,7 @@ class FreeQuizSheetContent extends StatelessWidget {
               choices: FreeQuizSelection.jlptLevels,
               selected: selection.level,
               columnLimit: FreeQuizSelection.jlptLevels.length,
+              emphasizeSelection: true,
               onChanged: onLevelChanged,
             ),
             const SizedBox(height: 6),
@@ -99,7 +101,7 @@ class FreeQuizSheetContent extends StatelessWidget {
                 foregroundColor: light ? Colors.white : null,
                 minimumSize: const Size(0, 48),
                 shape: const StadiumBorder(),
-                textStyle: heading.copyWith(fontSize: 14),
+                textStyle: heading.copyWith(fontSize: 14, letterSpacing: -0.35),
               ),
               child: const Text('퀴즈 시작', textAlign: TextAlign.center),
             ),
@@ -111,6 +113,7 @@ class FreeQuizSheetContent extends StatelessWidget {
 }
 
 class _FreeQuizChoices extends StatelessWidget {
+  final bool emphasizeSelection;
   final List<String> choices;
   final String selected;
   final int columnLimit;
@@ -124,6 +127,7 @@ class _FreeQuizChoices extends StatelessWidget {
     required this.columnLimit,
     this.labels = const {},
     this.icons = const {},
+    this.emphasizeSelection = false,
     required this.onChanged,
   });
 
@@ -175,10 +179,14 @@ class _FreeQuizChoices extends StatelessWidget {
                           horizontal: 8,
                           vertical: 8,
                         ),
-                        textStyle: const TextStyle(
+                        textStyle: TextStyle(
                           fontFamily: redesignFontFamily,
                           fontSize: 14,
+                          fontWeight: emphasizeSelection && choice == selected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
                           height: 1.4,
+                          letterSpacing: -0.35,
                         ),
                       ),
                       child: Row(
@@ -245,7 +253,9 @@ class _FreeQuizStatsStrip extends StatelessWidget {
               ? AppColors.redesignForeground
               : theme.colorScheme.onSurface,
           fontSize: 12,
-          height: 1.4,
+          height: 1.5,
+          fontWeight: FontWeight.w400,
+          letterSpacing: -0.3,
         ),
         child: SizedBox(
           width: double.infinity,
@@ -259,7 +269,7 @@ class _FreeQuizStatsStrip extends StatelessWidget {
                 Text('$label ${countFormat(current.totalCount)}개'),
                 Text(
                   '진행률 ${countFormat(current.progress)}%',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
               ] else
                 Text(loading ? '진행률 불러오는 중' : '진행률을 불러오지 못했어요'),

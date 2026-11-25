@@ -38,6 +38,23 @@ void main() {
       expect(find.text('문법 96개'), findsOneWidget);
       expect(find.text('진행률 25%'), findsOneWidget);
 
+      TextStyle optionStyle(String label) {
+        final option = find.ancestor(
+          of: find.text(label),
+          matching: find.byType(OutlinedButton),
+        );
+        return tester
+            .widget<OutlinedButton>(option)
+            .style!
+            .textStyle!
+            .resolve({})!;
+      }
+
+      expect(optionStyle('N4').fontWeight, FontWeight.w600);
+      expect(optionStyle('N5').fontWeight, FontWeight.w500);
+      expect(optionStyle('4지선다').fontWeight, FontWeight.w500);
+      expect(optionStyle('4지선다').letterSpacing, closeTo(-0.35, 0.001));
+
       await tester.tap(find.text('N5'));
       await tester.pumpAndSettle();
       expect(find.text('문법 184개'), findsOneWidget);

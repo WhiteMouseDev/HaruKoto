@@ -95,7 +95,7 @@ class _WeeklyChartState extends State<WeeklyChart> {
         children: [
           Text(
             '주간 학습',
-            style: _chartText(theme, 20, weight: FontWeight.w600),
+            style: _chartText(theme, 20, weight: FontWeight.w600, height: 1.4),
           ),
           const SizedBox(height: 16),
           Container(
@@ -185,7 +185,7 @@ class _WeeklyChartState extends State<WeeklyChart> {
                                       message,
                                       textAlign: TextAlign.center,
                                       style: _chartText(theme, 14,
-                                          weight: FontWeight.w600),
+                                          weight: FontWeight.w500),
                                     ),
                                     if (showExamples && studyDays == 0) ...[
                                       const SizedBox(height: 2),
@@ -236,7 +236,8 @@ class _WeeklyChartState extends State<WeeklyChart> {
               shape: const StadiumBorder(),
               foregroundColor: _chartForeground(theme),
               side: BorderSide(color: _chartBorder(theme)),
-              textStyle: _chartText(theme, 13, weight: FontWeight.w600),
+              textStyle:
+                  _chartText(theme, 13, weight: FontWeight.w500, height: 1.4),
             ),
             onPressed: () {
               HapticService().selection();
@@ -292,12 +293,13 @@ TextStyle? _chartText(
   double size, {
   FontWeight weight = FontWeight.w400,
   Color? color,
+  double height = 1.5,
 }) =>
     theme.textTheme.bodyMedium?.copyWith(
       fontFamily: redesignFontFamily,
       fontSize: size,
       fontWeight: weight,
-      height: 1.4,
+      height: height,
       letterSpacing: -0.025 * size,
       color: color ?? _chartForeground(theme),
     );
@@ -448,10 +450,7 @@ class _WeeklyDay extends StatelessWidget {
                       _weekdays[column],
                       style: _chartText(
                         theme,
-                        11,
-                        weight: isToday || selected
-                            ? FontWeight.w600
-                            : FontWeight.w400,
+                        12,
                         color: showExample
                             ? muted.withValues(alpha: 0.25)
                             : future
@@ -603,7 +602,7 @@ class _WeekTotals extends StatelessWidget {
                   color: count == null || count == 0
                       ? muted
                       : theme.colorScheme.onSurface,
-                  weight: FontWeight.w600)),
+                  weight: FontWeight.w500)),
         ],
       );
     }

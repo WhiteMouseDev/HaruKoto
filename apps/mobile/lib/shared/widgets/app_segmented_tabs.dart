@@ -10,6 +10,7 @@ class AppSegmentedTabs extends StatelessWidget {
     required this.labels,
     this.tabKeys,
     this.compact = false,
+    this.labelFontWeight,
     required this.selectedIndex,
     required this.onChanged,
   })  : assert(labels.length > 1),
@@ -19,6 +20,7 @@ class AppSegmentedTabs extends StatelessWidget {
   final List<String> labels;
   final List<Key>? tabKeys;
   final bool compact;
+  final FontWeight? labelFontWeight;
   final int selectedIndex;
   final ValueChanged<int> onChanged;
 
@@ -93,15 +95,16 @@ class AppSegmentedTabs extends StatelessWidget {
                 ? colors.onSurface
                 : colors.onSurfaceVariant,
         textStyle: compact
-            ? const TextStyle(
+            ? TextStyle(
                 fontFamily: redesignFontFamily,
                 fontSize: 13,
-                fontWeight: FontWeight.w400,
+                fontWeight: labelFontWeight ?? FontWeight.w400,
                 height: 1.4,
                 letterSpacing: -0.325,
               )
             : theme.textTheme.labelLarge?.copyWith(
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                fontWeight: labelFontWeight ??
+                    (selected ? FontWeight.w700 : FontWeight.w500),
               ),
       ),
       child: Semantics(

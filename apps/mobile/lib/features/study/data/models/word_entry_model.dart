@@ -72,6 +72,8 @@ class LearnedWordsSummary {
   }
 }
 
+enum WrongAnswerStatus { all, learning, mastered }
+
 class WrongEntryModel {
   final String id;
   final String vocabularyId;

@@ -193,6 +193,8 @@ class LessonContinueBanner extends ConsumerWidget {
               fontFamily: redesignFontFamily,
               fontSize: 16,
               fontWeight: FontWeight.w600,
+              height: 1.4,
+              letterSpacing: -0.4,
               color: foreground,
             )),
         const SizedBox(height: 12),
@@ -234,7 +236,9 @@ class LessonContinueBanner extends ConsumerWidget {
                           style: TextStyle(
                             fontFamily: redesignFontFamily,
                             fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
+                            letterSpacing: -0.3,
                             color: light
                                 ? AppColors.sakuraOn
                                 : colors.onPrimaryContainer,
@@ -244,7 +248,10 @@ class LessonContinueBanner extends ConsumerWidget {
                       Text(location,
                           style: TextStyle(
                             fontFamily: redesignFontFamily,
-                            fontSize: 12,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                            height: 1.5,
+                            letterSpacing: -0.325,
                             color: muted,
                           )),
                     ],
@@ -253,8 +260,10 @@ class LessonContinueBanner extends ConsumerWidget {
                   Text(lesson.title,
                       style: TextStyle(
                         fontFamily: redesignFontFamily,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        height: 1.4,
+                        letterSpacing: -0.45,
                         color: foreground,
                       )),
                   if (details.isNotEmpty) ...[
@@ -263,6 +272,9 @@ class LessonContinueBanner extends ConsumerWidget {
                         style: TextStyle(
                           fontFamily: redesignFontFamily,
                           fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          height: 1.5,
+                          letterSpacing: -0.325,
                           color: muted,
                         )),
                   ],
@@ -277,7 +289,9 @@ class LessonContinueBanner extends ConsumerWidget {
                       textStyle: const TextStyle(
                         fontFamily: redesignFontFamily,
                         fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
+                        height: 1.4,
+                        letterSpacing: -0.35,
                       ),
                     ),
                     onPressed: open,

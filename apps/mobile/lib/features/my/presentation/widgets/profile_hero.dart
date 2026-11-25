@@ -22,9 +22,8 @@ class ProfileHero extends StatelessWidget {
     final light = theme.brightness == Brightness.light;
     final foreground =
         light ? AppColors.redesignForeground : theme.colorScheme.onSurface;
-    final muted = light
-        ? AppColors.redesignMutedForeground
-        : theme.colorScheme.onSurfaceVariant;
+    final muted =
+        light ? const Color(0xFF767676) : theme.colorScheme.onSurfaceVariant;
     final xp = profile.levelProgress;
     final nickname = profile.nickname.trim();
     final displayName = nickname.isEmpty
@@ -36,9 +35,10 @@ class ProfileHero extends StatelessWidget {
         xp.xpForNext > 0 ? (xp.currentXp / xp.xpForNext).clamp(0.0, 1.0) : 0.0;
     final xpTextStyle = TextStyle(
       fontFamily: redesignFontFamily,
-      fontSize: 11,
-      height: 1.4,
-      letterSpacing: -0.275,
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      height: 1.5,
+      letterSpacing: -0.3,
       color: muted,
     );
     final stats = [
@@ -77,7 +77,7 @@ class ProfileHero extends StatelessWidget {
           child: Stack(
             children: [
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
                 child: Column(
                   children: [
                     ConstrainedBox(
@@ -86,7 +86,7 @@ class ProfileHero extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Wrap(
-                              spacing: 8,
+                              spacing: 4,
                               runSpacing: 4,
                               crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
@@ -118,9 +118,10 @@ class ProfileHero extends StatelessWidget {
                                           : profile.jlptLevel,
                                       style: TextStyle(
                                         fontFamily: redesignFontFamily,
-                                        fontSize: 10,
+                                        fontSize: 12,
                                         height: 1.4,
-                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: -0.3,
+                                        fontWeight: FontWeight.w500,
                                         color:
                                             light ? Colors.white : foreground,
                                       ),
@@ -134,7 +135,7 @@ class ProfileHero extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     LinearProgressIndicator(
                       value: xpProgress,
                       minHeight: 6,
@@ -146,13 +147,15 @@ class ProfileHero extends StatelessWidget {
                       color: AppColors.brandPink,
                       semanticsLabel: '레벨 경험치',
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
-                          child:
-                              Text('LV.${profile.level}', style: xpTextStyle),
+                          child: Text(
+                            'LV.${profile.level}',
+                            style: xpTextStyle.copyWith(color: foreground),
+                          ),
                         ),
                         const SizedBox(width: 8),
                         Flexible(
@@ -230,14 +233,15 @@ class ProfileMetricsCard extends StatelessWidget {
     final outline = colors.brightness == Brightness.light
         ? AppColors.redesignOutline
         : colors.outline;
-    return DecoratedBox(
+    return Container(
+      constraints: const BoxConstraints(minHeight: 89),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: outline),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 13),
+        padding: const EdgeInsets.all(11),
         child: LayoutBuilder(builder: (context, constraints) {
           final columns = constraints.maxWidth < 280 ||
                   MediaQuery.textScalerOf(context).scale(14) > 21
@@ -248,6 +252,7 @@ class ProfileMetricsCard extends StatelessWidget {
             children: [
               for (var offset = 0; offset < metrics.length; offset += columns)
                 Row(
+                  spacing: 8,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     for (final metric in metrics.skip(offset).take(columns))
@@ -295,16 +300,16 @@ class _ProfileMetric extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 4),
           Text(
             value,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: redesignFontFamily,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              height: 1.4,
-              letterSpacing: -0.4,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              height: 1.5,
+              letterSpacing: -0.35,
               color: light
                   ? AppColors.redesignForeground
                   : theme.colorScheme.onSurface,
@@ -315,11 +320,12 @@ class _ProfileMetric extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: redesignFontFamily,
-              fontSize: 11,
-              height: 1.4,
-              letterSpacing: -0.275,
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              height: 1.5,
+              letterSpacing: -0.3,
               color: light
-                  ? AppColors.redesignMutedForeground
+                  ? const Color(0xFF767676)
                   : theme.colorScheme.onSurfaceVariant,
             ),
           ),

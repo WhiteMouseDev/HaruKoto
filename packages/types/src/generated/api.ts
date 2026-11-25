@@ -4630,6 +4630,8 @@ export interface components {
             /** Totalpages */
             totalPages: number;
             summary: components["schemas"]["StudyWrongAnswersSummary"];
+            /** Supportssearchandstatus */
+            supportsSearchAndStatus?: boolean;
         };
         /** StudyWrongAnswersSummary */
         StudyWrongAnswersSummary: {
@@ -5041,6 +5043,8 @@ export interface components {
             /** Exampletranslation */
             exampleTranslation?: string | null;
         };
+        /** @enum {string} */
+        WrongAnswerStatus: "LEARNING" | "MASTERED";
         /** WrongAnswersResponse */
         WrongAnswersResponse: {
             /** Wronganswers */
@@ -8569,6 +8573,8 @@ export interface operations {
                 limit?: number;
                 sort?: string;
                 level?: string | null;
+                search?: string | null;
+                status?: components["schemas"]["WrongAnswerStatus"] | null;
             };
             header?: never;
             path?: never;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/colors.dart';
 import '../../core/services/haptic_service.dart';
+import '../../core/theme/text_theme.dart';
 
 class BottomNav extends StatelessWidget {
   const BottomNav({
@@ -27,6 +28,8 @@ class BottomNav extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final surface = theme.colorScheme.surfaceContainerLowest;
     final active = isDark ? AppColors.darkText : const Color(0xFF2A2A37);
+    final activeText =
+        isDark ? AppColors.darkText : AppColors.redesignForeground;
     final inactive = isDark ? AppColors.darkSubtext : const Color(0xFFA5A5AF);
     final inactiveText =
         isDark ? AppColors.darkSubtext : const Color(0xFF767676);
@@ -74,15 +77,15 @@ class BottomNav extends StatelessWidget {
                                 tab.label,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontFamily: 'Pretendard',
+                                  fontFamily: redesignFontFamily,
                                   fontSize: 11,
-                                  height: 1.3,
+                                  height: 1.4,
                                   letterSpacing: -0.275,
                                   fontWeight: index == currentIndex
                                       ? FontWeight.w600
-                                      : FontWeight.w400,
+                                      : FontWeight.w500,
                                   color: index == currentIndex
-                                      ? active
+                                      ? activeText
                                       : inactiveText,
                                 ),
                               ),

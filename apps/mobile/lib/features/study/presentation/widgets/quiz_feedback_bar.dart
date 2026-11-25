@@ -144,9 +144,8 @@ class QuizFeedbackBar extends StatelessWidget {
             style: FilledButton.styleFrom(
               backgroundColor: light ? AppColors.brandPink : null,
               foregroundColor: light ? Colors.white : null,
-              disabledBackgroundColor:
-                  light ? AppColors.brandPink.withValues(alpha: 0.28) : null,
-              disabledForegroundColor: light ? Colors.white : null,
+              disabledBackgroundColor: light ? AppColors.redesignControl : null,
+              disabledForegroundColor: light ? const Color(0xFF999999) : null,
               minimumSize: const Size(0, 48),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               shape: const StadiumBorder(),

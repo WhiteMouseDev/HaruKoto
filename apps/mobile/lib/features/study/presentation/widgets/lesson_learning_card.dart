@@ -141,7 +141,7 @@ class LessonLearningCard extends StatelessWidget {
                           const SizedBox(width: AppSizes.sm),
                           Expanded(
                             child: Text(
-                              '$itemType ${itemIndex + 1}/$itemCount',
+                              '$itemType ${itemIndex + 1} / $itemCount',
                               textAlign: TextAlign.end,
                               style: detailStyle.copyWith(fontSize: 12),
                             ),

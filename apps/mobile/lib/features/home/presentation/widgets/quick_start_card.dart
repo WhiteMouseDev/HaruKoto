@@ -131,6 +131,7 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
                   ValueKey('quick-start-tab-${category.name}'),
               ],
               compact: true,
+              labelFontWeight: FontWeight.w500,
               selectedIndex: _selectedIndex,
               onChanged: _selectTab,
             ),
@@ -194,7 +195,8 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
                                 )
                               : Text(
                                   '$reviewCount문제',
-                                  style: _studyText(14, color: secondary),
+                                  style: _studyText(14,
+                                      color: secondary, height: 1.5),
                                   textAlign: TextAlign.end,
                                 ),
                         ),
@@ -205,7 +207,7 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
                         labelColor: secondary,
                         value: Text(
                           jlptLevel,
-                          style: _studyText(14, color: secondary),
+                          style: _studyText(14, color: secondary, height: 1.5),
                           textAlign: TextAlign.end,
                         ),
                       ),
@@ -261,7 +263,7 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
                 foregroundColor: foreground,
                 minimumSize: const Size(48, 48),
                 iconAlignment: IconAlignment.end,
-                textStyle: _studyText(13, weight: FontWeight.w600),
+                textStyle: _studyText(13, weight: FontWeight.w500),
               ),
               label: const Text('오답노트 확인하기'),
               icon: SizedBox.square(
@@ -367,9 +369,9 @@ class _StudyDetailRow extends StatelessWidget {
       constraints: BoxConstraints(minHeight: isGoal ? 43 : 28),
       padding: EdgeInsets.fromLTRB(
         13,
-        isGoal ? 7 : AppSizes.xs,
+        isGoal ? 7 : 3.5,
         13,
-        isGoal ? 1 : AppSizes.xs,
+        isGoal ? 1 : 3.5,
       ),
       child: Row(
         children: [
@@ -395,6 +397,7 @@ class _StudyDetailRow extends StatelessWidget {
                     isGoal ? 16 : 14,
                     color: labelColor,
                     weight: isGoal ? FontWeight.w600 : FontWeight.w400,
+                    height: isGoal ? 1.4 : 1.5,
                   ),
                 ),
                 if (onEdit != null)
@@ -460,7 +463,7 @@ class _DailyCount extends StatelessWidget {
         progress.countLabel,
         key: key,
         textAlign: TextAlign.end,
-        style: _studyText(14, color: color),
+        style: _studyText(15, color: color, height: 1.5),
       );
     }
     return Text.rich(
@@ -476,7 +479,7 @@ class _DailyCount extends StatelessWidget {
       key: key,
       textAlign: TextAlign.end,
       semanticsLabel: progress.countLabel,
-      style: _studyText(14, color: color),
+      style: _studyText(15, color: color, height: 1.5),
     );
   }
 }
@@ -527,6 +530,8 @@ class _DailyGoalGauge extends StatelessWidget {
                       category.label,
                       style: _studyText(
                         12,
+                        height: 1.5,
+                        weight: FontWeight.w500,
                         color: isLight
                             ? const Color(0xFFF06292)
                             : AppColors.brandPink,
@@ -607,11 +612,12 @@ TextStyle _studyText(
   double size, {
   Color? color,
   FontWeight weight = FontWeight.w400,
+  double height = 1.4,
 }) =>
     TextStyle(
       fontFamily: 'Pretendard',
       fontSize: size,
-      height: 1.4,
+      height: height,
       letterSpacing: -size * 0.025,
       fontWeight: weight,
       color: color,

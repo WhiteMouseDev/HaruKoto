@@ -49,8 +49,10 @@ class KanaChartGrid extends StatelessWidget {
     ('wa', 'u'),
     ('wa', 'e'),
   };
-  static const _axisFontSize = 12.0;
-  static const _kanaFontSize = 16.0;
+  static const _axisKanaFontSize = 13.0;
+  static const _axisReadingFontSize = 11.0;
+  static const _kanaFontSize = 15.0;
+  static const _lineHeight = 1.5;
   static const _gap = 8.0;
   static const _blockCorners = BorderRadius.all(Radius.circular(4));
 
@@ -58,7 +60,9 @@ class KanaChartGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final light = colors.brightness == Brightness.light;
-    final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final kanaColor = light ? const Color(0xFF505050) : colors.onSurfaceVariant;
+    final readingColor =
+        light ? const Color(0xFF767676) : colors.onSurfaceVariant;
     final onCharacterTap = _onCharacterTap;
     final loading = onCharacterTap == null;
     const placeholder = AppSkeletonBlock(radius: 4);
@@ -67,11 +71,16 @@ class KanaChartGrid extends StatelessWidget {
       for (final character in characters)
         (character.row, character.column): character,
     };
-    final scaleAxis = scaler.scale(_axisFontSize);
-    final minSlotWidth =
-        max(scaleAxis * 2 + 10, scaler.scale(_kanaFontSize) + 12);
-    final headerHeight = max(28.0, scaleAxis * 1.4 + 8);
-    final rowHeight = max(36.0, scaler.scale(_kanaFontSize) * 1.4 + 8);
+    final scaledAxisKana = scaler.scale(_axisKanaFontSize);
+    final scaledAxisReading = scaler.scale(_axisReadingFontSize);
+    final scaledKana = scaler.scale(_kanaFontSize);
+    final minSlotWidth = max(
+      scaledAxisKana + scaledAxisReading + 10,
+      scaledKana + 12,
+    );
+    final headerHeight =
+        max(28.0, max(scaledAxisKana, scaledAxisReading) * _lineHeight + 8);
+    final rowHeight = max(36.0, scaledKana * _lineHeight + 8);
     final nasal = cells[('n', 'a')];
 
     return LayoutBuilder(builder: (context, constraints) {
@@ -96,7 +105,8 @@ class KanaChartGrid extends StatelessWidget {
                           reading: korean,
                           color: AppColors.redesignVocabulary
                               .withValues(alpha: 0.32),
-                          foreground: foreground,
+                          kanaColor: kanaColor,
+                          readingColor: readingColor,
                         ),
               ],
             ),
@@ -112,7 +122,8 @@ class KanaChartGrid extends StatelessWidget {
                       kana: katakana ? katakanaGlyph : hiragana,
                       reading: korean,
                       color: AppColors.redesignGrammar.withValues(alpha: 0.24),
-                      foreground: foreground,
+                      kanaColor: kanaColor,
+                      readingColor: readingColor,
                     ),
                   for (final (column, _, _, _) in _columns)
                     if (_emptyCells.contains((row, column)))
@@ -190,22 +201,22 @@ class _KanaAxisCell extends StatelessWidget {
     required this.kana,
     required this.reading,
     required this.color,
-    required this.foreground,
+    required this.kanaColor,
+    required this.readingColor,
   });
 
   final String kana;
   final String reading;
   final Color color;
-  final Color foreground;
+  final Color kanaColor;
+  final Color readingColor;
 
   @override
   Widget build(BuildContext context) {
-    final style = TextStyle(
-      fontFamily: redesignFontFamily,
-      fontSize: KanaChartGrid._axisFontSize,
-      height: 1.4,
-      fontWeight: FontWeight.w600,
-      color: foreground,
+    const style = TextStyle(
+      fontFamily: redesignJapaneseFontFamily,
+      height: KanaChartGrid._lineHeight,
+      fontWeight: FontWeight.w400,
     );
     return Semantics(
       header: true,
@@ -220,9 +231,24 @@ class _KanaAxisCell extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(kana, style: style, locale: const Locale('ja')),
+              Text(
+                kana,
+                style: style.copyWith(
+                  fontSize: KanaChartGrid._axisKanaFontSize,
+                  letterSpacing: -0.325,
+                  color: kanaColor,
+                ),
+                locale: const Locale('ja'),
+              ),
               const SizedBox(width: 2),
-              Text(reading, style: style),
+              Text(
+                reading,
+                style: style.copyWith(
+                  fontSize: KanaChartGrid._axisReadingFontSize,
+                  letterSpacing: -0.275,
+                  color: readingColor,
+                ),
+              ),
             ],
           ),
         ),
@@ -277,10 +303,12 @@ class _KanaCell extends StatelessWidget {
               character.character,
               locale: const Locale('ja'),
               style: TextStyle(
+                // The bundled Medium and JP Medium have identical basic kana glyphs.
                 fontFamily: redesignFontFamily,
                 fontSize: KanaChartGrid._kanaFontSize,
-                height: 1.4,
-                fontWeight: FontWeight.w600,
+                height: KanaChartGrid._lineHeight,
+                letterSpacing: -0.375,
+                fontWeight: FontWeight.w500,
                 color: foreground,
               ),
             ),

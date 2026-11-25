@@ -20,6 +20,7 @@ void main() {
     expect(find.text('전체 통계'), findsOneWidget);
     expect(find.text('오답 복습 퀴즈 시작'), findsOneWidget);
     expect(find.text('食べる'), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
     expect(find.text('食べ物を食べる。'), findsNothing);
 
     await tester.tap(find.text('많이 틀린 순'));
@@ -34,9 +35,14 @@ void main() {
     expect(find.text('食べ物を食べる。'), findsOneWidget);
     expect(find.text('음식을 먹다.'), findsOneWidget);
     expect(find.text('정답률'), findsOneWidget);
+    expect(find.text('3'), findsNothing);
 
     final save = find.widgetWithText(OutlinedButton, '단어장에 추가');
-    await tester.ensureVisible(save);
+    await tester.scrollUntilVisible(
+      save.hitTestable(),
+      80,
+      scrollable: _listScroll,
+    );
     await tester.tap(save);
     await tester.pump();
     expect(
@@ -52,6 +58,7 @@ void main() {
     expect(repository.saved, [('食べる', 'QUIZ')]);
     expect(find.text('단어장에 추가됨'), findsOneWidget);
 
+    await tester.ensureVisible(find.text('食べる'));
     await tester.tap(find.text('食べる'));
     await tester.pumpAndSettle();
     expect(find.text('食べ物を食べる。'), findsNothing);
@@ -69,6 +76,53 @@ void main() {
     await tester.pumpAndSettle();
     expect(repository.sorts, ['most-wrong', 'most-wrong']);
     expect(find.text('食べる'), findsOneWidget);
+  });
+
+  testWidgets('filters keep the overview and can be reset from empty results',
+      (tester) async {
+    final repository = _WrongAnswersRepository();
+    await _pumpPage(tester, repository);
+
+    final search = find.byType(TextField);
+    final all = find.widgetWithText(ChoiceChip, '전체');
+    final learning = find.widgetWithText(ChoiceChip, '학습중');
+    expect(tester.widget<ChoiceChip>(all).selected, isTrue);
+    await tester.tap(learning);
+    await tester.pumpAndSettle();
+    expect(tester.widget<ChoiceChip>(learning).selected, isTrue);
+
+    await tester.enterText(search, '사과');
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(repository.filters.last, ('사과', WrongAnswerStatus.learning));
+    expect(find.text('전체 통계'), findsOneWidget);
+    expect(find.text('오답 복습 퀴즈 시작'), findsOneWidget);
+    expect(find.text('조건에 맞는 오답이 없어요.'), findsOneWidget);
+    expect(find.text('0개'), findsNWidgets(2));
+    expect(find.text('오답노트 내역이 없어요.'), findsNothing);
+
+    final reset = find.text('검색·필터 초기화');
+    await tester.scrollUntilVisible(
+      reset.hitTestable(),
+      80,
+      scrollable: _listScroll,
+    );
+    await tester.tap(reset);
+    await tester.pumpAndSettle();
+    expect(tester.widget<TextField>(search).controller?.text, isEmpty);
+    expect(tester.widget<ChoiceChip>(all).selected, isTrue);
+    expect(repository.filters.last, ('', WrongAnswerStatus.all));
+    expect(find.text('食べる'), findsOneWidget);
+  });
+
+  testWidgets('the earlier API still supports the list and review actions',
+      (tester) async {
+    await _pumpPage(tester, _WrongAnswersRepository(supportsFilters: false));
+
+    expect(find.text('食べる'), findsOneWidget);
+    expect(find.text('오답 복습 퀴즈 시작'), findsOneWidget);
+    expect(find.byType(TextField), findsNothing);
+    expect(find.byType(ChoiceChip), findsNothing);
   });
 
   testWidgets('empty action opens the Study route', (tester) async {
@@ -131,14 +185,29 @@ void main() {
     gate.complete();
     await tester.pumpAndSettle();
     final word = find.text('食べる');
-    await tester.scrollUntilVisible(word, 80);
+    await tester.scrollUntilVisible(
+      word.hitTestable(),
+      80,
+      scrollable: _listScroll,
+    );
     await tester.tap(word);
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.text('단어장에 추가'), 80);
+    await tester.scrollUntilVisible(
+      find.text('단어장에 추가').hitTestable(),
+      80,
+      scrollable: _listScroll,
+    );
     expect(find.text('단어장에 추가'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }
+
+final _listScroll = find
+    .descendant(
+      of: find.byType(CustomScrollView),
+      matching: find.byType(Scrollable),
+    )
+    .first;
 
 Future<void> _pumpPage(
   WidgetTester tester,
@@ -166,13 +235,16 @@ class _WrongAnswersRepository extends Fake implements StudyRepository {
     this.entries = const [_entry],
     this.failFirst = false,
     this.readGate,
+    this.supportsFilters = true,
   });
 
   final List<WrongEntryModel> entries;
   final bool failFirst;
   final Completer<void>? readGate;
+  final bool supportsFilters;
   final saveGate = Completer<void>();
   final sorts = <String>[];
+  final filters = <(String, WrongAnswerStatus)>[];
   final saved = <(String, String)>[];
 
   @override
@@ -182,18 +254,24 @@ class _WrongAnswersRepository extends Fake implements StudyRepository {
         int total,
         int totalPages,
         WrongAnswersSummary summary,
+        bool supportsSearchAndStatus,
       })> fetchWrongAnswers({
     int page = 1,
     String sort = 'most-wrong',
     int limit = 20,
+    String search = '',
+    WrongAnswerStatus status = WrongAnswerStatus.all,
   }) async {
     sorts.add(sort);
+    filters.add((search, status));
     if (failFirst && sorts.length == 1) throw StateError('offline');
     if (readGate case final gate?) await gate.future;
+    final matches = search.isEmpty ? entries : const <WrongEntryModel>[];
     return (
-      entries: entries,
-      total: entries.length,
+      entries: matches,
+      total: matches.length,
       totalPages: 1,
+      supportsSearchAndStatus: supportsFilters,
       summary: WrongAnswersSummary(
         totalWrong: entries.length,
         mastered: 0,

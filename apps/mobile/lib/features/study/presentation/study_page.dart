@@ -357,6 +357,7 @@ class _StudyRouteHeading extends StatelessWidget {
                   fontSize: 16,
                   height: 1.4,
                   fontWeight: FontWeight.w600,
+                  letterSpacing: -0.4,
                   color: light
                       ? AppColors.redesignForeground
                       : theme.colorScheme.onSurface,
@@ -365,7 +366,7 @@ class _StudyRouteHeading extends StatelessWidget {
           if (loading)
             AppSkeletonBlock(
               width: 88,
-              height: MediaQuery.textScalerOf(context).scale(12) * 1.4 + 12,
+              height: MediaQuery.textScalerOf(context).scale(13) * 1.5 + 12,
               radius: AppSizes.radiusFull,
             )
           else if (stations.isNotEmpty)
@@ -381,8 +382,10 @@ class _StudyRouteHeading extends StatelessWidget {
                   semanticsLabel: '${stations.length}개 역 중 $completed개 완료',
                   style: TextStyle(
                     fontFamily: redesignFontFamily,
-                    fontSize: 12,
-                    height: 1.4,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    height: 1.5,
+                    letterSpacing: -0.325,
                     color: light
                         ? AppColors.redesignMutedForeground
                         : theme.colorScheme.onSurfaceVariant,
@@ -577,11 +580,12 @@ class _JlptLevelChip extends StatelessWidget {
           minimumSize: const Size(0, 36),
           padding: const EdgeInsets.symmetric(horizontal: 16),
           tapTargetSize: MaterialTapTargetSize.padded,
-          textStyle: const TextStyle(
+          textStyle: TextStyle(
             fontFamily: redesignFontFamily,
             fontSize: 14,
-            height: 1.4,
-            fontWeight: FontWeight.w600,
+            height: mapEnabled ? 1.5 : 1.4,
+            fontWeight: mapEnabled ? FontWeight.w500 : FontWeight.w600,
+            letterSpacing: mapEnabled ? -0.35 : null,
           ),
         ),
         child: Row(

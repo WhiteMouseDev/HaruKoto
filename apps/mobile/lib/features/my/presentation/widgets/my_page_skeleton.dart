@@ -16,9 +16,9 @@ class MyPageSkeleton extends StatelessWidget {
     final metric = Column(
       children: [
         const AppSkeletonBlock(width: 20, height: 20, radius: 4),
-        const SizedBox(height: 5),
-        AppSkeletonBlock(width: 34, height: text.scale(16) * 1.4),
-        AppSkeletonBlock(width: 49, height: text.scale(11) * 1.4),
+        const SizedBox(height: 4),
+        AppSkeletonBlock(width: 34, height: text.scale(14) * 1.5),
+        AppSkeletonBlock(width: 49, height: text.scale(12) * 1.5),
       ],
     );
     return Semantics(
@@ -26,10 +26,10 @@ class MyPageSkeleton extends StatelessWidget {
       liveRegion: true,
       excludeSemantics: true,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 2, 20, 40),
+        padding: const EdgeInsets.fromLTRB(20, 6, 20, 40),
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
             decoration: BoxDecoration(
               color: light
                   ? AppColors.redesignSurface
@@ -51,21 +51,21 @@ class MyPageSkeleton extends StatelessWidget {
                             width: 94,
                             height: text.scale(18) * 1.4,
                           ),
-                          const AppSkeletonBlock(width: 36, height: 18),
+                          const AppSkeletonBlock(width: 32, height: 21),
                         ],
                       ),
                     ),
                     const AppSkeletonBlock(width: 34, height: 28, radius: 20),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 const AppSkeletonBlock(height: 6),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    AppSkeletonBlock(width: 32, height: text.scale(11) * 1.4),
-                    AppSkeletonBlock(width: 72, height: text.scale(11) * 1.4),
+                    AppSkeletonBlock(width: 32, height: text.scale(12) * 1.5),
+                    AppSkeletonBlock(width: 72, height: text.scale(12) * 1.5),
                   ],
                 ),
               ],
@@ -84,7 +84,9 @@ class MyPageSkeleton extends StatelessWidget {
             child: const ListTile(
               minTileHeight: 48,
               contentPadding: EdgeInsets.symmetric(horizontal: 16),
-              leading: AppSkeletonBlock(width: 24, height: 24, radius: 4),
+              minLeadingWidth: 20,
+              horizontalTitleGap: 8,
+              leading: AppSkeletonBlock(width: 18, height: 18, radius: 4),
               title: Align(
                 alignment: Alignment.centerLeft,
                 child: AppSkeletonBlock(width: 85, height: 16),
@@ -122,7 +124,12 @@ class _SettingPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: const AppSkeletonBlock(width: 20, height: 20, radius: 4),
+      leading: const SizedBox.square(
+        dimension: 24,
+        child: Center(
+          child: AppSkeletonBlock(width: 20, height: 20, radius: 4),
+        ),
+      ),
       title: const Align(
         alignment: Alignment.centerLeft,
         child: AppSkeletonBlock(width: 84, height: 14),

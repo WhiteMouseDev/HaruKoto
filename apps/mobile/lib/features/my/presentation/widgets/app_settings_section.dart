@@ -13,6 +13,7 @@ import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../providers/settings_sync_provider.dart';
 import 'my_settings_group.dart';
+import 'my_settings_toggle_tile.dart';
 
 class AppSettingsSection extends ConsumerWidget {
   const AppSettingsSection({super.key});
@@ -20,6 +21,15 @@ class AppSettingsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
+    final valueStyle = TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      height: 1.5,
+      letterSpacing: -0.35,
+      color:
+          light ? const Color(0xFF767676) : theme.colorScheme.onSurfaceVariant,
+    );
     final themeMode = ref.watch(themeProvider);
     final deviceSettings = ref.watch(deviceSettingsProvider);
     final userPreferences = ref.watch(quizSettingsProvider);
@@ -29,8 +39,7 @@ class AppSettingsSection extends ConsumerWidget {
       label: '앱 설정',
       rows: [
         ListTile(
-          leading:
-              const Icon(LucideIcons.info, size: 20, color: AppColors.purple),
+          leading: const MySettingsIcon('app-version'),
           title: Row(
             children: [
               const Expanded(
@@ -43,6 +52,7 @@ class AppSettingsSection extends ConsumerWidget {
                   version ?? '—',
                   semanticsLabel: version ?? '앱 버전 정보 없음',
                   textAlign: TextAlign.end,
+                  style: valueStyle,
                 ),
               ),
             ],
@@ -50,29 +60,20 @@ class AppSettingsSection extends ConsumerWidget {
         ),
         // Theme
         ListTile(
-          leading: const Icon(LucideIcons.palette,
-              size: 20, color: AppColors.purple),
+          leading: const MySettingsIcon('theme'),
           title: const Text('테마 선택', style: TextStyle(fontSize: 14)),
           trailing: Text(
             _themeModeLabel(themeMode),
-            style: TextStyle(
-                fontSize: 14,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
+            style: valueStyle,
           ),
           onTap: () => _showThemeSheet(context, ref, themeMode),
         ),
 
         // Furigana
-        SwitchListTile(
-          secondary: const Icon(LucideIcons.languages,
-              size: 20, color: AppColors.mintPressed),
+        MySettingsToggleTile(
+          leading: const MySettingsIcon('furigana'),
           title: const Text('읽기(후리가나) 표시', style: TextStyle(fontSize: 14)),
-          subtitle: Text(
-            '퀴즈에서 한자 위에 히라가나 표시',
-            style: TextStyle(
-                fontSize: 12,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-          ),
+          subtitle: const Text('퀴즈에서 한자 위에 히라가나 표시'),
           value: userPreferences.showFurigana,
           onChanged: (value) async {
             unawaited(HapticService().selection());
@@ -99,16 +100,10 @@ class AppSettingsSection extends ConsumerWidget {
         const _HapticToggle(),
 
         // Study Reminder
-        SwitchListTile(
-          secondary:
-              const Icon(LucideIcons.bell, size: 20, color: AppColors.sakura),
+        MySettingsToggleTile(
+          leading: const MySettingsIcon('reminder'),
           title: const Text('학습 리마인더', style: TextStyle(fontSize: 14)),
-          subtitle: Text(
-            '매일 설정한 시간에 알림',
-            style: TextStyle(
-                fontSize: 12,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-          ),
+          subtitle: const Text('매일 설정한 시간에 알림'),
           value: deviceSettings.reminderEnabled,
           onChanged: (value) {
             HapticService().selection();
@@ -121,32 +116,24 @@ class AppSettingsSection extends ConsumerWidget {
         ),
         if (deviceSettings.reminderEnabled) ...[
           ListTile(
-            leading: const Icon(LucideIcons.clock,
-                size: 20, color: AppColors.sakura),
+            leading: const MySettingsIcon('reminder-time'),
+            tileColor: light
+                ? AppColors.redesignSurface
+                : theme.colorScheme.surfaceContainerHigh,
             title: const Text('리마인더 시간', style: TextStyle(fontSize: 14)),
             trailing: Text(
               deviceSettings.reminderTimeLabel,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.sakura,
-              ),
+              style: valueStyle,
             ),
             onTap: () => _showTimePicker(context, ref),
           ),
         ],
 
         // Streak Defense
-        SwitchListTile(
-          secondary:
-              const Icon(LucideIcons.flame, size: 20, color: AppColors.streak),
+        MySettingsToggleTile(
+          leading: const MySettingsIcon('streak-reminder'),
           title: const Text('연속학습 알림', style: TextStyle(fontSize: 14)),
-          subtitle: Text(
-            '매일 22:00에 학습 리마인더',
-            style: TextStyle(
-                fontSize: 12,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-          ),
+          subtitle: const Text('매일 22:00에 학습 리마인더'),
           value: deviceSettings.streakDefenseEnabled,
           onChanged: (value) {
             HapticService().selection();
@@ -264,21 +251,11 @@ class _SoundToggle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final settings = ref.watch(deviceSettingsProvider);
-    return SwitchListTile(
-      secondary: const Icon(
-        LucideIcons.volume2,
-        size: 20,
-        color: AppColors.mintPressed,
-      ),
+    return MySettingsToggleTile(
+      leading: const MySettingsIcon('sound'),
       title: const Text('효과음', style: TextStyle(fontSize: 14)),
-      subtitle: Text(
-        '정답/오답 시 효과음 재생',
-        style: TextStyle(
-            fontSize: 12,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-      ),
+      subtitle: const Text('정답/오답 시 효과음 재생'),
       value: settings.soundEnabled,
       onChanged: (value) {
         HapticService().selection();
@@ -295,21 +272,11 @@ class _HapticToggle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final settings = ref.watch(deviceSettingsProvider);
-    return SwitchListTile(
-      secondary: const Icon(
-        LucideIcons.vibrate,
-        size: 20,
-        color: AppColors.purple,
-      ),
+    return MySettingsToggleTile(
+      leading: const MySettingsIcon('vibration'),
       title: const Text('진동 피드백', style: TextStyle(fontSize: 14)),
-      subtitle: Text(
-        '터치 시 진동으로 반응',
-        style: TextStyle(
-            fontSize: 12,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-      ),
+      subtitle: const Text('터치 시 진동으로 반응'),
       value: settings.hapticEnabled,
       onChanged: (value) {
         // Fire haptic BEFORE disabling (so user feels the last toggle)

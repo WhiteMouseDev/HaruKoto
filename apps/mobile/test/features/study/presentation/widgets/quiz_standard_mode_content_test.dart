@@ -46,7 +46,8 @@ void main() {
       expect(selectedOptionId, 'o1');
     });
 
-    testWidgets('aligns progress and footer to the iPhone design frame',
+    testWidgets(
+        'aligns header, options, progress and footer to the design frame',
         (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(375, 812);
@@ -59,6 +60,9 @@ void main() {
 
       final progress = tester.getRect(find.byType(LinearProgressIndicator));
       expect(progress, const Rect.fromLTWH(20, 110, 335, 8));
+      final title = find.text('N5 단어퀴즈');
+      expect(tester.getTopLeft(title).dx, 52);
+      expect(tester.widget<Text>(title).style?.fontSize, 20);
       final badge = find
           .ancestor(
             of: find.text('Q1'),
@@ -66,6 +70,17 @@ void main() {
           )
           .first;
       expect(tester.getTopLeft(badge).dy, closeTo(228, 2));
+      const optionLabels = ['먹다', '보다', '읽다', '놀다'];
+      for (final (index, label) in optionLabels.indexed) {
+        final outline = find
+            .ancestor(of: find.text(label), matching: find.byType(Ink))
+            .first;
+        final bounds = tester.getRect(outline);
+        expect(bounds.left, 20);
+        expect(bounds.width, 335);
+        expect(bounds.top, closeTo(394 + index * 54, 2));
+        expect(bounds.height, closeTo(42, 0.01));
+      }
       final next = find.byKey(const ValueKey('quiz-next'));
       expect(tester.getRect(next), const Rect.fromLTWH(20, 730, 335, 48));
       expect(tester.widget<FilledButton>(next).onPressed, isNull);
