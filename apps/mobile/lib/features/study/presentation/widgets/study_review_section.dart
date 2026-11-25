@@ -10,7 +10,8 @@ import '../../../../core/auth/current_account_provider.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/network/api_exception.dart';
-import '../../../../core/theme/text_theme.dart';
+import '../../../../core/theme/haru_typography.dart';
+import '../../../../shared/widgets/haru_button_styles.dart';
 import '../../data/models/review_summary_model.dart';
 import '../../providers/lesson_pilot_telemetry_provider.dart';
 import '../../providers/study_provider.dart';
@@ -38,7 +39,6 @@ class StudyReviewSection extends ConsumerStatefulWidget {
 }
 
 class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
-  static const _buttonHitInset = 3.0;
   static const _secondaryText = Color(0xFF505050);
 
   bool _opening = false;
@@ -161,12 +161,7 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
             Semantics(
               header: true,
               child: Text('오늘 복습할 표현',
-                  style: TextStyle(
-                    fontFamily: redesignFontFamily,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
-                    letterSpacing: -0.45,
+                  style: HaruTypography.krTitle3.copyWith(
                     color: light
                         ? AppColors.redesignForeground
                         : theme.colorScheme.onSurface,
@@ -179,19 +174,14 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
                 hasBoth
                     ? '단어와 문법을 골라 한 번에 최대 10개씩 복습해요.'
                     : '학습한 내용을 복습하고, 실력을 키워봐요!',
-                style: TextStyle(
-                  fontFamily: redesignFontFamily,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  height: 1.5,
-                  letterSpacing: -0.325,
+                style: HaruTypography.krBody3.copyWith(
                   color: light
                       ? _secondaryText
                       : theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
-            const SizedBox(height: 12 - _buttonHitInset),
+            const SizedBox(height: 12 - HaruButtonStyles.compactHitInset),
           ] else ...[
             Text('복습할 표현 ${summary.totalDue}개',
                 style: theme.textTheme.headlineSmall?.copyWith(
@@ -234,7 +224,6 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
     final batch = math.min(due, 10);
     final level = widget.jlptLevel;
     final brightness = Theme.of(context).brightness;
-    final light = brightness == Brightness.light;
     final buttonLabel =
         widget.redesigned && (summary.wordDue <= 0 || summary.grammarDue <= 0)
             ? '복습 시작'
@@ -251,31 +240,18 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
                 summary: summary,
                 quizType: quizType,
                 due: due)),
-        style: FilledButton.styleFrom(
-          backgroundColor: widget.redesigned
-              ? (light ? AppColors.brandPink : null)
-              : (widget.mapEnabled
-                  ? StudyMapColors.button(brightness)
-                  : AppColors.sakuraContainer),
-          foregroundColor: widget.redesigned
-              ? (light ? Colors.white : null)
-              : _accent(context),
-          minimumSize: Size.fromHeight(widget.redesigned ? 42 : 48),
-          tapTargetSize: MaterialTapTargetSize.padded,
-          visualDensity: widget.redesigned ? VisualDensity.standard : null,
-          padding: EdgeInsets.symmetric(
-              horizontal: widget.redesigned ? 20 : 16,
-              vertical: widget.redesigned ? 10 : 12),
-          textStyle: widget.redesigned
-              ? const TextStyle(
-                  fontFamily: redesignFontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  height: 1.4,
-                  letterSpacing: -0.35,
-                )
-              : null,
-        ),
+        style: widget.redesigned
+            ? HaruButtonStyles.primary(context)
+            : FilledButton.styleFrom(
+                backgroundColor: widget.mapEnabled
+                    ? StudyMapColors.button(brightness)
+                    : AppColors.sakuraContainer,
+                foregroundColor: _accent(context),
+                minimumSize: const Size.fromHeight(48),
+                tapTargetSize: MaterialTapTargetSize.padded,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
         child: Text(buttonLabel,
             semanticsLabel: '$label 복습, 남은 $due개 중 최대 $batch개',
             textAlign: TextAlign.center),
@@ -309,11 +285,7 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
                       offset: const Offset(0, 1),
                       child: Text(
                         breakdown,
-                        style: TextStyle(
-                          fontFamily: redesignFontFamily,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                          height: 1.5,
+                        style: HaruTypography.krBody3.copyWith(
                           letterSpacing: -0.24,
                           color: light
                               ? _secondaryText
@@ -340,8 +312,8 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
       liveRegion: true,
       child: Container(
         padding: widget.redesigned
-            ? EdgeInsets.fromLTRB(
-                16, 16, 16, breakdown == null ? 16 : 16 - _buttonHitInset)
+            ? EdgeInsets.fromLTRB(16, 16, 16,
+                breakdown == null ? 16 : 16 - HaruButtonStyles.compactHitInset)
             : const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: light

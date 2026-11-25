@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/providers/user_preferences_provider.dart';
+import '../../../core/theme/haru_typography.dart';
 import '../../../core/theme/text_theme.dart';
 import '../../../shared/widgets/app_skeleton.dart';
+import '../../../shared/widgets/haru_button_styles.dart';
 import '../../home/data/models/dashboard_model.dart';
 import '../../home/providers/home_provider.dart';
 import '../../study/presentation/quiz_launch.dart';
@@ -96,8 +98,12 @@ class _PracticePageState extends ConsumerState<PracticePage> {
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
               child: Semantics(
                 header: true,
-                child:
-                    Text('퀴즈', style: _practiceText(theme, 20, strong: true)),
+                child: Text(
+                  '퀴즈',
+                  style: HaruTypography.krTitle2.copyWith(
+                    color: _practiceForeground(theme),
+                  ),
+                ),
               ),
             ),
             Expanded(
@@ -239,9 +245,6 @@ class _QuizCategoryTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final light = theme.brightness == Brightness.light;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -251,34 +254,10 @@ class _QuizCategoryTabs extends StatelessWidget {
           for (final category in _QuizCategory.values)
             TextButton(
               key: ValueKey('practice-category-${category.apiType}'),
-              style: TextButton.styleFrom(
-                backgroundColor: category == selectedCategory
-                    ? light
-                        ? AppColors.redesignStrong
-                        : colors.onSurface
-                    : light
-                        ? AppColors.redesignControl
-                        : colors.surfaceContainerHigh,
-                foregroundColor: category == selectedCategory
-                    ? light
-                        ? Colors.white
-                        : colors.surface
-                    : light
-                        ? AppColors.redesignForeground
-                        : colors.onSurfaceVariant,
-                minimumSize: Size(category.tabWidth, 32),
-                tapTargetSize: MaterialTapTargetSize.padded,
-                visualDensity: VisualDensity.standard,
-                // Align the Pretendard glyphs to the center of the capsule.
-                padding: const EdgeInsets.fromLTRB(12, 5, 12, 7),
-                textStyle: const TextStyle(
-                  fontFamily: redesignFontFamily,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  height: 1.4,
-                  letterSpacing: -0.325,
-                ),
-                shape: const StadiumBorder(),
+              style: HaruButtonStyles.pillTab(
+                context,
+                selected: category == selectedCategory,
+                minimumWidth: category.tabWidth,
               ),
               onPressed: () => onChanged(category),
               child: Semantics(
@@ -296,8 +275,6 @@ class _QuizCategoryTabs extends StatelessWidget {
 class _QuizHero extends StatelessWidget {
   const _QuizHero({required this.category, required this.onStart});
 
-  // The 42-point button fill sits inside a 48-point interaction area.
-  static const _buttonHitInset = 3.0;
   static const _secondaryText = Color(0xFF505050);
 
   final _QuizCategory category;
@@ -308,13 +285,21 @@ class _QuizHero extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final light = theme.brightness == Brightness.light;
+    final supportingText = HaruTypography.krBody3.copyWith(
+      color: light ? _secondaryText : colors.onSurfaceVariant,
+    );
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: light ? AppColors.redesignSurface : colors.surfaceContainerHigh,
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16 - _buttonHitInset),
+        padding: const EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          16 - HaruButtonStyles.compactHitInset,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -347,16 +332,16 @@ class _QuizHero extends StatelessWidget {
                     color: colors.surfaceContainerLowest,
                   ),
                   child: Container(
-                    constraints:
-                        const BoxConstraints(minWidth: 59, minHeight: 28),
-                    alignment: Alignment.center,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    child: Text(
-                      '$_quizQuestionCount문제',
-                      style: _practiceText(theme, 13, height: 1.5, muted: true)
-                          .copyWith(color: light ? _secondaryText : null),
+                    constraints: const BoxConstraints(
+                      minWidth: 59,
+                      minHeight: 28,
                     ),
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    child: Text('$_quizQuestionCount문제', style: supportingText),
                   ),
                 ),
               ],
@@ -364,35 +349,17 @@ class _QuizHero extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               '${category.label} 퀴즈 풀기',
-              style: _practiceText(theme, 18, strong: true),
+              style: HaruTypography.krTitle3.copyWith(
+                color: _practiceForeground(theme),
+              ),
             ),
             const SizedBox(height: 4),
-            Text(
-              category.description,
-              style: _practiceText(theme, 13, height: 1.5, muted: true)
-                  .copyWith(color: light ? _secondaryText : null),
-            ),
-            const SizedBox(height: 12 - _buttonHitInset),
+            Text(category.description, style: supportingText),
+            const SizedBox(height: 12 - HaruButtonStyles.compactHitInset),
             FilledButton(
               key: const ValueKey('practice-start-quiz'),
               onPressed: onStart,
-              style: FilledButton.styleFrom(
-                backgroundColor: light ? AppColors.brandPink : null,
-                foregroundColor: light ? Colors.white : null,
-                minimumSize: const Size(0, 42),
-                tapTargetSize: MaterialTapTargetSize.padded,
-                visualDensity: VisualDensity.standard,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: const StadiumBorder(),
-                textStyle: const TextStyle(
-                  fontFamily: redesignFontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  height: 1.4,
-                  letterSpacing: -0.35,
-                ),
-              ),
+              style: HaruButtonStyles.primary(context),
               child: const Text('퀴즈 풀기', textAlign: TextAlign.center),
             ),
           ],
@@ -655,8 +622,11 @@ TextStyle _practiceText(
         ? light
             ? AppColors.redesignMutedForeground
             : theme.colorScheme.onSurfaceVariant
-        : light
-            ? AppColors.redesignForeground
-            : theme.colorScheme.onSurface,
+        : _practiceForeground(theme),
   );
 }
+
+Color _practiceForeground(ThemeData theme) =>
+    theme.brightness == Brightness.light
+        ? AppColors.redesignForeground
+        : theme.colorScheme.onSurface;

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
+import 'package:harukoto_mobile/core/constants/colors.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
+import 'package:harukoto_mobile/core/theme/haru_typography.dart';
 import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
 import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:harukoto_mobile/features/practice/presentation/practice_page.dart';
@@ -44,6 +46,13 @@ void main() {
       expect(titleStyle.fontWeight, FontWeight.w600);
       expect(titleStyle.letterSpacing, closeTo(-0.45, 0.001));
 
+      final cta = find.byKey(_start);
+      final ctaStyle = tester.widget<FilledButton>(cta).style!;
+      expect(tester.getSize(cta).height, 48);
+      expect(ctaStyle.minimumSize?.resolve({})?.height, 42);
+      expect(ctaStyle.backgroundColor?.resolve({}), AppColors.brandPink);
+      expect(ctaStyle.textStyle?.resolve({}), HaruTypography.krCompactButton);
+
       for (final (type, label) in [
         ('VOCABULARY', '단어'),
         ('GRAMMAR', '문법'),
@@ -53,8 +62,18 @@ void main() {
       ]) {
         final tab = find.byKey(ValueKey('practice-category-$type'));
         final text = find.descendant(of: tab, matching: find.text(label));
-        expect(tester.getCenter(text).dy,
-            closeTo(tester.getCenter(tab).dy - 1, 0.001));
+        final tabStyle = tester.widget<TextButton>(tab).style!;
+        expect(tester.getSize(tab).height, 48);
+        expect(
+          tabStyle.backgroundColor?.resolve({}),
+          type == 'VOCABULARY'
+              ? AppColors.redesignStrong
+              : AppColors.redesignControl,
+        );
+        expect(
+          tester.getCenter(text).dy,
+          closeTo(tester.getCenter(tab).dy - 1, 0.001),
+        );
         if (type == 'SENTENCE_ARRANGE') expect(tester.getSize(tab).width, 84);
       }
     });

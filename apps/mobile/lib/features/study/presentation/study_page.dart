@@ -7,6 +7,7 @@ import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
+import '../../../core/theme/haru_typography.dart';
 import '../../../core/theme/text_theme.dart';
 import '../../../shared/widgets/app_sheet_handle.dart';
 import '../../../shared/widgets/app_skeleton.dart';
@@ -120,12 +121,7 @@ class _StudyPageState extends ConsumerState<StudyPage> {
                           child: Text(
                             '학습',
                             style: mapEnabled
-                                ? TextStyle(
-                                    fontFamily: redesignFontFamily,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.4,
-                                    letterSpacing: -0.5,
+                                ? HaruTypography.krTitle2.copyWith(
                                     color: theme.brightness == Brightness.light
                                         ? AppColors.redesignForeground
                                         : theme.colorScheme.onSurface,
@@ -383,12 +379,7 @@ class _StudyRouteHeading extends StatelessWidget {
               ),
               child: Text('$completed/${stations.length}개역 완료',
                   semanticsLabel: '${stations.length}개 역 중 $completed개 완료',
-                  style: TextStyle(
-                    fontFamily: redesignFontFamily,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    height: 1.5,
-                    letterSpacing: -0.325,
+                  style: HaruTypography.krBody3.copyWith(
                     color: light
                         ? const Color(0xFF505050)
                         : theme.colorScheme.onSurfaceVariant,
