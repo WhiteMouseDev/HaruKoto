@@ -57,6 +57,21 @@ void main() {
       for (final label in _labels) tester.getCenter(find.text(label)).dy,
     };
     expect(weekdaysY, hasLength(1));
+    final petals = find.byWidgetPredicate(
+      (widget) =>
+          widget is Image &&
+          widget.image is AssetImage &&
+          (widget.image as AssetImage).assetName.startsWith(
+                'assets/icons/figma-home-petal-',
+              ),
+    );
+    expect(petals, findsNWidgets(_labels.length));
+    for (final (index, label) in _labels.indexed) {
+      final offset = tester.getCenter(find.text(label)) -
+          tester.getCenter(petals.at(index));
+      expect(offset.dx, closeTo(-0.5, 0.001), reason: label);
+      expect(offset.dy, closeTo(2, 0.001), reason: label);
+    }
     expect(
       tester
           .getSize(find.byKey(const ValueKey('streak-calendar-action')))

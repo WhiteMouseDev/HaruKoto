@@ -332,24 +332,30 @@ class _StreakWeek extends StatelessWidget {
                               excludeFromSemantics: true,
                             ),
                             Center(
+                              child: Transform.translate(
+                                // The text follows the petal's optical center.
+                                offset: const Offset(-0.5, 2),
                                 child: Text(
-                              _weekdays[index],
-                              textAlign: TextAlign.center,
-                              maxLines: 1,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                fontFamily: 'Pretendard',
-                                fontSize: 11,
-                                fontWeight:
-                                    studied ? FontWeight.w600 : FontWeight.w400,
-                                height: 1.5,
-                                letterSpacing: -0.275,
-                                color: studied
-                                    ? Colors.white
-                                    : isLight
-                                        ? const Color(0xFF767676)
-                                        : AppColors.darkSubtext,
+                                  _weekdays[index],
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    fontFamily: 'Pretendard',
+                                    fontSize: 11,
+                                    fontWeight: studied
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                    height: 1.5,
+                                    letterSpacing: -0.275,
+                                    color: studied
+                                        ? Colors.white
+                                        : isLight
+                                            ? const Color(0xFF767676)
+                                            : AppColors.darkSubtext,
+                                  ),
+                                ),
                               ),
-                            )),
+                            ),
                           ],
                         ),
                       ),
