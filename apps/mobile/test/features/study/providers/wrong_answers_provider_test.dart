@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/features/study/data/models/word_entry_model.dart';
@@ -23,7 +25,9 @@ void main() {
       expect(state.loading, isFalse);
       expect(state.entries, repository.entries);
       expect(state.summary, repository.summary);
+      expect(state.total, 10);
       expect(state.totalPages, 3);
+      expect(state.supportsSearchAndStatus, isTrue);
     });
 
     test('sort changes reset pagination and expansion', () async {
@@ -69,6 +73,130 @@ void main() {
       await notifier.nextPage();
       expect(container.read(wrongAnswersProvider).page, 3);
       expect(repository.fetchCalls, 3);
+    });
+
+    testWidgets('search debounces and invalidates older reads immediately',
+        (tester) async {
+      final repository = _FakeStudyRepository();
+      final container = _buildContainer(repository);
+      final sub = container.listen(wrongAnswersProvider, (_, __) {});
+      addTearDown(sub.close);
+      addTearDown(container.dispose);
+      final notifier = container.read(wrongAnswersProvider.notifier);
+      await notifier.refresh();
+      await notifier.nextPage();
+      notifier.toggleExpanded('wrong-1');
+
+      final oldReadGate = Completer<void>();
+      repository.nextReadGate = oldReadGate;
+      final oldRead = notifier.refresh();
+      notifier.changeSearch('た');
+      oldReadGate.complete();
+      await oldRead;
+      expect(sub.read().loading, isTrue);
+      expect(sub.read().page, 1);
+      expect(sub.read().expandedId, isNull);
+      expect(sub.read().summary, repository.summary);
+
+      await tester.pump(const Duration(milliseconds: 220));
+      notifier.changeSearch(' たべる ');
+      await tester.pump(const Duration(milliseconds: 299));
+      expect(repository.fetchCalls, 3);
+      await tester.pump(const Duration(milliseconds: 1));
+      expect(repository.fetchCalls, 4);
+      expect(repository.lastSearch, ' たべる ');
+      expect(repository.lastPage, 1);
+      expect(sub.read().loading, isFalse);
+      expect(sub.read().total, 1);
+      expect(sub.read().summary?.totalWrong, 10);
+      expect(sub.read().hasActiveFilters, isTrue);
+
+      notifier.changeSearch('たべる');
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(repository.fetchCalls, 4);
+      expect(sub.read().search, 'たべる');
+    });
+
+    testWidgets('status applies pending search and clear preserves sort',
+        (tester) async {
+      final repository = _FakeStudyRepository();
+      final container = _buildContainer(repository);
+      final sub = container.listen(wrongAnswersProvider, (_, __) {});
+      addTearDown(sub.close);
+      addTearDown(container.dispose);
+      final notifier = container.read(wrongAnswersProvider.notifier);
+      await notifier.refresh();
+      await notifier.changeSort('recent');
+      await notifier.nextPage();
+
+      notifier.changeSearch('食');
+      await notifier.changeStatus(WrongAnswerStatus.learning);
+      expect(repository.fetchCalls, 4);
+      expect(repository.lastPage, 1);
+      expect(repository.lastSort, 'recent');
+      expect(repository.lastSearch, '食');
+      expect(repository.lastStatus, WrongAnswerStatus.learning);
+      expect(sub.read().total, 1);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(repository.fetchCalls, 4);
+
+      notifier.changeSearch('먹');
+      await notifier.clearFilters();
+      expect(repository.fetchCalls, 5);
+      expect(repository.lastSort, 'recent');
+      expect(repository.lastSearch, isEmpty);
+      expect(repository.lastStatus, WrongAnswerStatus.all);
+      expect(sub.read().total, 10);
+      expect(sub.read().hasActiveFilters, isFalse);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(repository.fetchCalls, 5);
+    });
+
+    testWidgets('legacy responses keep list features but ignore filters',
+        (tester) async {
+      final repository = _FakeStudyRepository()
+        ..supportsSearchAndStatus = false;
+      final container = _buildContainer(repository);
+      final sub = container.listen(wrongAnswersProvider, (_, __) {});
+      addTearDown(sub.close);
+      addTearDown(container.dispose);
+      final notifier = container.read(wrongAnswersProvider.notifier);
+      await notifier.refresh();
+
+      notifier.changeSearch('食べる');
+      await notifier.changeStatus(WrongAnswerStatus.mastered);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(repository.fetchCalls, 1);
+      expect(sub.read().supportsSearchAndStatus, isFalse);
+      expect(sub.read().hasActiveFilters, isFalse);
+      expect(sub.read().entries, repository.entries);
+
+      await notifier.changeSort('recent');
+      await notifier.nextPage();
+      expect(repository.fetchCalls, 3);
+      expect(repository.lastPage, 2);
+      expect(repository.lastSort, 'recent');
+    });
+
+    testWidgets('dispose cancels queued searches and ignores late reads',
+        (tester) async {
+      final repository = _FakeStudyRepository();
+      final container = _buildContainer(repository);
+      final sub = container.listen(wrongAnswersProvider, (_, __) {});
+      final notifier = container.read(wrongAnswersProvider.notifier);
+      await notifier.refresh();
+
+      final oldReadGate = Completer<void>();
+      repository.nextReadGate = oldReadGate;
+      final oldRead = notifier.refresh();
+      notifier.changeSearch('たべる');
+      sub.close();
+      container.dispose();
+
+      oldReadGate.complete();
+      await oldRead;
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(repository.fetchCalls, 2);
     });
 
     test('toggleExpanded opens and closes the selected wrong-answer card', () {
@@ -143,6 +271,10 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
   int addWordCalls = 0;
   int? lastPage;
   String? lastSort;
+  String? lastSearch;
+  WrongAnswerStatus? lastStatus;
+  bool supportsSearchAndStatus = true;
+  Completer<void>? nextReadGate;
   String? lastAddedWord;
   String? lastAddedSource;
 
@@ -153,19 +285,30 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
         int total,
         int totalPages,
         WrongAnswersSummary summary,
+        bool supportsSearchAndStatus,
       })> fetchWrongAnswers({
     int page = 1,
     String sort = 'most-wrong',
+    String search = '',
+    WrongAnswerStatus status = WrongAnswerStatus.all,
     int limit = 20,
   }) async {
     fetchCalls++;
     lastPage = page;
     lastSort = sort;
+    lastSearch = search;
+    lastStatus = status;
+    final gate = nextReadGate;
+    nextReadGate = null;
+    if (gate != null) await gate.future;
     return (
       entries: entries,
-      total: entries.length,
+      total: search.trim().isNotEmpty || status != WrongAnswerStatus.all
+          ? 1
+          : summary.totalWrong,
       totalPages: 3,
       summary: summary,
+      supportsSearchAndStatus: supportsSearchAndStatus,
     );
   }
 

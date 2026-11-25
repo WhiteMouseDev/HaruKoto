@@ -27,7 +27,7 @@ class WrongAnswerCard extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final light = colors.brightness == Brightness.light;
     final border = light ? AppColors.redesignOutline : colors.outlineVariant;
-    const radius = BorderRadius.all(Radius.circular(8));
+    const radius = BorderRadius.all(Radius.circular(12));
 
     return Material(
       color: colors.surface,
@@ -43,15 +43,14 @@ class WrongAnswerCard extends StatelessWidget {
             child: InkWell(
               onTap: onTap,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, expanded ? 7 : 16),
                 child: _WrongAnswerCardHeader(entry: entry, expanded: expanded),
               ),
             ),
           ),
           if (expanded)
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: _WrongAnswerCardDetail(
                 entry: entry,
                 saved: saved,
@@ -78,89 +77,116 @@ class _WrongAnswerCardHeader extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final light = colors.brightness == Brightness.light;
     final foreground = light ? AppColors.redesignForeground : colors.onSurface;
-    final secondary =
-        light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
+    final secondary = light ? const Color(0xFF505050) : colors.onSurfaceVariant;
 
     return Row(
+      crossAxisAlignment:
+          expanded ? CrossAxisAlignment.start : CrossAxisAlignment.center,
       children: [
-        Semantics(
-          label: entry.mastered ? '학습 완료' : '학습 중',
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: entry.mastered
-                  ? AppColors.redesignSentence
-                  : AppColors.redesignGrammar,
-              shape: BoxShape.circle,
-            ),
-            child: const SizedBox.square(dimension: 7),
-          ),
-        ),
-        const SizedBox(width: 8),
         Expanded(
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Wrap(
-                spacing: 5,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Text(
-                    entry.word,
-                    style: TextStyle(
-                      fontFamily: redesignFontFamily,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: foreground,
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Semantics(
+                  label: entry.mastered ? '학습 완료' : '학습 중',
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: entry.mastered
+                          ? AppColors.redesignSentence
+                          : AppColors.redesignGrammar,
+                      borderRadius: BorderRadius.circular(4),
                     ),
+                    child: const SizedBox.square(dimension: 12),
                   ),
-                  if (entry.reading.isNotEmpty)
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          entry.word,
+                          style: TextStyle(
+                            fontFamily: redesignJapaneseFontFamily,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            height: 1.4,
+                            color: foreground,
+                          ),
+                        ),
+                        if (entry.reading.isNotEmpty)
+                          Text(
+                            entry.reading,
+                            style: TextStyle(
+                              fontFamily: redesignJapaneseFontFamily,
+                              fontSize: 12,
+                              height: 1.5,
+                              color: secondary,
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 3.5),
                     Text(
-                      entry.reading,
+                      entry.meaningKo,
+                      maxLines: expanded ? null : 1,
+                      overflow: expanded
+                          ? TextOverflow.visible
+                          : TextOverflow.ellipsis,
                       style: TextStyle(
                         fontFamily: redesignFontFamily,
-                        fontSize: 11,
-                        color: secondary,
+                        fontSize: 14,
+                        height: 1.5,
+                        color: foreground,
                       ),
                     ),
-                ],
-              ),
-              Text(
-                entry.meaningKo,
-                style: TextStyle(
-                  fontFamily: redesignFontFamily,
-                  fontSize: 12,
-                  color: secondary,
+                  ],
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(width: 6),
-        Semantics(
-          label: '오답 ${entry.incorrectCount}회',
-          excludeSemantics: true,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: light
-                  ? AppColors.sakuraTrack
-                  : colors.error.withValues(alpha: 0.18),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              child: Text(
-                '${entry.incorrectCount}',
-                style: TextStyle(
-                  fontFamily: redesignFontFamily,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: light ? AppColors.sakuraOn : colors.error,
+        const SizedBox(width: 12),
+        if (!expanded) ...[
+          Semantics(
+            label: '오답 ${entry.incorrectCount}회',
+            excludeSemantics: true,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: light
+                    ? const Color(0xFFFAE6E6)
+                    : colors.error.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  child: Text(
+                    '${entry.incorrectCount}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: redesignFontFamily,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      height: 1.5,
+                      color: light ? const Color(0xFFD32F2F) : colors.error,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 6),
+          const SizedBox(width: 8),
+        ],
         Icon(
           expanded ? LucideIcons.chevronUp : LucideIcons.chevronDown,
           size: 16,
@@ -193,26 +219,35 @@ class _WrongAnswerCardDetail extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DecoratedBox(
+        Container(
           decoration: BoxDecoration(
             color:
                 light ? AppColors.redesignSurface : colors.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              color: light ? AppColors.redesignOutline : colors.outlineVariant,
+            ),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 WrongAnswersMiniStat(
                   label: '오답',
-                  value: '${entry.incorrectCount}회',
+                  value: entry.incorrectCount,
+                  unit: '회',
                   isError: true,
                 ),
-                WrongAnswersMiniStat(label: '정답률', value: '${entry.accuracy}%'),
+                WrongAnswersMiniStat(
+                  label: '정답률',
+                  value: entry.accuracy,
+                  unit: '%',
+                ),
                 WrongAnswersMiniStat(
                   label: '총 풀이',
-                  value: '${entry.totalAttempts}회',
+                  value: entry.totalAttempts,
+                  unit: '회',
                 ),
               ],
             ),
@@ -220,11 +255,18 @@ class _WrongAnswerCardDetail extends StatelessWidget {
         ),
         if (entry.exampleSentence case final example?) ...[
           const SizedBox(height: 8),
-          Text(
-            example,
+          Text.rich(
+            TextSpan(
+              children: _highlightedExample(
+                example,
+                entry.word,
+                light ? AppColors.sakura : colors.primary,
+              ),
+            ),
             style: TextStyle(
-              fontFamily: redesignFontFamily,
-              fontSize: 13,
+              fontFamily: redesignJapaneseFontFamily,
+              fontSize: 14,
+              height: 1.5,
               color: foreground,
             ),
           ),
@@ -233,17 +275,20 @@ class _WrongAnswerCardDetail extends StatelessWidget {
               translation,
               style: TextStyle(
                 fontFamily: redesignFontFamily,
-                fontSize: 11,
+                fontSize: 12,
+                height: 1.5,
                 color: secondary,
               ),
             ),
         ],
-        const SizedBox(height: 6),
+        const SizedBox(height: 4),
         Row(
           children: [
             DecoratedBox(
               decoration: BoxDecoration(
-                color: light ? AppColors.sakuraTrack : colors.primaryContainer,
+                color: light
+                    ? AppColors.redesignVocabulary
+                    : colors.primaryContainer,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Padding(
@@ -253,8 +298,7 @@ class _WrongAnswerCardDetail extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: redesignFontFamily,
                     fontSize: 11,
-                    color:
-                        light ? AppColors.sakuraOn : colors.onPrimaryContainer,
+                    color: light ? Colors.white : colors.onPrimaryContainer,
                   ),
                 ),
               ),
@@ -310,7 +354,7 @@ class _SaveToWordbookButtonState extends State<_SaveToWordbookButton> {
     return OutlinedButton.icon(
       onPressed: _saving || widget.saved ? null : _save,
       icon: Icon(
-        widget.saved ? LucideIcons.check : LucideIcons.bookmarkPlus,
+        widget.saved ? LucideIcons.check : LucideIcons.bookmark,
         size: 14,
       ),
       label: Text(
@@ -321,12 +365,13 @@ class _SaveToWordbookButtonState extends State<_SaveToWordbookButton> {
                 : '단어장에 추가',
       ),
       style: OutlinedButton.styleFrom(
-        foregroundColor: secondary,
+        foregroundColor:
+            light ? AppColors.redesignForeground : colors.onSurface,
         disabledForegroundColor: secondary,
         side: BorderSide(color: border),
         shape: const StadiumBorder(),
-        minimumSize: const Size(0, 34),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        minimumSize: const Size(0, 28),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
         visualDensity: VisualDensity.standard,
         tapTargetSize: MaterialTapTargetSize.padded,
         textStyle:
@@ -334,4 +379,16 @@ class _SaveToWordbookButtonState extends State<_SaveToWordbookButton> {
       ),
     );
   }
+}
+
+List<InlineSpan> _highlightedExample(String example, String word, Color color) {
+  if (word.isEmpty) return [TextSpan(text: example)];
+  final parts = example.split(word);
+  return [
+    TextSpan(text: parts.first),
+    for (final part in parts.skip(1)) ...[
+      TextSpan(text: word, style: TextStyle(color: color)),
+      TextSpan(text: part),
+    ],
+  ];
 }

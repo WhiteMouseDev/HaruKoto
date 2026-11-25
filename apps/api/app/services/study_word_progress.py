@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from typing import Literal
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,6 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import UserVocabProgress, Vocabulary
 from app.models.user import User
 from app.utils.helpers import enum_value
+
+type WrongAnswerStatus = Literal["LEARNING", "MASTERED"]
 
 
 @dataclass(slots=True)
@@ -154,6 +157,8 @@ async def get_study_wrong_answers_data(
     limit: int,
     sort: str,
     level: str | None,
+    search: str | None = None,
+    status: WrongAnswerStatus | None = None,
 ) -> StudyWrongAnswersResult:
     base_query = (
         select(UserVocabProgress, Vocabulary)
@@ -167,6 +172,17 @@ async def get_study_wrong_answers_data(
     if level:
         base_query = base_query.where(Vocabulary.jlpt_level == level)
 
+    if search:
+        base_query = base_query.where(
+            or_(
+                Vocabulary.word.icontains(search, autoescape=True),
+                Vocabulary.reading.icontains(search, autoescape=True),
+                Vocabulary.meaning_ko.icontains(search, autoescape=True),
+            )
+        )
+    if status is not None:
+        base_query = base_query.where(UserVocabProgress.mastered.is_(status == "MASTERED"))
+
     count_query = select(func.count()).select_from(base_query.subquery())
     total = (await db.execute(count_query)).scalar() or 0
 
@@ -177,7 +193,7 @@ async def get_study_wrong_answers_data(
     else:
         base_query = base_query.order_by(UserVocabProgress.incorrect_count.desc())
 
-    result = await db.execute(base_query.offset((page - 1) * limit).limit(limit))
+    result = await db.execute(base_query.order_by(UserVocabProgress.id.asc()).offset((page - 1) * limit).limit(limit))
     rows = result.all()
 
     summary_base = select(UserVocabProgress).where(

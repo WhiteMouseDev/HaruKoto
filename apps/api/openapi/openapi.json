@@ -5892,6 +5892,40 @@
               ],
               "title": "Level"
             }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100,
+                  "pattern": "^[^\\x00]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/WrongAnswerStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
           }
         ],
         "responses": {
@@ -14180,6 +14214,10 @@
           },
           "summary": {
             "$ref": "#/components/schemas/StudyWrongAnswersSummary"
+          },
+          "supportsSearchAndStatus": {
+            "type": "boolean",
+            "title": "Supportssearchandstatus"
           }
         },
         "type": "object",
@@ -15419,6 +15457,13 @@
           "questionId"
         ],
         "title": "WrongAnswer"
+      },
+      "WrongAnswerStatus": {
+        "type": "string",
+        "enum": [
+          "LEARNING",
+          "MASTERED"
+        ]
       },
       "WrongAnswersResponse": {
         "properties": {

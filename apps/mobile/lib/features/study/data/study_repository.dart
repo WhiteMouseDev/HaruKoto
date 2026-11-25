@@ -332,14 +332,29 @@ class ApiStudyRepository implements StudyRepository {
         int total,
         int totalPages,
         WrongAnswersSummary summary,
+        bool supportsSearchAndStatus,
       })> fetchWrongAnswers({
     int page = 1,
     String sort = 'most-wrong',
+    String search = '',
+    WrongAnswerStatus status = WrongAnswerStatus.all,
     int limit = 20,
   }) async {
+    final query = search.trim();
+    final statusFilter = switch (status) {
+      WrongAnswerStatus.all => null,
+      WrongAnswerStatus.learning => 'LEARNING',
+      WrongAnswerStatus.mastered => 'MASTERED',
+    };
     final response = await _dio.get<Map<String, dynamic>>(
       '/study/wrong-answers',
-      queryParameters: {'page': page, 'sort': sort, 'limit': limit},
+      queryParameters: {
+        'page': page,
+        'sort': sort,
+        'limit': limit,
+        if (query.isNotEmpty) 'search': query,
+        if (statusFilter != null) 'status': statusFilter,
+      },
     );
     final data = response.data!;
     return (
@@ -350,6 +365,7 @@ class ApiStudyRepository implements StudyRepository {
       totalPages: data['totalPages'] as int? ?? 1,
       summary:
           WrongAnswersSummary.fromJson(data['summary'] as Map<String, dynamic>),
+      supportsSearchAndStatus: data['supportsSearchAndStatus'] == true,
     );
   }
 

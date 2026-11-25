@@ -76,7 +76,7 @@ class WrongAnswersSortMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final foreground = colors.brightness == Brightness.light
-        ? AppColors.redesignMutedForeground
+        ? AppColors.redesignForeground
         : colors.onSurfaceVariant;
     final label = _wrongAnswersSortOptions
         .firstWhere((option) => option.$1 == activeSort,
@@ -90,12 +90,15 @@ class WrongAnswersSortMenu extends StatelessWidget {
       label: Text(label),
       style: TextButton.styleFrom(
         foregroundColor: foreground,
-        minimumSize: const Size(48, kMinInteractiveDimension),
+        minimumSize: const Size(48, 36),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        visualDensity: VisualDensity.standard,
         padding: const EdgeInsetsDirectional.only(start: 8),
         textStyle: const TextStyle(
           fontFamily: redesignFontFamily,
           fontSize: 13,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
+          height: 1.5,
         ),
       ),
     );

@@ -21,6 +21,9 @@ class WrongAnswersPage extends ConsumerStatefulWidget {
 }
 
 class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
+  final _search = TextEditingController();
+  final _scroll = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -28,6 +31,13 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
       if (!mounted) return;
       unawaited(ref.read(wrongAnswersProvider.notifier).refresh());
     });
+  }
+
+  @override
+  void dispose() {
+    _search.dispose();
+    _scroll.dispose();
+    super.dispose();
   }
 
   Future<void> _saveToWordbook(WrongEntryModel entry) async {
@@ -40,8 +50,10 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
     );
   }
 
-  void _changeSort(String sort) {
-    unawaited(ref.read(wrongAnswersProvider.notifier).changeSort(sort));
+  void _fromTop(Future<void> Function() action) {
+    FocusScope.of(context).unfocus();
+    if (_scroll.hasClients) _scroll.jumpTo(0);
+    unawaited(action());
   }
 
   void _startReviewQuiz(WrongAnswersSummary summary) {
@@ -73,26 +85,37 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
         : theme.colorScheme.onSurface;
     final wrongAnswers = ref.watch(wrongAnswersProvider);
     final controller = ref.read(wrongAnswersProvider.notifier);
+    ref.listen(
+      wrongAnswersProvider.select((state) => state.supportsSearchAndStatus),
+      (previous, supported) {
+        if (previous == true && !supported) _search.clear();
+      },
+    );
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: false,
+        toolbarHeight: 66,
+        leadingWidth: 52,
         titleSpacing: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         backgroundColor: theme.scaffoldBackgroundColor,
         foregroundColor: foreground,
-        leading: IconButton(
-          onPressed: () => Navigator.maybePop(context),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          icon: const Icon(LucideIcons.arrowLeft, size: 20),
+        leading: Padding(
+          padding: const EdgeInsetsDirectional.only(start: 8),
+          child: IconButton(
+            onPressed: () => Navigator.maybePop(context),
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            icon: const Icon(LucideIcons.arrowLeft, size: 20),
+          ),
         ),
         title: const Text(
           '오답노트',
           style: TextStyle(
             fontFamily: redesignFontFamily,
-            fontSize: 16,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -101,14 +124,26 @@ class _WrongAnswersPageState extends ConsumerState<WrongAnswersPage> {
         top: false,
         child: WrongAnswersContent(
           state: wrongAnswers,
+          searchController: _search,
+          scrollController: _scroll,
           onRetry: controller.refresh,
           onOpenStudy: _openStudy,
           onStartReview: _startReviewQuiz,
-          onSortChanged: _changeSort,
+          onSearchChanged: controller.changeSearch,
+          onStatusChanged: controller.changeStatus,
+          onClearFilters: () {
+            _search.clear();
+            unawaited(controller.clearFilters());
+          },
+          onSortChanged: (sort) {
+            if (sort != wrongAnswers.sort) {
+              _fromTop(() => controller.changeSort(sort));
+            }
+          },
           onToggleExpand: controller.toggleExpanded,
           onSaveToWordbook: _saveToWordbook,
-          onPagePrev: controller.previousPage,
-          onPageNext: controller.nextPage,
+          onPagePrev: () => _fromTop(controller.previousPage),
+          onPageNext: () => _fromTop(controller.nextPage),
         ),
       ),
     );

@@ -90,9 +90,12 @@ abstract class StudyRepository {
         int total,
         int totalPages,
         WrongAnswersSummary summary,
+        bool supportsSearchAndStatus,
       })> fetchWrongAnswers({
     int page = 1,
     String sort = 'most-wrong',
+    String search = '',
+    WrongAnswerStatus status = WrongAnswerStatus.all,
     int limit = 20,
   });
 

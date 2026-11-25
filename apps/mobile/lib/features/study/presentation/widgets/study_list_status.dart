@@ -79,19 +79,19 @@ class StudyListStatusAction extends StatelessWidget {
   const StudyListStatusAction({
     super.key,
     required this.onPressed,
-    required this.icon,
+    this.icon,
     required this.label,
   });
 
   final VoidCallback onPressed;
-  final IconData icon;
+  final IconData? icon;
   final String label;
 
   @override
   Widget build(BuildContext context) {
     return FilledButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, size: 14),
+      icon: icon == null ? null : Icon(icon, size: 14),
       label: Text(label),
       style: FilledButton.styleFrom(
         minimumSize: const Size(0, 42),
