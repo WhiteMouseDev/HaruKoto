@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
+import 'package:harukoto_mobile/core/constants/colors.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/features/my/data/models/profile_detail_model.dart';
 import 'package:harukoto_mobile/features/my/data/my_repository.dart';
@@ -65,6 +66,26 @@ void main() {
         expect(find.bySemanticsLabel('최장 연속 7일'), findsOneWidget);
         expect(find.text('나의 학습 통계'), findsOneWidget);
         expect(find.text('앱 설정'), findsOneWidget);
+
+        final metrics = find.byType(ProfileMetricsCard);
+        expect(tester.getSize(metrics).height, 89);
+        for (final (label, size, weight, height) in [
+          ('5일', 14.0, FontWeight.w500, 1.5),
+          ('총 학습일', 12.0, FontWeight.w400, 1.5),
+          ('320/1000 XP', 12.0, FontWeight.w400, 1.5),
+        ]) {
+          final style = tester.widget<Text>(find.text(label)).style!;
+          expect(style.fontSize, size);
+          expect(style.fontWeight, weight);
+          expect(style.height, height);
+        }
+
+        final badge = tester.widget<Text>(find.descendant(
+          of: find.byType(ProfileHero),
+          matching: find.text('N5'),
+        ));
+        expect(badge.style?.fontSize, 12);
+        expect(badge.style?.fontWeight, FontWeight.w500);
       } finally {
         semantics.dispose();
       }
@@ -176,13 +197,42 @@ void main() {
       tester.state<NavigatorState>(find.byType(Navigator)).pop();
       await tester.pumpAndSettle();
 
-      await tester.drag(find.byType(ListView), const Offset(0, -300));
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -300));
       await tester.pumpAndSettle();
       await tester.tap(find.text('테마 선택').hitTestable());
       await tester.pumpAndSettle();
       expect(find.byType(BottomSheet), findsOneWidget);
       expect(find.text('다크'), findsOneWidget);
       expect(repository.updatedProfiles, isEmpty);
+    });
+
+    testWidgets('business information fills the viewport with a 20dp inset',
+        (tester) async {
+      await tester.binding.setSurfaceSize(const Size(375, 812));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(await _buildMyPage(_FakeMyRepository()));
+      await tester.pumpAndSettle();
+
+      final heading = find.text('화이트마우스데브 (WhiteMouseDev)');
+      await tester.scrollUntilVisible(heading, 250);
+      final footer = find.ancestor(
+        of: heading,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is ColoredBox && widget.color == AppColors.redesignControl,
+        ),
+      );
+      final bounds = tester.getRect(footer);
+      expect(bounds.left, 0);
+      expect(bounds.width, 375);
+      expect(tester.getTopLeft(heading) - bounds.topLeft, const Offset(20, 24));
+      expect(
+        bounds.bottom -
+            tester
+                .getBottomLeft(find.text('이메일: whitemousedev@whitemouse.dev'))
+                .dy,
+        24,
+      );
     });
 
     testWidgets('supports long nicknames and settings in a 320dp large font',

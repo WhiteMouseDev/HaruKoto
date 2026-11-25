@@ -18,17 +18,19 @@ import '../../study/providers/saved_quiz_provider.dart';
 const _quizQuestionCount = 10;
 
 enum _QuizCategory {
-  vocabulary('단어', 'VOCABULARY', '단어 퀴즈를 풀면서 어휘력을 늘려봐요!'),
-  grammar('문법', 'GRAMMAR', '문장에 쓰이는 문법을 익혀요.'),
-  kanji('한자', 'KANJI', '한자의 뜻과 읽는 법을 확인해요.'),
-  listening('리스닝', 'LISTENING', '일본어 음성을 듣고 알맞은 답을 골라요.'),
-  sentenceArrange('문장배열', 'SENTENCE_ARRANGE', '단어를 배열해 문장을 완성해요.');
+  vocabulary('단어', 'VOCABULARY', '단어 퀴즈를 풀면서 어휘력을 늘려봐요!', 63),
+  grammar('문법', 'GRAMMAR', '문장에 쓰이는 문법을 익혀요.', 63),
+  kanji('한자', 'KANJI', '한자의 뜻과 읽는 법을 확인해요.', 63),
+  listening('리스닝', 'LISTENING', '일본어 음성을 듣고 알맞은 답을 골라요.', 74),
+  sentenceArrange('문장배열', 'SENTENCE_ARRANGE', '단어를 배열해 문장을 완성해요.', 86);
 
   final String label;
   final String apiType;
   final String description;
+  final double tabWidth;
 
-  const _QuizCategory(this.label, this.apiType, this.description);
+  const _QuizCategory(
+      this.label, this.apiType, this.description, this.tabWidth);
 
   bool get usesFreeQuizSheet => this == vocabulary || this == grammar;
 
@@ -105,60 +107,70 @@ class _PracticePageState extends ConsumerState<PracticePage> {
                   ref.invalidate(dashboardProvider);
                   await ref.read(savedQuizListProvider.notifier).refresh();
                 },
-                child: ListView(
+                child: CustomScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
-                  children: [
-                    _QuizCategoryTabs(
-                      selectedCategory: _selectedCategory,
-                      onChanged: (category) =>
-                          setState(() => _selectedCategory = category),
-                    ),
-                    const SizedBox(height: 14),
-                    _QuizHero(
-                      category: _selectedCategory,
-                      onStart: accountCurrent && !_openingQuiz
-                          ? () => _startSelectedQuiz(owner, jlptLevel)
-                          : null,
-                    ),
-                    const SizedBox(height: 40),
-                    _TodayRecord(
-                      today: today,
-                      loading: dashboard?.isLoading == true,
-                      onRetry: accountCurrent
-                          ? () => ref.invalidate(dashboardProvider)
-                          : null,
-                    ),
-                    const SizedBox(height: 40),
-                    const SavedQuizSection(
-                      redesigned: true,
-                      padding: EdgeInsets.only(bottom: 20),
-                    ),
-                    Semantics(
-                      header: true,
-                      child: Text(
-                        '퀴즈 기록',
-                        style: _practiceText(theme, 16, strong: true),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: _QuizCategoryTabs(
+                          selectedCategory: _selectedCategory,
+                          onChanged: (category) =>
+                              setState(() => _selectedCategory = category),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    const _RecordTile(
-                      icon: 'wordbook',
-                      iconSize: 28,
-                      label: '단어장',
-                      destination: '/study/wordbook',
-                    ),
-                    const SizedBox(height: 8),
-                    const _RecordTile(
-                      icon: 'wrong',
-                      label: '오답노트',
-                      destination: '/study/wrong-answers',
-                    ),
-                    const SizedBox(height: 8),
-                    const _RecordTile(
-                      icon: 'studied',
-                      label: '학습한 단어',
-                      destination: '/study/learned-words',
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+                      sliver: SliverList.list(
+                        children: [
+                          _QuizHero(
+                            category: _selectedCategory,
+                            onStart: accountCurrent && !_openingQuiz
+                                ? () => _startSelectedQuiz(owner, jlptLevel)
+                                : null,
+                          ),
+                          const SizedBox(height: 40),
+                          _TodayRecord(
+                            today: today,
+                            loading: dashboard?.isLoading == true,
+                            onRetry: accountCurrent
+                                ? () => ref.invalidate(dashboardProvider)
+                                : null,
+                          ),
+                          const SizedBox(height: 40),
+                          const SavedQuizSection(
+                            redesigned: true,
+                            padding: EdgeInsets.only(bottom: 20),
+                          ),
+                          Semantics(
+                            header: true,
+                            child: Text(
+                              '퀴즈 기록',
+                              style: _practiceText(theme, 16, strong: true),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          const _RecordTile(
+                            icon: 'wordbook',
+                            iconSize: 28,
+                            label: '단어장',
+                            destination: '/study/wordbook',
+                          ),
+                          const SizedBox(height: 8),
+                          const _RecordTile(
+                            icon: 'wrong',
+                            label: '오답노트',
+                            destination: '/study/wrong-answers',
+                          ),
+                          const SizedBox(height: 8),
+                          const _RecordTile(
+                            icon: 'studied',
+                            label: '학습한 단어',
+                            destination: '/study/learned-words',
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -230,57 +242,54 @@ class _QuizCategoryTabs extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final light = theme.brightness == Brightness.light;
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: constraints.maxWidth),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            spacing: 4,
-            children: [
-              for (final category in _QuizCategory.values)
-                TextButton(
-                  key: ValueKey('practice-category-${category.apiType}'),
-                  style: TextButton.styleFrom(
-                    backgroundColor: category == selectedCategory
-                        ? light
-                            ? AppColors.redesignStrong
-                            : colors.onSurface
-                        : light
-                            ? AppColors.redesignControl
-                            : colors.surfaceContainerHigh,
-                    foregroundColor: category == selectedCategory
-                        ? light
-                            ? Colors.white
-                            : colors.surface
-                        : light
-                            ? AppColors.redesignStrong
-                            : colors.onSurfaceVariant,
-                    minimumSize: const Size(63, 32),
-                    visualDensity: VisualDensity.standard,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 6,
-                    ),
-                    textStyle: const TextStyle(
-                      fontFamily: redesignFontFamily,
-                      fontSize: 13,
-                      height: 1.4,
-                      letterSpacing: -0.325,
-                    ),
-                    shape: const StadiumBorder(),
-                  ),
-                  onPressed: () => onChanged(category),
-                  child: Semantics(
-                    selected: category == selectedCategory,
-                    inMutuallyExclusiveGroup: true,
-                    child: Text(category.label),
-                  ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        spacing: 4,
+        children: [
+          for (final category in _QuizCategory.values)
+            TextButton(
+              key: ValueKey('practice-category-${category.apiType}'),
+              style: TextButton.styleFrom(
+                backgroundColor: category == selectedCategory
+                    ? light
+                        ? AppColors.redesignStrong
+                        : colors.onSurface
+                    : light
+                        ? AppColors.redesignControl
+                        : colors.surfaceContainerHigh,
+                foregroundColor: category == selectedCategory
+                    ? light
+                        ? Colors.white
+                        : colors.surface
+                    : light
+                        ? AppColors.redesignForeground
+                        : colors.onSurfaceVariant,
+                minimumSize: Size(category.tabWidth, 32),
+                tapTargetSize: MaterialTapTargetSize.padded,
+                visualDensity: VisualDensity.standard,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
                 ),
-            ],
-          ),
-        ),
+                textStyle: const TextStyle(
+                  fontFamily: redesignFontFamily,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  height: 1.4,
+                  letterSpacing: -0.325,
+                ),
+                shape: const StadiumBorder(),
+              ),
+              onPressed: () => onChanged(category),
+              child: Semantics(
+                selected: category == selectedCategory,
+                inMutuallyExclusiveGroup: true,
+                child: Text(category.label),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -288,6 +297,10 @@ class _QuizCategoryTabs extends StatelessWidget {
 
 class _QuizHero extends StatelessWidget {
   const _QuizHero({required this.category, required this.onStart});
+
+  // The 42-point button fill sits inside a 48-point interaction area.
+  static const _buttonHitInset = 3.0;
+  static const _secondaryText = Color(0xFF505050);
 
   final _QuizCategory category;
   final VoidCallback? onStart;
@@ -303,7 +316,7 @@ class _QuizHero extends StatelessWidget {
         color: light ? AppColors.redesignSurface : colors.surfaceContainerHigh,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16 - _buttonHitInset),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -317,12 +330,15 @@ class _QuizHero extends StatelessWidget {
                   ),
                   child: SizedBox.square(
                     dimension: 40,
-                    child: Center(
-                      child: Image.asset(
-                        'assets/icons/figma-practice-hero.png',
-                        width: 18,
-                        height: 16.84,
-                        excludeFromSemantics: true,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 1),
+                      child: Center(
+                        child: Image.asset(
+                          'assets/icons/figma-practice-hero.png',
+                          width: 18,
+                          height: 17,
+                          excludeFromSemantics: true,
+                        ),
                       ),
                     ),
                   ),
@@ -332,12 +348,16 @@ class _QuizHero extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     color: colors.surfaceContainerLowest,
                   ),
-                  child: Padding(
+                  child: Container(
+                    constraints:
+                        const BoxConstraints(minWidth: 59, minHeight: 28),
+                    alignment: Alignment.center,
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     child: Text(
                       '$_quizQuestionCount문제',
-                      style: _practiceText(theme, 12, strong: true),
+                      style: _practiceText(theme, 13, height: 1.5, muted: true)
+                          .copyWith(color: light ? _secondaryText : null),
                     ),
                   ),
                 ),
@@ -346,12 +366,15 @@ class _QuizHero extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               '${category.label} 퀴즈 풀기',
-              style: _practiceText(theme, 16, strong: true),
+              style: _practiceText(theme, 18, strong: true),
             ),
             const SizedBox(height: 4),
-            Text(category.description,
-                style: _practiceText(theme, 12, muted: true)),
-            const SizedBox(height: 12),
+            Text(
+              category.description,
+              style: _practiceText(theme, 13, height: 1.5, muted: true)
+                  .copyWith(color: light ? _secondaryText : null),
+            ),
+            const SizedBox(height: 12 - _buttonHitInset),
             FilledButton(
               key: const ValueKey('practice-start-quiz'),
               onPressed: onStart,
@@ -359,6 +382,7 @@ class _QuizHero extends StatelessWidget {
                 backgroundColor: light ? AppColors.brandPink : null,
                 foregroundColor: light ? Colors.white : null,
                 minimumSize: const Size(0, 42),
+                tapTargetSize: MaterialTapTargetSize.padded,
                 visualDensity: VisualDensity.standard,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -366,7 +390,9 @@ class _QuizHero extends StatelessWidget {
                 textStyle: const TextStyle(
                   fontFamily: redesignFontFamily,
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
+                  height: 1.4,
+                  letterSpacing: -0.35,
                 ),
               ),
               child: const Text('퀴즈 풀기', textAlign: TextAlign.center),
@@ -420,7 +446,7 @@ class _TodayRecord extends StatelessWidget {
             color: theme.colorScheme.surfaceContainerLowest,
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 17.5),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: counts != null || loading
                 ? Semantics(
                     container: true,
@@ -432,7 +458,8 @@ class _TodayRecord extends StatelessWidget {
                       children: [
                         Expanded(
                           child: _RecordMetric(
-                            label: '푼 문제',
+                            label: '오늘 푼 퀴즈',
+                            semanticsLabel: '푼 문제',
                             count: counts?.total,
                             emphasized: true,
                           ),
@@ -474,11 +501,13 @@ class _RecordMetric extends StatelessWidget {
   const _RecordMetric({
     required this.label,
     required this.count,
+    this.semanticsLabel,
     this.emphasized = false,
   });
 
   final String label;
   final int? count;
+  final String? semanticsLabel;
   final bool emphasized;
 
   @override
@@ -487,12 +516,12 @@ class _RecordMetric extends StatelessWidget {
     final accent = theme.brightness == Brightness.light
         ? AppColors.brandPink
         : AppColors.sakuraContainer;
-    final countStyle = _practiceText(theme, 17, strong: true).copyWith(
+    final countStyle = _practiceText(theme, 18, strong: true).copyWith(
       color: emphasized ? accent : null,
     );
     return Semantics(
       container: true,
-      label: count == null ? null : '$label $count개',
+      label: count == null ? null : '${semanticsLabel ?? label} $count개',
       excludeSemantics: true,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 3),
@@ -500,14 +529,22 @@ class _RecordMetric extends StatelessWidget {
           children: [
             if (count == null)
               SizedBox(
-                height: MediaQuery.textScalerOf(context).scale(17) * 1.4,
+                height: MediaQuery.textScalerOf(context).scale(18) * 1.4,
                 child: const Center(
                   child: AppSkeletonBlock(width: 36, height: 12),
                 ),
               )
             else
-              Text(
-                '$count개',
+              Text.rich(
+                TextSpan(
+                  text: '$count',
+                  children: [
+                    TextSpan(
+                      text: '개',
+                      style: _practiceText(theme, 13, height: 1.5),
+                    ),
+                  ],
+                ),
                 textAlign: TextAlign.center,
                 style: countStyle,
               ),
@@ -515,7 +552,12 @@ class _RecordMetric extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: _practiceText(theme, 12, muted: true),
+              style:
+                  _practiceText(theme, 12, height: 1.5, muted: true).copyWith(
+                color: theme.brightness == Brightness.light
+                    ? const Color(0xFF767676)
+                    : null,
+              ),
             ),
           ],
         ),
@@ -553,9 +595,9 @@ class _RecordTile extends StatelessWidget {
       child: InkWell(
         onTap: () => context.push(destination),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 54),
+          constraints: const BoxConstraints(minHeight: 66),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            padding: const EdgeInsets.fromLTRB(16, 10, 20, 10),
             child: Row(
               children: [
                 SizedBox.square(
@@ -570,16 +612,22 @@ class _RecordTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 7),
                 Expanded(
-                  child: Text(label, style: _practiceText(theme, 14)),
+                  child: Text(
+                    label,
+                    style: _practiceText(theme, 14, height: 1.5)
+                        .copyWith(fontWeight: FontWeight.w500),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Image.asset(
                   'assets/icons/figma-home-arrow.png',
                   width: 6.25,
                   height: 11,
-                  color: light ? null : theme.colorScheme.onSurfaceVariant,
+                  color: light
+                      ? const Color(0xFF81818D)
+                      : theme.colorScheme.onSurfaceVariant,
                   excludeFromSemantics: true,
                 ),
               ],
@@ -596,13 +644,14 @@ TextStyle _practiceText(
   double size, {
   bool strong = false,
   bool muted = false,
+  double height = 1.4,
 }) {
   final light = theme.brightness == Brightness.light;
   return TextStyle(
     fontFamily: redesignFontFamily,
     fontSize: size,
     fontWeight: strong ? FontWeight.w600 : FontWeight.w400,
-    height: 1.4,
+    height: height,
     letterSpacing: -size * 0.025,
     color: muted
         ? light

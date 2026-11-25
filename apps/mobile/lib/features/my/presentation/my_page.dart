@@ -58,18 +58,6 @@ class _MyPageState extends ConsumerState<MyPage> {
     return Theme(
       data: theme.copyWith(
         textTheme: theme.textTheme.apply(fontFamily: redesignFontFamily),
-        switchTheme: light
-            ? theme.switchTheme.copyWith(
-                trackColor: WidgetStateProperty.resolveWith((states) =>
-                    states.contains(WidgetState.selected)
-                        ? AppColors.redesignVocabulary
-                        : null),
-                thumbColor: WidgetStateProperty.resolveWith((states) =>
-                    states.contains(WidgetState.selected)
-                        ? Colors.white
-                        : null),
-              )
-            : theme.switchTheme,
       ),
       child: Scaffold(
         body: SafeArea(
@@ -118,147 +106,101 @@ class _MyPageState extends ConsumerState<MyPage> {
         ref.invalidate(profileDetailProvider);
         ref.invalidate(subscriptionStatusProvider);
       },
-      child: ListView(
+      child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(20, 2, 20, 40),
-        children: [
-          // Profile Hero
-          ProfileHero(
-            profile: data.profile,
-            summary: data.summary,
-            onEditNickname: () =>
-                _showNicknameSheet(context, owner, data.profile.nickname),
-          ),
-          const SizedBox(height: 8),
-
-          // Subscription — hidden for free launch (re-enable when IAP ready)
-          // SubscriptionSection(
-          //   onNavigateToPricing: () => context.push('/pricing'),
-          //   onNavigateToManage: () => context.push('/my/subscription'),
-          //   onNavigateToPayments: () => context.push('/my/payments'),
-          // ),
-
-          // Learning Stats
-          Card(
-            margin: EdgeInsets.zero,
-            elevation: 0,
-            color: light
-                ? const Color(0xFFFEF0F2)
-                : theme.colorScheme.surfaceContainerHigh,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: ListTile(
-              minTileHeight: 48,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              leading: Image.asset(
-                'assets/icons/figma-my-stats.png',
-                width: 24,
-                height: 24,
-                fit: BoxFit.contain,
-                excludeFromSemantics: true,
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 6, 20, 24),
+            sliver: SliverList.list(children: [
+              // Profile Hero
+              ProfileHero(
+                profile: data.profile,
+                summary: data.summary,
+                onEditNickname: () =>
+                    _showNicknameSheet(context, owner, data.profile.nickname),
               ),
-              title: const Text('나의 학습 통계',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              trailing: Image.asset(
-                'assets/icons/figma-home-arrow.png',
-                width: 6.25,
-                height: 11,
-                color: light ? null : theme.colorScheme.onSurfaceVariant,
-                excludeFromSemantics: true,
+              const SizedBox(height: 8),
+
+              // Subscription — hidden for free launch (re-enable when IAP ready)
+              // SubscriptionSection(
+              //   onNavigateToPricing: () => context.push('/pricing'),
+              //   onNavigateToManage: () => context.push('/my/subscription'),
+              //   onNavigateToPayments: () => context.push('/my/payments'),
+              // ),
+
+              // Learning Stats
+              Card(
+                margin: EdgeInsets.zero,
+                elevation: 0,
+                color: light
+                    ? const Color(0xFFFEF0F2)
+                    : theme.colorScheme.surfaceContainerHigh,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: ListTile(
+                  minTileHeight: 48,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                  minLeadingWidth: 20,
+                  horizontalTitleGap: 8,
+                  leading: SizedBox.square(
+                    dimension: 20,
+                    child: Center(
+                      child: Image.asset(
+                        'assets/icons/figma-my-stats.png',
+                        width: 18,
+                        height: 18,
+                        fit: BoxFit.contain,
+                        excludeFromSemantics: true,
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    '나의 학습 통계',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      height: 1.5,
+                      letterSpacing: -0.35,
+                      color: light
+                          ? AppColors.redesignForeground
+                          : theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  trailing: Image.asset(
+                    'assets/icons/figma-home-arrow.png',
+                    width: 6.25,
+                    height: 11,
+                    color: light ? null : theme.colorScheme.onSurfaceVariant,
+                    excludeFromSemantics: true,
+                  ),
+                  onTap: () => context.push('/my/stats'),
+                ),
               ),
-              onTap: () => context.push('/my/stats'),
-            ),
+              const SizedBox(height: 40),
+
+              // Settings
+              const SettingsMenu(),
+              const SizedBox(height: 40),
+
+              // App Settings
+              const AppSettingsSection(),
+              const SizedBox(height: 40),
+
+              // Info
+              const InfoSection(),
+              const SizedBox(height: 40),
+
+              // Account
+              AccountSection(
+                onLogout: () => _handleLogout(owner),
+                loggingOut: _loggingOut,
+                onDeleteAccount: () => _handleDeleteAccount(owner),
+              ),
+            ]),
           ),
-          const SizedBox(height: 40),
-
-          // Settings
-          const SettingsMenu(),
-          const SizedBox(height: 40),
-
-          // App Settings
-          const AppSettingsSection(),
-          const SizedBox(height: 40),
-
-          // Info
-          const InfoSection(),
-          const SizedBox(height: 40),
-
-          // Account
-          AccountSection(
-            onLogout: () => _handleLogout(owner),
-            loggingOut: _loggingOut,
-            onDeleteAccount: () => _handleDeleteAccount(owner),
-          ),
-          const SizedBox(height: AppSizes.md),
-
-          // Footer
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: light
-                  ? AppColors.redesignSurface
-                  : theme.colorScheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '화이트마우스데브 (WhiteMouseDev)',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '대표: 김건우',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                  ),
-                ),
-                Text(
-                  '사업자등록번호: 634-26-01985',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                  ),
-                ),
-                Text(
-                  '통신판매업신고번호: 2026-서울송파-0749',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                  ),
-                ),
-                Text(
-                  '주소: 서울특별시 송파구 양재대로 1218',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                  ),
-                ),
-                Text(
-                  '연락처: 010-8595-9869',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                  ),
-                ),
-                Text(
-                  '이메일: whitemousedev@whitemouse.dev',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          const SliverToBoxAdapter(child: _BusinessInfoFooter()),
         ],
       ),
     );
@@ -349,6 +291,55 @@ class _MyPageState extends ConsumerState<MyPage> {
         );
       }
     }
+  }
+}
+
+class _BusinessInfoFooter extends StatelessWidget {
+  const _BusinessInfoFooter();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final light = colors.brightness == Brightness.light;
+    return ColoredBox(
+      color: light ? AppColors.redesignControl : colors.surfaceContainerHigh,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: DefaultTextStyle(
+          style: TextStyle(
+            fontFamily: redesignFontFamily,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            height: 1.5,
+            letterSpacing: -0.3,
+            color: light ? const Color(0xFF505050) : colors.onSurfaceVariant,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '화이트마우스데브 (WhiteMouseDev)',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.35,
+                  color:
+                      light ? AppColors.redesignForeground : colors.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text('대표: 김건우'),
+              const Text('사업자등록번호: 634-26-01985'),
+              const Text('통신판매업신고번호: 2026-서울송파-0749'),
+              const Text('주소: 서울특별시 송파구 양재대로 1218'),
+              const SizedBox(height: 16),
+              const Text('연락처: 010-8595-9869'),
+              const Text('이메일: whitemousedev@whitemouse.dev'),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

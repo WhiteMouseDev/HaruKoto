@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/theme/text_theme.dart';
 import 'package:harukoto_mobile/features/kana/data/models/kana_character_model.dart';
 import 'package:harukoto_mobile/features/kana/presentation/kana_chart_page.dart';
 import 'package:harukoto_mobile/features/kana/presentation/widgets/kana_chart_grid.dart';
@@ -91,7 +92,48 @@ void main() {
     expect(find.text('다시 시도'), findsNothing);
   });
 
-  testWidgets('320px 2x dark chart keeps the last column reachable',
+  testWidgets('matches the 375dp chart geometry and text styles',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 812));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await _pumpChart(
+      tester,
+      load: (type) async => _characters(type),
+      topInset: 44,
+    );
+
+    final grid = tester.getRect(find.byType(KanaChartGrid));
+    expect(grid.left, 20);
+    expect(grid.top, 174);
+    expect(grid.width, 335);
+
+    final kana = tester.widget<Text>(find.text('あ').last);
+    expect(kana.style?.fontFamily, redesignFontFamily);
+    expect(kana.style?.fontSize, 15);
+    expect(kana.style?.fontWeight, FontWeight.w500);
+    expect(kana.style?.height, 1.5);
+    expect(kana.style?.letterSpacing, -0.375);
+
+    final axisKana = tester.widget<Text>(find.text('あ').first);
+    final axisReading = tester.widget<Text>(find.text('아').first);
+    expect(axisKana.style?.fontFamily, redesignJapaneseFontFamily);
+    expect(axisKana.style?.fontSize, 13);
+    expect(axisKana.style?.fontWeight, FontWeight.w400);
+    expect(axisReading.style?.fontFamily, redesignJapaneseFontFamily);
+    expect(axisReading.style?.fontSize, 11);
+    expect(axisReading.style?.fontWeight, FontWeight.w400);
+
+    for (final title in ['히라가나', '가타카나']) {
+      final tab = tester.widget<TextButton>(
+        find.widgetWithText(TextButton, title),
+      );
+      final tabStyle = tab.style?.textStyle?.resolve({});
+      expect(tabStyle?.fontSize, 13);
+      expect(tabStyle?.fontWeight, FontWeight.w500);
+    }
+  });
+
+  testWidgets('320px 2x bold dark chart keeps the last column reachable',
       (tester) async {
     await tester.binding.setSurfaceSize(const Size(320, 640));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -102,6 +144,7 @@ void main() {
         load: (type) async => _characters(type),
         brightness: Brightness.dark,
         textScaler: const TextScaler.linear(2),
+        boldText: true,
       );
       final waFinal = find.bySemanticsLabel('を, 오, 미학습, 문자 상세');
       await tester.ensureVisible(waFinal);
@@ -119,6 +162,8 @@ Future<void> _pumpChart(
   required Future<List<KanaCharacterModel>> Function(String type) load,
   Brightness brightness = Brightness.light,
   TextScaler textScaler = TextScaler.noScaling,
+  bool boldText = false,
+  double topInset = 0,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
@@ -130,7 +175,11 @@ Future<void> _pumpChart(
       child: MaterialApp(
         theme: ThemeData(brightness: brightness),
         builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+          data: MediaQuery.of(context).copyWith(
+            textScaler: textScaler,
+            boldText: boldText,
+            padding: EdgeInsets.only(top: topInset),
+          ),
           child: child!,
         ),
         home: const KanaChartPage(),

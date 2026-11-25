@@ -81,7 +81,7 @@ class StreakDailyCard extends ConsumerWidget {
             borderRadius: BorderRadius.circular(12),
             boxShadow: isLight
                 ? const [
-                    BoxShadow(color: Color(0x14000000), blurRadius: 8),
+                    BoxShadow(color: Color(0x14000000), blurRadius: 6),
                   ]
                 : null,
           ),
@@ -157,8 +157,8 @@ class _StreakStrip extends StatelessWidget {
       child: Container(
         constraints: const BoxConstraints(minHeight: 56),
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.xs, vertical: AppSizes.sm),
+        padding:
+            const EdgeInsets.symmetric(horizontal: AppSizes.xs, vertical: 6),
         decoration: BoxDecoration(
           color: isLight
               ? const Color(0xFFFEF0F2)
@@ -174,22 +174,26 @@ class _StreakStrip extends StatelessWidget {
               style: theme.textTheme.labelSmall?.copyWith(
                 fontFamily: 'Pretendard',
                 fontWeight: FontWeight.w400,
-                fontSize: 11,
-                height: 1.4,
-                letterSpacing: -0.275,
+                fontSize: 12,
+                height: 1.5,
+                letterSpacing: -0.3,
                 color: isLight
                     ? const Color(0xFF111111)
                     : theme.colorScheme.onSurface,
               ),
             ),
-            const SizedBox(height: 2),
             Text.rich(
               TextSpan(
                 text: '${streak.current}',
                 children: const [
                   TextSpan(
                     text: '일',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      height: 1.5,
+                      letterSpacing: -0.325,
+                    ),
                   ),
                 ],
               ),
@@ -201,7 +205,7 @@ class _StreakStrip extends StatelessWidget {
                 letterSpacing: -0.4,
                 fontWeight: FontWeight.w600,
                 color: isLight
-                    ? const Color(0xFFF06292)
+                    ? const Color(0xFFFF5173)
                     : AppColors.primaryContainer,
               ),
             ),
@@ -211,7 +215,7 @@ class _StreakStrip extends StatelessWidget {
     );
     final week = Padding(
       // Center the petals in the strip while leaving room for the date marker.
-      padding: const EdgeInsets.only(top: 6),
+      padding: const EdgeInsets.only(top: 7),
       child: _StreakWeek(
         today: today,
         studiedToday: streak.studiedToday,
@@ -335,7 +339,8 @@ class _StreakWeek extends StatelessWidget {
                               style: theme.textTheme.labelSmall?.copyWith(
                                 fontFamily: 'Pretendard',
                                 fontSize: 11,
-                                fontWeight: FontWeight.w400,
+                                fontWeight:
+                                    studied ? FontWeight.w600 : FontWeight.w400,
                                 height: 1.5,
                                 letterSpacing: -0.275,
                                 color: studied
@@ -348,7 +353,7 @@ class _StreakWeek extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 5),
                       SizedBox.square(
                         dimension: 4,
                         child: isToday
@@ -810,7 +815,7 @@ class _CalendarLegend extends StatelessWidget {
         color: colors.legendBackground,
         borderRadius: BorderRadius.circular(4),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       child: Wrap(
         alignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,

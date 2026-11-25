@@ -10,6 +10,7 @@ import '../../../../core/providers/user_preferences_provider.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../providers/settings_sync_provider.dart';
 import 'my_settings_group.dart';
+import 'my_settings_toggle_tile.dart';
 
 class SettingsMenu extends ConsumerWidget {
   const SettingsMenu({super.key});
@@ -25,13 +26,7 @@ class SettingsMenu extends ConsumerWidget {
       rows: [
         // JLPT Level
         ListTile(
-          leading: Image.asset(
-            'assets/icons/figma-my-jlpt.png',
-            width: 20,
-            height: 20,
-            fit: BoxFit.contain,
-            excludeFromSemantics: true,
-          ),
+          leading: const MySettingsIcon('jlpt', size: 20),
           title: const Text('JLPT 레벨', style: TextStyle(fontSize: 14)),
           trailing: Text(
             preferences.jlptLevel == 'ABSOLUTE_ZERO'
@@ -39,9 +34,11 @@ class SettingsMenu extends ConsumerWidget {
                 : preferences.jlptLevel,
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
+              height: 1.5,
+              letterSpacing: -0.35,
               color: theme.brightness == Brightness.light
-                  ? AppColors.redesignMutedForeground
+                  ? const Color(0xFF767676)
                   : theme.colorScheme.onSurfaceVariant,
             ),
           ),
@@ -53,14 +50,8 @@ class SettingsMenu extends ConsumerWidget {
         ),
 
         // Show Kana
-        SwitchListTile(
-          secondary: Image.asset(
-            'assets/icons/figma-my-kana.png',
-            width: 20,
-            height: 20,
-            fit: BoxFit.contain,
-            excludeFromSemantics: true,
-          ),
+        MySettingsToggleTile(
+          leading: const MySettingsIcon('kana', size: 20),
           title: const Text('가나 학습 표시', style: TextStyle(fontSize: 14)),
           value: preferences.showKana,
           onChanged: (value) async {

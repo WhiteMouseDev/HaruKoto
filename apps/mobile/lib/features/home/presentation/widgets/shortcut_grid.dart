@@ -112,7 +112,8 @@ class _ShortcutTile extends StatelessWidget {
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontFamily: 'Pretendard',
                     fontSize: 14,
-                    height: 1.4,
+                    fontWeight: FontWeight.w500,
+                    height: 1.5,
                     letterSpacing: -0.35,
                     color: _shortcutForeground(theme),
                   ),

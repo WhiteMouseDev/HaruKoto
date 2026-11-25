@@ -360,13 +360,14 @@ class _StationRow extends StatelessWidget {
           style: theme.textTheme.titleMedium?.copyWith(
             color: redesigned && isLight ? AppColors.redesignForeground : null,
             fontFamily: redesigned ? redesignFontFamily : null,
-            fontSize: redesigned ? 14 : 18,
+            fontSize: redesigned ? 15 : 18,
             fontWeight: redesigned
                 ? FontWeight.w600
                 : isRecommended
                     ? FontWeight.w800
                     : FontWeight.w700,
-            height: 1.35,
+            height: redesigned ? 1.5 : 1.35,
+            letterSpacing: redesigned ? -0.375 : null,
           ),
         ),
         SizedBox(height: redesigned ? 4 : 8),
@@ -380,7 +381,10 @@ class _StationRow extends StatelessWidget {
               style: theme.textTheme.bodySmall?.copyWith(
                 color: subtext,
                 fontFamily: redesigned ? redesignFontFamily : null,
-                fontSize: redesigned ? 12 : 13,
+                fontSize: redesigned ? 14 : 13,
+                fontWeight: redesigned ? FontWeight.w400 : null,
+                height: redesigned ? 1.5 : null,
+                letterSpacing: redesigned ? -0.35 : null,
               ),
             ),
             if (redesigned ? isRecommended : state != _StationState.idle)
@@ -401,11 +405,14 @@ class _StationRow extends StatelessWidget {
                   stateLabel,
                   style: theme.textTheme.labelSmall?.copyWith(
                     fontFamily: redesigned ? redesignFontFamily : null,
-                    fontSize: redesigned ? 10 : 12,
-                    height: 1.2,
-                    fontWeight: isRecommended && !redesigned
-                        ? FontWeight.w800
-                        : FontWeight.w600,
+                    fontSize: 12,
+                    height: redesigned ? 1.4 : 1.2,
+                    letterSpacing: redesigned ? -0.3 : null,
+                    fontWeight: redesigned
+                        ? FontWeight.w500
+                        : isRecommended
+                            ? FontWeight.w800
+                            : FontWeight.w600,
                     color: state == _StationState.complete
                         ? completeColor
                         : isRecommended
@@ -625,8 +632,9 @@ class _StationSign extends StatelessWidget {
             ? AppColors.redesignForeground
             : null,
         fontFamily: redesigned ? redesignFontFamily : null,
-        fontSize: redesigned ? 15 : 24,
-        height: redesigned ? 1.25 : 1,
+        fontSize: redesigned ? 16 : 24,
+        height: redesigned ? 1.4 : 1,
+        letterSpacing: redesigned ? -0.4 : null,
         fontWeight: redesigned ? FontWeight.w600 : FontWeight.w900,
       );
 

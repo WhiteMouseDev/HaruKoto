@@ -55,6 +55,25 @@ void main() {
     expect(log.top, start.bottom);
     expect(log.bottom, area.bottom);
     expect(area.height, 410);
+
+    final tab = tester.widget<TextButton>(
+      find.byKey(const ValueKey('quick-start-tab-vocabulary')),
+    );
+    final tabStyle = tab.style!.textStyle!.resolve({})!;
+    expect(tabStyle.fontSize, 13);
+    expect(tabStyle.fontWeight, FontWeight.w500);
+    expect(tabStyle.letterSpacing, -0.325);
+
+    final count = tester.widget<Text>(
+      find.byKey(const ValueKey('quick-start-daily-count')),
+    );
+    expect(count.style!.fontSize, 15);
+    expect(count.style!.fontWeight, FontWeight.w400);
+    expect(count.style!.letterSpacing, -0.375);
+    final answered = (count.textSpan! as TextSpan).children!.first.style!;
+    expect(answered.fontSize, 16);
+    expect(answered.fontWeight, FontWeight.w600);
+    expect(answered.letterSpacing, -0.4);
   });
 
   for (final count in [0, 8, 20, 24]) {

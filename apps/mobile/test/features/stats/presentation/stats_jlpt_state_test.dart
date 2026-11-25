@@ -159,6 +159,55 @@ void main() {
       container.dispose();
     }
   });
+
+  testWidgets('JLPT next goal matches Figma and can scroll on compact screens',
+      (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final container = ProviderContainer(overrides: [
+      jlptProgressProvider.overrideWith((ref) async => _sampleProgress),
+    ]);
+    final remaining = find.byKey(const ValueKey('jlpt-remaining-summary'));
+    final nextGoal = find.text('다음 목표');
+    final nextGoalAction = find.text('다음 진도 학습하러 가기');
+    try {
+      for (final (size, scale, gap) in [
+        (const Size(375, 812), 1.0, 40.0),
+        (const Size(320, 568), 1.0, 32.0),
+        (const Size(375, 812), 2.0, 32.0),
+      ]) {
+        tester.view.physicalSize = size;
+        await tester.pumpWidget(UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: TextScaler.linear(scale)),
+              child: child!,
+            ),
+            home: const Scaffold(
+              body: SingleChildScrollView(child: JlptTab(currentLevel: 'N4')),
+            ),
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        expect(
+          tester.getTopLeft(nextGoal).dy - tester.getBottomLeft(remaining).dy,
+          closeTo(gap, 0.01),
+        );
+        await tester.ensureVisible(nextGoalAction);
+        await tester.pumpAndSettle();
+        expect(nextGoalAction.hitTestable(), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      }
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      container.dispose();
+    }
+  });
 }
 
 const _sampleProgress = JlptProgressResponse(levels: [

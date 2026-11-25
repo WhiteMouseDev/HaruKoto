@@ -25,7 +25,7 @@ class QuizHeader extends StatelessWidget {
           ? AppColors.redesignForeground
           : theme.colorScheme.onSurface;
       return Padding(
-        padding: const EdgeInsets.fromLTRB(8, 0, 20, 0),
+        padding: const EdgeInsets.fromLTRB(4, 0, 20, 0),
         child: Row(
           children: [
             IconButton(
@@ -34,8 +34,9 @@ class QuizHeader extends StatelessWidget {
               style: IconButton.styleFrom(
                 foregroundColor: foreground,
                 minimumSize: const Size.square(48),
+                padding: const EdgeInsets.only(left: 4),
               ),
-              icon: const Icon(LucideIcons.arrowLeft, size: 20),
+              icon: const Icon(LucideIcons.arrowLeft, size: 22),
             ),
             Expanded(
               child: Semantics(
@@ -44,7 +45,7 @@ class QuizHeader extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontFamily: redesignFontFamily,
-                    fontSize: 16,
+                    fontSize: 20,
                     fontWeight: FontWeight.w600,
                     height: 1.4,
                     letterSpacing: -0.4,

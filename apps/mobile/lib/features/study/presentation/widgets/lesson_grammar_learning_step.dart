@@ -85,6 +85,7 @@ class _LessonGrammarLearningStepState extends State<LessonGrammarLearningStep> {
         ),
         LessonStageActions(
           nextLabel: '다음학습',
+          compact: true,
           onPrevious: widget.onBackToPrev,
           onNext: isLast ? widget.onNext : null,
         ),

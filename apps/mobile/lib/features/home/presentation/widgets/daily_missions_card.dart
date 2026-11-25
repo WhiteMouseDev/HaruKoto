@@ -146,13 +146,15 @@ class _MissionTile extends StatelessWidget {
     final textStyle = theme.textTheme.bodyMedium?.copyWith(
       fontFamily: 'Pretendard',
       fontSize: 14,
-      height: 1.4,
+      height: 1.5,
+      fontWeight: FontWeight.w400,
       letterSpacing: -0.35,
       color: _missionForeground(theme),
     );
     final statusStyle = textStyle?.copyWith(
       fontSize: 16,
       fontWeight: FontWeight.w600,
+      height: 1.4,
       letterSpacing: -0.4,
     );
     final pink = isLight ? AppColors.brandPink : AppColors.primaryContainer;
@@ -166,7 +168,7 @@ class _MissionTile extends StatelessWidget {
       child: ExcludeSemantics(
         child: Container(
           constraints: const BoxConstraints(minHeight: 143),
-          padding: const EdgeInsets.fromLTRB(6, 12, 6, 11),
+          padding: const EdgeInsets.fromLTRB(6, 12, 6, 9),
           decoration: BoxDecoration(
             color: theme.colorScheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(12),

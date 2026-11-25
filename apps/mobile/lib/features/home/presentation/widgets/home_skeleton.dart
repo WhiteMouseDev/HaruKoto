@@ -13,11 +13,17 @@ class HomeStreakSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final light = theme.brightness == Brightness.light;
-    final labelSize = MediaQuery.textScalerOf(context).scale(11);
+    final scaler = MediaQuery.textScalerOf(context);
+    final labelSize = scaler.scale(11);
     final countWidth = math.max(87.0, labelSize * 5 + 16);
     final count = SizedBox(
       width: countWidth,
-      child: AppSkeletonBlock(height: math.max(56.0, labelSize * 2.8 + 18)),
+      child: AppSkeletonBlock(
+        height: math.max(
+          56.0,
+          scaler.scale(12) * 1.5 + scaler.scale(16) * 1.4 + 14,
+        ),
+      ),
     );
     final week = Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

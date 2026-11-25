@@ -48,7 +48,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('문법 1/2'), findsOneWidget);
+      expect(find.text('문법 1 / 2'), findsOneWidget);
       expect(find.text('〜です'), findsOneWidget);
       expect(find.text('~ です'), findsNothing);
       expect(find.text('～です'), findsNothing);
@@ -59,7 +59,7 @@ void main() {
       await tester.tap(find.text('다음 문법'));
       await tester.pumpAndSettle();
 
-      expect(find.text('문법 2/2'), findsOneWidget);
+      expect(find.text('문법 2 / 2'), findsOneWidget);
       expect(find.text('〜ます'), findsOneWidget);
       expect(find.text('정중한 동사 표현'), findsOneWidget);
       final nextItem = find.widgetWithText(OutlinedButton, '다음 문법');

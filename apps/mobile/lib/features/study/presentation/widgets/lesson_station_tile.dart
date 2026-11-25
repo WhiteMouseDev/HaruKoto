@@ -99,10 +99,14 @@ class LessonStationTile extends StatelessWidget {
                                 ? AppColors.redesignForeground
                                 : null,
                             fontFamily: redesigned ? redesignFontFamily : null,
-                            fontSize: redesigned ? 13 : null,
-                            fontWeight: !redesigned && isRecommended
-                                ? FontWeight.w700
-                                : FontWeight.w600,
+                            fontSize: redesigned ? 14 : null,
+                            fontWeight: redesigned
+                                ? FontWeight.w500
+                                : isRecommended
+                                    ? FontWeight.w700
+                                    : FontWeight.w600,
+                            height: redesigned ? 1.5 : null,
+                            letterSpacing: redesigned ? -0.35 : null,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -111,7 +115,10 @@ class LessonStationTile extends StatelessWidget {
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: subtext,
                             fontFamily: redesigned ? redesignFontFamily : null,
-                            fontSize: redesigned ? 11 : null,
+                            fontSize: redesigned ? 12 : null,
+                            fontWeight: redesigned ? FontWeight.w400 : null,
+                            height: redesigned ? 1.5 : null,
+                            letterSpacing: redesigned ? -0.3 : null,
                           ),
                         ),
                         if (!redesigned || showScore) ...[
