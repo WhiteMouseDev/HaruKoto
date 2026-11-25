@@ -38,6 +38,9 @@ class StudyReviewSection extends ConsumerStatefulWidget {
 }
 
 class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
+  static const _buttonHitInset = 3.0;
+  static const _secondaryText = Color(0xFF505050);
+
   bool _opening = false;
 
   bool _isCurrent(String? owner) =>
@@ -170,22 +173,25 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
                   )),
             ),
             const SizedBox(height: 4),
-            Text(
-              hasBoth
-                  ? '단어와 문법을 골라 한 번에 최대 10개씩 복습해요.'
-                  : '학습한 내용을 복습하고, 실력을 키워봐요!',
-              style: TextStyle(
-                fontFamily: redesignFontFamily,
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                height: 1.5,
-                letterSpacing: -0.325,
-                color: light
-                    ? AppColors.redesignMutedForeground
-                    : theme.colorScheme.onSurfaceVariant,
+            Transform.translate(
+              offset: const Offset(0, 1),
+              child: Text(
+                hasBoth
+                    ? '단어와 문법을 골라 한 번에 최대 10개씩 복습해요.'
+                    : '학습한 내용을 복습하고, 실력을 키워봐요!',
+                style: TextStyle(
+                  fontFamily: redesignFontFamily,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
+                  letterSpacing: -0.325,
+                  color: light
+                      ? _secondaryText
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 12 - _buttonHitInset),
           ] else ...[
             Text('복습할 표현 ${summary.totalDue}개',
                 style: theme.textTheme.headlineSmall?.copyWith(
@@ -256,6 +262,7 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
               : _accent(context),
           minimumSize: Size.fromHeight(widget.redesigned ? 42 : 48),
           tapTargetSize: MaterialTapTargetSize.padded,
+          visualDensity: widget.redesigned ? VisualDensity.standard : null,
           padding: EdgeInsets.symmetric(
               horizontal: widget.redesigned ? 20 : 16,
               vertical: widget.redesigned ? 10 : 12),
@@ -297,18 +304,21 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
                   ),
                   child: Padding(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    child: Text(
-                      breakdown,
-                      style: TextStyle(
-                        fontFamily: redesignFontFamily,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                        letterSpacing: -0.325,
-                        color: light
-                            ? AppColors.redesignMutedForeground
-                            : theme.colorScheme.onSurfaceVariant,
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: Transform.translate(
+                      offset: const Offset(0, 1),
+                      child: Text(
+                        breakdown,
+                        style: TextStyle(
+                          fontFamily: redesignFontFamily,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          height: 1.5,
+                          letterSpacing: -0.24,
+                          color: light
+                              ? _secondaryText
+                              : theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ),
@@ -329,7 +339,10 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
       container: true,
       liveRegion: true,
       child: Container(
-        padding: EdgeInsets.all(widget.redesigned ? 16 : 20),
+        padding: widget.redesigned
+            ? EdgeInsets.fromLTRB(
+                16, 16, 16, breakdown == null ? 16 : 16 - _buttonHitInset)
+            : const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: light
               ? (widget.redesigned

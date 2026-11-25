@@ -104,7 +104,7 @@ void main() {
       expect(find.text('추천 레슨'), findsOneWidget);
       expect(find.text('1번 역 · 2번째 레슨'), findsOneWidget);
       expect(find.text('전체 보기'), findsNothing);
-      expect(find.text('추천 역'), findsOneWidget);
+      expect(find.text('추천'), findsOneWidget);
       expect(find.text('학습 시작'), findsOneWidget);
       final lessonTitle = tester.widget<Text>(find.text('Lesson 2')).style!;
       expect(lessonTitle.fontSize, 18);
@@ -171,7 +171,7 @@ void main() {
       expect(find.text('이어할 레슨'), findsOneWidget);
       expect(find.text('1번 역 · 1번째 레슨'), findsOneWidget);
       expect(find.text('전체 보기'), findsNothing);
-      expect(find.text('이어할 역'), findsOneWidget);
+      expect(find.text('추천'), findsOneWidget);
       expect(find.text('Lesson 1'), findsWidgets);
       expect(find.text('추천 레슨'), findsNothing);
       final station = find.byKey(const ValueKey('station-toggle-chapter-1'));

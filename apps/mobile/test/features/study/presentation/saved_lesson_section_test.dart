@@ -45,7 +45,12 @@ void main() {
         store: store);
     expect(find.text('추천 레슨'), findsOneWidget);
     expect(find.text('저장 레슨 first'), findsOneWidget);
-    expect(find.text('인사 · 10분'), findsOneWidget);
+    final recommendation = find.byType(LessonContinueBanner);
+    expect(find.descendant(of: recommendation, matching: find.text('인사')),
+        findsOneWidget);
+    expect(find.descendant(of: recommendation, matching: find.text('10분')),
+        findsOneWidget);
+    expect(tester.getSize(find.byType(ExpansionTile)).height, 48);
     expect(find.text('저장 레슨 second'), findsNothing);
     expect(find.text('열기'), findsNothing);
     expect(f.repository.fetchCalls, 0);
@@ -183,7 +188,7 @@ void main() {
               tester.getSize(find.byKey(const ValueKey('station-sign-N5-01')));
           expect(signSize.width, greaterThanOrEqualTo(redesigned ? 44 : 56));
           expect(signSize.width, signSize.height);
-          expect(find.text('추천 역'), findsOneWidget);
+          expect(find.text(redesigned ? '추천' : '추천 역'), findsOneWidget);
         }
         if (redesigned) {
           final available = find.text('이 기기에 저장된 레슨');

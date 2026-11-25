@@ -12,12 +12,15 @@ import '../../domain/lesson_recommendation.dart';
 import 'lesson_station_tile.dart';
 import '../study_map_colors.dart';
 
-const _routeRailCenter = 12.0;
-const _routeRailWidth = 2.0;
-const _routeCardOffset = 36.0;
+const _routeRailCenter = 24.0;
+const _routeRailWidth = 1.0;
+const _routeCardOffset = 56.0;
 const _routeCardRadius = 12.0;
-const _routeCardInset = 10.0;
-const _routeRowGap = 8.0;
+const _routeCardInset = 13.0;
+const _routeCardPadding = 17.0;
+const _routeRowGap = 12.0;
+const _routeLabel = Color(0xFF505050);
+const _routeChevron = Color(0xFF545461);
 
 class LessonStationListSkeleton extends StatelessWidget {
   const LessonStationListSkeleton({super.key});
@@ -62,7 +65,7 @@ class LessonStationListSkeleton extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: 12,
+            horizontal: _routeCardPadding,
             vertical: _routeCardInset,
           ),
           child: stackTitle
@@ -101,10 +104,10 @@ class LessonStationListSkeleton extends StatelessWidget {
                 ),
                 card,
                 Positioned(
-                  left: _routeRailCenter - 5,
-                  top: nodeCenter - 5,
+                  left: _routeRailCenter - 6,
+                  top: nodeCenter - 6,
                   child:
-                      const AppSkeletonBlock(width: 10, height: 10, radius: 5),
+                      const AppSkeletonBlock(width: 12, height: 12, radius: 6),
                 ),
               ],
             ),
@@ -169,6 +172,13 @@ class _LessonStationListState extends State<LessonStationList> {
         widget.chapters.where((chapter) => chapter.isComplete).length;
     final multipleParts =
         widget.chapters.map((chapter) => chapter.partNo).toSet().length > 1;
+    final recommendedId = _recommendedId;
+    final recommendedStation = recommendedId == null
+        ? -1
+        : widget.chapters.indexWhere(
+            (chapter) =>
+                chapter.lessons.any((lesson) => lesson.id == recommendedId),
+          );
 
     return Padding(
       padding: widget.padding,
@@ -228,7 +238,11 @@ class _LessonStationListState extends State<LessonStationList> {
               isFirst: index == 0,
               isLast: index == widget.chapters.length - 1,
               showPart: multipleParts,
-              recommendedLessonId: _recommendedId,
+              recommendedLessonId: recommendedId,
+              solidBeforeMarker:
+                  recommendedStation < 0 || index <= recommendedStation,
+              solidAfterMarker:
+                  recommendedStation < 0 || index < recommendedStation,
               isExpanded: _expandedChapterId == widget.chapters[index].id,
               redesigned: widget.redesigned,
               onToggle: () {
@@ -261,6 +275,8 @@ class _StationRow extends StatelessWidget {
     required this.isLast,
     required this.showPart,
     required this.recommendedLessonId,
+    required this.solidBeforeMarker,
+    required this.solidAfterMarker,
     required this.isExpanded,
     required this.redesigned,
     required this.onToggle,
@@ -271,6 +287,8 @@ class _StationRow extends StatelessWidget {
   final bool isLast;
   final bool showPart;
   final String? recommendedLessonId;
+  final bool solidBeforeMarker;
+  final bool solidAfterMarker;
   final bool isExpanded;
   final bool redesigned;
   final VoidCallback onToggle;
@@ -302,14 +320,16 @@ class _StationRow extends StatelessWidget {
     final completeColor = isLight ? AppColors.mintOn : AppColors.mintContainer;
     final subtext = isLight
         ? redesigned
-            ? AppColors.redesignMutedForeground
+            ? _routeLabel
             : AppColors.lightSubtext
         : AppColors.darkSubtext;
-    final background = isRecommended
-        ? isLight
-            ? AppColors.lightCard
-            : AppColors.darkCard
-        : theme.colorScheme.surface;
+    final background = redesigned && isLight
+        ? Colors.white
+        : isRecommended
+            ? isLight
+                ? AppColors.lightCard
+                : AppColors.darkCard
+            : theme.colorScheme.surface;
     final textScaler = MediaQuery.textScalerOf(context);
     final stackTitle = textScaler.scale(16) > 21;
     final stationNumber = chapter.chapterNo.toString().padLeft(2, '0');
@@ -346,11 +366,27 @@ class _StationRow extends StatelessWidget {
       redesigned: redesigned,
       progress: fraction,
     );
-    final chevron = Icon(
-      isExpanded ? LucideIcons.chevronUp : LucideIcons.chevronDown,
-      color: subtext,
-      size: redesigned ? 16 : 18,
-    );
+    final chevron = redesigned
+        ? SizedBox.square(
+            dimension: 16,
+            child: Center(
+              child: RotatedBox(
+                quarterTurns: isExpanded ? -1 : 1,
+                child: Image.asset(
+                  'assets/icons/figma-home-arrow.png',
+                  width: 6.25,
+                  height: 11,
+                  color: isLight ? _routeChevron : subtext,
+                  excludeFromSemantics: true,
+                ),
+              ),
+            ),
+          )
+        : Icon(
+            isExpanded ? LucideIcons.chevronUp : LucideIcons.chevronDown,
+            color: subtext,
+            size: 18,
+          );
     final titleAndStatus = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -370,7 +406,7 @@ class _StationRow extends StatelessWidget {
             letterSpacing: redesigned ? -0.375 : null,
           ),
         ),
-        SizedBox(height: redesigned ? 4 : 8),
+        SizedBox(height: redesigned ? 2 : 8),
         Wrap(
           spacing: 8,
           runSpacing: 6,
@@ -387,32 +423,22 @@ class _StationRow extends StatelessWidget {
                 letterSpacing: redesigned ? -0.35 : null,
               ),
             ),
-            if (redesigned ? isRecommended : state != _StationState.idle)
+            if (!redesigned && state != _StationState.idle)
               Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: redesigned ? 6 : 7,
-                    vertical: redesigned ? 2 : 3),
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: isRecommended
                     ? BoxDecoration(
-                        color: redesigned && isLight
-                            ? AppColors.sakuraTrack
-                            : StudyMapColors.button(theme.brightness),
-                        borderRadius:
-                            BorderRadius.circular(redesigned ? 999 : 6),
+                        color: StudyMapColors.button(theme.brightness),
+                        borderRadius: BorderRadius.circular(6),
                       )
                     : null,
                 child: Text(
                   stateLabel,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    fontFamily: redesigned ? redesignFontFamily : null,
                     fontSize: 12,
-                    height: redesigned ? 1.4 : 1.2,
-                    letterSpacing: redesigned ? -0.3 : null,
-                    fontWeight: redesigned
-                        ? FontWeight.w500
-                        : isRecommended
-                            ? FontWeight.w800
-                            : FontWeight.w600,
+                    height: 1.2,
+                    fontWeight:
+                        isRecommended ? FontWeight.w800 : FontWeight.w600,
                     color: state == _StationState.complete
                         ? completeColor
                         : isRecommended
@@ -427,16 +453,35 @@ class _StationRow extends StatelessWidget {
     );
 
     return Stack(
+      clipBehavior: redesigned ? Clip.none : Clip.hardEdge,
       children: [
         // The rail guides navigation independently of completion.
-        Positioned(
-          left: railCenter - railWidth / 2,
-          top: isFirst ? nodeCenter : 0,
-          bottom: isLast ? null : 0,
-          height: isLast ? (isFirst ? 0 : nodeCenter) : null,
-          width: railWidth,
-          child: const ColoredBox(color: StudyMapColors.route),
-        ),
+        if (redesigned)
+          Positioned(
+            left: railCenter - railWidth / 2,
+            top: 0,
+            bottom: 0,
+            width: railWidth,
+            child: CustomPaint(
+              painter: _RouteRailPainter(
+                color: isLight ? AppColors.redesignVocabulary : accent,
+                nodeCenter: nodeCenter,
+                isFirst: isFirst,
+                isLast: isLast,
+                solidBeforeMarker: solidBeforeMarker,
+                solidAfterMarker: solidAfterMarker,
+              ),
+            ),
+          )
+        else
+          Positioned(
+            left: railCenter - railWidth / 2,
+            top: isFirst ? nodeCenter : 0,
+            bottom: isLast ? null : 0,
+            height: isLast ? (isFirst ? 0 : nodeCenter) : null,
+            width: railWidth,
+            child: const ColoredBox(color: StudyMapColors.route),
+          ),
         Column(
           children: [
             Padding(
@@ -473,8 +518,12 @@ class _StationRow extends StatelessWidget {
                     onTap: onToggle,
                     excludeFromSemantics: true,
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(redesigned ? 12 : _leftInset,
-                          verticalInset, 12, verticalInset),
+                      padding: EdgeInsets.fromLTRB(
+                        redesigned ? _routeCardPadding : _leftInset,
+                        verticalInset,
+                        redesigned ? _routeCardPadding : 12,
+                        verticalInset,
+                      ),
                       child: ExcludeSemantics(
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -556,27 +605,7 @@ class _StationRow extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               alignment: Alignment.topCenter,
               child: isExpanded
-                  ? Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        redesigned
-                            ? cardOffset
-                            : _leftInset + _markerWidth + _markerGap,
-                        0,
-                        0,
-                        12,
-                      ),
-                      child: Column(
-                        children: [
-                          for (final lesson in chapter.lessons)
-                            LessonStationTile(
-                              lesson: lesson,
-                              isRecommended: isRecommended &&
-                                  lesson.id == recommendedLessonId,
-                              redesigned: redesigned,
-                            ),
-                        ],
-                      ),
-                    )
+                  ? _expandedLessons(theme, isRecommended)
                   : const SizedBox.shrink(),
             ),
             SizedBox(height: redesigned ? _routeRowGap : 6),
@@ -591,16 +620,148 @@ class _StationRow extends StatelessWidget {
             child: ExcludeSemantics(
               child: _StationNode(
                 state: state,
-                background: theme.colorScheme.surface,
+                background: background,
                 color: accent,
-                borderColor: StudyMapColors.route,
+                borderColor: isLight ? AppColors.redesignVocabulary : accent,
                 compact: true,
+              ),
+            ),
+          ),
+        if (redesigned && isRecommended)
+          Positioned(
+            top: -7,
+            right: 11,
+            child: IgnorePointer(
+              child: ExcludeSemantics(
+                child: Container(
+                  constraints:
+                      const BoxConstraints(minWidth: 37, minHeight: 20),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  decoration: ShapeDecoration(
+                    color: isLight
+                        ? AppColors.brandPink
+                        : StudyMapColors.button(theme.brightness),
+                    shape: const StadiumBorder(),
+                  ),
+                  child: Text(
+                    '추천',
+                    style: TextStyle(
+                      color: isLight
+                          ? Colors.white
+                          : StudyMapColors.onButton(theme.brightness),
+                      fontFamily: redesignFontFamily,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      height: 1.4,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
       ],
     );
   }
+
+  Widget _expandedLessons(ThemeData theme, bool isRecommended) {
+    final lessons = Column(
+      spacing: redesigned ? 8 : 0,
+      children: [
+        for (final lesson in chapter.lessons)
+          LessonStationTile(
+            lesson: lesson,
+            isRecommended: isRecommended && lesson.id == recommendedLessonId,
+            redesigned: redesigned,
+          ),
+      ],
+    );
+    if (!redesigned) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(
+          _leftInset + _markerWidth + _markerGap,
+          0,
+          0,
+          12,
+        ),
+        child: lessons,
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.only(left: _routeCardOffset + 12, top: 8),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(
+              color: theme.brightness == Brightness.light
+                  ? AppColors.redesignOutline
+                  : theme.colorScheme.outline,
+            ),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(9, 4, 0, 4),
+          child: lessons,
+        ),
+      ),
+    );
+  }
+}
+
+class _RouteRailPainter extends CustomPainter {
+  const _RouteRailPainter({
+    required this.color,
+    required this.nodeCenter,
+    required this.isFirst,
+    required this.isLast,
+    required this.solidBeforeMarker,
+    required this.solidAfterMarker,
+  });
+
+  final Color color;
+  final double nodeCenter;
+  final bool isFirst;
+  final bool isLast;
+  final bool solidBeforeMarker;
+  final bool solidAfterMarker;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = size.width / 2;
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = _routeRailWidth;
+    void draw(double start, double end, bool solid) {
+      if (solid) {
+        canvas.drawLine(Offset(center, start), Offset(center, end), paint);
+        return;
+      }
+      for (var y = start; y < end; y += 8) {
+        canvas.drawLine(
+          Offset(center, y),
+          Offset(center, math.min(y + 4, end)),
+          paint,
+        );
+      }
+    }
+
+    if (!isFirst) draw(0, nodeCenter, solidBeforeMarker);
+    if (!isLast) {
+      final start =
+          solidBeforeMarker && !solidAfterMarker ? nodeCenter + 10 : nodeCenter;
+      draw(start, size.height, solidAfterMarker);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _RouteRailPainter oldDelegate) =>
+      color != oldDelegate.color ||
+      nodeCenter != oldDelegate.nodeCenter ||
+      isFirst != oldDelegate.isFirst ||
+      isLast != oldDelegate.isLast ||
+      solidBeforeMarker != oldDelegate.solidBeforeMarker ||
+      solidAfterMarker != oldDelegate.solidAfterMarker;
 }
 
 class _StationSign extends StatelessWidget {
@@ -629,7 +790,7 @@ class _StationSign extends StatelessWidget {
   static TextStyle _numberStyle(ThemeData theme, {required bool redesigned}) =>
       theme.textTheme.titleMedium!.copyWith(
         color: redesigned && theme.brightness == Brightness.light
-            ? AppColors.redesignForeground
+            ? Colors.black
             : null,
         fontFamily: redesigned ? redesignFontFamily : null,
         fontSize: redesigned ? 16 : 24,
@@ -659,7 +820,7 @@ class _StationSign extends StatelessWidget {
 
     final numberSize =
         measure(number, _numberStyle(theme, redesigned: redesigned));
-    if (redesigned) return math.max(44, numberSize.longestSide + 12);
+    if (redesigned) return math.max(48, numberSize.longestSide + 12);
     final levelSize = measure(level, _levelStyle(theme));
     // Include padding and border on both axes, then grow the square to fit.
     return math.max(
@@ -689,13 +850,16 @@ class _StationSign extends StatelessWidget {
           children: [
             CircularProgressIndicator(
               value: progress,
-              strokeWidth: 2,
+              strokeWidth: 4,
+              strokeAlign: CircularProgressIndicator.strokeAlignInside,
               trackGap: 0,
               backgroundColor: light
-                  ? AppColors.redesignDetailTrack
+                  ? AppColors.redesignOutline
                   : theme.colorScheme.surfaceContainerHighest,
-              color: light ? AppColors.brandPink : AppColors.sakuraContainer,
-              strokeCap: StrokeCap.round,
+              color: light
+                  ? AppColors.redesignVocabulary
+                  : AppColors.sakuraContainer,
+              strokeCap: StrokeCap.butt,
             ),
             Center(child: numberLabel),
           ],
@@ -746,11 +910,26 @@ class _StationNode extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     if (state == _StationState.resume || state == _StationState.recommended) {
+      if (compact) {
+        return Center(
+          key: const ValueKey('station-train'),
+          child: ColoredBox(
+            color: background,
+            child: Image.asset(
+              'assets/icons/figma-study-route-train.png',
+              key: ValueKey('station-node-${state.name}'),
+              width: 20,
+              height: 22,
+              excludeFromSemantics: true,
+            ),
+          ),
+        );
+      }
       return Center(
         key: const ValueKey('station-train'),
         child: SizedBox(
-          width: compact ? 18 : 40,
-          height: compact ? 22.5 : 50,
+          width: 40,
+          height: 50,
           child: CustomPaint(
             key: ValueKey('station-node-${state.name}'),
             painter: _StationTrainPainter(
@@ -766,12 +945,14 @@ class _StationNode extends StatelessWidget {
     return Center(
       child: Container(
         key: ValueKey('station-node-${state.name}'),
-        width: compact ? 10 : 34,
-        height: compact ? 10 : 34,
+        width: compact ? 12 : 34,
+        height: compact ? 12 : 34,
         decoration: BoxDecoration(
-          color: background,
+          color: compact && state == _StationState.complete
+              ? borderColor
+              : background,
           shape: BoxShape.circle,
-          border: Border.all(color: borderColor, width: compact ? 1.5 : 4),
+          border: Border.all(color: borderColor, width: compact ? 2 : 4),
         ),
         child: compact
             ? null

@@ -290,9 +290,11 @@ void main() {
 
     final first = find.byKey(const ValueKey('station-toggle-chapter-1'));
     final sign = find.byKey(const ValueKey('station-sign-N5-01'));
-    expect(tester.getTopLeft(first).dx, 56);
+    expect(tester.getTopLeft(first).dx, 76);
     expect(tester.getTopRight(first).dx, 355);
-    expect(tester.getSize(sign), const Size.square(44));
+    expect(tester.getSize(first).height, 74);
+    expect(tester.getTopLeft(sign).dx, 93);
+    expect(tester.getSize(sign), const Size.square(48));
     expect(
       tester
           .widget<CircularProgressIndicator>(
@@ -304,6 +306,7 @@ void main() {
     );
     expect(_within(5, find.byKey(const ValueKey('station-train'))),
         findsOneWidget);
+    expect(_within(5, find.text('추천')), findsOneWidget);
     expect(find.text('관심 있는 역부터 자유롭게 학습해요'), findsNothing);
     expect(find.text('레슨 5-1'), findsNothing);
 
@@ -311,6 +314,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('레슨 5-1'), findsOneWidget);
     final lesson = find.byKey(const ValueKey('station-lesson-lesson-5-1'));
+    expect(tester.getTopLeft(lesson).dx, 97);
+    expect(tester.getSize(lesson).height, closeTo(65, 1));
+    expect(find.text('일상 표현 · 5분'), findsNWidgets(2));
     await tester.tap(lesson);
     await tester.pumpAndSettle();
     expect(find.text('Opened lesson-5-1'), findsOneWidget);
@@ -332,6 +338,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('station-toggle-chapter-100')));
     await tester.pumpAndSettle();
     expect(find.text('아주 긴 레슨 이름 주문하고 요청하는 표현'), findsNWidgets(2));
+    expect(find.text('5/5 정답'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

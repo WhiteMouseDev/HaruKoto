@@ -597,7 +597,7 @@ class _RecordTile extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 66),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 20, 10),
+            padding: const EdgeInsets.fromLTRB(16, 10, 21.5, 10),
             child: Row(
               children: [
                 SizedBox.square(
