@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +14,7 @@ import 'core/settings/device_settings_repository.dart';
 import 'core/services/local_notification_service.dart';
 import 'core/services/haptic_service.dart';
 import 'core/services/sound_service.dart';
+import 'core/services/startup_notifications.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +34,8 @@ void main() async {
     anonKey: AppConfig.supabaseAnonKey,
   );
 
-  await LocalNotificationService.initialize();
+  final startupNotifications = StartupNotifications();
+  await startupNotifications.initialize(LocalNotificationService.initialize);
   // 알림 권한은 앱 시작 시 요청하지 않음 — 온보딩 완료 후 요청
   await SoundService().init();
   await HapticService().init();
@@ -41,6 +45,10 @@ void main() async {
   );
   await deviceSettingsRepository.hydrateRuntime(
     deviceSettingsRepository.load(),
+    notificationSettingsApplier: (settings) =>
+        startupNotifications.applySettings(
+      () => deviceSettingsRepository.applyNotificationSettings(settings),
+    ),
   );
 
   Widget buildApp() {
@@ -52,15 +60,28 @@ void main() async {
     );
   }
 
+  void startApp() {
+    runApp(buildApp());
+    for (final failure in startupNotifications.failures) {
+      debugPrint('[StartupNotifications] $failure');
+      if (AppConfig.sentryDsn.isNotEmpty) {
+        unawaited(Sentry.captureException(
+          failure,
+          stackTrace: failure.stackTrace,
+        ));
+      }
+    }
+  }
+
   if (AppConfig.sentryDsn.isNotEmpty) {
     await SentryFlutter.init(
       (options) {
         options.dsn = AppConfig.sentryDsn;
         options.tracesSampleRate = 0.2;
       },
-      appRunner: () => runApp(buildApp()),
+      appRunner: startApp,
     );
   } else {
-    runApp(buildApp());
+    startApp();
   }
 }
