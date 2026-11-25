@@ -11,6 +11,7 @@ import '../../../../core/providers/study_clock_provider.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../../../shared/widgets/app_segmented_tabs.dart';
 import '../../../../shared/widgets/app_skeleton.dart';
+import '../../../../shared/widgets/haru_button_styles.dart';
 import '../../../my/providers/settings_sync_provider.dart';
 import '../../../study/presentation/study_entry_flow.dart';
 import '../../../study/presentation/widgets/today_study_goal_picker.dart';
@@ -228,12 +229,8 @@ class _QuickStartCardState extends ConsumerState<QuickStartCard> {
           ],
           const SizedBox(height: AppSizes.sm),
           FilledButton(
-            style: FilledButton.styleFrom(
-              minimumSize: const Size(0, 48),
-              textStyle: _studyText(14, weight: FontWeight.w600),
-              backgroundColor: isLight ? AppColors.brandPink : null,
-              foregroundColor: isLight ? Colors.white : null,
-            ),
+            style:
+                HaruButtonStyles.primary(context, size: HaruButtonSize.regular),
             onPressed: canStart
                 ? () {
                     if (ref.read(currentAccountIdProvider) != owner ||

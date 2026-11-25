@@ -5,7 +5,9 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/theme/haru_typography.dart';
 import '../../../../core/theme/text_theme.dart';
+import '../../../../shared/widgets/haru_button_styles.dart';
 import '../../domain/lesson_recommendation.dart';
 import '../../providers/study_map_config.dart';
 import '../study_map_colors.dart';
@@ -23,9 +25,6 @@ class LessonContinueBanner extends ConsumerWidget {
   final bool compact;
   final bool redesigned;
   final VoidCallback? onTap;
-
-  // Keep a 48-point tap target around the 42-point Figma button.
-  static const _recommendationButtonHitInset = 3.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -172,14 +171,7 @@ class LessonContinueBanner extends ConsumerWidget {
     final colors = theme.colorScheme;
     final foreground = light ? AppColors.redesignForeground : colors.onSurface;
     final muted = light ? const Color(0xFF505050) : colors.onSurfaceVariant;
-    final metadataStyle = TextStyle(
-      fontFamily: redesignFontFamily,
-      fontSize: 13,
-      fontWeight: FontWeight.w400,
-      height: 1.5,
-      letterSpacing: -0.325,
-      color: muted,
-    );
+    final metadataStyle = HaruTypography.krBody3.copyWith(color: muted);
     final location = [
       if (chapter.partNo > 1) '${chapter.partNo}부',
       '${chapter.chapterNo}번 역',
@@ -224,7 +216,7 @@ class LessonContinueBanner extends ConsumerWidget {
                 17,
                 17,
                 17,
-                17 - _recommendationButtonHitInset,
+                17 - HaruButtonStyles.compactHitInset,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -291,12 +283,7 @@ class LessonContinueBanner extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(lesson.title,
-                      style: TextStyle(
-                        fontFamily: redesignFontFamily,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        height: 1.4,
-                        letterSpacing: -0.45,
+                      style: HaruTypography.krTitle3.copyWith(
                         color: foreground,
                       )),
                   if (topic.isNotEmpty) ...[
@@ -332,28 +319,10 @@ class LessonContinueBanner extends ConsumerWidget {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 12 - _recommendationButtonHitInset),
+                  const SizedBox(height: 12 - HaruButtonStyles.compactHitInset),
                   FilledButton(
                     key: const ValueKey('lesson-continue-action'),
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(0, 42),
-                      backgroundColor: light ? AppColors.brandPink : null,
-                      foregroundColor: light ? Colors.white : null,
-                      tapTargetSize: MaterialTapTargetSize.padded,
-                      visualDensity: VisualDensity.standard,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      shape: const StadiumBorder(),
-                      textStyle: const TextStyle(
-                        fontFamily: redesignFontFamily,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        height: 1.4,
-                        letterSpacing: -0.35,
-                      ),
-                    ),
+                    style: HaruButtonStyles.primary(context),
                     onPressed: open,
                     child: Text(action),
                   ),
