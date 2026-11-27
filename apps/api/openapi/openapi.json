@@ -6177,6 +6177,148 @@
         }
       }
     },
+    "/api/v1/lessons/{lesson_id}/questions/{question_order}/feedback": {
+      "post": {
+        "tags": [
+          "lessons"
+        ],
+        "summary": "Get Recognition Feedback",
+        "operationId": "get_recognition_feedback_api_v1_lessons__lesson_id__questions__question_order__feedback_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Lesson Id"
+            }
+          },
+          {
+            "name": "question_order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Question Order"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonRecognitionFeedbackRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonRecognitionFeedbackResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "원래 계정 인증 회복 후 같은 제출 ID로 조회/재시도",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "원래 계정과 인증 계정 불일치 또는 접근 불가. 쓰기 없음",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "요청 구조 검증 실패",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "이해 체크에서 채점할 수 없는 문항 또는 잘못된 답안",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "공개 레슨 또는 문항을 찾을 수 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "현재 공개된 레슨과 채점 버전이 다름",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/lessons/{lesson_id}/submissions": {
       "post": {
         "tags": [
@@ -10824,6 +10966,17 @@
             ],
             "title": "Activitycontentversion"
           },
+          "recognitionFeedbackVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recognitionfeedbackversion"
+          },
           "id": {
             "type": "string",
             "format": "uuid",
@@ -10965,6 +11118,81 @@
           "scoreTotal"
         ],
         "title": "LessonProgressResponse"
+      },
+      "LessonRecognitionFeedbackRequest": {
+        "properties": {
+          "expectedUserId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Expecteduserid"
+          },
+          "feedbackVersion": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Feedbackversion"
+          },
+          "selectedAnswer": {
+            "type": "string",
+            "maxLength": 4096,
+            "minLength": 1,
+            "title": "Selectedanswer"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expectedUserId",
+          "feedbackVersion",
+          "selectedAnswer"
+        ],
+        "title": "LessonRecognitionFeedbackRequest"
+      },
+      "LessonRecognitionFeedbackResponse": {
+        "properties": {
+          "feedbackVersion": {
+            "type": "string",
+            "title": "Feedbackversion"
+          },
+          "questionOrder": {
+            "type": "integer",
+            "title": "Questionorder"
+          },
+          "selectedAnswer": {
+            "type": "string",
+            "title": "Selectedanswer"
+          },
+          "correctAnswer": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Correctanswer"
+          },
+          "isCorrect": {
+            "type": "boolean",
+            "title": "Iscorrect"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "feedbackVersion",
+          "questionOrder",
+          "selectedAnswer",
+          "correctAnswer",
+          "isCorrect",
+          "explanation"
+        ],
+        "title": "LessonRecognitionFeedbackResponse"
       },
       "LessonStudyActivityResponse": {
         "properties": {

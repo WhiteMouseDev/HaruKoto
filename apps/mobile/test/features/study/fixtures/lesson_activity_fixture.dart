@@ -9,6 +9,7 @@ import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/features/home/providers/study_activity_refresh_provider.dart';
 import 'package:harukoto_mobile/features/study/data/lesson_checkpoint_store.dart';
+import 'package:harukoto_mobile/features/study/data/lesson_recognition_feedback_repository.dart';
 import 'package:harukoto_mobile/features/study/data/lesson_study_activity_repository.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
 import 'package:harukoto_mobile/features/study/domain/lesson_study_activity.dart';
@@ -41,6 +42,7 @@ LessonStudyActivityDraft activityDraft(
 
 LessonDetailModel activityDetail(
         {String? version,
+        String? recognitionFeedbackVersion,
         bool enabled = true,
         bool recognition = true,
         bool secondRecognition = false,
@@ -54,6 +56,7 @@ LessonDetailModel activityDetail(
       topic: '인사',
       estimatedMinutes: 2,
       activityContentVersion: enabled ? version ?? activityVersion : null,
+      recognitionFeedbackVersion: recognitionFeedbackVersion,
       content: LessonContentModel(
           reading: const ReadingModel(script: []),
           questions: [
@@ -180,6 +183,7 @@ class ActivityHarness {
   ActivityHarness(
       {required SharedPreferences preferences,
       ActivityRepositoryFixture? activityRepository,
+      LessonRecognitionFeedbackRepository? feedbackRepository,
       LessonDetailModel? detail,
       PreferencesLessonCheckpointStore? checkpointStore}) {
     store = checkpointStore ?? PreferencesLessonCheckpointStore(preferences);
@@ -191,6 +195,9 @@ class ActivityHarness {
       sharedPreferencesProvider.overrideWithValue(preferences),
       lessonCheckpointStoreProvider.overrideWithValue(store),
       lessonStudyActivityRepositoryProvider.overrideWithValue(repository),
+      if (feedbackRepository != null)
+        lessonRecognitionFeedbackRepositoryProvider
+            .overrideWithValue(feedbackRepository),
       studyRepositoryProvider.overrideWithValue(study),
       studyActivityRefreshProvider
           .overrideWith((ref) => _ActivityRefresh(ref, () => refreshes++)),

@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../data/models/lesson_models.dart';
 import 'lesson_flow_policy.dart';
 import 'lesson_practice_layout.dart';
+import 'lesson_recognition_feedback.dart';
 import 'lesson_session_state.dart';
 
 class LessonCheckpoint {
@@ -30,7 +31,7 @@ class LessonCheckpoint {
         state.answers.containsKey(
           lessonRecognitionQuestions(detail)[state.recognitionIndex].order,
         );
-    return jsonEncode({
+    final draft = {
       'version': 1,
       if (lastStudiedAt != null)
         'lastStudiedAtMs': lastStudiedAt!.toUtc().millisecondsSinceEpoch,
@@ -57,7 +58,19 @@ class LessonCheckpoint {
       'matchingRight': state.matchingRight,
       'reorderSelected': state.reorderSelected,
       'reorderAvailable': state.reorderAvailable,
-    });
+    };
+    if (state.recognitionFeedback.isNotEmpty) {
+      final gradedDraft = jsonEncode({
+        ...draft,
+        'recognitionFeedback': [
+          for (final result in state.recognitionFeedback.values)
+            result.toJson(),
+        ],
+      });
+      if (gradedDraft.length <= 512 * 1024) return gradedDraft;
+    }
+    // Feedback is optional cache data; it must not displace saved answers.
+    return jsonEncode(draft);
   }
 
   factory LessonCheckpoint.decode(String raw, LessonDetailModel detail) {
@@ -283,6 +296,12 @@ class LessonCheckpoint {
             matchingRightIndices: rightIndices,
             reorderBanks: banks),
         recognitionSelection: selected as String?,
+        recognitionFeedback: _readRecognitionFeedback(
+          json['recognitionFeedback'],
+          detail.recognitionFeedbackVersion,
+          recognition,
+          answers,
+        ),
         matchingMatched: matched.toSet(),
         matchingLeft: left,
         matchingRight: right,
@@ -291,6 +310,35 @@ class LessonCheckpoint {
         restored: true,
       ),
     );
+  }
+
+  static Map<int, LessonRecognitionFeedback> _readRecognitionFeedback(
+    Object? raw,
+    String? feedbackVersion,
+    List<LessonQuestionModel> questions,
+    Map<int, Map<String, dynamic>> answers,
+  ) {
+    if (raw is! List || feedbackVersion == null) return const {};
+    final byOrder = {
+      for (final question in questions) question.order: question
+    };
+    final feedback = <int, LessonRecognitionFeedback>{};
+    for (final item in raw) {
+      if (item is! Map<String, dynamic>) continue;
+      try {
+        final result = LessonRecognitionFeedback.fromJson(item);
+        final order = result.questionOrder;
+        final options = byOrder[order]?.options ?? const [];
+        if (result.feedbackVersion == feedbackVersion &&
+            result.selectedAnswer == answers[order]?['selectedAnswer'] &&
+            options.any((option) => option.id == result.correctAnswer)) {
+          feedback[order] = result;
+        }
+      } on FormatException {
+        // Optional feedback must never make an otherwise valid draft unreadable.
+      }
+    }
+    return feedback;
   }
 }
 

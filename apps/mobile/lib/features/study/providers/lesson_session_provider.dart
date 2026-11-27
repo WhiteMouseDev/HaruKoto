@@ -10,6 +10,7 @@ import '../../../core/auth/current_account_provider.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../data/lesson_checkpoint_store.dart';
+import '../data/lesson_recognition_feedback_repository.dart';
 import '../data/models/lesson_models.dart';
 import '../domain/lesson_checkpoint.dart';
 import '../domain/lesson_submission.dart';
@@ -52,6 +53,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
 
   String? _owner;
   int _generation = 0;
+  int _recognitionFeedbackEpoch = 0;
   int _writeVersion = 0;
   bool _initialized = false;
   bool _acknowledged = false;
@@ -518,6 +520,81 @@ class LessonSessionController extends Notifier<LessonSessionState> {
         'responseMs': 0,
       };
     _change(state.copyWith(answers: answers, recognitionSelection: null));
+    unawaited(requestRecognitionFeedback(expectedOrder));
+  }
+
+  Future<void> requestRecognitionFeedback(int expectedOrder) async {
+    final question = _currentRecognitionQuestion(expectedOrder: expectedOrder);
+    final version = _detail?.recognitionFeedbackVersion;
+    final owner = _owner;
+    final selected = state.answers[expectedOrder]?['selectedAnswer'];
+    if (question == null ||
+        version == null ||
+        owner == null ||
+        selected is! String ||
+        state.recognitionFeedback.containsKey(expectedOrder) ||
+        state.recognitionFeedbackUnavailable.contains(expectedOrder) ||
+        state.recognitionFeedbackInFlight.contains(expectedOrder)) {
+      return;
+    }
+    final generation = _generation;
+    final epoch = _recognitionFeedbackEpoch;
+    bool requestIsCurrent() =>
+        _current(generation) && epoch == _recognitionFeedbackEpoch;
+    state = state.copyWith(recognitionFeedbackInFlight: {
+      ...state.recognitionFeedbackInFlight,
+      expectedOrder,
+    });
+    try {
+      final result = await ref
+          .read(lessonRecognitionFeedbackRepositoryProvider)
+          .check(
+            owner: owner,
+            lessonId: lessonId,
+            questionOrder: expectedOrder,
+            feedbackVersion: version,
+            selectedAnswer: selected,
+          )
+          .timeout(const Duration(seconds: 8));
+      if (!requestIsCurrent() ||
+          !_editable ||
+          _detail?.recognitionFeedbackVersion != version ||
+          state.answers[expectedOrder]?['selectedAnswer'] != selected ||
+          result.feedbackVersion != version ||
+          result.questionOrder != expectedOrder ||
+          result.selectedAnswer != selected ||
+          !(question.options ?? [])
+              .any((option) => option.id == result.correctAnswer)) {
+        return;
+      }
+      state = state.copyWith(recognitionFeedback: {
+        ...state.recognitionFeedback,
+        expectedOrder: result,
+      });
+      unawaited(_persist());
+    } on ApiException catch (error) {
+      // A missing or changed question cannot be retried against this version.
+      if (requestIsCurrent() &&
+          _editable &&
+          const {400, 404, 409, 422}.contains(error.statusCode)) {
+        state = state.copyWith(recognitionFeedbackUnavailable: {
+          ...state.recognitionFeedbackUnavailable,
+          expectedOrder,
+        });
+      }
+    } on TimeoutException {
+      // Keep the saved selection and let the learner resume or retry.
+    } on FormatException {
+      // The answer is already saved. Ending the pending state allows retry or
+      // continuing to the existing final lesson result.
+    } finally {
+      if (requestIsCurrent()) {
+        state = state.copyWith(
+          recognitionFeedbackInFlight: {...state.recognitionFeedbackInFlight}
+            ..remove(expectedOrder),
+        );
+      }
+    }
   }
 
   void previousRecognition(int expectedOrder) {
@@ -533,7 +610,10 @@ class LessonSessionController extends Notifier<LessonSessionState> {
 
   void nextRecognition(int expectedOrder) {
     final question = _currentRecognitionQuestion(expectedOrder: expectedOrder);
-    if (question == null) return;
+    if (question == null ||
+        state.recognitionFeedbackInFlight.contains(expectedOrder)) {
+      return;
+    }
     final answer = state.answers[question.order];
     if (answer != null) answerRecognition(_detail!, answer);
   }
@@ -967,6 +1047,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     _acknowledged = false;
     _submission = null;
     _activityAttemptId = null;
+    _recognitionFeedbackEpoch++;
     // The previous completed response is not a baseline for a new attempt.
     ref.invalidate(lessonResumeDetailProvider(lessonId));
   }
@@ -1037,6 +1118,12 @@ class LessonSessionActions {
 
   void confirmRecognition(int expectedOrder) {
     if (_current) _controller.confirmRecognition(expectedOrder);
+  }
+
+  void requestRecognitionFeedback(int expectedOrder) {
+    if (_current) {
+      unawaited(_controller.requestRecognitionFeedback(expectedOrder));
+    }
   }
 
   void previousRecognition(int expectedOrder) {

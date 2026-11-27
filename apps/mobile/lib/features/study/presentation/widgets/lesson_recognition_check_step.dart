@@ -4,6 +4,7 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/theme/text_theme.dart';
 import '../../data/models/lesson_models.dart';
+import '../../domain/lesson_recognition_feedback.dart';
 import 'lesson_stage_actions.dart';
 
 const _optionHeight = 42.0;
@@ -22,6 +23,11 @@ class LessonRecognitionCheckStep extends StatelessWidget {
     this.optionOrder,
     this.selectedOptionId,
     this.confirmed = false,
+    this.usesServerFeedback = false,
+    this.feedbackPending = false,
+    this.feedbackUnavailable = false,
+    this.feedback,
+    this.onRetryFeedback,
     this.onPrevious,
   });
 
@@ -31,8 +37,13 @@ class LessonRecognitionCheckStep extends StatelessWidget {
   final List<String>? optionOrder;
   final String? selectedOptionId;
   final bool confirmed;
+  final bool usesServerFeedback;
+  final bool feedbackPending;
+  final bool feedbackUnavailable;
+  final LessonRecognitionFeedback? feedback;
   final ValueChanged<String> onSelectionChanged;
   final VoidCallback onConfirm;
+  final VoidCallback? onRetryFeedback;
   final VoidCallback onNext;
   final VoidCallback? onPrevious;
 
@@ -57,15 +68,34 @@ class LessonRecognitionCheckStep extends StatelessWidget {
     final muted =
         light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
     final options = _options;
-    final correctOption = options
-        .where((option) => option.id == question.correctAnswer)
-        .firstOrNull;
+    final unavailable = usesServerFeedback && feedbackUnavailable;
+    final grading = usesServerFeedback && feedbackPending && !unavailable;
+    final correctAnswer =
+        usesServerFeedback ? feedback?.correctAnswer : question.correctAnswer;
+    final correctOption =
+        options.where((option) => option.id == correctAnswer).firstOrNull;
+    final grade = confirmed && !grading && !unavailable && correctOption != null
+        ? (usesServerFeedback
+            ? feedback?.isCorrect
+            : selectedOptionId == correctAnswer)
+        : null;
     final isLast = currentIndex == questionCount - 1;
     final nextLabel = confirmed
         ? (isLast ? '다음 학습' : '다음 문제')
-        : (correctOption == null ? '답안 확인' : '정답 확인');
-    final selectedCorrect =
-        correctOption != null && selectedOptionId == correctOption.id;
+        : (usesServerFeedback || correctOption != null ? '정답 확인' : '답안 확인');
+    final status = switch (grade) {
+      true => '정답이에요!',
+      false => '아쉬워요',
+      null when grading => '채점 중…',
+      null when unavailable => '지금은 채점할 수 없어요. 레슨 결과를 확인해 주세요.',
+      null when usesServerFeedback => '정오답을 확인하지 못했어요',
+      null => '답안을 확인했어요',
+    };
+    final explanation = usesServerFeedback
+        ? (grade != null ? feedback?.explanation : null)
+        : question.explanation;
+    final canRetry =
+        usesServerFeedback && !grading && !unavailable && grade == null;
     const smallText = TextStyle(
       fontFamily: redesignFontFamily,
       fontSize: 12,
@@ -151,11 +181,11 @@ class LessonRecognitionCheckStep extends StatelessWidget {
                     _RecognitionOption(
                       option: option,
                       selected: option.id == selectedOptionId,
-                      status: confirmed && option.id == correctOption?.id
+                      status: grade != null && option.id == correctAnswer
                           ? _OptionStatus.correct
                           : option.id != selectedOptionId
                               ? _OptionStatus.plain
-                              : confirmed && correctOption != null
+                              : grade == false
                                   ? _OptionStatus.wrong
                                   : _OptionStatus.selected,
                       onPressed: confirmed
@@ -170,22 +200,18 @@ class LessonRecognitionCheckStep extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            correctOption == null
-                                ? '답안을 확인했어요'
-                                : selectedCorrect
-                                    ? '정답이에요!'
-                                    : '아쉬워요',
+                            status,
                             textAlign: TextAlign.center,
                             style: smallText.copyWith(
-                              color: correctOption == null
+                              color: grade == null
                                   ? muted
-                                  : selectedCorrect
+                                  : grade
                                       ? AppColors.success(theme.brightness)
                                       : AppColors.error(theme.brightness),
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          if (correctOption != null && !selectedCorrect) ...[
+                          if (grade == false && correctOption != null) ...[
                             const SizedBox(height: AppSizes.xs),
                             Text(
                               '정답: ${correctOption.text}',
@@ -196,16 +222,20 @@ class LessonRecognitionCheckStep extends StatelessWidget {
                               ),
                             ),
                           ],
-                          if (question.explanation?.trim()
-                              case final explanation?
-                              when explanation.isNotEmpty) ...[
+                          if (explanation?.trim() case final text?
+                              when text.isNotEmpty) ...[
                             const SizedBox(height: AppSizes.xs),
                             Text(
-                              explanation,
+                              text,
                               textAlign: TextAlign.center,
                               style: smallText.copyWith(color: muted),
                             ),
                           ],
+                          if (canRetry && onRetryFeedback != null)
+                            TextButton(
+                              onPressed: onRetryFeedback,
+                              child: const Text('다시 확인'),
+                            ),
                         ],
                       ),
                     ),
@@ -219,7 +249,7 @@ class LessonRecognitionCheckStep extends StatelessWidget {
           nextLabel: nextLabel,
           showPrevious: true,
           onPrevious: onPrevious,
-          onNext: selectedOptionId == null
+          onNext: selectedOptionId == null || grading
               ? null
               : confirmed
                   ? onNext

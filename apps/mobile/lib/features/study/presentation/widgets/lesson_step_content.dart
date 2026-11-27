@@ -113,9 +113,17 @@ class LessonStepContent extends ConsumerWidget {
           selectedOptionId: confirmedAnswer?['selectedAnswer'] as String? ??
               session.recognitionSelection,
           confirmed: confirmedAnswer != null,
+          usesServerFeedback: detail.recognitionFeedbackVersion != null,
+          feedbackPending:
+              session.recognitionFeedbackInFlight.contains(question.order),
+          feedbackUnavailable:
+              session.recognitionFeedbackUnavailable.contains(question.order),
+          feedback: session.recognitionFeedback[question.order],
           onSelectionChanged: (value) =>
               sessionNotifier.selectRecognition(question.order, value),
           onConfirm: () => sessionNotifier.confirmRecognition(question.order),
+          onRetryFeedback: () =>
+              sessionNotifier.requestRecognitionFeedback(question.order),
           onNext: () => sessionNotifier.nextRecognition(question.order),
           onPrevious: () => sessionNotifier.previousRecognition(question.order),
         );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/constants/colors.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
+import 'package:harukoto_mobile/features/study/domain/lesson_recognition_feedback.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_matching_game_step.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_recognition_check_step.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_sentence_reorder_step.dart';
@@ -149,6 +150,139 @@ void main() {
         await tester.pumpAndSettle();
         expect(harness.nextCalls, 1);
         expect(harness.confirmCalls, 1);
+      },
+    );
+
+    testWidgets(
+      'server grading blocks advancement until feedback or failure and retries independently',
+      (tester) async {
+        final harness = _RecognitionHarness(
+          question: _gradedQuestion,
+          usesServerFeedback: true,
+        );
+        await harness.mount(tester);
+
+        await tester.tap(find.text('안녕하세요'));
+        await tester.pumpAndSettle();
+        expect(find.text('정답 확인'), findsOneWidget);
+        await tester.tap(find.text('정답 확인'));
+        await tester.pumpAndSettle();
+
+        final next = find.widgetWithText(FilledButton, '다음 학습');
+        expect(harness.confirmCalls, 1);
+        expect(find.text('채점 중…'), findsOneWidget);
+        expect(find.text('아쉬워요'), findsNothing);
+        expect(find.text('첫 만남에서 쓰는 표현이에요.'), findsNothing);
+        expect(find.text('다시 확인'), findsNothing);
+        expect(tester.widget<FilledButton>(next).onPressed, isNull);
+
+        harness.finishFeedback();
+        await tester.pumpAndSettle();
+        expect(find.text('정오답을 확인하지 못했어요'), findsOneWidget);
+        expect(find.text('채점 중…'), findsNothing);
+        expect(tester.widget<FilledButton>(next).onPressed, isNotNull);
+        await tester.tap(find.text('다시 확인'));
+        await tester.pumpAndSettle();
+
+        expect(harness.confirmCalls, 1);
+        expect(harness.retryCalls, 1);
+        expect(find.text('채점 중…'), findsOneWidget);
+        expect(find.text('다시 확인'), findsNothing);
+        expect(tester.widget<FilledButton>(next).onPressed, isNull);
+
+        harness.finishFeedback(
+            feedback: const LessonRecognitionFeedback(
+          feedbackVersion: 'fixture-v1',
+          questionOrder: 2,
+          selectedAnswer: 'a',
+          correctAnswer: 'b',
+          isCorrect: false,
+          explanation: '서버의 설명이에요.',
+        ));
+        await tester.pumpAndSettle();
+
+        expect(find.text('아쉬워요'), findsOneWidget);
+        expect(find.text('정답: 처음 뵙겠습니다'), findsOneWidget);
+        expect(find.text('서버의 설명이에요.'), findsOneWidget);
+        expect(find.text('첫 만남에서 쓰는 표현이에요.'), findsNothing);
+        expect(find.text('다시 확인'), findsNothing);
+        final wrong = tester.widget<OutlinedButton>(
+          find.widgetWithText(OutlinedButton, '안녕하세요'),
+        );
+        final correct = tester.widget<OutlinedButton>(
+          find.widgetWithText(OutlinedButton, '처음 뵙겠습니다'),
+        );
+        expect(wrong.style?.backgroundColor?.resolve({WidgetState.disabled}),
+            AppColors.quizWrongBg);
+        expect(correct.style?.backgroundColor?.resolve({WidgetState.disabled}),
+            AppColors.quizCorrectBg);
+        await tester.tap(next);
+        expect(harness.nextCalls, 1);
+        expect(harness.confirmCalls, 1);
+      },
+    );
+
+    testWidgets(
+      'unavailable server grading stops retry and allows advancement',
+      (tester) async {
+        final harness = _RecognitionHarness(
+          question: _gradedQuestion,
+          usesServerFeedback: true,
+        );
+        await harness.mount(tester);
+
+        await tester.tap(find.text('안녕하세요'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('정답 확인'));
+        await tester.pumpAndSettle();
+        harness.finishFeedback(unavailable: true);
+        await tester.pumpAndSettle();
+
+        expect(find.text('지금은 채점할 수 없어요. 레슨 결과를 확인해 주세요.'), findsOneWidget);
+        expect(find.text('정답이에요!'), findsNothing);
+        expect(find.text('아쉬워요'), findsNothing);
+        expect(find.text('채점 중…'), findsNothing);
+        expect(find.text('다시 확인'), findsNothing);
+        await tester.tap(find.widgetWithText(FilledButton, '다음 학습'));
+        expect(harness.nextCalls, 1);
+        expect(harness.confirmCalls, 1);
+      },
+    );
+
+    testWidgets(
+      'restored server-graded answers show cached feedback or offer manual retry',
+      (tester) async {
+        var harness = _RecognitionHarness(
+          question: _gradedQuestion,
+          usesServerFeedback: true,
+          restoredAnswer: 'b',
+          feedback: const LessonRecognitionFeedback(
+            feedbackVersion: 'fixture-v1',
+            questionOrder: 2,
+            selectedAnswer: 'b',
+            correctAnswer: 'b',
+            isCorrect: true,
+          ),
+        );
+        await harness.mount(tester);
+        expect(find.text('정답이에요!'), findsOneWidget);
+        expect(find.text('다시 확인'), findsNothing);
+        expect(find.text('첫 만남에서 쓰는 표현이에요.'), findsNothing);
+        expect(harness.confirmCalls, 0);
+
+        harness = _RecognitionHarness(
+          question: _gradedQuestion,
+          usesServerFeedback: true,
+          restoredAnswer: 'b',
+        );
+        await harness.mount(tester);
+        expect(find.text('정오답을 확인하지 못했어요'), findsOneWidget);
+        expect(find.text('채점 중…'), findsNothing);
+        expect(find.text('다시 확인'), findsOneWidget);
+        expect(harness.retryCalls, 0);
+        await tester.tap(find.widgetWithText(FilledButton, '다음 학습'));
+        expect(harness.nextCalls, 1);
+        expect(harness.confirmCalls, 0);
       },
     );
 
@@ -436,15 +570,37 @@ class _RecognitionHarness {
     required this.question,
     this.questionCount = 1,
     this.optionOrder = const ['a', 'b'],
-  });
+    this.usesServerFeedback = false,
+    this.restoredAnswer,
+    LessonRecognitionFeedback? feedback,
+  })  : _selectedOptionId = restoredAnswer,
+        _feedback = feedback;
 
   final LessonQuestionModel question;
   final int questionCount;
   final List<String> optionOrder;
+  final bool usesServerFeedback;
+  final String? restoredAnswer;
   final List<String> selections = [];
   String? _selectedOptionId;
+  LessonRecognitionFeedback? _feedback;
+  bool _feedbackPending = false;
+  bool _feedbackUnavailable = false;
+  late StateSetter _setState;
   int confirmCalls = 0;
   int nextCalls = 0;
+  int retryCalls = 0;
+
+  void finishFeedback({
+    LessonRecognitionFeedback? feedback,
+    bool unavailable = false,
+  }) {
+    _setState(() {
+      _feedback = feedback;
+      _feedbackPending = false;
+      _feedbackUnavailable = unavailable;
+    });
+  }
 
   Future<void> mount(WidgetTester tester, {double textScale = 1}) async {
     await tester.pumpWidget(
@@ -459,21 +615,35 @@ class _RecognitionHarness {
           appBar: AppBar(toolbarHeight: 62),
           bottomNavigationBar: const SizedBox(height: 68),
           body: StatefulBuilder(
-            builder: (context, setState) => LessonRecognitionCheckStep(
-              question: question,
-              currentIndex: 0,
-              questionCount: questionCount,
-              optionOrder: optionOrder,
-              selectedOptionId: _selectedOptionId,
-              confirmed: confirmCalls > 0,
-              onSelectionChanged: (id) => setState(() {
-                selections.add(id);
-                _selectedOptionId = id;
-              }),
-              onConfirm: () => setState(() => confirmCalls++),
-              onNext: () => nextCalls++,
-              onPrevious: () {},
-            ),
+            builder: (context, setState) {
+              _setState = setState;
+              return LessonRecognitionCheckStep(
+                question: question,
+                currentIndex: 0,
+                questionCount: questionCount,
+                optionOrder: optionOrder,
+                selectedOptionId: _selectedOptionId,
+                confirmed: restoredAnswer != null || confirmCalls > 0,
+                usesServerFeedback: usesServerFeedback,
+                feedbackPending: _feedbackPending,
+                feedbackUnavailable: _feedbackUnavailable,
+                feedback: _feedback,
+                onSelectionChanged: (id) => setState(() {
+                  selections.add(id);
+                  _selectedOptionId = id;
+                }),
+                onConfirm: () => setState(() {
+                  confirmCalls++;
+                  _feedbackPending = usesServerFeedback;
+                }),
+                onRetryFeedback: () => setState(() {
+                  retryCalls++;
+                  _feedbackPending = true;
+                }),
+                onNext: () => nextCalls++,
+                onPrevious: () {},
+              );
+            },
           ),
         ),
       ),

@@ -1,4 +1,5 @@
 import '../data/models/lesson_models.dart';
+import 'lesson_recognition_feedback.dart';
 import 'lesson_submission.dart';
 import 'lesson_practice_layout.dart';
 
@@ -31,6 +32,9 @@ class LessonSessionState {
     this.seed = 1,
     this.layout = const LessonPracticeLayout(),
     this.recognitionSelection,
+    this.recognitionFeedback = const {},
+    this.recognitionFeedbackInFlight = const {},
+    this.recognitionFeedbackUnavailable = const {},
     this.matchingMatched = const {},
     this.matchingLeft,
     this.matchingRight,
@@ -71,6 +75,9 @@ class LessonSessionState {
 
   /// Draft for the first unanswered recognition question, even during review.
   final String? recognitionSelection;
+  final Map<int, LessonRecognitionFeedback> recognitionFeedback;
+  final Set<int> recognitionFeedbackInFlight;
+  final Set<int> recognitionFeedbackUnavailable;
   final Set<int> matchingMatched;
   final int? matchingLeft;
   final int? matchingRight;
@@ -111,6 +118,9 @@ class LessonSessionState {
     int? seed,
     LessonPracticeLayout? layout,
     Object? recognitionSelection = _noResultChange,
+    Map<int, LessonRecognitionFeedback>? recognitionFeedback,
+    Set<int>? recognitionFeedbackInFlight,
+    Set<int>? recognitionFeedbackUnavailable,
     Set<int>? matchingMatched,
     Object? matchingLeft = _noResultChange,
     Object? matchingRight = _noResultChange,
@@ -149,6 +159,11 @@ class LessonSessionState {
       recognitionSelection: identical(recognitionSelection, _noResultChange)
           ? this.recognitionSelection
           : recognitionSelection as String?,
+      recognitionFeedback: recognitionFeedback ?? this.recognitionFeedback,
+      recognitionFeedbackInFlight:
+          recognitionFeedbackInFlight ?? this.recognitionFeedbackInFlight,
+      recognitionFeedbackUnavailable:
+          recognitionFeedbackUnavailable ?? this.recognitionFeedbackUnavailable,
       matchingMatched: matchingMatched ?? this.matchingMatched,
       matchingLeft: identical(matchingLeft, _noResultChange)
           ? this.matchingLeft

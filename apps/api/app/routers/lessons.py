@@ -5,6 +5,7 @@ GET  /api/v1/lessons/review/summary    — SRS 복습 요약 (due/new 카드 수
 GET  /api/v1/lessons/{lesson_id}       — 레슨 상세 (대화문 + 문제, 정답 제거)
 POST /api/v1/lessons/{lesson_id}/script-lines/{line_index}/tts — 대화문 한 줄 TTS
 POST /api/v1/lessons/{lesson_id}/questions/{question_order}/tts — 문제 prompt TTS
+POST /api/v1/lessons/{lesson_id}/questions/{question_order}/feedback — 이해 체크 답안 채점
 POST /api/v1/lessons/{lesson_id}/start — 레슨 시작
 POST /api/v1/lessons/{lesson_id}/submit — 퀴즈 결과 제출
 """
@@ -21,6 +22,7 @@ from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.middleware.rate_limit import rate_limit
 from app.models.user import User
+from app.routers.lesson_recognition_feedback import router as lesson_recognition_feedback_router
 from app.routers.lesson_study_activities import router as lesson_study_activities_router
 from app.routers.lesson_submissions import router as lesson_submissions_router
 from app.schemas.lesson import (
@@ -54,6 +56,7 @@ from app.services.tts_storage import upload_tts_to_gcs
 from app.utils.constants import RATE_LIMITS
 
 router = APIRouter(prefix="/api/v1/lessons", tags=["lessons"])
+router.include_router(lesson_recognition_feedback_router)
 router.include_router(lesson_submissions_router)
 router.include_router(lesson_study_activities_router)
 
@@ -203,6 +206,7 @@ async def get_lesson_detail(
     return LessonDetailResponse(
         id=lesson.id,
         activity_content_version=lesson.activity_content_version,
+        recognition_feedback_version=lesson.recognition_feedback_version,
         lesson_no=lesson.lesson_no,
         chapter_lesson_no=lesson.chapter_lesson_no,
         title=lesson.title,
