@@ -9,6 +9,7 @@ class StageIntro extends StatelessWidget {
   final KanaCharacterModel character;
   final int currentIndex;
   final int totalCount;
+  final bool locked;
   final VoidCallback onNext;
 
   const StageIntro({
@@ -16,6 +17,7 @@ class StageIntro extends StatelessWidget {
     required this.character,
     required this.currentIndex,
     required this.totalCount,
+    this.locked = false,
     required this.onNext,
   });
 
@@ -129,7 +131,7 @@ class StageIntro extends StatelessWidget {
             width: double.infinity,
             height: 48,
             child: FilledButton(
-              onPressed: onNext,
+              onPressed: locked ? null : onNext,
               style: FilledButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppSizes.buttonRadius),

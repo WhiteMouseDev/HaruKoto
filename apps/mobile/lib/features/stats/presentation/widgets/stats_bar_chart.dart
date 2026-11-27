@@ -1,292 +1,344 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/constants/sizes.dart';
+
+import '../../../../core/constants/colors.dart';
 import '../../../../core/providers/study_clock_provider.dart';
-import '../../data/models/stats_history_model.dart';
+import '../../../../core/theme/text_theme.dart';
+import '../../../../shared/widgets/app_skeleton.dart';
 
-enum BarChartViewMode { week, month, year }
+typedef StatsBarCounts = ({int vocabulary, int grammar, int sentences});
 
-class _BarData {
+class StatsBarDay {
+  const StatsBarDay({
+    required this.date,
+    required this.label,
+    required this.counts,
+    this.isFuture = false,
+  });
+
+  final DateTime date;
   final String label;
-  final int value; // seconds
+  final StatsBarCounts? counts;
+  final bool isFuture;
 
-  const _BarData({required this.label, required this.value});
+  int? get total {
+    final values = counts;
+    if (isFuture || values == null) return null;
+    return values.vocabulary + values.grammar + values.sentences;
+  }
 }
 
-class StatsBarChart extends ConsumerStatefulWidget {
-  final List<StatsHistoryRecord> records;
+class StatsBarChart extends StatelessWidget {
+  const StatsBarChart({
+    super.key,
+    required this.dateRangeLabel,
+    required this.days,
+    this.selectedDate,
+    this.today,
+    this.onDateSelected,
+    this.emptyMessage,
+    this.isLoading = false,
+  });
 
-  const StatsBarChart({super.key, required this.records});
-
-  @override
-  ConsumerState<StatsBarChart> createState() => _StatsBarChartState();
-}
-
-class _StatsBarChartState extends ConsumerState<StatsBarChart> {
-  BarChartViewMode _viewMode = BarChartViewMode.week;
-
-  static const double _chartHeight = 120;
-  static const double _minBarPx = 16;
-  static const double _maxBarPx = _chartHeight - 20;
-
-  String _formatMinutes(int seconds) {
-    final mins = (seconds / 60).round();
-    if (mins < 60) return '$mins분';
-    final hours = mins ~/ 60;
-    final remainder = mins % 60;
-    return remainder > 0 ? '$hours시간 $remainder분' : '$hours시간';
-  }
-
-  double _calcBarPx(int value, int maxValue) {
-    if (value <= 0) return 0;
-    if (maxValue <= 0) return _minBarPx;
-    final ratio = value / maxValue;
-    final scaled = math.sqrt(ratio) * _maxBarPx;
-    return scaled.clamp(_minBarPx, _maxBarPx);
-  }
-
-  List<_BarData> _getWeekBars(DateTime today) {
-    const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
-    final dayOfWeek = today.weekday; // Mon=1
-    final monday = today.subtract(Duration(days: dayOfWeek - 1));
-
-    return List.generate(7, (i) {
-      final d = DateTime.utc(monday.year, monday.month, monday.day + i);
-      final dateStr =
-          '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
-      final record = widget.records.cast<StatsHistoryRecord?>().firstWhere(
-            (r) => r?.date == dateStr,
-            orElse: () => null,
-          );
-      return _BarData(
-          label: dayLabels[i], value: record?.studyTimeSeconds ?? 0);
-    });
-  }
-
-  List<_BarData> _getMonthBars(DateTime today) {
-    return List.generate(5, (w) {
-      final weekEnd = today.subtract(Duration(days: (4 - w) * 7));
-      final weekStart = weekEnd.subtract(const Duration(days: 6));
-      var totalSeconds = 0;
-      for (final r in widget.records) {
-        final parts = r.date.split('-');
-        if (parts.length == 3) {
-          final rDate = DateTime.utc(
-            int.parse(parts[0]),
-            int.parse(parts[1]),
-            int.parse(parts[2]),
-          );
-          if (!rDate.isBefore(weekStart) && !rDate.isAfter(weekEnd)) {
-            totalSeconds += r.studyTimeSeconds;
-          }
-        }
-      }
-      return _BarData(
-        label: '${weekStart.month}/${weekStart.day}',
-        value: totalSeconds,
-      );
-    });
-  }
-
-  List<_BarData> _getYearBars() {
-    const monthLabels = [
-      '1월',
-      '2월',
-      '3월',
-      '4월',
-      '5월',
-      '6월',
-      '7월',
-      '8월',
-      '9월',
-      '10월',
-      '11월',
-      '12월',
-    ];
-    final monthTotals = List<int>.filled(12, 0);
-    for (final r in widget.records) {
-      final parts = r.date.split('-');
-      if (parts.length >= 2) {
-        final month = int.parse(parts[1]) - 1;
-        if (month >= 0 && month < 12) {
-          monthTotals[month] += r.studyTimeSeconds;
-        }
-      }
-    }
-    return List.generate(
-      12,
-      (i) => _BarData(label: monthLabels[i], value: monthTotals[i]),
-    );
-  }
+  final String dateRangeLabel;
+  final List<StatsBarDay> days;
+  final DateTime? selectedDate;
+  final DateTime? today;
+  final ValueChanged<DateTime>? onDateSelected;
+  final String? emptyMessage;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final foreground =
+        isLight ? AppColors.redesignForeground : theme.colorScheme.onSurface;
+    final muted = isLight
+        ? AppColors.redesignMutedForeground
+        : theme.colorScheme.onSurfaceVariant;
+    final maxCount = days.fold(0, (max, day) => math.max(max, day.total ?? 0));
+    final extraTextScale =
+        math.max(0.0, MediaQuery.textScalerOf(context).scale(14) / 14 - 1);
+    final plotHeight = 132 + extraTextScale * 64;
 
-    final today = ref.watch(studyDateProvider);
-    final bars = switch (_viewMode) {
-      BarChartViewMode.week => _getWeekBars(today),
-      BarChartViewMode.month => _getMonthBars(today),
-      BarChartViewMode.year => _getYearBars(),
-    };
-
-    final maxValue = bars.fold<int>(1, (m, b) => b.value > m ? b.value : m);
-    final totalSeconds = bars.fold<int>(0, (s, b) => s + b.value);
-
-    const viewModes = [
-      (BarChartViewMode.week, '주'),
-      (BarChartViewMode.month, '월'),
-      (BarChartViewMode.year, '년'),
-    ];
-
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+    return Container(
+      decoration: BoxDecoration(
+        color: isLight
+            ? AppColors.redesignSurface
+            : theme.colorScheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              Text(dateRangeLabel, style: _labelStyle(foreground)),
+              _ChartLegend(foreground: foreground),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Semantics(
+            label: isLoading ? '문제풀이 그래프를 불러오는 중' : null,
+            excludeSemantics: isLoading,
+            child: Stack(
               children: [
-                Text(
-                  '학습 시간',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.all(2),
-                  child: Row(
-                    children: viewModes.map((mode) {
-                      final isSelected = _viewMode == mode.$1;
-                      return GestureDetector(
-                        onTap: () => setState(() => _viewMode = mode.$1),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? theme.colorScheme.primary
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            mode.$2,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: isSelected
-                                  ? theme.colorScheme.onPrimary
-                                  : theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.5),
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // Chart
-            SizedBox(
-              height: _chartHeight,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: bars.map((bar) {
-                  final barPx = _calcBarPx(bar.value, maxValue);
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          if (bar.value > 0)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Text(
-                                _formatMinutes(bar.value),
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  color: theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.5),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.clip,
-                              ),
-                            ),
-                          Container(
-                            height: bar.value > 0 ? barPx : 3,
-                            decoration: BoxDecoration(
-                              color: bar.value > 0
-                                  ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.1),
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(4),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-            const SizedBox(height: 4),
-
-            // Labels
-            Row(
-              children: bars.map((bar) {
-                return Expanded(
-                  child: Text(
-                    bar.label,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 8),
-
-            // Total
-            Center(
-              child: Text.rich(
-                TextSpan(
-                  text: '총 학습 시간 ',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                  ),
+                Row(
                   children: [
-                    TextSpan(
-                      text: _formatMinutes(totalSeconds),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.onSurface,
+                    for (final day in days)
+                      Expanded(
+                        child: _DayColumn(
+                          day: day,
+                          selected: day.date == selectedDate,
+                          isToday: day.date == today,
+                          plotHeight: plotHeight,
+                          maxCount: maxCount,
+                          foreground: foreground,
+                          muted: muted,
+                          isLoading: isLoading,
+                          onTap: !isLoading &&
+                                  onDateSelected != null &&
+                                  day.total != null
+                              ? () => onDateSelected!(day.date)
+                              : null,
+                        ),
                       ),
-                    ),
                   ],
                 ),
-              ),
+                if (!isLoading && emptyMessage != null)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: plotHeight,
+                    child: IgnorePointer(
+                      child: Center(
+                        child: Text(
+                          emptyMessage!,
+                          textAlign: TextAlign.center,
+                          style: _labelStyle(muted, size: 13),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+TextStyle _labelStyle(
+  Color color, {
+  double size = 11,
+  FontWeight weight = FontWeight.w400,
+}) =>
+    TextStyle(
+      fontFamily: redesignFontFamily,
+      fontSize: size,
+      fontWeight: weight,
+      height: 1.4,
+      letterSpacing: -size * 0.025,
+      color: color,
+    );
+
+class _ChartLegend extends StatelessWidget {
+  const _ChartLegend({required this.foreground});
+
+  final Color foreground;
+
+  @override
+  Widget build(BuildContext context) {
+    const legend = [
+      ('단어', AppColors.redesignVocabulary),
+      ('문법', AppColors.redesignGrammar),
+      ('문장배열', AppColors.redesignSentence),
+    ];
+    return Wrap(
+      spacing: 6,
+      runSpacing: 4,
+      children: [
+        for (final (label, color) in legend)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 2),
+              Text(label, style: _labelStyle(foreground)),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class _DayColumn extends StatelessWidget {
+  const _DayColumn({
+    required this.day,
+    required this.selected,
+    required this.isToday,
+    required this.plotHeight,
+    required this.maxCount,
+    required this.foreground,
+    required this.muted,
+    required this.onTap,
+    required this.isLoading,
+  });
+
+  final StatsBarDay day;
+  final bool selected;
+  final bool isToday;
+  final double plotHeight;
+  final int maxCount;
+  final Color foreground;
+  final Color muted;
+  final VoidCallback? onTap;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final total = day.total;
+    final weekday = _weekdays[day.date.weekday - DateTime.monday];
+    final status = switch (total) {
+      final count? => '$count문제',
+      null => day.isFuture ? '예정' : '집계 확인 필요',
+    };
+    final column = Column(
+      children: [
+        SizedBox(
+          height: plotHeight,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: isLoading
+                ? (day.isFuture
+                    ? null
+                    : const AppSkeletonBlock(width: 12, height: 64, radius: 4))
+                : switch (total) {
+                    0 => Container(
+                        key: ValueKey('stats-zero-${studyDateKey(day.date)}'),
+                        width: 12,
+                        height: 1,
+                        color: muted,
+                      ),
+                    final count? => _StackedBar(
+                        key: ValueKey('stats-bar-${studyDateKey(day.date)}'),
+                        counts: day.counts!,
+                        height: plotHeight * count / maxCount,
+                      ),
+                    null => null,
+                  },
+          ),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          alignment: Alignment.center,
+          constraints: const BoxConstraints(minHeight: 18),
+          decoration: selected
+              ? BoxDecoration(
+                  color: isLight
+                      ? const Color(0xFFD9D9DD)
+                      : theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(4),
+                )
+              : null,
+          child: Text(
+            day.label,
+            textAlign: TextAlign.center,
+            style: _labelStyle(
+              day.isFuture || total == null ? muted : foreground,
+              weight: selected ? FontWeight.w600 : FontWeight.w400,
+            ),
+          ),
+        ),
+        const SizedBox(height: 2),
+        SizedBox(
+          height: 4,
+          child: isToday
+              ? const DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AppColors.brandPink,
+                    shape: BoxShape.circle,
+                  ),
+                  child: SizedBox(width: 4),
+                )
+              : null,
+        ),
+      ],
+    );
+
+    return Semantics(
+      container: true,
+      label: '${studyDateKey(day.date)} $weekday요일, $status',
+      button: onTap != null,
+      selected: onTap == null ? null : selected,
+      onTap: onTap,
+      child: ExcludeSemantics(
+        child: onTap == null
+            ? column
+            : Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  excludeFromSemantics: true,
+                  onTap: onTap,
+                  child: column,
+                ),
+              ),
+      ),
+    );
+  }
+}
+
+const _weekdays = ['월', '화', '수', '목', '금', '토', '일'];
+
+class _StackedBar extends StatelessWidget {
+  const _StackedBar({super.key, required this.counts, required this.height});
+
+  final StatsBarCounts counts;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4),
+      child: SizedBox(
+        width: 12,
+        height: height,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (counts.vocabulary > 0)
+              Expanded(
+                flex: counts.vocabulary,
+                child: const ColoredBox(color: AppColors.redesignVocabulary),
+              ),
+            if (counts.grammar > 0)
+              Expanded(
+                flex: counts.grammar,
+                child: const ColoredBox(color: AppColors.redesignGrammar),
+              ),
+            if (counts.sentences > 0)
+              Expanded(
+                flex: counts.sentences,
+                child: const ColoredBox(color: AppColors.redesignSentence),
+              ),
           ],
         ),
       ),

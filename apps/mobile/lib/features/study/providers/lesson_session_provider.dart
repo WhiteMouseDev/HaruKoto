@@ -10,6 +10,7 @@ import '../../../core/auth/current_account_provider.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../data/lesson_checkpoint_store.dart';
+import '../data/lesson_recognition_feedback_repository.dart';
 import '../data/models/lesson_models.dart';
 import '../domain/lesson_checkpoint.dart';
 import '../domain/lesson_submission.dart';
@@ -52,6 +53,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
 
   String? _owner;
   int _generation = 0;
+  int _recognitionFeedbackEpoch = 0;
   int _writeVersion = 0;
   bool _initialized = false;
   bool _acknowledged = false;
@@ -473,22 +475,147 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     }
   }
 
-  void selectRecognition(String selected) {
-    if (_editable &&
-        state.step == LessonStep.recognition &&
-        state.recognitionSelection == null) {
-      final questions = lessonRecognitionQuestions(_detail!);
-      final question = questions[state.recognitionIndex];
-      if (state.answers.containsKey(question.order) ||
-          !(question.options ?? []).any((option) => option.id == selected)) {
-        return;
-      }
+  LessonQuestionModel? _currentRecognitionQuestion({int? expectedOrder}) {
+    final detail = _detail;
+    if (!_editable || state.step != LessonStep.recognition || detail == null) {
+      return null;
+    }
+    final questions = lessonRecognitionQuestions(detail);
+    final index = state.recognitionIndex;
+    if (index < 0 || index >= questions.length) return null;
+    final question = questions[index];
+    if (expectedOrder != null && question.order != expectedOrder) return null;
+    return question;
+  }
+
+  void selectRecognition(String selected, {int? expectedOrder}) {
+    final question = _currentRecognitionQuestion(expectedOrder: expectedOrder);
+    if (question == null ||
+        state.answers.containsKey(question.order) ||
+        !(question.options ?? []).any((option) => option.id == selected)) {
+      return;
+    }
+    if (state.recognitionSelection == null) {
       _queueActivity('RECOGNITION', {
         'questionOrder': question.order,
         'selectedAnswer': selected,
       });
-      _change(state.copyWith(recognitionSelection: selected));
     }
+    _change(state.copyWith(recognitionSelection: selected));
+  }
+
+  void confirmRecognition(int expectedOrder) {
+    final question = _currentRecognitionQuestion(expectedOrder: expectedOrder);
+    final selected = state.recognitionSelection;
+    if (question == null ||
+        selected == null ||
+        state.answers.containsKey(expectedOrder) ||
+        !(question.options ?? []).any((option) => option.id == selected)) {
+      return;
+    }
+    final answers = Map<int, Map<String, dynamic>>.of(state.answers)
+      ..[expectedOrder] = {
+        'order': expectedOrder,
+        'selectedAnswer': selected,
+        'responseMs': 0,
+      };
+    _change(state.copyWith(answers: answers, recognitionSelection: null));
+    unawaited(requestRecognitionFeedback(expectedOrder));
+  }
+
+  Future<void> requestRecognitionFeedback(int expectedOrder) async {
+    final question = _currentRecognitionQuestion(expectedOrder: expectedOrder);
+    final version = _detail?.recognitionFeedbackVersion;
+    final owner = _owner;
+    final selected = state.answers[expectedOrder]?['selectedAnswer'];
+    if (question == null ||
+        version == null ||
+        owner == null ||
+        selected is! String ||
+        state.recognitionFeedback.containsKey(expectedOrder) ||
+        state.recognitionFeedbackUnavailable.contains(expectedOrder) ||
+        state.recognitionFeedbackInFlight.contains(expectedOrder)) {
+      return;
+    }
+    final generation = _generation;
+    final epoch = _recognitionFeedbackEpoch;
+    bool requestIsCurrent() =>
+        _current(generation) && epoch == _recognitionFeedbackEpoch;
+    state = state.copyWith(recognitionFeedbackInFlight: {
+      ...state.recognitionFeedbackInFlight,
+      expectedOrder,
+    });
+    try {
+      final result = await ref
+          .read(lessonRecognitionFeedbackRepositoryProvider)
+          .check(
+            owner: owner,
+            lessonId: lessonId,
+            questionOrder: expectedOrder,
+            feedbackVersion: version,
+            selectedAnswer: selected,
+          )
+          .timeout(const Duration(seconds: 8));
+      if (!requestIsCurrent() ||
+          !_editable ||
+          _detail?.recognitionFeedbackVersion != version ||
+          state.answers[expectedOrder]?['selectedAnswer'] != selected ||
+          result.feedbackVersion != version ||
+          result.questionOrder != expectedOrder ||
+          result.selectedAnswer != selected ||
+          !(question.options ?? [])
+              .any((option) => option.id == result.correctAnswer)) {
+        return;
+      }
+      state = state.copyWith(recognitionFeedback: {
+        ...state.recognitionFeedback,
+        expectedOrder: result,
+      });
+      unawaited(_persist());
+    } on ApiException catch (error) {
+      // A missing or changed question cannot be retried against this version.
+      if (requestIsCurrent() &&
+          _editable &&
+          const {400, 404, 409, 422}.contains(error.statusCode)) {
+        state = state.copyWith(recognitionFeedbackUnavailable: {
+          ...state.recognitionFeedbackUnavailable,
+          expectedOrder,
+        });
+      }
+    } on TimeoutException {
+      // Keep the saved selection and let the learner resume or retry.
+    } on FormatException {
+      // The answer is already saved. Ending the pending state allows retry or
+      // continuing to the existing final lesson result.
+    } finally {
+      if (requestIsCurrent()) {
+        state = state.copyWith(
+          recognitionFeedbackInFlight: {...state.recognitionFeedbackInFlight}
+            ..remove(expectedOrder),
+        );
+      }
+    }
+  }
+
+  void previousRecognition(int expectedOrder) {
+    if (_currentRecognitionQuestion(expectedOrder: expectedOrder) == null) {
+      return;
+    }
+    if (state.recognitionIndex == 0) {
+      goBack();
+    } else {
+      _change(state.copyWith(recognitionIndex: state.recognitionIndex - 1));
+    }
+  }
+
+  void nextRecognition(int expectedOrder) {
+    final question = _currentRecognitionQuestion(expectedOrder: expectedOrder);
+    if (question == null ||
+        state.recognitionFeedbackInFlight.contains(expectedOrder)) {
+      return;
+    }
+    final answer = state.answers[question.order];
+    if (answer != null) answerRecognition(_detail!, answer);
   }
 
   void answerMatching(
@@ -606,12 +733,14 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     final questions = lessonRecognitionQuestions(detail);
     final question = questions[state.recognitionIndex];
     if (answer['order'] != question.order) return;
+    final alreadyConfirmed = state.answers.containsKey(question.order);
     final answers = Map<int, Map<String, dynamic>>.from(state.answers)
       ..[question.order] = Map<String, dynamic>.from(answer);
     if (state.recognitionIndex < questions.length - 1) {
       _change(state.copyWith(
           answers: answers,
-          recognitionSelection: null,
+          recognitionSelection:
+              alreadyConfirmed ? state.recognitionSelection : null,
           recognitionIndex: state.recognitionIndex + 1));
     } else {
       _trackStepCompleted(LessonStep.recognition);
@@ -918,6 +1047,7 @@ class LessonSessionController extends Notifier<LessonSessionState> {
     _acknowledged = false;
     _submission = null;
     _activityAttemptId = null;
+    _recognitionFeedbackEpoch++;
     // The previous completed response is not a baseline for a new attempt.
     ref.invalidate(lessonResumeDetailProvider(lessonId));
   }
@@ -980,8 +1110,24 @@ class LessonSessionActions {
     if (_current) _controller.setGrammarIndex(value);
   }
 
-  void selectRecognition(String value) {
-    if (_current) _controller.selectRecognition(value);
+  void selectRecognition(int expectedOrder, String value) {
+    if (_current) {
+      _controller.selectRecognition(value, expectedOrder: expectedOrder);
+    }
+  }
+
+  void confirmRecognition(int expectedOrder) {
+    if (_current) _controller.confirmRecognition(expectedOrder);
+  }
+
+  void requestRecognitionFeedback(int expectedOrder) {
+    if (_current) {
+      unawaited(_controller.requestRecognitionFeedback(expectedOrder));
+    }
+  }
+
+  void previousRecognition(int expectedOrder) {
+    if (_current) _controller.previousRecognition(expectedOrder);
   }
 
   void skipRecognition() {
@@ -992,9 +1138,8 @@ class LessonSessionActions {
     if (_current) await _controller.startPractice(detail);
   }
 
-  void answerRecognition(
-      LessonDetailModel detail, Map<String, dynamic> answer) {
-    if (_current) _controller.answerRecognition(detail, answer);
+  void nextRecognition(int expectedOrder) {
+    if (_current) _controller.nextRecognition(expectedOrder);
   }
 
   void updateMatching({required Set<int> matched, int? left, int? right}) {

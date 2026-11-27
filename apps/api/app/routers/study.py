@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import StringConstraints
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
@@ -23,7 +26,7 @@ from app.services.study_responses import (
     to_study_wrong_answers_response,
 )
 from app.services.study_stage_query import get_stages_data
-from app.services.study_word_progress import get_learned_words_data, get_study_wrong_answers_data
+from app.services.study_word_progress import WrongAnswerStatus, get_learned_words_data, get_study_wrong_answers_data
 
 router = APIRouter(prefix="/api/v1/study", tags=["study"])
 
@@ -57,6 +60,8 @@ async def get_study_wrong_answers(
     limit: int = Query(default=10, le=50),
     sort: str = Query(default="most-wrong"),
     level: str | None = Query(default=None),
+    search: Annotated[str, StringConstraints(strip_whitespace=True, max_length=100, pattern=r"^[^\x00]*$")] | None = Query(default=None),
+    status: WrongAnswerStatus | None = Query(default=None),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> StudyWrongAnswersResponse:
@@ -67,6 +72,8 @@ async def get_study_wrong_answers(
         limit=limit,
         sort=sort,
         level=level,
+        search=search,
+        status=status,
     )
 
     return to_study_wrong_answers_response(result)

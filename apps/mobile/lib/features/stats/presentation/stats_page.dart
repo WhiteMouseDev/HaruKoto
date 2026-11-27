@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/auth/current_account_provider.dart';
+import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/study_clock_provider.dart';
 import '../../../core/providers/user_preferences_provider.dart';
+import '../../../core/theme/text_theme.dart';
 import '../../../shared/widgets/app_error_retry.dart';
-import '../../../shared/widgets/app_skeleton.dart';
-import '../../home/data/models/dashboard_model.dart';
+import '../../../shared/widgets/app_segmented_tabs.dart';
 import '../../home/providers/home_provider.dart';
-import '../data/models/level_progress_model.dart' as stats;
-import '../data/models/stats_history_model.dart';
 import '../providers/stats_provider.dart';
 import 'widgets/period_tab.dart';
 import 'widgets/study_tab.dart';
@@ -24,160 +24,136 @@ class StatsPage extends ConsumerStatefulWidget {
 
 class _StatsPageState extends ConsumerState<StatsPage> {
   int _selectedTab = 0;
-  late int _heatmapYear;
-
-  @override
-  void initState() {
-    super.initState();
-    _heatmapYear = ref.read(studyDateProvider).year;
-  }
+  int? _selectedHeatmapYear;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final owner = ref.watch(currentAccountIdProvider);
     final accountCurrent =
         owner != null && ref.watch(currentAccountReaderProvider)() == owner;
-    final dashboardAsync = ref.watch(dashboardProvider);
-    final historyAsync = ref.watch(statsHistoryProvider(_heatmapYear));
-    final jlptLevel = ref.watch(userPreferencesProvider).jlptLevel;
+    const tabLabels = ['기간별', '학습별', 'JLPT진도'];
+    final activeTab = accountCurrent ? _selectedTab : 0;
+    final content = switch (activeTab) {
+      0 => _buildPeriod(accountCurrent ? owner : null),
+      1 => _scroll(StudyTab(key: ValueKey(owner))),
+      _ => _scroll(JlptTab(
+          key: ValueKey(owner),
+          currentLevel: ref.watch(userPreferencesProvider).jlptLevel,
+        )),
+    };
 
-    // Multi-provider composition: manual AsyncValue handling is used instead
-    // of .when() because loading/error states are combined across providers.
-    final allLoading =
-        !accountCurrent || dashboardAsync.isLoading || historyAsync.isLoading;
-
-    if (allLoading) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('학습 통계')),
-        body: const AppSkeleton(
-          itemCount: 4,
-          itemHeights: [48, 140, 140, 140],
-        ),
-      );
-    }
-
-    // A failed history request must not look like an empty study calendar.
-    if (dashboardAsync.hasError || historyAsync.hasError) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('학습 통계')),
-        body: AppErrorRetry(onRetry: () {
-          ref.invalidate(dashboardProvider);
-          ref.invalidate(statsHistoryProvider(_heatmapYear));
-        }),
-      );
-    }
-
-    final dashboard = dashboardAsync.hasValue ? dashboardAsync.value : null;
-    final historyRecords =
-        historyAsync.hasValue ? historyAsync.value! : <StatsHistoryRecord>[];
-
-    // JLPT progress fallback — actual data is fetched via jlptProgressProvider
-    // inside JlptTab and StudyTab widgets directly.
-    const levelProgress = stats.LevelProgressData(
-      vocabulary: stats.ProgressCategory(total: 0, mastered: 0, inProgress: 0),
-      grammar: stats.ProgressCategory(total: 0, mastered: 0, inProgress: 0),
+    final tabs = AppSegmentedTabs(
+      labels: tabLabels,
+      compact: true,
+      selectedIndex: activeTab,
+      onChanged: (index) => setState(() => _selectedTab = index),
     );
 
-    const tabLabels = ['기간별', '학습별', 'JLPT 진도'];
-
     return Scaffold(
-      appBar: AppBar(title: const Text('학습 통계')),
+      appBar: _buildStatsAppBar(context),
       body: Column(
         children: [
-          // Fixed pill-style segmented tab
           Padding(
             padding: const EdgeInsets.fromLTRB(
-                AppSizes.md, 0, AppSizes.md, AppSizes.sm),
-            child: Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: List.generate(tabLabels.length, (i) {
-                  final isSelected = _selectedTab == i;
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedTab = i),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? theme.colorScheme.surface
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(13),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.06),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 1),
-                                  ),
-                                ]
-                              : null,
-                        ),
-                        child: Text(
-                          tabLabels[i],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight:
-                                isSelected ? FontWeight.w600 : FontWeight.w500,
-                            color: isSelected
-                                ? theme.colorScheme.onSurface
-                                : theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.45),
-                          ),
-                        ),
+                AppSizes.pageHorizontal, 6, AppSizes.pageHorizontal, 20),
+            child: accountCurrent
+                ? tabs
+                : Semantics(
+                    label: '학습 통계 메뉴를 준비하는 중',
+                    enabled: false,
+                    excludeSemantics: true,
+                    child: ExcludeFocus(
+                      child: IgnorePointer(
+                        child: Opacity(opacity: 0.55, child: tabs),
                       ),
                     ),
-                  );
-                }),
-              ),
-            ),
+                  ),
           ),
-
-          // Scrollable tab content
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-              children: [
-                if (_selectedTab == 0)
-                  PeriodTab(
-                    today: dashboard?.today ??
-                        const TodayStats(
-                          wordsStudied: 0,
-                          quizzesCompleted: 0,
-                          correctAnswers: 0,
-                          totalAnswers: 0,
-                          xpEarned: 0,
-                          goalProgress: 0.0,
-                          hasStudied: false,
-                        ),
-                    historyRecords: historyRecords,
-                    heatmapYear: _heatmapYear,
-                    onHeatmapYearChange: (year) {
-                      setState(() => _heatmapYear = year);
-                    },
-                  ),
-                if (_selectedTab == 1)
-                  StudyTab(
-                    levelProgress: levelProgress,
-                    historyRecords: historyRecords,
-                  ),
-                if (_selectedTab == 2)
-                  JlptTab(
-                    levelProgress: levelProgress,
-                    currentLevel: jlptLevel,
-                  ),
-                const SizedBox(height: 32),
-              ],
+            child: SafeArea(
+              top: false,
+              left: false,
+              right: false,
+              child: content,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _scroll(Widget child) => ListView(
+        key: ValueKey(_selectedTab),
+        padding: const EdgeInsets.fromLTRB(
+            AppSizes.pageHorizontal, 0, AppSizes.pageHorizontal, AppSizes.xl),
+        children: [child],
+      );
+
+  Widget _buildPeriod(String? owner) {
+    final currentYear = ref.watch(studyDateProvider).year;
+    final year =
+        owner == null ? currentYear : _selectedHeatmapYear ?? currentYear;
+    final dashboard = owner == null ? null : ref.watch(dashboardProvider);
+    final history =
+        owner == null ? null : ref.watch(statsHistoryProvider(year));
+    if (dashboard != null && !dashboard.isLoading && dashboard.hasError) {
+      return AppErrorRetry(onRetry: () => ref.invalidate(dashboardProvider));
+    }
+    final dashboardLoading = dashboard?.isLoading ?? true;
+    final historyLoading = history?.isLoading ?? true;
+    final snapshot = dashboardLoading ? null : dashboard?.value;
+    return _scroll(PeriodTab(
+      key: ValueKey(owner),
+      today: snapshot?.today,
+      questionStats: snapshot?.weeklyQuestionStats,
+      isDashboardLoading: dashboardLoading,
+      historyRecords: history != null && !history.isLoading && !history.hasError
+          ? history.requireValue
+          : [],
+      isHistoryLoading: historyLoading,
+      hasHistoryError: history?.hasError ?? false,
+      onRetryHistory: () => ref.invalidate(statsHistoryProvider(year)),
+      heatmapYear: year,
+      onHeatmapYearChange: owner == null
+          ? null
+          : (year) => setState(
+                () => _selectedHeatmapYear = year == currentYear ? null : year,
+              ),
+    ));
+  }
+
+  AppBar _buildStatsAppBar(BuildContext context) {
+    final theme = Theme.of(context);
+    final foreground = theme.brightness == Brightness.light
+        ? AppColors.redesignForeground
+        : theme.colorScheme.onSurface;
+    final canPop = ModalRoute.of(context)?.impliesAppBarDismissal ?? false;
+    return AppBar(
+      leadingWidth: 48,
+      titleSpacing: AppSizes.xs,
+      leading: canPop
+          ? IconButton(
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              onPressed: () => Navigator.maybePop(context),
+              icon: Transform.translate(
+                offset: const Offset(5, 6),
+                child: Icon(LucideIcons.arrowLeft, size: 20, color: foreground),
+              ),
+            )
+          : null,
+      title: Transform.translate(
+        offset: const Offset(0, 6),
+        child: Text(
+          '학습 통계',
+          style: TextStyle(
+            fontFamily: redesignFontFamily,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+            letterSpacing: -0.5,
+            color: foreground,
+          ),
+        ),
       ),
     );
   }

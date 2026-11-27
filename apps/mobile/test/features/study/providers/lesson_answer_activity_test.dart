@@ -1,7 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/features/study/data/lesson_checkpoint_store.dart';
+import 'package:harukoto_mobile/features/study/data/lesson_recognition_feedback_repository.dart';
+import 'package:harukoto_mobile/features/study/domain/lesson_recognition_feedback.dart';
+import 'package:harukoto_mobile/features/study/domain/lesson_session_state.dart';
 import 'package:harukoto_mobile/features/study/domain/lesson_study_activity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,31 +21,46 @@ void main() {
   });
 
   test(
-      'option tap saves attendance with selection, Next never duplicates or grades',
-      () async {
-    final h = ActivityHarness(preferences: prefs);
-    addTearDown(h.dispose);
-    await h.start();
-    h.controller.selectRecognition('b');
-    await h.controller.flush();
-    await h.sync();
-    await activityFlush();
-    expect(h.repository.posts, hasLength(1));
-    expect(h.repository.posts.single['kind'], 'RECOGNITION');
-    expect(h.repository.posts.single['answer'],
-        {'questionOrder': 1, 'selectedAnswer': 'b'});
-    expect(h.state.recognitionSelection, 'b');
-    expect(h.state.answers, isEmpty);
-    expect(h.study.submissions, 0);
-    h.controller.selectRecognition('a');
-    h.controller.answerRecognition(
-        h.study.detail, {'order': 1, 'selectedAnswer': 'b', 'responseMs': 0});
-    await h.controller.flush();
-    await h.sync();
-    expect(h.repository.posts, hasLength(1));
-    expect(h.state.answers[1]!['selectedAnswer'], 'b');
-    expect(h.study.submissions, 0);
-  });
+    'first choice records attendance and Confirm saves the final choice without grading',
+    () async {
+      final h = ActivityHarness(preferences: prefs);
+      addTearDown(h.dispose);
+      await h.start();
+      h.controller.selectRecognition('b', expectedOrder: 99);
+      h.controller.confirmRecognition(1);
+      expect(h.state.recognitionSelection, isNull);
+      expect(h.state.answers, isEmpty);
+
+      h.controller.selectRecognition('b');
+      await h.controller.flush();
+      await h.sync();
+      await activityFlush();
+      expect(h.repository.posts, hasLength(1));
+      expect(h.repository.posts.single['kind'], 'RECOGNITION');
+      expect(h.repository.posts.single['answer'], {
+        'questionOrder': 1,
+        'selectedAnswer': 'b',
+      });
+      expect(h.state.recognitionSelection, 'b');
+      expect(h.state.answers, isEmpty);
+      expect(h.study.submissions, 0);
+      h.controller.selectRecognition('a');
+      h.controller.confirmRecognition(99);
+      expect(h.state.answers, isEmpty);
+      h.controller.confirmRecognition(1);
+      expect(h.state.recognitionIndex, 0);
+      expect(h.state.answers[1]!['selectedAnswer'], 'a');
+      h.controller.selectRecognition('b');
+      h.controller.confirmRecognition(1);
+      h.controller.answerRecognition(h.study.detail, h.state.answers[1]!);
+      await h.controller.flush();
+      await h.sync();
+      expect(h.repository.posts, hasLength(1));
+      expect(h.state.answers[1]!['selectedAnswer'], 'a');
+      expect(h.state.recognitionSelection, isNull);
+      expect(h.study.submissions, 0);
+    },
+  );
 
   test('cold restore preserves selected answer and makes no new activity',
       () async {
@@ -69,6 +89,48 @@ void main() {
     expect(repository.posts.single['activityId'], id);
   });
 
+  test('reviewing an earlier answer preserves the later draft and its receipt',
+      () async {
+    final repository = ActivityRepositoryFixture();
+    final detail = activityDetail(secondRecognition: true);
+    final first = ActivityHarness(
+        preferences: prefs, detail: detail, activityRepository: repository);
+    await first.start();
+    first.controller.selectRecognition('a', expectedOrder: 1);
+    first.controller.confirmRecognition(1);
+    first.controller.nextRecognition(1);
+    first.controller.selectRecognition('c', expectedOrder: 7);
+    first.controller.previousRecognition(7);
+    expect(first.state.recognitionIndex, 0);
+    await first.controller.flush();
+    await first.sync();
+    await activityFlush();
+    expect(repository.posts, hasLength(2));
+    final activityIds =
+        repository.posts.map((post) => post['activityId']).toList();
+    first.dispose();
+
+    final cold = ActivityHarness(
+        preferences: prefs, detail: detail, activityRepository: repository);
+    addTearDown(cold.dispose);
+    await cold.controller.initialize(detail);
+    expect(cold.state.restored, isTrue);
+    expect(cold.state.recognitionIndex, 0);
+    expect(cold.state.answers[1]?['selectedAnswer'], 'a');
+    expect(cold.state.answers[7], isNull);
+    cold.controller.nextRecognition(1);
+    expect(cold.state.recognitionIndex, 1);
+    expect(cold.state.recognitionSelection, 'c');
+    cold.controller.selectRecognition('d', expectedOrder: 7);
+    cold.controller.confirmRecognition(7);
+    cold.controller.nextRecognition(7);
+    await cold.controller.flush();
+    await cold.sync();
+    expect(cold.state.answers[7]?['selectedAnswer'], 'd');
+    expect(repository.posts.map((post) => post['activityId']), activityIds);
+    expect(cold.study.submissions, 0);
+  });
+
   test('old selected checkpoint upgraded to new server does not backfill',
       () async {
     final old = ActivityHarness(
@@ -89,6 +151,101 @@ void main() {
     await current.sync();
     expect(current.repository.posts, isEmpty);
     expect(await current.store.pendingActivities(activityOwner), isEmpty);
+  });
+
+  test(
+      'recognition feedback retries the confirmed answer and restores by version',
+      () async {
+    final answers = _RecognitionFeedbackFixture();
+    final detail = activityDetail(recognitionFeedbackVersion: 'revision-1');
+    final first = ActivityHarness(
+        preferences: prefs, detail: detail, feedbackRepository: answers);
+    await first.start();
+    first.controller.selectRecognition('a');
+    first.controller.selectRecognition('b');
+    first.controller.confirmRecognition(1);
+    first.controller.confirmRecognition(1);
+    await first.controller.requestRecognitionFeedback(1);
+    expect(first.state.recognitionFeedbackInFlight, {1});
+    expect(first.state.answers[1]?['selectedAnswer'], 'b');
+    expect(answers.pending, hasLength(1));
+    first.controller.nextRecognition(1);
+    expect(first.state.recognitionIndex, 0);
+    expect(first.state.answers[1]?['selectedAnswer'], 'b');
+
+    answers.pending.first.completeError(const ApiException(message: 'offline'));
+    await activityFlush();
+    expect(first.state.recognitionFeedbackInFlight, isEmpty);
+    expect(first.state.recognitionFeedback, isEmpty);
+    expect(first.state.answers[1]?['selectedAnswer'], 'b');
+    final retry = first.controller.requestRecognitionFeedback(1);
+    expect(answers.choices, ['b', 'b']);
+    answers.pending.last.complete(_wrongFeedback);
+    await retry;
+    expect(first.state.recognitionFeedback[1]?.correctAnswer, 'a');
+    await first.controller.flush();
+    await first.sync();
+    expect(first.repository.posts, hasLength(1));
+    expect(first.study.submissions, 0);
+    first.dispose();
+
+    final cold = ActivityHarness(
+        preferences: prefs, detail: detail, feedbackRepository: answers);
+    addTearDown(cold.dispose);
+    await cold.controller.initialize(detail);
+    expect(cold.state.recognitionFeedback[1]?.isCorrect, isFalse);
+    await cold.controller.requestRecognitionFeedback(1);
+    expect(answers.pending, hasLength(2));
+    final edited = activityDetail(recognitionFeedbackVersion: 'revision-2');
+    final updated = ActivityHarness(
+      preferences: prefs,
+      detail: edited,
+      feedbackRepository: answers,
+    );
+    addTearDown(updated.dispose);
+    await updated.controller.initialize(edited);
+    expect(updated.state.answers[1]?['selectedAnswer'], 'b');
+    expect(updated.state.recognitionFeedback, isEmpty);
+    final outdated = updated.controller.requestRecognitionFeedback(1);
+    answers.pending.last.completeError(
+      const ApiException(message: 'stale version', statusCode: 409),
+    );
+    await outdated;
+    expect(updated.state.recognitionFeedbackUnavailable, {1});
+    await updated.controller.requestRecognitionFeedback(1);
+    expect(answers.pending, hasLength(3));
+    updated.controller.nextRecognition(1);
+    expect(updated.state.step, LessonStep.matching);
+    expect(updated.state.answers[1]?['selectedAnswer'], 'b');
+  });
+
+  test('late recognition feedback cannot enter a different account draft',
+      () async {
+    final answers = _RecognitionFeedbackFixture();
+    final h = ActivityHarness(
+      preferences: prefs,
+      feedbackRepository: answers,
+      detail: activityDetail(recognitionFeedbackVersion: 'revision-1'),
+    );
+    addTearDown(h.dispose);
+    await h.start();
+    h.controller.selectRecognition('b');
+    h.controller.confirmRecognition(1);
+    await h.controller.flush();
+    h.switchAccount(activityOtherOwner);
+    await h.start();
+    h.controller.selectRecognition('b');
+    h.controller.confirmRecognition(1);
+    expect(answers.pending, hasLength(2));
+
+    answers.pending.first.complete(_wrongFeedback);
+    await activityFlush();
+    expect(h.state.recognitionFeedback, isEmpty);
+    expect(h.state.recognitionFeedbackInFlight, {1});
+    answers.pending.last.complete(_wrongFeedback);
+    await activityFlush();
+    expect(h.state.recognitionFeedback[1]?.isCorrect, isFalse);
+    expect(h.state.recognitionFeedbackInFlight, isEmpty);
   });
 
   test(
@@ -230,6 +387,34 @@ void main() {
         id);
     expect(h.study.submissions, 1);
   });
+}
+
+const _wrongFeedback = LessonRecognitionFeedback(
+  feedbackVersion: 'revision-1',
+  questionOrder: 1,
+  selectedAnswer: 'b',
+  correctAnswer: 'a',
+  isCorrect: false,
+);
+
+class _RecognitionFeedbackFixture
+    implements LessonRecognitionFeedbackRepository {
+  final choices = <String>[];
+  final pending = <Completer<LessonRecognitionFeedback>>[];
+
+  @override
+  Future<LessonRecognitionFeedback> check({
+    required String owner,
+    required String lessonId,
+    required int questionOrder,
+    required String feedbackVersion,
+    required String selectedAnswer,
+  }) {
+    choices.add(selectedAnswer);
+    final response = Completer<LessonRecognitionFeedback>();
+    pending.add(response);
+    return response.future;
+  }
 }
 
 class _FailWriteStore extends PreferencesLessonCheckpointStore {

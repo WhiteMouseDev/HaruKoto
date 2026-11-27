@@ -90,9 +90,12 @@ abstract class StudyRepository {
         int total,
         int totalPages,
         WrongAnswersSummary summary,
+        bool supportsSearchAndStatus,
       })> fetchWrongAnswers({
     int page = 1,
     String sort = 'most-wrong',
+    String search = '',
+    WrongAnswerStatus status = WrongAnswerStatus.all,
     int limit = 20,
   });
 
@@ -130,6 +133,15 @@ abstract class StudyRepository {
     String source = 'MANUAL',
     bool preserveExisting = false,
     String? note,
+  });
+
+  Future<WordbookEntryModel> fetchWordbookEntry(String id);
+
+  Future<void> updateWordbookEntry(
+    String id, {
+    required String word,
+    required String reading,
+    required String meaningKo,
   });
 
   Future<void> deleteWord(String id);

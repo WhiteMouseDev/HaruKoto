@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract class AuthSessionStore {
@@ -41,38 +39,63 @@ class AuthSessionManager {
   final AuthSessionStore _store;
   final Duration _refreshCooldown;
 
-  Completer<String?>? _refreshCompleter;
-  DateTime? _lastRefreshAttempt;
+  Future<String?>? _refreshInFlight;
+  ({String token, DateTime time})? _lastRefresh;
 
   String? get currentAccessToken => _store.currentAccessToken;
 
-  Future<String?> refreshAccessToken() {
-    if (_refreshCompleter != null) {
-      return _refreshCompleter!.future;
+  Future<String?> recoverAccessToken(String rejectedToken) async {
+    final currentToken = currentAccessToken;
+    if (currentToken == null) return null;
+    if (currentToken != rejectedToken) {
+      // A slower 401 can arrive after another request refreshed the token.
+      return _isSameSession(currentToken, rejectedToken) ? currentToken : null;
     }
 
-    final now = DateTime.now();
-    if (_lastRefreshAttempt != null &&
-        now.difference(_lastRefreshAttempt!) < _refreshCooldown) {
-      return Future<String?>.value(null);
-    }
-
-    _lastRefreshAttempt = now;
-    final completer = Completer<String?>();
-    _refreshCompleter = completer;
-
-    () async {
-      try {
-        completer.complete(await _store.refreshAccessToken());
-      } catch (error, stackTrace) {
-        unawaited(completer.future.catchError((Object _) => null));
-        completer.completeError(error, stackTrace);
-      } finally {
-        _refreshCompleter = null;
+    final inFlight = _refreshInFlight;
+    if (inFlight != null) {
+      if (_lastRefresh?.token != rejectedToken) return null;
+      await inFlight;
+    } else {
+      final now = DateTime.now();
+      final lastRefresh = _lastRefresh;
+      if (lastRefresh != null &&
+          now.difference(lastRefresh.time) < _refreshCooldown &&
+          _isSameSession(lastRefresh.token, rejectedToken)) {
+        return null;
       }
-    }();
+      _lastRefresh = (token: rejectedToken, time: now);
+      final refresh = Future<String?>.sync(_store.refreshAccessToken);
+      _refreshInFlight = refresh;
+      try {
+        await refresh;
+      } finally {
+        _refreshInFlight = null;
+      }
+    }
 
-    return completer.future;
+    // Read the live session again. Refresh can overlap a logout or a new login.
+    final refreshedToken = currentAccessToken;
+    if (refreshedToken == null || refreshedToken == rejectedToken) return null;
+    return _isSameSession(refreshedToken, rejectedToken)
+        ? refreshedToken
+        : null;
+  }
+
+  bool _isSameSession(String first, String second) {
+    if (first == second) return true;
+    try {
+      final firstClaims = decodeJwt(first).payload;
+      final secondClaims = decodeJwt(second).payload;
+      final sessionId = firstClaims.claims['session_id'];
+      return sessionId is String &&
+          sessionId.isNotEmpty &&
+          sessionId == secondClaims.claims['session_id'] &&
+          firstClaims.sub != null &&
+          firstClaims.sub == secondClaims.sub;
+    } on AuthInvalidJwtException {
+      return false;
+    }
   }
 
   Future<void> signOut() {

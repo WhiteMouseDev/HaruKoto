@@ -5,6 +5,7 @@ class DashboardModel {
   final TodayStats today;
   final StreakData streak;
   final List<WeeklyStatEntry> weeklyStats;
+  final List<WeeklyQuestionStatEntry>? weeklyQuestionStats;
   final KanaProgressData? kanaProgress;
   final LevelProgressData? levelProgress;
 
@@ -13,6 +14,7 @@ class DashboardModel {
     required this.today,
     required this.streak,
     required this.weeklyStats,
+    this.weeklyQuestionStats,
     this.kanaProgress,
     this.levelProgress,
   });
@@ -31,6 +33,8 @@ class DashboardModel {
               ?.map((e) => WeeklyStatEntry.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      weeklyQuestionStats:
+          WeeklyQuestionStatEntry.parseWeek(json['weeklyQuestionStats']),
       kanaProgress: json['kanaProgress'] != null
           ? KanaProgressData.fromJson(
               json['kanaProgress'] as Map<String, dynamic>)
@@ -166,6 +170,55 @@ class WeeklyStatEntry {
               ? vocabularyAnsweredCount
               : null,
     );
+  }
+}
+
+class WeeklyQuestionStatEntry {
+  const WeeklyQuestionStatEntry({
+    required this.date,
+    required this.hasStudied,
+    required this.vocabularyAnsweredCount,
+    required this.grammarAnsweredCount,
+    required this.sentenceArrangeAnsweredCount,
+  });
+
+  final String date;
+  final bool hasStudied;
+  final int vocabularyAnsweredCount;
+  final int grammarAnsweredCount;
+  final int sentenceArrangeAnsweredCount;
+
+  static List<WeeklyQuestionStatEntry>? parseWeek(Object? json) {
+    if (json is! List || json.length != DateTime.daysPerWeek) return null;
+    final entries = <WeeklyQuestionStatEntry>[];
+    final dates = <String>{};
+    for (final item in json) {
+      if (item is! Map<String, dynamic>) return null;
+      final date = parseGoalDate(item['date']);
+      final studied = item['hasStudied'];
+      final vocabulary = item['vocabularyAnsweredCount'];
+      final grammar = item['grammarAnsweredCount'];
+      final sentence = item['sentenceArrangeAnsweredCount'];
+      if (date == null ||
+          !dates.add(date) ||
+          studied is! bool ||
+          vocabulary is! int ||
+          vocabulary < 0 ||
+          grammar is! int ||
+          grammar < 0 ||
+          sentence is! int ||
+          sentence < 0) {
+        return null;
+      }
+      entries.add(WeeklyQuestionStatEntry(
+        date: date,
+        hasStudied: studied,
+        vocabularyAnsweredCount: vocabulary,
+        grammarAnsweredCount: grammar,
+        sentenceArrangeAnsweredCount: sentence,
+      ));
+    }
+    return entries;
   }
 }
 

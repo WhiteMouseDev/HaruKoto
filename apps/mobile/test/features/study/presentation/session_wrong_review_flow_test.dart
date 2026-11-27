@@ -22,10 +22,10 @@ void main() {
       (tester) async {
     final repository = _SessionReviewRepository();
     final container = await _pumpSourceResult(tester, repository);
-    await tester.scrollUntilVisible(find.text('오답 복습 →'), 200);
+    await tester.scrollUntilVisible(find.text('오답 복습하기'), 200);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('오답 복습 →'));
-    await tester.tap(find.text('오답 복습 →'));
+    await tester.tap(find.text('오답 복습하기'));
+    await tester.tap(find.text('오답 복습하기'));
     await tester.pumpAndSettle();
 
     expect(repository.sources, ['source-session']);
@@ -53,8 +53,14 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('이전 퀴즈 결과로 돌아가기'));
     await tester.pumpAndSettle();
-    expect(find.text('틀린 문법 1개'), findsOneWidget);
-    expect(find.text('1/2'), findsOneWidget);
+    expect(find.text('틀린 문제 1개'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('result-stat-correct')),
+        matching: find.text('1개'),
+      ),
+      findsOneWidget,
+    );
     expect(
         container
             .read(quizResultProvider('source-session'))
@@ -73,9 +79,9 @@ void main() {
       (tester) async {
     final repository = _SessionReviewRepository()..failStarts = 2;
     await _pumpSourceResult(tester, repository);
-    await tester.scrollUntilVisible(find.text('오답 복습 →'), 200);
+    await tester.scrollUntilVisible(find.text('오답 복습하기'), 200);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('오답 복습 →'));
+    await tester.tap(find.text('오답 복습하기'));
     await tester.pumpAndSettle();
     expect(find.text('퀴즈를 불러오지 못했어요'), findsOneWidget);
     expect(find.text('복습할 문제가 없어요!'), findsNothing);
@@ -85,7 +91,7 @@ void main() {
     expect(repository.generalStarts, 0);
     await tester.tap(find.text('결과로 돌아가기'));
     await tester.pumpAndSettle();
-    expect(find.text('틀린 문법 1개'), findsOneWidget);
+    expect(find.text('틀린 문제 1개'), findsOneWidget);
     expect(repository.loadedWrongSessions, ['source-session']);
     expect(repository.savedAnswers, isEmpty);
     expect(repository.completedSessions, isEmpty);

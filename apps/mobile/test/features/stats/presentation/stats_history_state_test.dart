@@ -8,9 +8,7 @@ import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart'
 import 'package:harukoto_mobile/core/providers/study_clock_provider.dart';
 import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
 import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
-import 'package:harukoto_mobile/features/stats/data/models/heatmap_data_model.dart';
 import 'package:harukoto_mobile/features/stats/data/models/stats_history_model.dart';
-import 'package:harukoto_mobile/features/stats/data/models/time_chart_model.dart';
 import 'package:harukoto_mobile/features/stats/presentation/stats_page.dart';
 import 'package:harukoto_mobile/features/stats/presentation/widgets/heatmap_widget.dart';
 import 'package:harukoto_mobile/features/stats/presentation/widgets/period_tab.dart';
@@ -19,7 +17,33 @@ import 'package:harukoto_mobile/features/stats/providers/stats_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('stats requests the KST year and matches today by the same date',
+  testWidgets('period keeps the redesigned sections while totals load',
+      (tester) async {
+    final pendingDashboard = Completer<DashboardModel>();
+    final container = await _pump(tester,
+        history: (_) async => [], pendingDashboard: pendingDashboard.future);
+    expect(find.text('기간별'), findsOneWidget);
+    expect(find.text('학습별'), findsOneWidget);
+    expect(find.text('JLPT진도'), findsOneWidget);
+    expect(find.text('오늘의 학습'), findsOneWidget);
+    expect(find.text('요일별 문제풀이'), findsOneWidget);
+    expect(find.text('연간 학습 히트맵'), findsOneWidget);
+    final chart = tester.widget<StatsBarChart>(find.byType(StatsBarChart));
+    expect(chart.isLoading, isTrue);
+    expect(chart.days.every((day) => day.total == null), isTrue);
+    expect(find.text('0문제', findRichText: true), findsNothing);
+    expect(find.text('문제풀이 집계를 확인할 수 없어요'), findsNothing);
+
+    pendingDashboard.complete(DashboardModel.fromJson({}));
+    await tester.pumpAndSettle();
+    expect(tester.widget<StatsBarChart>(find.byType(StatsBarChart)).isLoading,
+        isFalse);
+    expect(find.text('문제풀이 집계를 확인할 수 없어요'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    container.dispose();
+  });
+
+  testWidgets('stats requests the KST year and excludes recorded duration',
       (tester) async {
     final years = <int>[];
     final container = await _pump(tester, now: DateTime.utc(2026, 12, 31, 15),
@@ -27,13 +51,15 @@ void main() {
       years.add(year);
       return [
         StatsHistoryRecord.fromJson(
-            {'date': '2027-01-01', 'studyTimeSeconds': 180})
+            {'date': '2027-01-01', 'studyTimeSeconds': 180, 'hasStudied': true})
       ];
     });
     expect(years, [2027]);
-    expect(find.text('3분'), findsWidgets);
     final heatmap = tester.widget<HeatmapWidget>(find.byType(HeatmapWidget));
     expect(heatmap.year, 2027);
+    expect(heatmap.records.single.hasStudyActivity, isTrue);
+    expect(find.textContaining('학습 시간'), findsNothing);
+    expect(find.text('3분'), findsNothing);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
     container.dispose();
@@ -48,14 +74,18 @@ void main() {
       if (fails) throw StateError('One requested month failed');
       return [];
     });
-    expect(find.text('데이터를 불러올 수 없습니다'), findsOneWidget);
-    expect(find.byType(PeriodTab), findsNothing);
+    expect(find.byType(PeriodTab), findsOneWidget);
+    expect(tester.widget<HeatmapWidget>(find.byType(HeatmapWidget)).hasError,
+        isTrue);
     fails = false;
+    await tester.ensureVisible(find.text('다시 시도'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('다시 시도'));
     await tester.pumpAndSettle();
     expect(requests, 2);
     expect(find.byType(PeriodTab), findsOneWidget);
-    expect(find.text('데이터를 불러올 수 없습니다'), findsNothing);
+    expect(tester.widget<HeatmapWidget>(find.byType(HeatmapWidget)).hasError,
+        isFalse);
     await tester.pumpWidget(const SizedBox.shrink());
     container.dispose();
   });
@@ -76,34 +106,47 @@ void main() {
     expect(find.byType(PeriodTab), findsOneWidget);
     container.invalidate(statsHistoryProvider(2026));
     await tester.pump();
-    expect(find.byType(PeriodTab), findsNothing);
+    final loading = tester.widget<HeatmapWidget>(find.byType(HeatmapWidget));
+    expect(loading.isLoading, isTrue);
+    expect(loading.records, isEmpty);
     pending.completeError(StateError('offline'));
     await tester.pumpAndSettle();
-    expect(find.text('데이터를 불러올 수 없습니다'), findsOneWidget);
-    expect(find.byType(PeriodTab), findsNothing);
+    final failed = tester.widget<HeatmapWidget>(find.byType(HeatmapWidget));
+    expect(failed.hasError, isTrue);
+    expect(failed.records, isEmpty);
     await tester.pumpWidget(const SizedBox.shrink());
     container.dispose();
   });
 
-  testWidgets('weekly chart uses Monday in Korea instead of the device date',
+  testWidgets('period summary uses the KST day and counts all three quiz types',
       (tester) async {
-    await tester.pumpWidget(ProviderScope(
-        overrides: [
-          studyClockProvider
-              .overrideWithValue(() => DateTime.utc(2026, 9, 27, 15)),
+    final container = await _pump(
+      tester,
+      now: DateTime.utc(2026, 9, 27, 15),
+      history: (_) async => [],
+      dashboard: {
+        'today': {'quizzesCompleted': 99, 'totalAnswers': 200},
+        'weeklyQuestionStats': [
+          for (var offset = 0; offset < 7; offset++)
+            {
+              'date': studyDateKey(DateTime.utc(2026, 9, 28 + offset)),
+              'hasStudied': offset == 0,
+              'vocabularyAnsweredCount': offset == 0 ? 3 : 0,
+              'grammarAnsweredCount': offset == 0 ? 2 : 0,
+              'sentenceArrangeAnsweredCount': offset == 0 ? 1 : 0,
+            },
         ],
-        child: MaterialApp(
-            home: Scaffold(
-                body: StatsBarChart(records: [
-          StatsHistoryRecord.fromJson(
-              {'date': '2026-09-28', 'studyTimeSeconds': 180}),
-          StatsHistoryRecord.fromJson(
-              {'date': '2026-09-27', 'studyTimeSeconds': 480}),
-        ])))));
-    await tester.pumpAndSettle();
-    expect(
-        find.textContaining('총 학습 시간 3분', findRichText: true), findsOneWidget);
+      },
+    );
+    expect(find.text('오늘 푼 문제'), findsOneWidget);
+    expect(find.text('이번 주 푼 문제'), findsOneWidget);
+    expect(find.textContaining('6문제', findRichText: true),
+        findsAtLeastNWidgets(2));
+    expect(find.textContaining('9.28'), findsOneWidget);
+    expect(find.text('99'), findsNothing);
     expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+    container.dispose();
   });
 }
 
@@ -111,6 +154,8 @@ Future<ProviderContainer> _pump(
   WidgetTester tester, {
   DateTime? now,
   required Future<List<StatsHistoryRecord>> Function(int) history,
+  Map<String, dynamic> dashboard = const {},
+  Future<DashboardModel>? pendingDashboard,
 }) async {
   SharedPreferences.setMockInitialValues({'user_jlpt_level': 'N5'});
   final prefs = await SharedPreferences.getInstance();
@@ -120,12 +165,9 @@ Future<ProviderContainer> _pump(
     sharedPreferencesProvider.overrideWithValue(prefs),
     studyClockProvider
         .overrideWithValue(() => now ?? DateTime.utc(2026, 10, 29, 3)),
-    dashboardProvider.overrideWith((ref) async => DashboardModel.fromJson({})),
+    dashboardProvider.overrideWith((ref) =>
+        pendingDashboard ?? Future.value(DashboardModel.fromJson(dashboard))),
     statsHistoryProvider.overrideWith((ref, year) => history(year)),
-    heatmapProvider
-        .overrideWith((ref, year) async => const HeatmapResponse(data: [])),
-    timeChartProvider
-        .overrideWith((ref, days) async => const TimeChartResponse(data: [])),
   ]);
   await tester.pumpWidget(UncontrolledProviderScope(
       container: container, child: const MaterialApp(home: StatsPage())));

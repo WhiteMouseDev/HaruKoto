@@ -221,7 +221,8 @@ status: open
 |-----|-------|------|
 | `frontend` | web/admin/landing/packages 변경 | pnpm lint + typecheck + build |
 | `backend` | api 변경 | ruff check/format + pytest |
-| `api-contract` | api 변경 | OpenAPI freshness / TS types freshness / oasdiff (warn) / mobile drift validator |
+| `api-contract` | API·DB·생성된 API 타입 등 관련 변경 | OpenAPI·TypeScript 생성물 검사, oasdiff, 모바일·관리자 계약 검사 |
+| `api-contract-gate` | 모든 CI 실행 | 영향 범위 감지 성공과 필요한 API 계약 검사 통과 확인 |
 | `schema-drift` | api 또는 frontend 변경 | Alembic migrations apply → Prisma schema diff (Alembic 단독 DDL 확인) |
 | `mobile` | mobile 변경 | dart format + flutter analyze + flutter test + Android debug build |
 
@@ -231,7 +232,12 @@ status: open
 
 - `.claude/hooks/*` 는 **Claude Code 내부에서만** 발화. Codex를 별도 터미널에서 돌리면 hooks는 작동 안 함. 크로스 툴 방어가 필요하면 `gitleaks` 같은 pre-commit 훅을 git 레이어에 설치할 것.
 - 모바일 field drift 감지는 **opt-in 주석 기반**. 전수 감지를 원하면 `openapi_generator` 같은 Dart codegen 도입 필요 (기존 코드와 충돌 가능성 큼).
-- oasdiff breaking change 체크는 현재 `continue-on-error: true` (warn 모드). 실제 breaking 패턴 데이터 쌓이면 hard-fail 전환 + override 메커니즘(PR label 또는 `[breaking-ok]` commit marker) 설계.
+
+## API 하위 호환성
+
+API 계약 검사는 PR의 기준 커밋과 비교합니다. `main`에 푸시된 변경은 푸시 직전 커밋과 비교합니다. 기준 OpenAPI를 읽을 수 없거나 oasdiff가 `ERR` 수준의 호환성 문제를 찾으면 검사가 실패합니다. `WARN`은 CI 로그에 표시합니다.
+
+`main`으로 병합하려면 최신 `main`을 기준으로 `api-contract-gate`를 통과해야 합니다. API에 영향이 없는 PR은 변경 범위 감지만 성공하면 계약 검사 없이 이 확인을 통과합니다.
 
 ---
 

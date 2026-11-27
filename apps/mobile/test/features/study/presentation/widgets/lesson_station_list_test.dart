@@ -259,6 +259,89 @@ void main() {
     expect(find.text('N5 학습 노선'), findsNothing);
   });
 
+  testWidgets('redesigned map preserves station progress and lesson navigation',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final chapters = [
+      _chapter(1, statuses: ['COMPLETED']),
+      _chapter(5, statuses: ['IN_PROGRESS', 'NOT_STARTED']),
+    ];
+    final router = GoRouter(routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => Scaffold(
+          body: SingleChildScrollView(
+            child: _list(chapters, redesigned: true),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/study/lessons/:id',
+        builder: (context, state) =>
+            Scaffold(body: Text('Opened ${state.pathParameters['id']}')),
+      ),
+    ]);
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      ProviderScope(child: MaterialApp.router(routerConfig: router)),
+    );
+    await tester.pumpAndSettle();
+
+    final first = find.byKey(const ValueKey('station-toggle-chapter-1'));
+    final sign = find.byKey(const ValueKey('station-sign-N5-01'));
+    expect(tester.getTopLeft(first).dx, 76);
+    expect(tester.getTopRight(first).dx, 355);
+    expect(tester.getSize(first).height, 74);
+    expect(tester.getTopLeft(sign).dx, 93);
+    expect(tester.getSize(sign), const Size.square(48));
+    expect(
+      tester
+          .widget<CircularProgressIndicator>(
+            find.descendant(
+                of: sign, matching: find.byType(CircularProgressIndicator)),
+          )
+          .value,
+      1,
+    );
+    expect(_within(5, find.byKey(const ValueKey('station-train'))),
+        findsOneWidget);
+    expect(_within(5, find.text('추천')), findsOneWidget);
+    expect(find.text('관심 있는 역부터 자유롭게 학습해요'), findsNothing);
+    expect(find.text('레슨 5-1'), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('station-toggle-chapter-5')));
+    await tester.pumpAndSettle();
+    expect(find.text('레슨 5-1'), findsOneWidget);
+    final lesson = find.byKey(const ValueKey('station-lesson-lesson-5-1'));
+    expect(tester.getTopLeft(lesson).dx, 97);
+    expect(tester.getSize(lesson).height, closeTo(65, 1));
+    expect(find.text('일상 표현 · 5분'), findsNWidgets(2));
+    await tester.tap(lesson);
+    await tester.pumpAndSettle();
+    expect(find.text('Opened lesson-5-1'), findsOneWidget);
+  });
+
+  testWidgets('redesigned map fits expanded rows at 320px and double-size text',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(320, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await _pump(
+      tester,
+      [
+        _chapter(100, statuses: ['IN_PROGRESS', 'COMPLETED'], long: true)
+      ],
+      brightness: Brightness.dark,
+      textScale: 2,
+      redesigned: true,
+    );
+    await tester.tap(find.byKey(const ValueKey('station-toggle-chapter-100')));
+    await tester.pumpAndSettle();
+    expect(find.text('아주 긴 레슨 이름 주문하고 요청하는 표현'), findsNWidgets(2));
+    expect(find.text('5/5 정답'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final brightness in Brightness.values) {
     for (final width in [320.0, 375.0]) {
       for (final scale in [1.0, 2.0]) {
@@ -304,9 +387,14 @@ Finder _within(int chapter, Finder matching) => find.descendant(
       matching: matching,
     );
 
-Widget _list(List<ChapterModel> chapters) => LessonChapterList(
+Widget _list(List<ChapterModel> chapters, {bool redesigned = false}) =>
+    LessonChapterList(
       chapters: chapters,
       recommendedLessonId: findRecommendedLesson(chapters)?.lesson.id,
+      redesigned: redesigned,
+      padding: redesigned
+          ? const EdgeInsets.symmetric(horizontal: 20)
+          : const EdgeInsets.all(16),
     );
 
 Future<void> _pump(
@@ -315,6 +403,7 @@ Future<void> _pump(
   bool? enabled,
   Brightness brightness = Brightness.light,
   double textScale = 1,
+  bool redesigned = false,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
@@ -332,7 +421,8 @@ Future<void> _pump(
         home: MediaQuery(
           data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
           child: Scaffold(
-            body: SingleChildScrollView(child: _list(chapters)),
+            body: SingleChildScrollView(
+                child: _list(chapters, redesigned: redesigned)),
           ),
         ),
       ),

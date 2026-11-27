@@ -38,13 +38,20 @@ class QuizPageContent extends ConsumerWidget {
   final String exitLabel;
   static const _specialModeBuilder = QuizSpecialModeBuilder();
 
-  String get _headerTitle => session.resolvedMode == 'wrong_answer_review'
-      ? '이번 퀴즈의 오답 복습'
-      : session.resolvedMode == 'review'
-          ? '복습'
-          : session.resolvedMode == 'arrange'
-              ? '$jlptLevel 문장 배열'
-              : '$jlptLevel ${quizType == 'VOCABULARY' ? '단어' : '문법'} 퀴즈';
+  String get _headerTitle {
+    if (session.resolvedMode == 'wrong_answer_review') return '이번 퀴즈의 오답 복습';
+    if (session.resolvedMode == 'review') return '복습';
+    if (session.resolvedMode == 'arrange') return '$jlptLevel 문장 배열';
+    final category = switch (session.displayQuizType(quizType)) {
+      'VOCABULARY' => '단어',
+      'GRAMMAR' => '문법',
+      'KANJI' => '한자',
+      'LISTENING' => '리스닝',
+      'SENTENCE_ARRANGE' => '문장배열',
+      _ => '',
+    };
+    return '$jlptLevel $category퀴즈';
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -127,7 +134,8 @@ class QuizPageContent extends ConsumerWidget {
         context,
         QuizStandardModeContent(
           title: _headerTitle,
-          count: session.headerCount,
+          currentQuestion: session.currentIndex + 1,
+          totalQuestions: session.questions.length,
           question: question,
           progress: session.progress,
           streak: session.streak,

@@ -16,11 +16,13 @@ class LessonChapterList extends ConsumerWidget {
     required this.chapters,
     this.padding = const EdgeInsets.all(16),
     this.recommendedLessonId,
+    this.redesigned = false,
   });
 
   final List<ChapterModel> chapters;
   final EdgeInsetsGeometry padding;
   final String? recommendedLessonId;
+  final bool redesigned;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,6 +37,7 @@ class LessonChapterList extends ConsumerWidget {
       chapters: chapters,
       padding: padding,
       recommendedLessonId: recommendedLessonId,
+      redesigned: redesigned,
     );
   }
 }

@@ -13,6 +13,7 @@ from app.models.lesson import Lesson, UserLessonProgress
 from app.models.user import User
 from app.schemas.lesson import LessonContent
 from app.services import study_day_recording
+from app.services.lesson_recognition_feedback import recognition_feedback_version
 from app.services.lesson_study_activity import lesson_content_version
 from app.utils.helpers import enum_value
 
@@ -58,6 +59,7 @@ class LessonDetailData:
     grammar_items: list[GrammarItemData]
     progress: LessonProgressData | None
     activity_content_version: str | None = None
+    recognition_feedback_version: str | None = None
 
 
 def _serialize_progress(progress: UserLessonProgress | None) -> LessonProgressData | None:
@@ -160,6 +162,7 @@ async def get_lesson_detail_data(
         vocab_items=vocab_items,
         grammar_items=grammar_items,
         progress=progress,
+        recognition_feedback_version=recognition_feedback_version(lesson.updated_at),
         activity_content_version=(
             lesson_content_version(
                 content,

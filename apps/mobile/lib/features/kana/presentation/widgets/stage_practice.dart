@@ -8,6 +8,7 @@ class StagePractice extends StatelessWidget {
   final KanaCharacterModel character;
   final int currentIndex;
   final int totalCount;
+  final bool locked;
   final VoidCallback onKnow;
   final VoidCallback onDontKnow;
 
@@ -16,6 +17,7 @@ class StagePractice extends StatelessWidget {
     required this.character,
     required this.currentIndex,
     required this.totalCount,
+    this.locked = false,
     required this.onKnow,
     required this.onDontKnow,
   });
@@ -36,6 +38,7 @@ class StagePractice extends StatelessWidget {
               exampleWord: character.exampleWord,
               exampleReading: character.exampleReading,
               exampleMeaning: character.exampleMeaning,
+              locked: locked,
               onKnow: onKnow,
               onDontKnow: onDontKnow,
             ),

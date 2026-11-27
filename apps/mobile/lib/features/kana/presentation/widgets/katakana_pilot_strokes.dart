@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/sizes.dart';
 import '../../domain/katakana_pilot.dart';
+import '../../domain/katakana_textbook_example.dart';
 
 class KatakanaStrokeComparison extends StatefulWidget {
   const KatakanaStrokeComparison({
@@ -11,7 +12,7 @@ class KatakanaStrokeComparison extends StatefulWidget {
     this.showComparison = true,
   });
 
-  final KatakanaPilotLetter letter;
+  final KanaPracticeLetter letter;
   final bool showComparison;
 
   @override
@@ -36,9 +37,10 @@ class _KatakanaStrokeComparisonState extends State<KatakanaStrokeComparison>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final letters = widget.showComparison
-        ? widget.letter.comparisonLetters
-        : [widget.letter];
+    final letter = widget.letter;
+    final letters = widget.showComparison && letter is KatakanaPilotLetter
+        ? letter.comparisonLetters
+        : [letter];
     final showCuesBelow = letters.length > 2;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -76,7 +78,7 @@ class _KatakanaStrokeComparisonState extends State<KatakanaStrokeComparison>
   }
 
   Widget _diagram(
-    KatakanaPilotLetter letter,
+    KanaPracticeLetter letter,
     ThemeData theme, {
     required bool showCue,
   }) {
@@ -100,8 +102,7 @@ class _KatakanaStrokeComparisonState extends State<KatakanaStrokeComparison>
                   aspectRatio: 1,
                   child: CustomPaint(
                     painter: _StrokeDiagramPainter(
-                      paths: letter.strokes,
-                      numberPositions: letter.strokeNumberPositions,
+                      letter: letter,
                       colors: colors,
                       animation: _animation,
                     ),
@@ -109,7 +110,8 @@ class _KatakanaStrokeComparisonState extends State<KatakanaStrokeComparison>
                 ),
               ),
             ),
-            if (showCue) Text(letter.cue, style: theme.textTheme.bodyMedium),
+            if (showCue && letter.cue.isNotEmpty)
+              Text(letter.cue, style: theme.textTheme.bodyMedium),
           ],
         ),
       ),
@@ -122,10 +124,16 @@ class KatakanaRecallPad extends StatefulWidget {
     super.key,
     required this.onInkChanged,
     this.example,
+    this.initialStrokes = const [],
+    this.onStrokesChanged,
+    this.enabled = true,
   });
 
+  final List<List<Offset>> initialStrokes;
+  final ValueChanged<List<List<Offset>>>? onStrokesChanged;
+  final bool enabled;
   final ValueChanged<bool> onInkChanged;
-  final List<List<Offset>>? example;
+  final KanaPracticeLetter? example;
 
   @override
   State<KatakanaRecallPad> createState() => _KatakanaRecallPadState();
@@ -142,8 +150,20 @@ class _KatakanaRecallPadState extends State<KatakanaRecallPad>
   @override
   void initState() {
     super.initState();
+    _strokes.addAll(widget.initialStrokes.map((stroke) => [...stroke]));
     WidgetsBinding.instance.addObserver(this);
   }
+
+  @override
+  void didUpdateWidget(covariant KatakanaRecallPad oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.enabled) _cancelStroke();
+  }
+
+  void _notifyStrokes() => widget.onStrokesChanged?.call(
+        List.unmodifiable(
+            _strokes.map((stroke) => List<Offset>.unmodifiable(stroke))),
+      );
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -164,7 +184,7 @@ class _KatakanaRecallPadState extends State<KatakanaRecallPad>
       Offset(point.dx / side, point.dy / side);
 
   void _begin(PointerDownEvent event, double side) {
-    if (_pointer != null || widget.example != null) return;
+    if (!widget.enabled || _pointer != null || widget.example != null) return;
     _pointer = event.pointer;
     _active = [_normalized(event.localPosition, side)];
     _travel = 0;
@@ -192,12 +212,15 @@ class _KatakanaRecallPadState extends State<KatakanaRecallPad>
   void _finish(PointerUpEvent event) {
     if (event.pointer != _pointer) return;
     final wasEmpty = _strokes.isEmpty;
+    var added = false;
     // A tap or slight jitter should not count as a written stroke.
     if (_travel >= 0.025 && _strokes.length < 32) {
       setState(() => _strokes.add(_active!));
+      added = true;
     }
     _cancelStroke();
     if (wasEmpty && _strokes.isNotEmpty) widget.onInkChanged(true);
+    if (added) _notifyStrokes();
   }
 
   void _cancelStroke() {
@@ -218,6 +241,7 @@ class _KatakanaRecallPadState extends State<KatakanaRecallPad>
     });
     _redraw.value++;
     widget.onInkChanged(_strokes.isNotEmpty);
+    _notifyStrokes();
   }
 
   @override
@@ -292,14 +316,16 @@ class _KatakanaRecallPadState extends State<KatakanaRecallPad>
             alignment: WrapAlignment.center,
             children: [
               TextButton.icon(
-                onPressed:
-                    _strokes.isEmpty ? null : () => _editInk(clear: false),
+                onPressed: _strokes.isEmpty || !widget.enabled
+                    ? null
+                    : () => _editInk(clear: false),
                 icon: const Icon(Icons.undo),
                 label: const Text('한 획 지우기'),
               ),
               TextButton.icon(
-                onPressed:
-                    _strokes.isEmpty ? null : () => _editInk(clear: true),
+                onPressed: _strokes.isEmpty || !widget.enabled
+                    ? null
+                    : () => _editInk(clear: true),
                 icon: const Icon(Icons.refresh),
                 label: const Text('모두 지우기'),
               ),
@@ -313,7 +339,16 @@ class _KatakanaRecallPadState extends State<KatakanaRecallPad>
 Offset _scaled(Offset point, Size size) =>
     Offset(point.dx * size.width, point.dy * size.height);
 
-Path _path(List<Offset> points, Size size) {
+void _scaleTextbookExample(Canvas canvas, Size size) {
+  const inset = KatakanaTextbookExample.inset;
+  const scale =
+      KatakanaTextbookExample.fit / KatakanaTextbookExample.viewBoxSize;
+  canvas
+    ..translate(size.width * inset, size.height * inset)
+    ..scale(size.width * scale, size.height * scale);
+}
+
+Path _inkPath(List<Offset> points, Size size) {
   final first = _scaled(points.first, size);
   final path = Path()..moveTo(first.dx, first.dy);
   for (final point in points.skip(1)) {
@@ -321,6 +356,35 @@ Path _path(List<Offset> points, Size size) {
     path.lineTo(scaled.dx, scaled.dy);
   }
   return path;
+}
+
+Path _guidePath(List<Offset> points, Size size) {
+  final start = _scaled(points.first, size);
+  final path = Path()..moveTo(start.dx, start.dy);
+  for (var index = 1; index < points.length - 1; index++) {
+    final previous = points[index - 1];
+    final point = points[index];
+    final next = points[index + 1];
+    final incoming = point - previous;
+    final outgoing = next - point;
+    final dot = incoming.dx * outgoing.dx + incoming.dy * outgoing.dy;
+    final control = _scaled(point, size);
+
+    // Round small changes of direction in sampled curves. Keep turns of
+    // 60° or more as corners, such as the upper right bend of ア.
+    if (dot <= incoming.distance * outgoing.distance * 0.5) {
+      path.lineTo(control.dx, control.dy);
+      continue;
+    }
+
+    final entry = _scaled((previous + point) / 2, size);
+    final exit = _scaled((point + next) / 2, size);
+    path
+      ..lineTo(entry.dx, entry.dy)
+      ..quadraticBezierTo(control.dx, control.dy, exit.dx, exit.dy);
+  }
+  final end = _scaled(points.last, size);
+  return path..lineTo(end.dx, end.dy);
 }
 
 Paint _ink(Color color, double width) => Paint()
@@ -332,54 +396,81 @@ Paint _ink(Color color, double width) => Paint()
 
 class _StrokeDiagramPainter extends CustomPainter {
   _StrokeDiagramPainter({
-    required this.paths,
-    required this.numberPositions,
+    required this.letter,
     required this.colors,
     required this.animation,
-  }) : super(repaint: animation);
+  })  : _textbook = kanaTextbookExample(letter.glyph),
+        super(repaint: animation);
 
-  final List<List<Offset>> paths;
-  final List<Offset>? numberPositions;
+  final KanaPracticeLetter letter;
   final ColorScheme colors;
   final Animation<double> animation;
+  final KatakanaTextbookExample? _textbook;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final strokeWidth = size.shortestSide * 0.047;
-    final preview = _ink(colors.onSurface.withValues(alpha: 0.14), strokeWidth);
-    final ink = _ink(colors.onSurface, strokeWidth);
-    for (final (index, points) in paths.indexed) {
-      final path = _path(points, size);
-      final progress = (animation.value * paths.length - index).clamp(0.0, 1.0);
-      if (progress < 1) canvas.drawPath(path, preview);
-      if (progress == 1) {
-        canvas.drawPath(path, ink);
-      } else if (progress > 0) {
-        final metric = path.computeMetrics().first;
-        canvas.drawPath(metric.extractPath(0, metric.length * progress), ink);
+    final strokeWidth = size.shortestSide * 0.036;
+    final textbook = _textbook;
+    final practiceLetter = letter;
+    final fallback =
+        practiceLetter is KatakanaPilotLetter ? practiceLetter : null;
+    if (textbook != null) {
+      _paintTextbookStrokes(canvas, size, textbook);
+    } else if (fallback != null) {
+      final preview =
+          _ink(colors.onSurface.withValues(alpha: 0.14), strokeWidth);
+      final ink = _ink(colors.onSurface, strokeWidth);
+      for (final (index, points) in fallback.strokes.indexed) {
+        final path = _guidePath(points, size);
+        final progress = _strokeProgress(index, fallback.strokes.length);
+        if (progress < 1) canvas.drawPath(path, preview);
+        if (progress == 1) {
+          canvas.drawPath(path, ink);
+        } else if (progress > 0) {
+          final metric = path.computeMetrics().first;
+          canvas.drawPath(metric.extractPath(0, metric.length * progress), ink);
+        }
       }
     }
 
-    final radius = (size.shortestSide * 0.059).clamp(4.0, 9.0);
-    for (final (index, points) in paths.indexed) {
-      final start = _scaled(points.first, size);
-      final numberPosition = _scaled(
-        numberPositions?[index] ?? points.first,
+    final radius = (size.shortestSide * 0.048).clamp(4.5, 7.0);
+    final leader = Paint()
+      ..color = colors.onSurface.withValues(alpha: 0.36)
+      ..strokeWidth = 1;
+    final badgeFill = Paint()..color = colors.surfaceContainerLowest;
+    final badgeOutline = Paint()
+      ..color = colors.onSurface.withValues(alpha: 0.30)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    final startInk = Paint()..color = colors.primary;
+    final strokeCount =
+        textbook?.strokes.length ?? fallback?.strokes.length ?? 0;
+    for (var index = 0; index < strokeCount; index++) {
+      final textbookStroke = textbook?.strokes[index];
+      final start = _scaled(
+        textbookStroke == null
+            ? fallback!.strokes[index].first
+            : KatakanaTextbookExample.unitPosition(textbookStroke.start),
         size,
       );
-      final markerInk = Paint()..color = colors.onSurface;
-      if (numberPosition != start) {
-        canvas.drawLine(start, numberPosition, markerInk..strokeWidth = 1);
-        canvas.drawCircle(start, 1.5, markerInk);
-      }
-      canvas.drawCircle(numberPosition, radius, markerInk);
+      final numberPosition = _scaled(
+        textbookStroke == null
+            ? fallback!.strokeNumberPositions[index]
+            : KatakanaTextbookExample.unitPosition(
+                textbookStroke.numberPosition),
+        size,
+      );
+      canvas.drawLine(start, numberPosition, leader);
+      canvas.drawCircle(start, (strokeWidth * 0.32).clamp(1.0, 1.8), startInk);
+      canvas.drawCircle(numberPosition, radius, badgeFill);
+      canvas.drawCircle(numberPosition, radius, badgeOutline);
       final number = TextPainter(
         text: TextSpan(
           text: '${index + 1}',
           style: TextStyle(
-            color: colors.surface,
+            color: colors.onSurface,
             fontSize: radius * 1.45,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
           ),
         ),
         textDirection: TextDirection.ltr,
@@ -392,10 +483,48 @@ class _StrokeDiagramPainter extends CustomPainter {
     }
   }
 
+  double _strokeProgress(int index, int strokeCount) =>
+      (animation.value * strokeCount - index).clamp(0.0, 1.0);
+
+  void _paintTextbookStrokes(
+    Canvas canvas,
+    Size size,
+    KatakanaTextbookExample textbook,
+  ) {
+    final fill = Paint()..color = colors.onSurface;
+    canvas.save();
+    _scaleTextbookExample(canvas, size);
+    if (animation.isCompleted) {
+      canvas.drawPath(textbook.silhouette, fill);
+      canvas.restore();
+      return;
+    }
+
+    final preview = Paint()..color = colors.onSurface.withValues(alpha: 0.14);
+    final brush =
+        _ink(colors.onSurface, KatakanaTextbookExample.replayBrushWidth);
+    canvas.drawPath(textbook.silhouette, preview);
+    for (final (index, stroke) in textbook.strokes.indexed) {
+      final progress = _strokeProgress(index, textbook.strokes.length);
+      if (progress == 1) {
+        canvas.drawPath(stroke.outline, fill);
+      } else if (progress > 0) {
+        for (final part in stroke.parts) {
+          final replay = part.replay;
+          canvas.save();
+          canvas.clipPath(part.outline);
+          canvas.drawPath(
+              replay.extractPath(0, replay.length * progress), brush);
+          canvas.restore();
+        }
+      }
+    }
+    canvas.restore();
+  }
+
   @override
   bool shouldRepaint(_StrokeDiagramPainter oldDelegate) =>
-      oldDelegate.paths != paths ||
-      oldDelegate.numberPositions != numberPositions ||
+      oldDelegate.letter != letter ||
       oldDelegate.colors != colors ||
       oldDelegate.animation != animation;
 }
@@ -407,32 +536,45 @@ class _RecallPainter extends CustomPainter {
     required this.activeStroke,
     required this.example,
     required this.redraw,
-  }) : super(repaint: redraw);
+  })  : _textbookSilhouette = example == null
+            ? null
+            : kanaTextbookExample(example.glyph)?.silhouette,
+        super(repaint: redraw);
 
   final ColorScheme colors;
   final List<List<Offset>> strokes;
   final List<Offset>? Function() activeStroke;
-  final List<List<Offset>>? example;
+  final KanaPracticeLetter? example;
   final Listenable redraw;
+  final Path? _textbookSilhouette;
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
-    final guide = Paint()..color = colors.outline;
+    final guide = Paint()..color = colors.outline.withValues(alpha: 0.65);
     canvas.drawLine(
         Offset(center.dx, 0), Offset(center.dx, size.height), guide);
     canvas.drawLine(Offset(0, center.dy), Offset(size.width, center.dy), guide);
     final width = size.shortestSide * 0.022;
-    final sampleInk = _ink(colors.primary.withValues(alpha: 0.66), width * 1.8);
-    for (final stroke in example ?? const <List<Offset>>[]) {
-      canvas.drawPath(_path(stroke, size), sampleInk);
+    final sampleColor = colors.primary.withValues(alpha: 0.62);
+    final silhouette = _textbookSilhouette;
+    if (silhouette != null) {
+      canvas.save();
+      _scaleTextbookExample(canvas, size);
+      canvas.drawPath(silhouette, Paint()..color = sampleColor);
+      canvas.restore();
+    } else if (example case final KatakanaPilotLetter letter) {
+      final sampleInk = _ink(sampleColor, width * 1.25);
+      for (final stroke in letter.strokes) {
+        canvas.drawPath(_guidePath(stroke, size), sampleInk);
+      }
     }
     final userInk = _ink(colors.onSurface, width);
     for (final stroke in strokes) {
-      canvas.drawPath(_path(stroke, size), userInk);
+      canvas.drawPath(_inkPath(stroke, size), userInk);
     }
     final active = activeStroke();
-    if (active != null) canvas.drawPath(_path(active, size), userInk);
+    if (active != null) canvas.drawPath(_inkPath(active, size), userInk);
   }
 
   @override

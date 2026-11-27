@@ -35,8 +35,8 @@ void main() {
       expect(setup['model'], 'gemini-live');
       expect(generationConfig['responseModalities'], ['AUDIO']);
       expect(
-        activityDetection['startOfSpeechSensitivity'],
-        'START_SENSITIVITY_HIGH',
+        activityDetection.containsKey('startOfSpeechSensitivity'),
+        isFalse,
       );
       expect(
         activityDetection['endOfSpeechSensitivity'],
@@ -51,7 +51,12 @@ void main() {
         isNot(contains('END_SENSITIVITY_MEDIUM')),
       );
       expect(activityDetection['silenceDurationMs'], 1200);
+      expect(activityDetection['prefixPaddingMs'], 200);
       expect(realtimeConfig['activityHandling'], 'NO_INTERRUPTION');
+      expect(setup['inputAudioTranscription'], {
+        'languageCodes': ['ja-JP', 'ko-KR'],
+      });
+      expect(setup['outputAudioTranscription'], isEmpty);
       expect(setup['sessionResumption'], {'handle': 'resume-1'});
       final instruction =
           (parts.first as Map<String, dynamic>)['text'] as String;

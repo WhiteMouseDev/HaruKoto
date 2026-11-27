@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/sizes.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/quiz_question_model.dart';
 
-class FourChoiceQuiz extends StatefulWidget {
-  final QuizQuestionModel question;
-  final String? selectedOptionId;
-  final bool answered;
-  final bool isCorrect;
-  final bool showFurigana;
-  final ValueChanged<String> onSelect;
+const _correct = Color(0xFF00C853);
+const _wrong = Color(0xFFD32F2F);
 
+class FourChoiceQuiz extends StatefulWidget {
   const FourChoiceQuiz({
     super.key,
     required this.question,
+    required this.questionNumber,
     this.selectedOptionId,
     this.answered = false,
     this.isCorrect = false,
@@ -21,14 +21,22 @@ class FourChoiceQuiz extends StatefulWidget {
     required this.onSelect,
   });
 
+  final QuizQuestionModel question;
+  final int questionNumber;
+  final String? selectedOptionId;
+  final bool answered;
+  final bool isCorrect;
+  final bool showFurigana;
+  final ValueChanged<String> onSelect;
+
   @override
   State<FourChoiceQuiz> createState() => _FourChoiceQuizState();
 }
 
 class _FourChoiceQuizState extends State<FourChoiceQuiz>
     with SingleTickerProviderStateMixin {
-  late AnimationController _shakeController;
-  late Animation<double> _shakeAnimation;
+  late final AnimationController _shakeController;
+  late final Animation<double> _shakeAnimation;
 
   @override
   void initState() {
@@ -52,8 +60,10 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
   @override
   void didUpdateWidget(FourChoiceQuiz oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Trigger shake when wrong answer is revealed
-    if (widget.answered && !oldWidget.answered && !widget.isCorrect) {
+    if (widget.answered &&
+        !oldWidget.answered &&
+        !widget.isCorrect &&
+        !MediaQuery.disableAnimationsOf(context)) {
       _shakeController.forward(from: 0);
     }
   }
@@ -67,135 +77,179 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final brightness = theme.brightness;
+    final light = theme.brightness == Brightness.light;
+    final foreground =
+        light ? AppColors.redesignForeground : theme.colorScheme.onSurface;
+    final accent = light ? AppColors.brandPink : AppColors.sakuraContainer;
+    final reading = widget.question.questionSubText;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Question
-        Expanded(
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  widget.question.questionText,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
+        Center(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(500),
+              color: light
+                  ? AppColors.redesignVocabulary
+                  : theme.colorScheme.surfaceContainerHigh,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              child: Text(
+                'Q${widget.questionNumber}',
+                style: TextStyle(
+                  fontFamily: redesignFontFamily,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  height: 1.35,
+                  letterSpacing: -0.3,
+                  color: light ? Colors.white : accent,
                 ),
-                if (widget.showFurigana &&
-                    widget.question.questionSubText != null &&
-                    widget.question.questionSubText !=
-                        widget.question.questionText) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    widget.question.questionSubText!,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 8),
-                TtsPlayButton(
-                  vocabId: widget.question.questionId,
-                ),
-              ],
+              ),
             ),
           ),
         ),
+        const SizedBox(height: AppSizes.lg),
+        Text(
+          widget.question.questionText,
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontFamily: redesignJapaneseFontFamily,
+            fontSize: 28,
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+            letterSpacing: -0.7,
+            color: foreground,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        if (widget.showFurigana &&
+            reading != null &&
+            reading != widget.question.questionText) ...[
+          const SizedBox(height: 3.2),
+          Text(
+            reading,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontFamily: redesignJapaneseFontFamily,
+              fontSize: 12,
+              height: 1.4,
+              letterSpacing: -0.3,
+              color: light
+                  ? const Color(0xFF767676)
+                  : theme.colorScheme.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+        const SizedBox(height: 2),
+        Center(
+          child: TtsPlayButton(
+            vocabId: widget.question.questionId,
+            iconSize: 22,
+            iconColor: accent,
+          ),
+        ),
+        const SizedBox(height: 9),
+        Column(
+          spacing: 6,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (final option in widget.question.options)
+              _buildOption(context, option),
+          ],
+        ),
+      ],
+    );
+  }
 
-        // Options
-        ...List.generate(widget.question.options.length, (i) {
-          final option = widget.question.options[i];
-          final isSelected = widget.selectedOptionId == option.id;
-          final isCorrectOption = option.id == widget.question.correctOptionId;
+  Widget _buildOption(BuildContext context, QuizOption option) {
+    final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
+    final selected = widget.selectedOptionId == option.id;
+    final correct =
+        widget.answered && option.id == widget.question.correctOptionId;
+    final wrong = widget.answered && selected && !correct;
+    final stateColor = correct
+        ? light
+            ? _correct
+            : AppColors.quizCorrectTextDark
+        : wrong
+            ? light
+                ? _wrong
+                : AppColors.quizWrongTextDark
+            : null;
+    final accent = stateColor ?? (selected ? AppColors.brandPink : null);
+    final onSelect = widget.answered ? null : () => widget.onSelect(option.id);
+    final semanticsLabel = correct
+        ? '${option.text}, 정답'
+        : wrong
+            ? '${option.text}, 선택한 오답'
+            : option.text;
 
-          Color borderColor = theme.colorScheme.outline;
-          Color? bgColor;
-
-          if (widget.answered) {
-            if (isCorrectOption) {
-              borderColor = AppColors.success(brightness);
-              bgColor = AppColors.success(brightness).withValues(alpha: 0.1);
-            } else if (isSelected && !isCorrectOption) {
-              borderColor = AppColors.error(brightness);
-              bgColor = AppColors.error(brightness).withValues(alpha: 0.1);
-            } else {
-              borderColor = theme.colorScheme.outline.withValues(alpha: 0.4);
-            }
-          } else if (isSelected) {
-            borderColor = theme.colorScheme.primary;
-            bgColor = theme.colorScheme.primary.withValues(alpha: 0.05);
-          }
-
-          Widget tile = Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Material(
-              color: bgColor ?? Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap:
-                    widget.answered ? null : () => widget.onSelect(option.id),
-                child: Container(
+    final tile = Semantics(
+      container: true,
+      label: semanticsLabel,
+      button: true,
+      enabled: onSelect != null,
+      selected: selected,
+      onTap: onSelect,
+      excludeSemantics: true,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(500),
+          onTap: onSelect,
+          excludeFromSemantics: true,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 3),
+            child: Ink(
+              decoration: BoxDecoration(
+                color: stateColor?.withValues(alpha: 0.08) ??
+                    theme.colorScheme.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(500),
+                border: Border.all(
+                  color: accent ??
+                      (light
+                          ? AppColors.redesignOutline
+                          : theme.colorScheme.outline),
+                ),
+              ),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 40),
+                child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: borderColor, width: 2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 28,
-                        height: 28,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHigh,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${i + 1}',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Center(
+                    child: Text(
+                      option.text,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontFamily: redesignFontFamily,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        height: 1.4,
+                        letterSpacing: -0.35,
+                        color: light
+                            ? AppColors.redesignForeground
+                            : theme.colorScheme.onSurface,
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          option.text,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ),
             ),
-          );
-
-          // Wrap wrong selected option with shake animation
-          if (isSelected && !isCorrectOption && widget.answered) {
-            tile = AnimatedBuilder(
-              animation: _shakeAnimation,
-              builder: (context, child) {
-                return Transform.translate(
-                  offset: Offset(_shakeAnimation.value, 0),
-                  child: child,
-                );
-              },
-              child: tile,
-            );
-          }
-
-          return tile;
-        }),
-      ],
+          ),
+        ),
+      ),
+    );
+    if (!wrong) return tile;
+    return AnimatedBuilder(
+      animation: _shakeAnimation,
+      builder: (context, child) => Transform.translate(
+        offset: Offset(_shakeAnimation.value, 0),
+        child: child,
+      ),
+      child: tile,
     );
   }
 }

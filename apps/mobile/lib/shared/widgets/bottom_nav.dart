@@ -1,164 +1,110 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+
 import '../../core/constants/colors.dart';
 import '../../core/services/haptic_service.dart';
-import '../../core/theme/haru_semantic_colors.dart';
+import '../../core/theme/text_theme.dart';
 
 class BottomNav extends StatelessWidget {
-  final int currentIndex;
-  final ValueChanged<int> onTap;
-
   const BottomNav({
     super.key,
     required this.currentIndex,
     required this.onTap,
   });
 
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
   static const _tabs = [
-    _TabData(svgPath: 'assets/icons/ic_home.svg', label: '홈'),
-    _TabData(svgPath: 'assets/icons/ic_book.svg', label: '학습'),
-    _TabData(svgPath: 'assets/icons/ic_note.svg', label: '퀴즈'),
-    _TabData(
-        svgPath: 'assets/icons/ic_messages.svg', label: '실전회화', isBeta: true),
-    _TabData(svgPath: 'assets/icons/ic_user.svg', label: 'MY'),
+    (icon: 'home', label: '홈'),
+    (icon: 'study', label: '학습'),
+    (icon: 'quiz', label: '퀴즈'),
+    (icon: 'conversation', label: '실전회화'),
+    (icon: 'profile', label: '마이페이지'),
   ];
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final semantic = HaruSemanticColors.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final bgColor = (isDark ? AppColors.darkCard : AppColors.lightBackground)
-        .withValues(alpha: 0.95);
-    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final surface = theme.colorScheme.surfaceContainerLowest;
+    final active = isDark ? AppColors.darkText : const Color(0xFF2A2A37);
+    final activeText =
+        isDark ? AppColors.darkText : AppColors.redesignForeground;
+    final inactive = isDark ? AppColors.darkSubtext : const Color(0xFFA5A5AF);
+    final inactiveText =
+        isDark ? AppColors.darkSubtext : const Color(0xFF767676);
 
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-        child: Container(
-          decoration: BoxDecoration(
-            color: bgColor,
-            border: Border(top: BorderSide(color: borderColor, width: 1)),
-          ),
-          child: SafeArea(
-            top: false,
-            child: SizedBox(
-              height: 64,
-              child: Row(
-                children: List.generate(_tabs.length, (i) {
-                  final tab = _tabs[i];
-                  final isActive = i == currentIndex;
-                  return Expanded(
-                    child: Semantics(
-                      label: '${tab.label} 탭',
-                      button: true,
-                      selected: isActive,
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          HapticService().selection();
-                          onTap(i);
-                        },
-                        child: _TabItem(
-                          tab: tab,
-                          isActive: isActive,
-                          activeColor: semantic.tabActive,
-                          inactiveColor: semantic.tabInactive,
+    return Material(
+      color: surface,
+      elevation: 3,
+      shadowColor: Colors.black12,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Row(
+            children: [
+              for (final (index, tab) in _tabs.indexed)
+                Expanded(
+                  child: Semantics(
+                    label: '${tab.label} 탭',
+                    button: true,
+                    selected: index == currentIndex,
+                    excludeSemantics: true,
+                    onTap: () => _select(index),
+                    child: InkWell(
+                      onTap: () => _select(index),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 56),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 10, bottom: 6),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox.square(
+                                dimension: 20,
+                                child: Image.asset(
+                                  'assets/icons/home-nav-${tab.icon}.png',
+                                  fit: BoxFit.contain,
+                                  color:
+                                      index == currentIndex ? active : inactive,
+                                  excludeFromSemantics: true,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                tab.label,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: redesignFontFamily,
+                                  fontSize: 11,
+                                  height: 1.4,
+                                  letterSpacing: -0.275,
+                                  fontWeight: index == currentIndex
+                                      ? FontWeight.w600
+                                      : FontWeight.w500,
+                                  color: index == currentIndex
+                                      ? activeText
+                                      : inactiveText,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  );
-                }),
-              ),
-            ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
     );
   }
-}
 
-class _TabData {
-  final String svgPath;
-  final String label;
-  final bool isBeta;
-
-  const _TabData({
-    required this.svgPath,
-    required this.label,
-    this.isBeta = false,
-  });
-}
-
-class _TabItem extends StatelessWidget {
-  final _TabData tab;
-  final bool isActive;
-  final Color activeColor;
-  final Color inactiveColor;
-
-  const _TabItem({
-    required this.tab,
-    required this.isActive,
-    required this.activeColor,
-    required this.inactiveColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isActive ? activeColor : inactiveColor;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            AnimatedScale(
-              scale: isActive ? 1.15 : 1.0,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOut,
-              child: SvgPicture.asset(
-                tab.svgPath,
-                width: 22,
-                height: 22,
-                colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-              ),
-            ),
-            if (tab.isBeta)
-              const Positioned(
-                top: -4,
-                right: -8,
-                child: Icon(
-                  LucideIcons.flaskConical,
-                  size: 10,
-                  color: AppColors.primary,
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Text(
-          tab.label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-            color: color,
-          ),
-        ),
-        const SizedBox(height: 3),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          width: 6,
-          height: 6,
-          decoration: BoxDecoration(
-            color: isActive ? activeColor : Colors.transparent,
-            shape: BoxShape.circle,
-          ),
-        ),
-      ],
-    );
+  void _select(int index) {
+    HapticService().selection();
+    onTap(index);
   }
 }

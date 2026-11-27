@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import Field
 
-from app.schemas.common import CamelModel
+from app.schemas.common import CamelModel, omit_schema_default
 
 
 class LearnedWordEntry(CamelModel):
@@ -62,6 +62,7 @@ class StudyWrongAnswersResponse(CamelModel):
     page: int
     total_pages: int
     summary: StudyWrongAnswersSummary
+    supports_search_and_status: bool = Field(default=True, json_schema_extra=omit_schema_default)
 
 
 class StudyStageUserProgress(CamelModel):

@@ -1,181 +1,180 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
 import 'package:harukoto_mobile/features/home/presentation/widgets/weekly_chart.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+
+final _today = DateTime.utc(2026, 11, 5);
 
 void main() {
-  testWidgets('explicit no-study day can show recovered XP without attendance',
+  testWidgets('shows Monday to Sunday and scales exactly by total questions',
       (tester) async {
-    final semantics = tester.ensureSemantics();
-    await _pumpChart(tester, [
-      WeeklyStatEntry.fromJson({
-        'date': '2026-11-03',
-        'hasStudied': false,
-        'vocabularyAnsweredCount': 0,
-        'wordsStudied': 10,
-        'xpEarned': 100,
-      }),
-    ]);
-    expect(find.text('단어 0개 · XP 100', findRichText: true), findsOneWidget);
-    expect(_activity('2026-11-03'), findsNothing);
-    expect(tester.getSize(_bar('2026-11-03')).height, 0);
-    expect(
-        find.bySemanticsLabel('2026-11-03, 학습 기록 없음, 단어 0개'), findsOneWidget);
-    semantics.dispose();
-  });
-  testWidgets('one saved wrong answer fills a bar before quiz completion',
-      (tester) async {
-    // No completed words or XP: the server includes the saved wrong answer.
-    await _pumpChart(tester, [
-      _entry('2026-11-02', answered: 1, studied: true),
-    ]);
+    await _pumpChart(
+      tester,
+      questionStats: _week({
+        2: (20, 0, 0, true),
+        3: (60, 30, 10, true),
+        4: (0, 0, 0, false),
+        5: (0, 4, 0, true),
+        7: (800, 1, 1, true),
+      }).reversed.toList(),
+    );
 
-    expect(find.text('이번 주 학습 기록이 아직 없어요'), findsNothing);
-    expect(find.text('단어 1개 · XP 0', findRichText: true), findsOneWidget);
-    expect(tester.getSize(_bar('2026-11-02')).height, closeTo(5, 0.01));
-    expect(_activity('2026-11-02'), findsOneWidget);
-    expect(find.byIcon(LucideIcons.check), findsNothing);
-    expect(find.text('일별 저장 단어 합계 · 점은 학습한 날'), findsOneWidget);
-  });
-
-  testWidgets(
-      'non-vocabulary study shows activity without inventing a word bar',
-      (tester) async {
-    final semantics = tester.ensureSemantics();
-    await _pumpChart(tester, [
-      _entry('2026-10-31', answered: 0),
-      _entry('2026-11-01', answered: 0, studied: true),
-      _entry('2026-11-02', answered: 0),
-    ]);
-
-    expect(find.text('이번 주 학습 기록이 아직 없어요'), findsNothing);
-    expect(find.text('단어 0개 · XP 0', findRichText: true), findsOneWidget);
-    expect(_activity('2026-11-01'), findsOneWidget);
-    expect(_activity('2026-10-31'), findsNothing);
-    expect(_activity('2026-11-02'), findsNothing);
-    for (final date in ['2026-10-31', '2026-11-01', '2026-11-02']) {
-      expect(tester.getSize(_bar(date)).height, 0);
+    final monday = tester.getRect(_bar('2026-11-02'));
+    final tuesday = tester.getRect(_bar('2026-11-03'));
+    expect(monday.left, lessThan(tuesday.left));
+    expect(tuesday.height, closeTo(monday.height * 5, 0.02));
+    expect(monday.bottom, closeTo(tuesday.bottom, 0.02));
+    final segments = find.descendant(
+      of: _bar('2026-11-03'),
+      matching: find.byType(ColoredBox),
+    );
+    expect(segments, findsNWidgets(3));
+    for (var index = 0; index < 3; index++) {
+      expect(tester.getSize(segments.at(index)).width, tuesday.width);
     }
-    expect(
-        find.bySemanticsLabel('2026-11-01, 학습 기록 있음, 단어 0개'), findsOneWidget);
-    semantics.dispose();
+    expect(_bar('2026-11-07'), findsNothing);
+    expect(_zero('2026-11-04'), findsOneWidget);
+    expect(_zero('2026-11-06'), findsNothing);
+    expect(find.text('11.2~11.8'), findsOneWidget);
+    expect(find.text('124개'), findsOneWidget);
+    expect(find.text('3일'), findsOneWidget);
+    expect(find.textContaining('목표'), findsNothing);
+    expect(find.textContaining('XP'), findsNothing);
+
+    await tester.tap(_day('2026-11-03'));
+    await tester.pumpAndSettle();
+    expect(find.text('11월 3일 (화) · 100문제'), findsOneWidget);
+    expect(find.text('단어 60 · 문법 30 · 문장배열 10'), findsOneWidget);
+
+    await tester.tap(_day('2026-11-04'));
+    await tester.pumpAndSettle();
+    expect(find.text('11월 4일 (수) · 0문제'), findsOneWidget);
+    expect(find.text('11월 3일 (화) · 100문제'), findsNothing);
   });
 
-  testWidgets('known zero uses saved answers instead of completed word count',
+  testWidgets('keeps the panel size when data, loading, or error changes',
       (tester) async {
-    await _pumpChart(tester, [
-      _entry('2026-11-02', answered: 0, completed: 8, studied: true, xp: 40),
-    ]);
-    expect(find.text('단어 0개 · XP 40', findRichText: true), findsOneWidget);
-    expect(tester.getSize(_bar('2026-11-02')).height, 0);
-    expect(_activity('2026-11-02'), findsOneWidget);
-    expect(find.textContaining('완료 기준'), findsNothing);
-  });
-
-  testWidgets(
-      'older and mixed responses clearly retain completed-word fallback',
-      (tester) async {
-    final oldEntry = WeeklyStatEntry.fromJson({
-      'date': '2026-11-01',
-      'wordsStudied': 4,
-      'xpEarned': 20,
-    });
-    await _pumpChart(tester, [oldEntry]);
-    expect(find.text('단어 4개 · XP 20', findRichText: true), findsOneWidget);
-    expect(tester.getSize(_bar('2026-11-01')).height, closeTo(20, 0.01));
-    expect(find.text('완료 기준 단어 수 포함 · 점은 학습한 날'), findsOneWidget);
-
-    await _pumpChart(tester, [
-      oldEntry,
-      _entry('2026-11-02', answered: 1, completed: 9, studied: true),
-    ]);
-    expect(find.text('단어 5개 · XP 20', findRichText: true), findsOneWidget);
-    expect(tester.getSize(_bar('2026-11-02')).height, closeTo(5, 0.01));
-    expect(find.text('완료 기준 단어 수 포함 · 점은 학습한 날'), findsOneWidget);
-  });
-
-  testWidgets('genuinely empty days show the empty state', (tester) async {
-    await _pumpChart(tester, [
-      _entry('2026-11-01', answered: 0),
-      _entry('2026-11-02', answered: 0),
-    ]);
+    await _pumpChart(tester, questionStats: _week({}));
+    final chartHeight = tester.getSize(find.byType(WeeklyChart)).height;
     expect(find.text('이번 주 학습 기록이 아직 없어요'), findsOneWidget);
-    expect(find.text('오늘 단어 1개만 학습해도 그래프가 채워져요'), findsOneWidget);
+    expect(find.text('오늘 단어 1개만 학습해도 그래프가 채워져요!'), findsOneWidget);
+    expect(find.text('0개'), findsOneWidget);
+    expect(find.text('0일'), findsOneWidget);
+    final emptyMessage =
+        tester.widget<Text>(find.text('이번 주 학습 기록이 아직 없어요')).style!;
+    expect(emptyMessage.fontSize, 14);
+    expect(emptyMessage.fontWeight, FontWeight.w500);
+    expect(emptyMessage.letterSpacing, closeTo(-0.35, 0.001));
+    expect(emptyMessage.height, 1.5);
+
+    await _pumpChart(tester, isLoading: true);
+    expect(find.text('주간 학습 기록을 불러오는 중이에요'), findsOneWidget);
+    expect(find.text('—'), findsNWidgets(2));
+    expect(tester.getSize(find.byType(WeeklyChart)).height, chartHeight);
+
+    await _pumpChart(tester, hasError: true);
+    expect(find.text('주간 학습 기록을 불러오지 못했어요'), findsOneWidget);
+    expect(find.text('—'), findsNWidgets(2));
+    expect(tester.getSize(find.byType(WeeklyChart)).height, chartHeight);
+
+    await _pumpChart(
+      tester,
+      questionStats: _week({2: (4, 0, 0, true)}),
+    );
+    expect(tester.getSize(find.byType(WeeklyChart)).height, chartHeight);
+  });
+
+  testWidgets('non-quiz study counts only as a study day', (tester) async {
+    await _pumpChart(tester, questionStats: _week({3: (0, 0, 0, true)}));
+    expect(find.text('이번 주 문제풀이 기록은 아직 없어요'), findsOneWidget);
+    expect(find.text('0개'), findsOneWidget);
+    expect(find.text('1일'), findsOneWidget);
+    expect(_bar('2026-11-03'), findsNothing);
+  });
+
+  testWidgets('legacy reports never become three-category data',
+      (tester) async {
+    await _pumpChart(
+      tester,
+      weeklyStats: [
+        for (var day = 2; day <= 5; day++)
+          WeeklyStatEntry(
+            date: '2026-11-0$day',
+            wordsStudied: 8,
+            xpEarned: 40,
+            vocabularyAnsweredCount: 8,
+            hasStudied: day == 2,
+          ),
+      ],
+    );
+
+    expect(find.text('주간 문제풀이 기록을 확인할 수 없어요'), findsOneWidget);
+    expect(find.text('—'), findsOneWidget);
+    expect(find.text('1일'), findsOneWidget);
+    expect(find.text('0개'), findsNothing);
     expect(_bar('2026-11-02'), findsNothing);
-    expect(_activity('2026-11-02'), findsNothing);
-
-    await _pumpChart(tester, [_entry('2026-11-02')]);
-    expect(find.text('학습을 마치면 완료 기준 기록이 표시돼요'), findsOneWidget);
   });
 
-  testWidgets('word bars and goal use the same scale above and below the goal',
-      (tester) async {
-    await _pumpChart(tester, [
-      _entry('2026-10-31', answered: 1),
-      _entry('2026-11-01', answered: 20),
-      _entry('2026-11-02', answered: 40),
-    ]);
-    expect(find.text('목표 20개'), findsOneWidget);
-    final small = tester.getRect(_bar('2026-10-31'));
-    final goal = tester.getRect(_bar('2026-11-01'));
-    final above = tester.getRect(_bar('2026-11-02'));
-    final line =
-        tester.getTopLeft(find.byKey(const ValueKey('weekly-goal-line')));
-    expect(small.height, closeTo(goal.height / 20, 0.01));
-    expect(above.height, closeTo(goal.height * 2, 0.01));
-    expect(line.dy, closeTo(goal.top, 0.01));
-    expect(small.bottom, closeTo(above.bottom, 0.01));
-    expect(find.byIcon(LucideIcons.check), findsNWidgets(2));
-    expect(tester.takeException(), isNull);
+  testWidgets('details opens learning statistics', (tester) async {
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => Scaffold(
+            body: WeeklyChart(weeklyStats: const [], studyDate: _today),
+          ),
+        ),
+        GoRoute(
+          path: '/stats',
+          builder: (context, state) => const Scaffold(body: Text('학습 통계 화면')),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(MaterialApp.router(
+      routerConfig: router,
+      theme: ThemeData(splashFactory: NoSplash.splashFactory),
+    ));
 
-    await _pumpChart(tester, [_entry('2026-11-02', answered: 1)],
-        dailyGoal: 100);
-    expect(tester.getSize(_bar('2026-11-02')).height, closeTo(1, 0.01));
-    expect(find.text('목표 100개'), findsOneWidget);
-  });
-
-  testWidgets('saved counts do not create attendance marks or reorder dates',
-      (tester) async {
-    await _pumpChart(tester, [
-      _entry('2026-11-02', answered: 1),
-      _entry('2026-10-30', answered: 2),
-    ]);
-    expect(find.text('이번 주 학습 기록이 아직 없어요'), findsNothing);
-    expect(_activity('2026-11-02'), findsNothing);
-    expect(_activity('2026-10-30'), findsNothing);
-    expect(tester.getTopLeft(_bar('2026-11-02')).dx,
-        lessThan(tester.getTopLeft(_bar('2026-10-30')).dx));
+    await tester.tap(find.text('학습 통계 자세히 보기'));
+    await tester.pumpAndSettle();
+    expect(find.text('학습 통계 화면'), findsOneWidget);
   });
 }
 
-Finder _bar(String date) => find.byKey(ValueKey('weekly-word-bar-$date'));
-Finder _activity(String date) => find.byKey(ValueKey('weekly-activity-$date'));
+Finder _day(String date) => find.byKey(ValueKey('weekly-day-$date'));
+Finder _bar(String date) => find.byKey(ValueKey('weekly-question-bar-$date'));
+Finder _zero(String date) => find.byKey(ValueKey('weekly-zero-bar-$date'));
 
-WeeklyStatEntry _entry(
-  String date, {
-  int? answered,
-  int completed = 0,
-  bool studied = false,
-  int xp = 0,
-}) =>
-    WeeklyStatEntry(
-      date: date,
-      wordsStudied: completed,
-      xpEarned: xp,
-      hasStudied: studied,
-      vocabularyAnsweredCount: answered,
-    );
+List<WeeklyQuestionStatEntry> _week(Map<int, (int, int, int, bool)> counts) => [
+      for (var day = 2; day <= 8; day++)
+        WeeklyQuestionStatEntry(
+          date: '2026-11-0$day',
+          vocabularyAnsweredCount: counts[day]?.$1 ?? 0,
+          grammarAnsweredCount: counts[day]?.$2 ?? 0,
+          sentenceArrangeAnsweredCount: counts[day]?.$3 ?? 0,
+          hasStudied: counts[day]?.$4 ?? false,
+        ),
+    ];
 
 Future<void> _pumpChart(
-  WidgetTester tester,
-  List<WeeklyStatEntry> entries, {
-  int dailyGoal = 20,
+  WidgetTester tester, {
+  List<WeeklyStatEntry> weeklyStats = const [],
+  List<WeeklyQuestionStatEntry>? questionStats,
+  bool isLoading = false,
+  bool hasError = false,
 }) async {
   await tester.pumpWidget(MaterialApp(
     home: Scaffold(
       body: SingleChildScrollView(
-        child: WeeklyChart(weeklyStats: entries, dailyGoal: dailyGoal),
+        child: WeeklyChart(
+          weeklyStats: weeklyStats,
+          questionStats: questionStats,
+          studyDate: _today,
+          isLoading: isLoading,
+          hasError: hasError,
+        ),
       ),
     ),
   ));

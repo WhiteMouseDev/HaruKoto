@@ -56,13 +56,16 @@ class GeminiLiveProtocol {
         'realtimeInputConfig': {
           'activityHandling': 'NO_INTERRUPTION',
           'automaticActivityDetection': {
-            'startOfSpeechSensitivity': 'START_SENSITIVITY_HIGH',
+            // Let the server choose start sensitivity: explicit HIGH can turn
+            // background noise into phantom speech on Gemini 3.8 Live.
             'endOfSpeechSensitivity': 'END_SENSITIVITY_HIGH',
             'prefixPaddingMs': 200,
             'silenceDurationMs': config.silenceDurationMs,
           },
         },
-        'inputAudioTranscription': {},
+        'inputAudioTranscription': {
+          'languageCodes': ['ja-JP', 'ko-KR'],
+        },
         'outputAudioTranscription': {},
         'sessionResumption': config.resumptionHandle != null
             ? {'handle': config.resumptionHandle}

@@ -15,9 +15,8 @@ final authStateProvider = StreamProvider<AuthState>((ref) {
 });
 
 final isAuthenticatedProvider = Provider<bool>((ref) {
-  final authState = ref.watch(authStateProvider);
-  return authState.whenOrNull(
-        data: (state) => state.session != null,
-      ) ??
-      false;
+  // A temporary refresh error can be emitted while Supabase still has a
+  // session. Use the stream as a signal to re-read the actual session.
+  ref.watch(authStateProvider);
+  return ref.watch(authRepositoryProvider).isAuthenticated;
 });

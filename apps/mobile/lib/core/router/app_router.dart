@@ -20,6 +20,7 @@ import '../../features/kana/presentation/kana_quiz_page.dart';
 import '../../features/kana/presentation/kana_chart_page.dart';
 import '../../features/kana/presentation/katakana_pilot_page.dart';
 import '../../features/my/presentation/my_page.dart';
+import '../../features/my/presentation/achievements_page.dart';
 // Hidden for free launch — re-enable when IAP ready
 // import '../../features/my/presentation/payments_page.dart';
 // import '../../features/my/presentation/subscription_manage_page.dart';
@@ -133,7 +134,17 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/home',
                 builder: (context, state) => const HomePage(),
+                routes: [
+                  GoRoute(
+                    path: 'achievements',
+                    pageBuilder: (context, state) => _slideTransitionPage(
+                      state: state,
+                      child: const AchievementsPage(),
+                    ),
+                  ),
+                ],
               ),
+              _statsRoute('/stats'),
             ],
           ),
 
@@ -221,7 +232,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                         parentNavigatorKey: _rootNavigatorKey,
                         pageBuilder: (context, state) => _slideTransitionPage(
                           state: state,
-                          child: const KatakanaPilotPage(),
+                          child: const KanaPilotPage(),
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'hiragana/focus',
+                        parentNavigatorKey: _rootNavigatorKey,
+                        pageBuilder: (context, state) => _slideTransitionPage(
+                          state: state,
+                          child: const KanaPilotPage(hiragana: true),
                         ),
                       ),
                       GoRoute(
@@ -343,7 +362,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/my',
                 builder: (context, state) => const MyPage(),
                 // Subscription routes — hidden for free launch
-                routes: const [],
+                routes: [_statsRoute('stats')],
               ),
             ],
           ),
@@ -351,14 +370,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // === Full-screen routes (outside shell) ===
-      GoRoute(
-        path: '/stats',
-        parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => _slideTransitionPage(
-          state: state,
-          child: const StatsPage(),
-        ),
-      ),
       GoRoute(
         path: '/notifications',
         parentNavigatorKey: _rootNavigatorKey,
@@ -393,6 +404,14 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.onDispose(router.dispose);
   return router;
 });
+
+GoRoute _statsRoute(String path) => GoRoute(
+      path: path,
+      pageBuilder: (context, state) => _slideTransitionPage(
+        state: state,
+        child: const StatsPage(),
+      ),
+    );
 
 /// Splash: shows splash animation on cold start (1.5s),
 /// then resolves auth state and navigates.

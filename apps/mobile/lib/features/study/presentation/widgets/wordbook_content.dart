@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../shared/widgets/app_error_retry.dart';
 import '../../data/models/wordbook_entry_model.dart';
 import 'wordbook_empty_state.dart';
 import 'wordbook_list.dart';
@@ -16,7 +15,10 @@ class WordbookContent extends StatelessWidget {
   final String filter;
   final VoidCallback onRetry;
   final VoidCallback onAddFirst;
-  final ValueChanged<String> onDelete;
+  final String? expandedEntryId;
+  final ValueChanged<String> onOpen;
+  final Widget Function(String id) buildDetail;
+  final Future<void> Function(String) onDelete;
   final VoidCallback onPagePrev;
   final VoidCallback onPageNext;
 
@@ -31,6 +33,9 @@ class WordbookContent extends StatelessWidget {
     required this.filter,
     required this.onRetry,
     required this.onAddFirst,
+    required this.expandedEntryId,
+    required this.onOpen,
+    required this.buildDetail,
     required this.onDelete,
     required this.onPagePrev,
     required this.onPageNext,
@@ -38,14 +43,14 @@ class WordbookContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (loading) {
+    if (loading && (expandedEntryId == null || entries.isEmpty)) {
       return const WordbookLoadingList();
     }
 
-    if (error != null) {
-      return AppErrorRetry(
+    if (error case final message?) {
+      return WordbookErrorState(
         onRetry: onRetry,
-        message: error,
+        message: message,
       );
     }
 
@@ -60,6 +65,9 @@ class WordbookContent extends StatelessWidget {
       entries: entries,
       totalPages: totalPages,
       page: page,
+      expandedEntryId: expandedEntryId,
+      onOpen: onOpen,
+      buildDetail: buildDetail,
       onDelete: onDelete,
       onPagePrev: onPagePrev,
       onPageNext: onPageNext,

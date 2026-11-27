@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../data/models/lesson_models.dart';
 import 'lesson_flow_policy.dart';
 import 'lesson_practice_layout.dart';
+import 'lesson_recognition_feedback.dart';
 import 'lesson_session_state.dart';
 
 class LessonCheckpoint {
@@ -24,33 +25,53 @@ class LessonCheckpoint {
     return DateTime.fromMillisecondsSinceEpoch(value, isUtc: true);
   }
 
-  String encode(LessonDetailModel detail) => jsonEncode({
-        'version': 1,
-        if (lastStudiedAt != null)
-          'lastStudiedAtMs': lastStudiedAt!.toUtc().millisecondsSinceEpoch,
-        'lessonId': detail.id,
-        'content': lessonContentSignature(detail),
-        'progressStamp': progressStamp,
-        'acknowledged': acknowledged,
-        'step': state.step.name,
-        'vocabIndex': state.vocabIndex,
-        'grammarIndex': state.grammarIndex,
-        'recognitionIndex': state.recognitionIndex,
-        'reorderIndex': state.reorderIndex,
-        'answers': {
-          for (final entry in state.answers.entries) '${entry.key}': entry.value
-        },
-        'practiceStarted': state.practiceStarted,
-        'submissionPending': state.submissionPending,
-        'seed': state.seed,
-        'layout': state.layout.toJson(),
-        'recognitionSelection': state.recognitionSelection,
-        'matchingMatched': state.matchingMatched.toList()..sort(),
-        'matchingLeft': state.matchingLeft,
-        'matchingRight': state.matchingRight,
-        'reorderSelected': state.reorderSelected,
-        'reorderAvailable': state.reorderAvailable,
+  String encode(LessonDetailModel detail) {
+    final selection = state.recognitionSelection;
+    final reviewing = selection != null &&
+        state.answers.containsKey(
+          lessonRecognitionQuestions(detail)[state.recognitionIndex].order,
+        );
+    final draft = {
+      'version': 1,
+      if (lastStudiedAt != null)
+        'lastStudiedAtMs': lastStudiedAt!.toUtc().millisecondsSinceEpoch,
+      'lessonId': detail.id,
+      'content': lessonContentSignature(detail),
+      'progressStamp': progressStamp,
+      'acknowledged': acknowledged,
+      'step': state.step.name,
+      'vocabIndex': state.vocabIndex,
+      'grammarIndex': state.grammarIndex,
+      'recognitionIndex': state.recognitionIndex,
+      'reorderIndex': state.reorderIndex,
+      'answers': {
+        for (final entry in state.answers.entries) '${entry.key}': entry.value
+      },
+      'practiceStarted': state.practiceStarted,
+      'submissionPending': state.submissionPending,
+      'seed': state.seed,
+      'layout': state.layout.toJson(),
+      'recognitionSelection': reviewing ? null : selection,
+      if (reviewing) 'parkedRecognitionSelection': selection,
+      'matchingMatched': state.matchingMatched.toList()..sort(),
+      'matchingLeft': state.matchingLeft,
+      'matchingRight': state.matchingRight,
+      'reorderSelected': state.reorderSelected,
+      'reorderAvailable': state.reorderAvailable,
+    };
+    if (state.recognitionFeedback.isNotEmpty) {
+      final gradedDraft = jsonEncode({
+        ...draft,
+        'recognitionFeedback': [
+          for (final result in state.recognitionFeedback.values)
+            result.toJson(),
+        ],
       });
+      if (gradedDraft.length <= 512 * 1024) return gradedDraft;
+    }
+    // Feedback is optional cache data; it must not displace saved answers.
+    return jsonEncode(draft);
+  }
 
   factory LessonCheckpoint.decode(String raw, LessonDetailModel detail) {
     if (raw.length > 512 * 1024) {
@@ -176,11 +197,25 @@ class LessonCheckpoint {
       }
       answers[order] = answer;
     }
-    final selected = json['recognitionSelection'];
+    final parked = json['parkedRecognitionSelection'];
+    final activeSelection = json['recognitionSelection'];
+    final currentQuestion =
+        recognition.isEmpty ? null : recognition[recognitionIndex];
+    if (parked != null &&
+        (activeSelection != null ||
+            !answers.containsKey(currentQuestion?.order))) {
+      throw const FormatException('invalid parked recognition draft');
+    }
+    final selected = parked ?? activeSelection;
+    final selectionQuestion = parked == null
+        ? currentQuestion
+        : recognition
+            .where((question) => !answers.containsKey(question.order))
+            .firstOrNull;
     if (selected != null &&
         (selected is! String ||
-            recognition.isEmpty ||
-            !(recognition[recognitionIndex].options ?? [])
+            selectionQuestion == null ||
+            !(selectionQuestion.options ?? [])
                 .any((option) => option.id == selected))) {
       throw const FormatException('invalid selected option');
     }
@@ -261,6 +296,12 @@ class LessonCheckpoint {
             matchingRightIndices: rightIndices,
             reorderBanks: banks),
         recognitionSelection: selected as String?,
+        recognitionFeedback: _readRecognitionFeedback(
+          json['recognitionFeedback'],
+          detail.recognitionFeedbackVersion,
+          recognition,
+          answers,
+        ),
         matchingMatched: matched.toSet(),
         matchingLeft: left,
         matchingRight: right,
@@ -269,6 +310,35 @@ class LessonCheckpoint {
         restored: true,
       ),
     );
+  }
+
+  static Map<int, LessonRecognitionFeedback> _readRecognitionFeedback(
+    Object? raw,
+    String? feedbackVersion,
+    List<LessonQuestionModel> questions,
+    Map<int, Map<String, dynamic>> answers,
+  ) {
+    if (raw is! List || feedbackVersion == null) return const {};
+    final byOrder = {
+      for (final question in questions) question.order: question
+    };
+    final feedback = <int, LessonRecognitionFeedback>{};
+    for (final item in raw) {
+      if (item is! Map<String, dynamic>) continue;
+      try {
+        final result = LessonRecognitionFeedback.fromJson(item);
+        final order = result.questionOrder;
+        final options = byOrder[order]?.options ?? const [];
+        if (result.feedbackVersion == feedbackVersion &&
+            result.selectedAnswer == answers[order]?['selectedAnswer'] &&
+            options.any((option) => option.id == result.correctAnswer)) {
+          feedback[order] = result;
+        }
+      } on FormatException {
+        // Optional feedback must never make an otherwise valid draft unreadable.
+      }
+    }
+    return feedback;
   }
 }
 

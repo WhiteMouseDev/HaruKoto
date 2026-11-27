@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
@@ -17,6 +18,24 @@ import 'package:harukoto_mobile/features/study/presentation/widgets/legacy_lesso
 
 void main() {
   group('StudyPage', () {
+    testWidgets('screen readers can open the level picker', (tester) async {
+      final handle = tester.ensureSemantics();
+      try {
+        await _pumpStudyPage(tester, chapters: [], jlptLevel: 'N4');
+
+        final node = tester.getSemantics(
+          find.bySemanticsLabel('학습 급수 N4, 변경'),
+        );
+        expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+        node.owner!.performAction(node.id, SemanticsAction.tap);
+        await tester.pumpAndSettle();
+
+        expect(find.text('JLPT 레벨 선택'), findsOneWidget);
+      } finally {
+        handle.dispose();
+      }
+    });
+
     testWidgets('rollback keeps the original list and recommendation',
         (tester) async {
       await _pumpStudyPage(
@@ -84,14 +103,25 @@ void main() {
 
       expect(find.text('추천 레슨'), findsOneWidget);
       expect(find.text('1번 역 · 2번째 레슨'), findsOneWidget);
-      expect(find.text('전체 보기'), findsOneWidget);
-      expect(find.text('시작하기'), findsOneWidget);
-      expect(find.text('추천 역'), findsOneWidget);
-      expect(find.text('학습 시작'), findsNothing);
-      await tester.tap(find.byKey(const ValueKey('station-toggle-chapter-1')));
-      await tester.pumpAndSettle();
+      expect(find.text('전체 보기'), findsNothing);
+      expect(find.text('추천'), findsOneWidget);
       expect(find.text('학습 시작'), findsOneWidget);
-      expect(find.text('Lesson 2'), findsWidgets);
+      final lessonTitle = tester.widget<Text>(find.text('Lesson 2')).style!;
+      expect(lessonTitle.fontSize, 18);
+      expect(lessonTitle.fontWeight, FontWeight.w600);
+      expect(lessonTitle.letterSpacing, -0.45);
+      final location = tester.widget<Text>(find.text('1번 역 · 2번째 레슨')).style!;
+      expect(location.fontSize, 13);
+      expect(location.fontWeight, FontWeight.w400);
+      expect(location.letterSpacing, -0.325);
+      final station = find.byKey(const ValueKey('station-toggle-chapter-1'));
+      final inlineLesson =
+          find.byKey(const ValueKey('station-lesson-lesson-2'));
+      expect(inlineLesson, findsNothing);
+      await tester.ensureVisible(station);
+      await tester.tap(station);
+      await tester.pumpAndSettle();
+      expect(inlineLesson, findsOneWidget);
 
       final viewedEvent = events.singleWhere(
         (event) => event.name == LessonPilotEventNames.lessonListViewed,
@@ -140,13 +170,16 @@ void main() {
       expect(find.text('이어하기'), findsOneWidget);
       expect(find.text('이어할 레슨'), findsOneWidget);
       expect(find.text('1번 역 · 1번째 레슨'), findsOneWidget);
-      expect(find.text('전체 보기'), findsOneWidget);
-      expect(find.text('이어할 역'), findsOneWidget);
+      expect(find.text('전체 보기'), findsNothing);
+      expect(find.text('추천'), findsOneWidget);
       expect(find.text('Lesson 1'), findsWidgets);
       expect(find.text('추천 레슨'), findsNothing);
-      await tester.tap(find.byKey(const ValueKey('station-toggle-chapter-1')));
+      final station = find.byKey(const ValueKey('station-toggle-chapter-1'));
+      await tester.ensureVisible(station);
+      await tester.tap(station);
       await tester.pumpAndSettle();
-      expect(find.text('이어하기'), findsNWidgets(2));
+      expect(find.byKey(const ValueKey('station-lesson-lesson-1')),
+          findsOneWidget);
     });
 
     for (final (words, grammar, quizType, count) in [
@@ -173,13 +206,11 @@ void main() {
           chapters: const [],
         );
         observer.routes.clear();
-        expect(find.text('오늘의 복습'), findsOneWidget);
-        expect(find.text('복습할 표현 ${words + grammar}개'), findsOneWidget);
+        expect(find.text('오늘 복습할 표현'), findsOneWidget);
         expect(find.text('단어 $words개 · 문법 $grammar개'), findsOneWidget);
         final button = find.byKey(ValueKey('review-category-$quizType'));
         expect(tester.getSize(button).height, greaterThanOrEqualTo(48));
-        await tester
-            .tapAt(tester.getCenter(find.text('복습할 표현 ${words + grammar}개')));
+        await tester.tapAt(tester.getCenter(find.text('오늘 복습할 표현')));
         expect(observer.routes, isEmpty);
         expect(
             events
@@ -202,6 +233,32 @@ void main() {
         await tester.pumpWidget(const SizedBox.shrink());
       });
     }
+
+    testWidgets('one due category uses the single Figma review action',
+        (tester) async {
+      final observer = _ReviewRouteObserver();
+      await _pumpStudyPage(tester,
+          navigatorObserver: observer,
+          chapters: const [],
+          reviewSummary: const ReviewSummaryModel(
+            wordDue: 0,
+            grammarDue: 14,
+            totalDue: 14,
+            wordNew: 0,
+            grammarNew: 0,
+          ));
+      observer.routes.clear();
+      expect(find.text('단어 0개 · 문법 14개'), findsOneWidget);
+      expect(find.byKey(const ValueKey('review-category-VOCABULARY')),
+          findsNothing);
+      await tester.tap(find.text('복습 시작'));
+      final review =
+          observer.singleQuiz(tester.element(find.byType(StudyPage)));
+      expect(review.quizType, 'GRAMMAR');
+      expect(review.count, 10);
+      expect(review.mode, 'review');
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
 
     for (final (selectedLevel, quizLevel) in [
       ('ABSOLUTE_ZERO', 'N5'),

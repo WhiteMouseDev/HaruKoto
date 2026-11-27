@@ -4290,6 +4290,33 @@
         ]
       }
     },
+    "/api/v1/stats/study-overview": {
+      "get": {
+        "tags": [
+          "stats"
+        ],
+        "summary": "Get Study Overview",
+        "description": "Lifetime quiz and conversation totals, with recent saved answers by category.",
+        "operationId": "get_study_overview_api_v1_stats_study_overview_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudyOverviewResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/stats/history": {
       "get": {
         "tags": [
@@ -4430,8 +4457,27 @@
           "stats"
         ],
         "summary": "Get Jlpt Progress",
-        "description": "3-7: JLPT level progress across all levels the user has studied.",
+        "description": "3-7: JLPT vocabulary and grammar mastery by level.",
         "operationId": "get_jlpt_progress_api_v1_stats_jlpt_progress_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "include_all_levels",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Include unstudied levels that have vocabulary or grammar content.",
+              "default": false,
+              "title": "Include All Levels"
+            },
+            "description": "Include unstudied levels that have vocabulary or grammar content."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -4442,13 +4488,18 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
+        }
       }
     },
     "/api/v1/stats/time-chart": {
@@ -4832,7 +4883,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/WordbookEntryResponse"
+                  "$ref": "#/components/schemas/WordbookEntryDetailResponse"
                 }
               }
             }
@@ -4892,6 +4943,12 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Only manually added words can be edited"
+          },
+          "409": {
+            "description": "The word already exists in your wordbook"
           },
           "422": {
             "description": "Validation Error",
@@ -5841,6 +5898,40 @@
               ],
               "title": "Level"
             }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100,
+                  "pattern": "^[^\\x00]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/WrongAnswerStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
           }
         ],
         "responses": {
@@ -6079,6 +6170,148 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/questions/{question_order}/feedback": {
+      "post": {
+        "tags": [
+          "lessons"
+        ],
+        "summary": "Get Recognition Feedback",
+        "operationId": "get_recognition_feedback_api_v1_lessons__lesson_id__questions__question_order__feedback_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Lesson Id"
+            }
+          },
+          {
+            "name": "question_order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Question Order"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonRecognitionFeedbackRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonRecognitionFeedbackResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "원래 계정 인증 회복 후 같은 제출 ID로 조회/재시도",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "원래 계정과 인증 계정 불일치 또는 접근 불가. 쓰기 없음",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "요청 구조 검증 실패",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "이해 체크에서 채점할 수 없는 문항 또는 잘못된 답안",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "공개 레슨 또는 문항을 찾을 수 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "현재 공개된 레슨과 채점 버전이 다름",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonSubmissionErrorResponse"
                 }
               }
             }
@@ -9541,6 +9774,23 @@
             "type": "array",
             "title": "Weeklystats"
           },
+          "weeklyQuestionStats": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/WeeklyQuestionStatItem"
+                },
+                "type": "array",
+                "maxItems": 7,
+                "minItems": 7
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weeklyquestionstats",
+            "description": "Current KST week, Monday through Sunday, in date order."
+          },
           "levelProgress": {
             "$ref": "#/components/schemas/LevelProgress"
           }
@@ -10716,6 +10966,17 @@
             ],
             "title": "Activitycontentversion"
           },
+          "recognitionFeedbackVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recognitionfeedbackversion"
+          },
           "id": {
             "type": "string",
             "format": "uuid",
@@ -10857,6 +11118,81 @@
           "scoreTotal"
         ],
         "title": "LessonProgressResponse"
+      },
+      "LessonRecognitionFeedbackRequest": {
+        "properties": {
+          "expectedUserId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Expecteduserid"
+          },
+          "feedbackVersion": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Feedbackversion"
+          },
+          "selectedAnswer": {
+            "type": "string",
+            "maxLength": 4096,
+            "minLength": 1,
+            "title": "Selectedanswer"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expectedUserId",
+          "feedbackVersion",
+          "selectedAnswer"
+        ],
+        "title": "LessonRecognitionFeedbackRequest"
+      },
+      "LessonRecognitionFeedbackResponse": {
+        "properties": {
+          "feedbackVersion": {
+            "type": "string",
+            "title": "Feedbackversion"
+          },
+          "questionOrder": {
+            "type": "integer",
+            "title": "Questionorder"
+          },
+          "selectedAnswer": {
+            "type": "string",
+            "title": "Selectedanswer"
+          },
+          "correctAnswer": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Correctanswer"
+          },
+          "isCorrect": {
+            "type": "boolean",
+            "title": "Iscorrect"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "feedbackVersion",
+          "questionOrder",
+          "selectedAnswer",
+          "correctAnswer",
+          "isCorrect",
+          "explanation"
+        ],
+        "title": "LessonRecognitionFeedbackResponse"
       },
       "LessonStudyActivityResponse": {
         "properties": {
@@ -13845,6 +14181,49 @@
         ],
         "title": "StudyCapabilitiesResponse"
       },
+      "StudyOverviewResponse": {
+        "properties": {
+          "quizzesCompleted": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Quizzescompleted"
+          },
+          "correctAnswers": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Correctanswers"
+          },
+          "totalAnswers": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Totalanswers"
+          },
+          "conversationCount": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Conversationcount"
+          },
+          "daily": {
+            "items": {
+              "$ref": "#/components/schemas/WeeklyQuestionStatItem"
+            },
+            "type": "array",
+            "maxItems": 7,
+            "minItems": 7,
+            "title": "Daily",
+            "description": "The latest seven KST calendar dates, oldest first."
+          }
+        },
+        "type": "object",
+        "required": [
+          "quizzesCompleted",
+          "correctAnswers",
+          "totalAnswers",
+          "conversationCount",
+          "daily"
+        ],
+        "title": "StudyOverviewResponse"
+      },
       "StudyStageResponse": {
         "properties": {
           "id": {
@@ -14069,6 +14448,10 @@
           },
           "summary": {
             "$ref": "#/components/schemas/StudyWrongAnswersSummary"
+          },
+          "supportsSearchAndStatus": {
+            "type": "boolean",
+            "title": "Supportssearchandstatus"
           }
         },
         "type": "object",
@@ -15009,6 +15392,43 @@
         ],
         "title": "VolumeChartResponse"
       },
+      "WeeklyQuestionStatItem": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "hasStudied": {
+            "type": "boolean",
+            "title": "Hasstudied"
+          },
+          "vocabularyAnsweredCount": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Vocabularyansweredcount"
+          },
+          "grammarAnsweredCount": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Grammaransweredcount"
+          },
+          "sentenceArrangeAnsweredCount": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Sentencearrangeansweredcount"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "hasStudied",
+          "vocabularyAnsweredCount",
+          "grammarAnsweredCount",
+          "sentenceArrangeAnsweredCount"
+        ],
+        "title": "WeeklyQuestionStatItem"
+      },
       "WeeklyStatItem": {
         "properties": {
           "vocabularyAnsweredCount": {
@@ -15091,6 +15511,82 @@
           "meaningKo"
         ],
         "title": "WordbookCreateRequest"
+      },
+      "WordbookEditableText": {
+        "type": "string",
+        "minLength": 1
+      },
+      "WordbookEntryDetailResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "word": {
+            "type": "string",
+            "title": "Word"
+          },
+          "reading": {
+            "type": "string",
+            "title": "Reading"
+          },
+          "meaningKo": {
+            "type": "string",
+            "title": "Meaningko"
+          },
+          "source": {
+            "$ref": "#/components/schemas/WordbookSource"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "exampleSentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Examplesentence"
+          },
+          "exampleTranslation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exampletranslation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "word",
+          "reading",
+          "meaningKo",
+          "source",
+          "createdAt"
+        ],
+        "title": "WordbookEntryDetailResponse"
       },
       "WordbookEntryResponse": {
         "properties": {
@@ -15199,6 +15695,36 @@
               }
             ],
             "title": "Note"
+          },
+          "word": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WordbookEditableText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reading": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WordbookEditableText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meaningKo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WordbookEditableText"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -15271,6 +15797,13 @@
           "questionId"
         ],
         "title": "WrongAnswer"
+      },
+      "WrongAnswerStatus": {
+        "type": "string",
+        "enum": [
+          "LEARNING",
+          "MASTERED"
+        ]
       },
       "WrongAnswersResponse": {
         "properties": {

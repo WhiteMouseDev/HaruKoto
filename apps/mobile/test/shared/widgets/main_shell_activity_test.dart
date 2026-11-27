@@ -7,6 +7,7 @@ import 'package:harukoto_mobile/core/network/connectivity_service.dart';
 import 'package:harukoto_mobile/core/providers/study_clock_provider.dart';
 import 'package:harukoto_mobile/features/home/data/models/dashboard_model.dart';
 import 'package:harukoto_mobile/features/home/presentation/widgets/streak_daily_card.dart';
+import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:harukoto_mobile/features/home/providers/study_activity_refresh_provider.dart';
 import 'package:harukoto_mobile/features/stats/providers/stats_provider.dart';
 import 'package:harukoto_mobile/shared/widgets/bottom_nav.dart';
@@ -23,6 +24,8 @@ void main() {
       studyClockProvider.overrideWithValue(() => now),
       studyActivityRefreshProvider.overrideWithValue(refresh),
       connectivityProvider.overrideWith((ref) => Stream.value(true)),
+      dashboardProvider
+          .overrideWith((ref) async => DashboardModel.fromJson({})),
       statsMonthHistoryProvider.overrideWith((ref, period) async => []),
     ]);
     final router = GoRouter(initialLocation: '/home', routes: [
@@ -52,10 +55,21 @@ void main() {
           container: container,
           child: MaterialApp.router(routerConfig: router)));
       await tester.pumpAndSettle();
-      tester.widget<BottomNav>(find.byType(BottomNav)).onTap(1);
+      final dock = find.byType(BottomNav);
+      final homeLabel = find.descendant(of: dock, matching: find.text('홈'));
+      final studyLabel = find.descendant(of: dock, matching: find.text('학습'));
+      expect(tester.widget<Text>(homeLabel).style?.fontWeight, FontWeight.w600);
+      final studyStyle = tester.widget<Text>(studyLabel).style!;
+      expect(studyStyle.fontSize, 11);
+      expect(studyStyle.fontWeight, FontWeight.w500);
+      expect(studyStyle.letterSpacing, -0.275);
+      expect(studyStyle.height, 1.4);
+      tester.widget<BottomNav>(dock).onTap(1);
       await tester.pumpAndSettle();
       expect(refresh.calls, 0);
-      tester.widget<BottomNav>(find.byType(BottomNav)).onTap(0);
+      expect(
+          tester.widget<Text>(studyLabel).style?.fontWeight, FontWeight.w600);
+      tester.widget<BottomNav>(dock).onTap(0);
       await tester.pumpAndSettle();
       expect(refresh.calls, 1);
       now = DateTime.utc(2026, 9, 27, 15);
@@ -66,7 +80,7 @@ void main() {
       expect(container.read(studyDateProvider), DateTime.utc(2026, 9, 28));
       await tester.tap(find.byKey(const ValueKey('streak-calendar-action')));
       await tester.pumpAndSettle();
-      expect(find.text('학습 기록'), findsOneWidget);
+      expect(find.text('연속 학습 0일'), findsOneWidget);
       expect(find.byType(BottomNav).hitTestable(), findsNothing);
     } finally {
       await tester.pumpWidget(const SizedBox());

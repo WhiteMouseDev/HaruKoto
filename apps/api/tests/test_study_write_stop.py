@@ -45,6 +45,7 @@ REVIEWED_ALLOW_ROUTES = frozenset(
         ("POST", "/api/v1/chat/characters/favorites"),
         ("GET", "/api/v1/chat/{conversation_id}"),
         ("GET", "/api/v1/stats/dashboard"),
+        ("GET", "/api/v1/stats/study-overview"),
         ("GET", "/api/v1/stats/history"),
         ("GET", "/api/v1/stats/heatmap"),
         ("GET", "/api/v1/stats/jlpt-progress"),
@@ -83,6 +84,7 @@ REVIEWED_ALLOW_ROUTES = frozenset(
         ("GET", "/api/v1/lessons/review/summary"),
         ("POST", "/api/v1/lessons/{lesson_id}/script-lines/{line_index}/tts"),
         ("POST", "/api/v1/lessons/{lesson_id}/questions/{question_order}/tts"),
+        ("POST", "/api/v1/lessons/{lesson_id}/questions/{question_order}/feedback"),
         ("GET", "/api/v1/lessons/{lesson_id}"),
     }
 )

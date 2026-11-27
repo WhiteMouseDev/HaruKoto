@@ -17,6 +17,7 @@ import 'package:harukoto_mobile/features/study/presentation/lesson_page.dart';
 import 'package:harukoto_mobile/features/study/presentation/study_page.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_continue_banner.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_chapter_list.dart';
+import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_station_list.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/study_kana_section.dart';
 import 'package:harukoto_mobile/features/study/providers/lesson_pilot_telemetry_provider.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
@@ -359,11 +360,13 @@ void main() {
       expect(f.repository.chapterReads, 2);
       expect(f.repository.reviewReads, 1);
       expect(f.requests, isEmpty);
-      expect(find.text('레슨을 불러오고 있어요.'), findsOneWidget);
-      expect(tester.widget<OutlinedButton>(_lessonRetry).onPressed, isNull);
+      expect(find.text('학습 노선'), findsOneWidget);
+      expect(find.byType(LessonStationListSkeleton), findsOneWidget);
+      expect(_lessonRetry, findsNothing);
       pending.complete(_lessonData('복구한 레슨'));
       await _lessonFrames(tester);
       expect(find.text('복구한 레슨'), findsOneWidget);
+      expect(find.byType(LessonStationListSkeleton), findsNothing);
       expect(_lessonRetry, findsNothing);
       expect(f.repository.writes, 0);
     });
@@ -385,7 +388,7 @@ void main() {
       expect(find.text('이전 레슨'), findsOneWidget);
       f.container.invalidate(chaptersProvider('N5'));
       await _lessonFrames(tester);
-      expect(find.text('레슨을 불러오고 있어요.'), findsOneWidget);
+      expect(find.byType(LessonStationListSkeleton), findsOneWidget);
       expect(find.text('이전 레슨'), findsNothing);
       expect(find.text('시작하기'), findsNothing);
       pending.completeError(_transportError());
@@ -432,7 +435,7 @@ void main() {
           dashboard: () async => throw _transportError(),
           chapterRead: (_) async => throw _transportError());
       expect(find.text('레슨을 불러오지 못했어요.'), findsOneWidget);
-      expect(find.text('복습할 표현 5개'), findsOneWidget);
+      expect(find.text('단어 2개 · 문법 3개'), findsOneWidget);
       await _openKana(tester);
       expect(f.repository.writes, 0);
     });
@@ -521,7 +524,7 @@ void main() {
           chapterRead: (_) async => _lessonData('숨긴 레슨'));
       expect(f.repository.chapterReads, 0);
       expect(find.text('숨긴 레슨'), findsNothing);
-      expect(find.text('레슨을 불러오고 있어요.'), findsOneWidget);
+      expect(find.byType(LessonStationListSkeleton), findsOneWidget);
     });
 
     for (final brightness in Brightness.values) {

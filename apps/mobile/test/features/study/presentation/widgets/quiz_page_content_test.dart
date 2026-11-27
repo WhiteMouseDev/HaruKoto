@@ -114,7 +114,7 @@ void main() {
         },
       );
 
-      expect(find.text('N5 단어 퀴즈'), findsOneWidget);
+      expect(find.text('N5 단어퀴즈'), findsOneWidget);
       expect(find.byType(QuizStandardModeContent), findsOneWidget);
       expect(find.byType(FourChoiceQuiz), findsOneWidget);
       expect(find.text('食べる'), findsOneWidget);

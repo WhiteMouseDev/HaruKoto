@@ -232,6 +232,15 @@ async def _upsert_lesson(db: AsyncSession, chapter: Chapter, lesson_data: dict[s
             "topic": lesson_data["topic"],
             "content_jsonb": lesson_data["content_jsonb"],
             "is_published": is_published,
+            # ON CONFLICT does not invoke the ORM column's onupdate handler.
+            "updated_at": sa.case(
+                (
+                    Lesson.content_jsonb.is_distinct_from(stmt.excluded.content_jsonb)
+                    | Lesson.is_published.is_distinct_from(stmt.excluded.is_published),
+                    sa.func.clock_timestamp(),
+                ),
+                else_=Lesson.updated_at,
+            ),
         },
     )
     await db.execute(stmt)

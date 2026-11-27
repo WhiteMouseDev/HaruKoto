@@ -42,47 +42,106 @@ void main() {
     final letters =
         KatakanaPracticeGroup.values.expand((group) => group.letters);
     expect(letters, hasLength(14));
-    expect(letters.toSet(), unorderedEquals(KatakanaPilotLetter.values));
+    expect(
+      letters.toSet(),
+      unorderedEquals(
+        KatakanaPilotLetter.values.where((letter) => letter.strokes.isNotEmpty),
+      ),
+    );
   });
 
-  test('practice and next-day words are distinct and have one target', () {
-    const letters = KatakanaPilotLetter.values;
-    final practiceWords = letters.map((letter) => letter.word).toSet();
-    expect(practiceWords, hasLength(letters.length));
-    expect(
-      letters.map((letter) => letter.reviewWord.text).toSet(),
-      hasLength(letters.length),
-    );
-    for (final letter in letters) {
-      final reviewWord = letter.reviewWord;
-      expect(practiceWords, isNot(contains(reviewWord.text)));
-      for (final word in [letter.word, reviewWord.text]) {
-        expect(
-          word.runes.where((rune) => rune == letter.glyph.runes.single),
-          hasLength(1),
-          reason: '$word must contain one ${letter.glyph}',
-        );
+  test('the ten rows cover the 46 basic letters once in each script', () {
+    final rows = KanaPracticeRow.values
+        .where((row) => row.section == KanaPracticeSection.basic);
+    expect(rows, hasLength(10));
+    for (final hiragana in [true, false]) {
+      final letters = rows.expand((row) => row.letters(hiragana: hiragana));
+      expect(rows.map((row) => row.letters(hiragana: hiragana).length),
+          [5, 5, 5, 5, 5, 5, 5, 3, 5, 3]);
+      expect(
+        letters.map((letter) => letter.glyph).join(),
+        hiragana
+            ? 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん'
+            : 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン',
+      );
+    }
+  });
+
+  test('variant rows contain each voiced and small kana exactly once', () {
+    for (final hiragana in [true, false]) {
+      final catalog = KanaPracticeRow.values
+          .expand((row) => row.letters(hiragana: hiragana))
+          .toList();
+      expect(
+        catalog,
+        unorderedEquals(
+          hiragana ? HiraganaPilotLetter.values : KatakanaPilotLetter.values,
+        ),
+      );
+
+      String glyphs(KanaPracticeSection section) => KanaPracticeRow.values
+          .where((row) => row.section == section)
+          .expand((row) => row.letters(hiragana: hiragana))
+          .map((letter) => letter.glyph)
+          .join();
+
+      expect(
+        glyphs(KanaPracticeSection.voiced),
+        hiragana ? 'がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゔ' : 'ガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポヴ',
+      );
+      expect(
+        glyphs(KanaPracticeSection.small),
+        hiragana ? 'ぁぃぅぇぉゃゅょっゎ' : 'ァィゥェォャュョッヮヵヶ',
+      );
+    }
+  });
+
+  test('practice and next-day examples are distinct and have one target', () {
+    for (final List<KanaPracticeLetter> letters in [
+      KatakanaPilotLetter.values,
+      HiraganaPilotLetter.values,
+    ]) {
+      final practiceWords = letters.map((letter) => letter.word).toSet();
+      expect(practiceWords, hasLength(letters.length));
+      expect(
+        letters.map((letter) => letter.reviewWord.text).toSet(),
+        hasLength(letters.length),
+      );
+      for (final letter in letters) {
+        final reviewWord = letter.reviewWord;
+        expect(practiceWords, isNot(contains(reviewWord.text)));
+        for (final word in [letter.word, reviewWord.text]) {
+          expect(
+            word.runes.where((rune) => rune == letter.glyph.runes.single),
+            hasLength(1),
+            reason: '$word must contain one ${letter.glyph}',
+          );
+        }
+        expect(reviewWord.reading, isNotEmpty);
+        expect(reviewWord.meaning, isNotEmpty);
       }
-      expect(reviewWord.reading, isNotEmpty);
-      expect(reviewWord.meaning, isNotEmpty);
     }
   });
 
   test('schematic coordinates preserve stroke count, ordering and directions',
       () {
-    const letters = KatakanaPilotLetter.values;
+    final letters =
+        KatakanaPilotLetter.values.where((letter) => letter.strokes.isNotEmpty);
     expect(letters.map((letter) => letter.strokes.length),
         [3, 3, 2, 2, 2, 3, 1, 2, 3, 2, 2, 3, 3]);
     for (final letter in letters) {
       final positions = letter.strokeNumberPositions;
-      if (positions != null) {
-        expect(positions, hasLength(letter.strokes.length));
-      }
-      for (final stroke in letter.strokes) {
+      expect(positions, hasLength(letter.strokes.length));
+      for (final (index, stroke) in letter.strokes.indexed) {
         expect(stroke, hasLength(greaterThanOrEqualTo(2)));
+        expect(
+          (positions[index] - stroke.first).distance,
+          greaterThan(0.085),
+          reason: '${letter.glyph} stroke ${index + 1} needs a separate badge',
+        );
       }
       final points = letter.strokes.expand((stroke) => stroke);
-      for (final point in points.followedBy(positions ?? const [])) {
+      for (final point in points.followedBy(positions)) {
         expect(point.dx, inInclusiveRange(0.0, 1.0));
         expect(point.dy, inInclusiveRange(0.0, 1.0));
       }
@@ -114,11 +173,13 @@ void main() {
     final i = KatakanaPilotLetter.i.strokes;
     expect(i[0].last.dx, lessThan(i[0].first.dx));
     expect(i[0].last.dy, greaterThan(i[0].first.dy));
+    expect(i[0], contains(i[1].first));
     expect(i[1].last.dx, closeTo(i[1].first.dx, .04));
     expect(i[1].last.dy, greaterThan(i[1].first.dy));
 
     final e = KatakanaPilotLetter.e.strokes;
     expect(e[0].last.dx, greaterThan(e[0].first.dx));
+    expect(e[1].last.dx, e[1].first.dx);
     expect(e[1].last.dy, greaterThan(e[1].first.dy));
     expect(e[2].last.dx - e[2].first.dx,
         greaterThan(e[0].last.dx - e[0].first.dx));
@@ -126,8 +187,12 @@ void main() {
 
     final o = KatakanaPilotLetter.o.strokes;
     expect(o[0].last.dx, greaterThan(o[0].first.dx));
-    expect(o[1][3].dy, greaterThan(o[1].first.dy));
-    expect(o[1].last.dx, lessThan(o[1][3].dx));
+    final hook = o[1][o[1].length - 2];
+    expect(hook.dx, o[1].first.dx);
+    expect(hook.dy, greaterThan(o[1].first.dy));
+    expect(o[1].last.dx, lessThan(hook.dx));
+    expect(o[1].last.dy, lessThan(hook.dy));
+    expect(o[2].first.dx, o[1].first.dx);
     expect(o[2].last.dx, lessThan(o[2].first.dx));
     expect(o[2].last.dy, greaterThan(o[2].first.dy));
   });

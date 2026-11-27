@@ -146,6 +146,7 @@ async def test_get_study_wrong_answers(client, mock_user, test_user_id):
         "mastered": 2,
         "remaining": 4,
     }
+    assert data["supportsSearchAndStatus"] is True
     assert data["entries"] == [
         {
             "id": str(mock_progress.id),
@@ -162,6 +163,13 @@ async def test_get_study_wrong_answers(client, mock_user, test_user_id):
             "lastReviewedAt": None,
         }
     ]
+
+
+@pytest.mark.parametrize("params", [{"status": "ALL"}, {"search": "가" * 101}, {"search": "가\x00나"}])
+@pytest.mark.asyncio
+async def test_wrong_answer_list_rejects_invalid_filters(client, params):
+    response = await client.get("/api/v1/study/wrong-answers", params=params)
+    assert response.status_code == 422
 
 
 @pytest.mark.asyncio

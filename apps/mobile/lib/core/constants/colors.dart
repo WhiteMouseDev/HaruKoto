@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 
 abstract final class AppColors {
   // ─── Brand ───────────────────────────────────────────────
-  static const primary = Color(0xFFFF6B86);
+  static const primary = Color(0xFFFF6A87);
   static const primaryStrong = primary;
   static const primaryPressed = Color(0xFFE04A6A);
   static const primaryContainer = Color(0xFFFFD8E1);
+  // White labels on the brand pink need a darker fill on primary buttons.
+  static const primaryButton = Color(0xFFCF3D60);
+  static const primaryButtonPressed = Color(0xFFC73759);
   static const brandPink = primary;
   static const sakura = primary;
   static const sakuraPressed = primaryPressed;
@@ -69,13 +72,26 @@ abstract final class AppColors {
   static const offlineBanner = Color(0xFFFF6B5F);
 
   // ─── Light theme ─────────────────────────────────────────
-  static const lightBackground = Color(0xFFFBFAF8);
+  static const lightBackground = Color(0xFFFFFFFF);
   static const lightCard = Color(0xFFFFFFFF);
   static const lightSecondary = surfaceMuted;
   static const lightBorder = Color(0xFFECE7E1);
   static const lightBorderStrong = Color(0xFFE1DAD2);
   static const lightText = Color(0xFF1F1B1A);
   static const lightSubtext = Color(0xFF5A524E);
+
+  // Figma light surfaces shared by the redesigned screens.
+  static const redesignForeground = Color(0xFF111111);
+  static const redesignMutedForeground = Color(0xFF737373);
+  static const redesignStrong = Color(0xFF2A2A37);
+  static const redesignSurface = Color(0xFFF7F7FB);
+  static const redesignControl = Color(0xFFF1F1F5);
+  static const redesignOutline = Color(0xFFE5E5EC);
+  static const redesignProgressTrack = Color(0xFFD9D9DC);
+  static const redesignDetailTrack = Color(0xFFE0E0E0);
+  static const redesignVocabulary = Color(0xFFF59BA7);
+  static const redesignGrammar = Color(0xFF2DD4C0);
+  static const redesignSentence = Color(0xFF9C7BFE);
 
   // ─── Dark theme ──────────────────────────────────────────
   static const darkBackground = Color(0xFF1A1A2E);

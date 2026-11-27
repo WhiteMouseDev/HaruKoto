@@ -13,6 +13,7 @@ import 'package:harukoto_mobile/features/home/providers/home_provider.dart';
 import 'package:harukoto_mobile/features/my/data/my_repository.dart';
 import 'package:harukoto_mobile/features/my/providers/my_provider.dart';
 import 'package:harukoto_mobile/features/my/providers/settings_sync_provider.dart';
+import 'package:harukoto_mobile/features/stats/providers/stats_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -69,6 +70,54 @@ void main() {
       await firstFailure;
       await settings.updateCategoryDailyGoal(DailyGoalCategory.grammar, 30);
       expect(repository.requests.last, (DailyGoalCategory.grammar, 30));
+    });
+
+    test('goal saves refresh annual and monthly achievement history', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      var annualReads = 0;
+      var monthlyReads = 0;
+      final container = ProviderContainer(overrides: [
+        currentAccountIdProvider.overrideWithValue('account-a'),
+        currentAccountReaderProvider.overrideWithValue(() => 'account-a'),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        homeRepositoryProvider
+            .overrideWithValue(_FakeHomeRepository(Future.value(20))),
+        myRepositoryProvider.overrideWithValue(_FakeMyRepository()),
+        statsHistoryProvider.overrideWith((ref, year) async {
+          annualReads++;
+          return [];
+        }),
+        statsMonthHistoryProvider.overrideWith((ref, period) async {
+          monthlyReads++;
+          return [];
+        }),
+      ]);
+      addTearDown(container.dispose);
+      final annual = statsHistoryProvider(2026);
+      final monthly = statsMonthHistoryProvider((year: 2026, month: 9));
+      container.listen(annual, (_, __) {});
+      container.listen(monthly, (_, __) {});
+      await container.read(annual.future);
+      await container.read(monthly.future);
+
+      final settings = container.read(settingsSyncServiceProvider);
+      const categories = <DailyGoalCategory?>[
+        null,
+        ...DailyGoalCategory.values
+      ];
+      for (final (index, category) in categories.indexed) {
+        final goal = 20 + index * 5;
+        if (category == null) {
+          await settings.updateDailyGoal(goal);
+        } else {
+          await settings.updateCategoryDailyGoal(category, goal);
+        }
+        await container.read(annual.future);
+        await container.read(monthly.future);
+        expect(annualReads, index + 2, reason: 'goal category: $category');
+        expect(monthlyReads, index + 2, reason: 'goal category: $category');
+      }
     });
 
     test('rolls back call settings when remote update fails', () async {

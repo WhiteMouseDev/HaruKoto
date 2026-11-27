@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_sentence_reorder_step.dart';
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/features/study/data/models/lesson_models.dart';
@@ -63,29 +62,92 @@ Future<GoRouter> _mountRouted(WidgetTester tester, ResumeHarness h) async {
 
 void main() {
   testWidgets(
-      'real page restores second recognition and selected option, then continues once',
-      (tester) async {
-    final before = ResumeHarness();
-    await before.recognition();
-    before.controller.answerRecognition(before.repository.detail,
-        {'order': 2, 'selectedAnswer': 'b', 'responseMs': 0});
-    before.controller.selectRecognition('c');
-    await before.controller.flush();
-    before.dispose();
-    final h = ResumeHarness(store: before.store);
-    addTearDown(h.dispose);
-    await _mount(tester, h);
-    expect(find.text('문항 2/2'), findsOneWidget);
-    expect(find.text('확인했어요'), findsOneWidget);
-    expect(h.repository.fetchCalls, 1);
-    expect(h.repository.startCalls, 0);
-    expect(h.repository.submitCalls, 0);
-    await tester.tap(find.text('다음으로'));
-    await tester.pumpAndSettle();
-    expect(find.text('단어 매칭'), findsOneWidget);
-    expect(h.state.answers[7]?['selectedAnswer'], 'c');
-    expect(tester.takeException(), isNull);
-  });
+    'real page restores a recognition draft and requires confirmation before advancing',
+    (tester) async {
+      final before = ResumeHarness();
+      await before.recognition();
+      before.controller.answerRecognition(before.repository.detail, {
+        'order': 2,
+        'selectedAnswer': 'b',
+        'responseMs': 0,
+      });
+      before.controller.selectRecognition('c');
+      final optionOrder = before.state.layout.recognitionOptions[7];
+      await before.controller.flush();
+      before.dispose();
+      final h = ResumeHarness(store: before.store);
+      addTearDown(h.dispose);
+      await _mount(tester, h);
+      final restored = tester.widget<LessonRecognitionCheckStep>(
+        find.byType(LessonRecognitionCheckStep),
+      );
+      expect(restored.currentIndex, 1);
+      expect(restored.selectedOptionId, 'c');
+      expect(restored.optionOrder, optionOrder);
+      expect(restored.confirmed, isFalse);
+      expect(h.repository.fetchCalls, 1);
+      expect(h.repository.startCalls, 0);
+      expect(h.repository.submitCalls, 0);
+
+      await tester.tap(find.text('마지막 보기'));
+      await tester.pumpAndSettle();
+      expect(h.state.recognitionSelection, 'd');
+      expect(h.state.answers[7], isNull);
+      await tester.tap(find.text('답안 확인'));
+      await tester.pumpAndSettle();
+      expect(h.state.recognitionIndex, 1);
+      expect(h.state.answers[7]?['selectedAnswer'], 'd');
+      expect(find.text('답안을 확인했어요'), findsOneWidget);
+      expect(h.repository.submitCalls, 0);
+
+      await tester.tap(find.text('다음 학습'));
+      await tester.pumpAndSettle();
+      expect(find.text('단어 매칭'), findsOneWidget);
+      expect(h.state.answers[7]?['selectedAnswer'], 'd');
+      expect(h.state.recognitionSelection, isNull);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'a confirmed recognition answer survives Previous and cold resume',
+    (tester) async {
+      final before = ResumeHarness();
+      addTearDown(before.dispose);
+      await before.recognition();
+      await _mount(tester, before);
+      await tester.tap(find.text('둘째 보기'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('답안 확인'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('이전'));
+      await tester.pumpAndSettle();
+      expect(before.state.step, LessonStep.guidedReading);
+      await tester.tap(find.text('다음학습'));
+      await tester.pumpAndSettle();
+      expect(find.text('다음 문제'), findsOneWidget);
+      await before.controller.flush();
+      await tester.pumpWidget(const SizedBox.shrink());
+
+      final h = ResumeHarness(store: before.store);
+      addTearDown(h.dispose);
+      await _mount(tester, h);
+      final resumed = tester.widget<LessonRecognitionCheckStep>(
+        find.byType(LessonRecognitionCheckStep),
+      );
+      expect(resumed.confirmed, isTrue);
+      expect(resumed.selectedOptionId, 'b');
+      expect(resumed.optionOrder, before.state.layout.recognitionOptions[2]);
+      expect(find.text('답안을 확인했어요'), findsOneWidget);
+      expect(h.repository.startCalls, 0);
+      await tester.tap(find.text('다음 문제'));
+      await tester.pumpAndSettle();
+      expect(h.state.recognitionIndex, 1);
+      expect(h.state.answers[2]?['selectedAnswer'], 'b');
+      expect(h.state.answers[7], isNull);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets(
       'all-matched restore never auto-submits and uses explicit continue',
@@ -109,7 +171,7 @@ void main() {
   });
 
   testWidgets(
-      'real old-account widget answer closure cannot change a new same-phase account',
+      'real old-account recognition callbacks cannot change a new same-phase account',
       (tester) async {
     final h = ResumeHarness();
     addTearDown(h.dispose);
@@ -117,18 +179,23 @@ void main() {
     await _mount(tester, h);
     final oldWidget = tester.widget<LessonRecognitionCheckStep>(
         find.byType(LessonRecognitionCheckStep));
-    final oldAnswer = oldWidget.onAnswer;
     h.account = 'account-b';
     h.container.invalidate(currentAccountIdProvider);
     await tester.pump();
     await tester.pumpAndSettle();
     await h.controller.startPractice(h.repository.detail);
+    h.controller.selectRecognition('b');
     await tester.pumpAndSettle();
     await h.controller.flush();
     expect(h.state.step, LessonStep.recognition);
     final before = Map<String, String>.from(h.store.values);
-    oldAnswer({'order': 2, 'selectedAnswer': 'a', 'responseMs': 0});
+    oldWidget.onSelectionChanged('a');
+    oldWidget.onConfirm();
+    oldWidget.onNext();
+    oldWidget.onPrevious?.call();
     await tester.pumpAndSettle();
+    expect(h.state.step, LessonStep.recognition);
+    expect(h.state.recognitionSelection, 'b');
     expect(h.state.answers, isEmpty);
     expect(h.state.recognitionIndex, 0);
     expect(h.store.values, before);
@@ -250,7 +317,7 @@ void main() {
             find.byType(LessonSentenceReorderStep))
         .onAnswer;
     h.store.writeGate = Completer<void>();
-    await tester.tap(find.byIcon(LucideIcons.x));
+    await tester.tap(find.byTooltip('레슨 나가기'));
     await tester.pump();
     oldAnswer({
       'order': 11,
@@ -279,7 +346,7 @@ void main() {
     await h.reorder();
     await _mountRouted(tester, h);
     h.store.failWrite = true;
-    await tester.tap(find.byIcon(LucideIcons.x));
+    await tester.tap(find.byTooltip('레슨 나가기'));
     await tester.pumpAndSettle();
     expect(find.text('최근 진행을 저장하지 못했어요'), findsOneWidget);
     expect(find.byType(LessonPage), findsOneWidget);
@@ -298,6 +365,28 @@ void main() {
     await tester.pumpAndSettle();
     expect(h.state.reorderIndex, 1);
     expect(h.repository.submitCalls, 0);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('home tab waits for lesson progress before leaving',
+      (tester) async {
+    final h = ResumeHarness();
+    addTearDown(h.dispose);
+    await h.reorder();
+    final bank = List<String>.from(h.state.layout.reorderBanks[11]!)
+      ..remove('は');
+    h.controller.updateReorder(selected: ['は'], available: bank);
+    await h.controller.flush();
+    final router = await _mountRouted(tester, h);
+    h.store.writeGate = Completer<void>();
+    await tester.tap(find.bySemanticsLabel('홈 탭'));
+    await tester.pump();
+    expect(find.byType(LessonPage), findsOneWidget);
+    h.store.writeGate!.complete();
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/home');
+    expect(find.byType(LessonPage), findsNothing);
+    expect(h.store.values.values.single, contains('"reorderSelected":["は"]'));
     expect(tester.takeException(), isNull);
   });
 }

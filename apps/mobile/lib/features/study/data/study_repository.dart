@@ -332,14 +332,29 @@ class ApiStudyRepository implements StudyRepository {
         int total,
         int totalPages,
         WrongAnswersSummary summary,
+        bool supportsSearchAndStatus,
       })> fetchWrongAnswers({
     int page = 1,
     String sort = 'most-wrong',
+    String search = '',
+    WrongAnswerStatus status = WrongAnswerStatus.all,
     int limit = 20,
   }) async {
+    final query = search.trim();
+    final statusFilter = switch (status) {
+      WrongAnswerStatus.all => null,
+      WrongAnswerStatus.learning => 'LEARNING',
+      WrongAnswerStatus.mastered => 'MASTERED',
+    };
     final response = await _dio.get<Map<String, dynamic>>(
       '/study/wrong-answers',
-      queryParameters: {'page': page, 'sort': sort, 'limit': limit},
+      queryParameters: {
+        'page': page,
+        'sort': sort,
+        'limit': limit,
+        if (query.isNotEmpty) 'search': query,
+        if (statusFilter != null) 'status': statusFilter,
+      },
     );
     final data = response.data!;
     return (
@@ -350,6 +365,7 @@ class ApiStudyRepository implements StudyRepository {
       totalPages: data['totalPages'] as int? ?? 1,
       summary:
           WrongAnswersSummary.fromJson(data['summary'] as Map<String, dynamic>),
+      supportsSearchAndStatus: data['supportsSearchAndStatus'] == true,
     );
   }
 
@@ -439,7 +455,7 @@ class ApiStudyRepository implements StudyRepository {
     bool preserveExisting = false,
     String? note,
   }) async {
-    await _dio.post('/wordbook/', data: {
+    final response = await _dio.post<Map<String, dynamic>>('/wordbook/', data: {
       'word': word,
       'reading': reading,
       'meaningKo': meaningKo,
@@ -447,6 +463,48 @@ class ApiStudyRepository implements StudyRepository {
       if (preserveExisting) 'preserveExisting': true,
       if (note != null) 'note': note,
     });
+    final entry = response.data;
+    if (source == 'MANUAL' &&
+        preserveExisting &&
+        (entry?['source'] != 'MANUAL' ||
+            entry?['reading'] != reading ||
+            entry?['meaningKo'] != meaningKo)) {
+      throw const ApiException(
+        statusCode: 409,
+        message: '이미 단어장에 있는 단어예요.',
+      );
+    }
+  }
+
+  @override
+  Future<WordbookEntryModel> fetchWordbookEntry(String id) async {
+    final response = await _dio.get<Map<String, dynamic>>('/wordbook/$id');
+    return WordbookEntryModel.fromJson(response.data!);
+  }
+
+  @override
+  Future<void> updateWordbookEntry(
+    String id, {
+    required String word,
+    required String reading,
+    required String meaningKo,
+  }) async {
+    final response =
+        await _dio.patch<Map<String, dynamic>>('/wordbook/$id', data: {
+      'word': word,
+      'reading': reading,
+      'meaningKo': meaningKo,
+    });
+    final entry = response.data;
+    // Older servers accept this request but ignore the word fields.
+    if (entry?['word'] != word ||
+        entry?['reading'] != reading ||
+        entry?['meaningKo'] != meaningKo) {
+      throw const ApiException(
+        errorCode: 'WORDBOOK_EDIT_UNAVAILABLE',
+        message: '단어 수정 기능을 사용할 수 없어요. 잠시 후 다시 시도해 주세요.',
+      );
+    }
   }
 
   @override

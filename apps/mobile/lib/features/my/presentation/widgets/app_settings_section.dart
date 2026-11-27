@@ -6,11 +6,14 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/device_settings_provider.dart';
+import '../../../../core/providers/installed_app_version_provider.dart';
 import '../../../../core/providers/notification_settings_provider.dart';
 import '../../../../core/providers/quiz_settings_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../providers/settings_sync_provider.dart';
+import 'my_settings_group.dart';
+import 'my_settings_toggle_tile.dart';
 
 class AppSettingsSection extends ConsumerWidget {
   const AppSettingsSection({super.key});
@@ -18,153 +21,128 @@ class AppSettingsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final light = theme.brightness == Brightness.light;
+    final valueStyle = TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      height: 1.5,
+      letterSpacing: -0.35,
+      color:
+          light ? const Color(0xFF767676) : theme.colorScheme.onSurfaceVariant,
+    );
     final themeMode = ref.watch(themeProvider);
     final deviceSettings = ref.watch(deviceSettingsProvider);
     final userPreferences = ref.watch(quizSettingsProvider);
+    final version = ref.watch(installedAppVersionProvider).value;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 6),
-          child: Text(
-            '앱 설정',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-          ),
-        ),
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
+    return MySettingsGroup(
+      label: '앱 설정',
+      rows: [
+        ListTile(
+          leading: const MySettingsIcon('app-version'),
+          title: Row(
             children: [
-              // Theme
-              ListTile(
-                leading: const Icon(LucideIcons.palette,
-                    size: 20, color: AppColors.purple),
-                title: const Text('테마 선택', style: TextStyle(fontSize: 14)),
-                trailing: Text(
-                  _themeModeLabel(themeMode),
-                  style: TextStyle(
-                      fontSize: 14,
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.6)),
-                ),
-                onTap: () => _showThemeSheet(context, ref, themeMode),
+              const Expanded(
+                child: Text('앱 버전', style: TextStyle(fontSize: 14)),
               ),
-              const Divider(height: 1),
-
-              // Furigana
-              SwitchListTile(
-                secondary: const Icon(LucideIcons.languages,
-                    size: 20, color: AppColors.mintPressed),
-                title:
-                    const Text('읽기(후리가나) 표시', style: TextStyle(fontSize: 14)),
-                subtitle: Text(
-                  '퀴즈에서 한자 위에 히라가나 표시',
-                  style: TextStyle(
-                      fontSize: 12,
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  version ?? '—',
+                  semanticsLabel: version ?? '앱 버전 정보 없음',
+                  textAlign: TextAlign.end,
+                  style: valueStyle,
                 ),
-                value: userPreferences.showFurigana,
-                onChanged: (value) async {
-                  unawaited(HapticService().selection());
-                  try {
-                    await ref
-                        .read(settingsSyncServiceProvider)
-                        .updateShowFurigana(value);
-                  } catch (_) {
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('후리가나 설정 저장에 실패했습니다'),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  }
-                },
-              ),
-              const Divider(height: 1),
-
-              // Sound Effects
-              const _SoundToggle(),
-              const Divider(height: 1),
-
-              // Haptic Feedback
-              const _HapticToggle(),
-              const Divider(height: 1),
-
-              // Study Reminder
-              SwitchListTile(
-                secondary: const Icon(LucideIcons.bell,
-                    size: 20, color: AppColors.sakura),
-                title: const Text('학습 리마인더', style: TextStyle(fontSize: 14)),
-                subtitle: Text(
-                  '매일 설정한 시간에 알림',
-                  style: TextStyle(
-                      fontSize: 12,
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-                ),
-                value: deviceSettings.reminderEnabled,
-                onChanged: (value) {
-                  HapticService().selection();
-                  unawaited(
-                    ref
-                        .read(notificationSettingsProvider.notifier)
-                        .setReminderEnabled(value),
-                  );
-                },
-              ),
-              if (deviceSettings.reminderEnabled) ...[
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(LucideIcons.clock,
-                      size: 20, color: AppColors.sakura),
-                  title: const Text('리마인더 시간', style: TextStyle(fontSize: 14)),
-                  trailing: Text(
-                    deviceSettings.reminderTimeLabel,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.sakura,
-                    ),
-                  ),
-                  onTap: () => _showTimePicker(context, ref),
-                ),
-              ],
-              const Divider(height: 1),
-
-              // Streak Defense
-              SwitchListTile(
-                secondary: const Icon(LucideIcons.flame,
-                    size: 20, color: AppColors.streak),
-                title: const Text('스트릭 방어 알림', style: TextStyle(fontSize: 14)),
-                subtitle: Text(
-                  '매일 22:00에 학습 리마인더',
-                  style: TextStyle(
-                      fontSize: 12,
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-                ),
-                value: deviceSettings.streakDefenseEnabled,
-                onChanged: (value) {
-                  HapticService().selection();
-                  unawaited(
-                    ref
-                        .read(notificationSettingsProvider.notifier)
-                        .setStreakDefenseEnabled(value),
-                  );
-                },
               ),
             ],
           ),
+        ),
+        // Theme
+        ListTile(
+          leading: const MySettingsIcon('theme'),
+          title: const Text('테마 선택', style: TextStyle(fontSize: 14)),
+          trailing: Text(
+            _themeModeLabel(themeMode),
+            style: valueStyle,
+          ),
+          onTap: () => _showThemeSheet(context, ref, themeMode),
+        ),
+
+        // Furigana
+        MySettingsToggleTile(
+          leading: const MySettingsIcon('furigana'),
+          title: const Text('읽기(후리가나) 표시', style: TextStyle(fontSize: 14)),
+          subtitle: const Text('퀴즈에서 한자 위에 히라가나 표시'),
+          value: userPreferences.showFurigana,
+          onChanged: (value) async {
+            unawaited(HapticService().selection());
+            try {
+              await ref
+                  .read(settingsSyncServiceProvider)
+                  .updateShowFurigana(value);
+            } catch (_) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('후리가나 설정 저장에 실패했습니다'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          },
+        ),
+
+        // Sound Effects
+        const _SoundToggle(),
+
+        // Haptic Feedback
+        const _HapticToggle(),
+
+        // Study Reminder
+        MySettingsToggleTile(
+          leading: const MySettingsIcon('reminder'),
+          title: const Text('학습 리마인더', style: TextStyle(fontSize: 14)),
+          subtitle: const Text('매일 설정한 시간에 알림'),
+          value: deviceSettings.reminderEnabled,
+          onChanged: (value) {
+            HapticService().selection();
+            unawaited(
+              ref
+                  .read(notificationSettingsProvider.notifier)
+                  .setReminderEnabled(value),
+            );
+          },
+        ),
+        if (deviceSettings.reminderEnabled) ...[
+          ListTile(
+            leading: const MySettingsIcon('reminder-time'),
+            tileColor: light
+                ? AppColors.redesignSurface
+                : theme.colorScheme.surfaceContainerHigh,
+            title: const Text('리마인더 시간', style: TextStyle(fontSize: 14)),
+            trailing: Text(
+              deviceSettings.reminderTimeLabel,
+              style: valueStyle,
+            ),
+            onTap: () => _showTimePicker(context, ref),
+          ),
+        ],
+
+        // Streak Defense
+        MySettingsToggleTile(
+          leading: const MySettingsIcon('streak-reminder'),
+          title: const Text('연속학습 알림', style: TextStyle(fontSize: 14)),
+          subtitle: const Text('매일 22:00에 학습 리마인더'),
+          value: deviceSettings.streakDefenseEnabled,
+          onChanged: (value) {
+            HapticService().selection();
+            unawaited(
+              ref
+                  .read(notificationSettingsProvider.notifier)
+                  .setStreakDefenseEnabled(value),
+            );
+          },
         ),
       ],
     );
@@ -273,21 +251,11 @@ class _SoundToggle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final settings = ref.watch(deviceSettingsProvider);
-    return SwitchListTile(
-      secondary: const Icon(
-        LucideIcons.volume2,
-        size: 20,
-        color: AppColors.mintPressed,
-      ),
+    return MySettingsToggleTile(
+      leading: const MySettingsIcon('sound'),
       title: const Text('효과음', style: TextStyle(fontSize: 14)),
-      subtitle: Text(
-        '정답/오답 시 효과음 재생',
-        style: TextStyle(
-            fontSize: 12,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-      ),
+      subtitle: const Text('정답/오답 시 효과음 재생'),
       value: settings.soundEnabled,
       onChanged: (value) {
         HapticService().selection();
@@ -304,21 +272,11 @@ class _HapticToggle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final settings = ref.watch(deviceSettingsProvider);
-    return SwitchListTile(
-      secondary: const Icon(
-        LucideIcons.vibrate,
-        size: 20,
-        color: AppColors.purple,
-      ),
+    return MySettingsToggleTile(
+      leading: const MySettingsIcon('vibration'),
       title: const Text('진동 피드백', style: TextStyle(fontSize: 14)),
-      subtitle: Text(
-        '터치 시 진동으로 반응',
-        style: TextStyle(
-            fontSize: 12,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-      ),
+      subtitle: const Text('터치 시 진동으로 반응'),
       value: settings.hapticEnabled,
       onChanged: (value) {
         // Fire haptic BEFORE disabling (so user feels the last toggle)

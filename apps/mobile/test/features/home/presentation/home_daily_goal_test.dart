@@ -44,16 +44,17 @@ void main() {
         child: const MaterialApp(home: HomePage()),
       ));
       await tester.pumpAndSettle();
-      expect(find.text('오늘 20/20개'), findsOneWidget);
+      expect(find.text('20 / 20개'), findsOneWidget);
       expect(find.text('100%'), findsOneWidget);
 
       final failed = Completer<DashboardModel>();
       response = failed.future;
       container.invalidate(dashboardProvider);
       await tester.pump();
-      expect(find.text('오늘 20/20개'), findsNothing);
+      expect(find.text('20 / 20개'), findsNothing);
       expect(find.text('100%'), findsNothing);
-      expect(find.text('오늘 학습량 확인 필요'), findsOneWidget);
+      expect(find.text('오늘 학습량 확인 필요'), findsNothing);
+      expect(find.text('0%'), findsNothing);
       failed.completeError(StateError('synthetic unavailable dashboard'));
       await tester.pumpAndSettle();
       expect(find.text('오늘 학습량 확인 필요'), findsOneWidget);
@@ -62,7 +63,7 @@ void main() {
       response = Future.value(_dashboard('2026-10-30', 8));
       container.invalidate(dashboardProvider);
       await tester.pumpAndSettle();
-      expect(find.text('오늘 8/20개'), findsOneWidget);
+      expect(find.text('8 / 20개'), findsOneWidget);
       expect(find.text('40%'), findsOneWidget);
 
       now = DateTime.utc(2026, 10, 30, 15);
@@ -70,14 +71,14 @@ void main() {
       await tester.pumpAndSettle();
       expect(requests, 4);
       // Even a successful stale server response cannot become the new day.
-      expect(find.text('오늘 8/20개'), findsNothing);
+      expect(find.text('8 / 20개'), findsNothing);
       expect(find.text('40%'), findsNothing);
       expect(find.text('오늘 학습량 확인 필요'), findsOneWidget);
 
       response = Future.value(_dashboard('2026-10-31', 0));
       container.invalidate(dashboardProvider);
       await tester.pumpAndSettle();
-      expect(find.text('오늘 0/20개'), findsOneWidget);
+      expect(find.text('0 / 20개'), findsOneWidget);
       expect(find.text('0%'), findsOneWidget);
     } finally {
       await tester.pumpWidget(const SizedBox());
@@ -112,9 +113,11 @@ void main() {
       account = 'account-b';
       pending.complete(_dashboard('2026-10-30', 20));
       await tester.pumpAndSettle();
-      expect(find.text('오늘 20/20개'), findsNothing);
+      expect(find.text('20 / 20개'), findsNothing);
       expect(find.text('100%'), findsNothing);
       expect(find.text('오늘 학습량 확인 필요'), findsOneWidget);
+      final start = find.widgetWithText(FilledButton, '오늘의 단어 학습하기');
+      expect(tester.widget<FilledButton>(start).onPressed, isNull);
     } finally {
       await tester.pumpWidget(const SizedBox());
       container.dispose();

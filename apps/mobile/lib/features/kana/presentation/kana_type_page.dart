@@ -83,10 +83,8 @@ class KanaTypePage extends ConsumerWidget {
                   ),
                   const SizedBox(height: AppSizes.md),
 
-                  if (type == 'katakana') ...[
-                    const _KatakanaPilotEntry(),
-                    const SizedBox(height: AppSizes.md),
-                  ],
+                  _KanaPilotEntry(hiragana: kanaType == 'HIRAGANA'),
+                  const SizedBox(height: AppSizes.md),
 
                   // Stage cards
                   ...stages.map((stage) {
@@ -240,17 +238,15 @@ class KanaTypePage extends ConsumerWidget {
     );
   }
 
-  Widget _withPilotEntry(Widget content) => type != 'katakana'
-      ? content
-      : Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(AppSizes.md),
-              child: _KatakanaPilotEntry(),
-            ),
-            Expanded(child: content),
-          ],
-        );
+  Widget _withPilotEntry(Widget content) => Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(AppSizes.md),
+            child: _KanaPilotEntry(hiragana: kanaType == 'HIRAGANA'),
+          ),
+          Expanded(child: content),
+        ],
+      );
 
   Widget _quizModeButton(
     BuildContext context,
@@ -269,8 +265,10 @@ class KanaTypePage extends ConsumerWidget {
   }
 }
 
-class _KatakanaPilotEntry extends StatelessWidget {
-  const _KatakanaPilotEntry();
+class _KanaPilotEntry extends StatelessWidget {
+  const _KanaPilotEntry({required this.hiragana});
+
+  final bool hiragana;
 
   @override
   Widget build(BuildContext context) {
@@ -280,13 +278,17 @@ class _KatakanaPilotEntry extends StatelessWidget {
       color: colors.surfaceContainerLowest,
       child: ListTile(
         leading: Icon(LucideIcons.pencil, color: colors.primary),
-        title: const Text('닮은 가타카나 집중 연습'),
-        subtitle: const Text('닮은 글자 3묶음 · 획순부터 단어까지'),
+        title: Text(hiragana ? '히라가나 쓰기 연습' : '가타카나 쓰기 연습'),
+        subtitle: const Text('기본 글자 · 탁음·반탁음 · 작은 글자'),
         trailing: const Icon(LucideIcons.chevronRight),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSizes.cardRadius),
         ),
-        onTap: () => context.push('/study/kana/katakana/focus'),
+        onTap: () => context.push(
+          hiragana
+              ? '/study/kana/hiragana/focus'
+              : '/study/kana/katakana/focus',
+        ),
       ),
     );
   }
