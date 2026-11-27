@@ -5,6 +5,8 @@ class WordbookEntryModel {
   final String meaningKo;
   final String source;
   final String? note;
+  final String? exampleSentence;
+  final String? exampleTranslation;
   final String createdAt;
 
   const WordbookEntryModel({
@@ -14,6 +16,8 @@ class WordbookEntryModel {
     required this.meaningKo,
     required this.source,
     this.note,
+    this.exampleSentence,
+    this.exampleTranslation,
     required this.createdAt,
   });
 
@@ -25,6 +29,8 @@ class WordbookEntryModel {
       meaningKo: json['meaningKo'] as String,
       source: json['source'] as String? ?? 'MANUAL',
       note: json['note'] as String?,
+      exampleSentence: json['exampleSentence'] as String?,
+      exampleTranslation: json['exampleTranslation'] as String?,
       createdAt: json['createdAt'] as String,
     );
   }

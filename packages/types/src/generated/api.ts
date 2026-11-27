@@ -4983,6 +4983,33 @@ export interface components {
              */
             preserveExisting?: boolean;
         };
+        WordbookEditableText: string;
+        /** WordbookEntryDetailResponse */
+        WordbookEntryDetailResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Word */
+            word: string;
+            /** Reading */
+            reading: string;
+            /** Meaningko */
+            meaningKo: string;
+            source: components["schemas"]["WordbookSource"];
+            /** Note */
+            note?: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /** Examplesentence */
+            exampleSentence?: string | null;
+            /** Exampletranslation */
+            exampleTranslation?: string | null;
+        };
         /** WordbookEntryResponse */
         WordbookEntryResponse: {
             /**
@@ -5027,6 +5054,9 @@ export interface components {
         WordbookUpdateRequest: {
             /** Note */
             note?: string | null;
+            word?: components["schemas"]["WordbookEditableText"] | null;
+            reading?: components["schemas"]["WordbookEditableText"] | null;
+            meaningKo?: components["schemas"]["WordbookEditableText"] | null;
         };
         /** WrongAnswer */
         WrongAnswer: {
@@ -7938,7 +7968,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["WordbookEntryResponse"];
+                    "application/json": components["schemas"]["WordbookEntryDetailResponse"];
                 };
             };
             /** @description Validation Error */
@@ -8008,6 +8038,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["WordbookEntryResponse"];
                 };
+            };
+            /** @description Only manually added words can be edited */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The word already exists in your wordbook */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

@@ -455,7 +455,7 @@ class ApiStudyRepository implements StudyRepository {
     bool preserveExisting = false,
     String? note,
   }) async {
-    await _dio.post('/wordbook/', data: {
+    final response = await _dio.post<Map<String, dynamic>>('/wordbook/', data: {
       'word': word,
       'reading': reading,
       'meaningKo': meaningKo,
@@ -463,6 +463,48 @@ class ApiStudyRepository implements StudyRepository {
       if (preserveExisting) 'preserveExisting': true,
       if (note != null) 'note': note,
     });
+    final entry = response.data;
+    if (source == 'MANUAL' &&
+        preserveExisting &&
+        (entry?['source'] != 'MANUAL' ||
+            entry?['reading'] != reading ||
+            entry?['meaningKo'] != meaningKo)) {
+      throw const ApiException(
+        statusCode: 409,
+        message: '이미 단어장에 있는 단어예요.',
+      );
+    }
+  }
+
+  @override
+  Future<WordbookEntryModel> fetchWordbookEntry(String id) async {
+    final response = await _dio.get<Map<String, dynamic>>('/wordbook/$id');
+    return WordbookEntryModel.fromJson(response.data!);
+  }
+
+  @override
+  Future<void> updateWordbookEntry(
+    String id, {
+    required String word,
+    required String reading,
+    required String meaningKo,
+  }) async {
+    final response =
+        await _dio.patch<Map<String, dynamic>>('/wordbook/$id', data: {
+      'word': word,
+      'reading': reading,
+      'meaningKo': meaningKo,
+    });
+    final entry = response.data;
+    // Older servers accept this request but ignore the word fields.
+    if (entry?['word'] != word ||
+        entry?['reading'] != reading ||
+        entry?['meaningKo'] != meaningKo) {
+      throw const ApiException(
+        errorCode: 'WORDBOOK_EDIT_UNAVAILABLE',
+        message: '단어 수정 기능을 사용할 수 없어요. 잠시 후 다시 시도해 주세요.',
+      );
+    }
   }
 
   @override

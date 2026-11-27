@@ -4883,7 +4883,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/WordbookEntryResponse"
+                  "$ref": "#/components/schemas/WordbookEntryDetailResponse"
                 }
               }
             }
@@ -4943,6 +4943,12 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Only manually added words can be edited"
+          },
+          "409": {
+            "description": "The word already exists in your wordbook"
           },
           "422": {
             "description": "Validation Error",
@@ -15278,6 +15284,82 @@
         ],
         "title": "WordbookCreateRequest"
       },
+      "WordbookEditableText": {
+        "type": "string",
+        "minLength": 1
+      },
+      "WordbookEntryDetailResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "word": {
+            "type": "string",
+            "title": "Word"
+          },
+          "reading": {
+            "type": "string",
+            "title": "Reading"
+          },
+          "meaningKo": {
+            "type": "string",
+            "title": "Meaningko"
+          },
+          "source": {
+            "$ref": "#/components/schemas/WordbookSource"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "exampleSentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Examplesentence"
+          },
+          "exampleTranslation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exampletranslation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "word",
+          "reading",
+          "meaningKo",
+          "source",
+          "createdAt"
+        ],
+        "title": "WordbookEntryDetailResponse"
+      },
       "WordbookEntryResponse": {
         "properties": {
           "id": {
@@ -15385,6 +15467,36 @@
               }
             ],
             "title": "Note"
+          },
+          "word": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WordbookEditableText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reading": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WordbookEditableText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meaningKo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WordbookEditableText"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",

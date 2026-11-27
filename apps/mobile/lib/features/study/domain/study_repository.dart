@@ -135,6 +135,15 @@ abstract class StudyRepository {
     String? note,
   });
 
+  Future<WordbookEntryModel> fetchWordbookEntry(String id);
+
+  Future<void> updateWordbookEntry(
+    String id, {
+    required String word,
+    required String reading,
+    required String meaningKo,
+  });
+
   Future<void> deleteWord(String id);
 
   Future<String> fetchTtsUrl(String vocabId);
