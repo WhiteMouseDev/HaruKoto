@@ -86,6 +86,7 @@ flutter:
     - assets/sounds/
     - assets/icons/
     - assets/images/characters/
+    - assets/images/conversation/
   fonts:
     # https://github.com/orioncactus/pretendard/releases/tag/v1.3.9
     - family: Pretendard

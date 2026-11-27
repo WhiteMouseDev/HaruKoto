@@ -48,9 +48,10 @@ void main() {
       ));
       await tester.pumpAndSettle();
       expect(find.text('회화 연습'), findsOneWidget);
-      expect(find.text('친구와 통화'), findsOneWidget);
+      expect(find.text('AI 친구 통화'), findsOneWidget);
       expect(find.text('여행').hitTestable(), findsOneWidget);
-      final freeChat = find.widgetWithText(TextButton, '글로 자유롭게 연습');
+      final freeChat =
+          find.byKey(const ValueKey('conversation-text-practice-banner'));
       await tester.scrollUntilVisible(
         freeChat,
         80,
@@ -63,8 +64,8 @@ void main() {
           lessThan(tester.getTopLeft(freeChat).dy));
       expect(freeChat.hitTestable(), findsOneWidget);
       expect(tester.getSize(freeChat).height, greaterThanOrEqualTo(48));
-      await tester.ensureVisible(find.text('친구와 통화'));
-      await tester.tap(find.text('친구와 통화'));
+      await tester.ensureVisible(find.text('AI 친구 통화'));
+      await tester.tap(find.text('AI 친구 통화'));
       await tester.pumpAndSettle();
       expect(find.text('친구에게 전화하기'), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -131,6 +132,30 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('the full text practice banner opens text practice',
+      (tester) async {
+    var freeChatRequests = 0;
+    await tester.pumpWidget(ProviderScope(
+      overrides: [chatHistoryProvider.overrideWith((ref) async => [])],
+      child: MaterialApp(
+        home: Scaffold(
+          body: TextTab(
+            onFreeChat: () => freeChatRequests++,
+            onSelectCategory: (category) {},
+          ),
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    final banner =
+        find.byKey(const ValueKey('conversation-text-practice-banner'));
+    await tester.tapAt(tester.getTopLeft(banner) + const Offset(12, 12));
+    await tester.tap(find.text('대화가 부담스럽다면?'));
+    await tester.tap(find.text('글로 자유롭게 연습하기'));
+    expect(freeChatRequests, 3);
+  });
 
   testWidgets('expression recall and save lead to the existing wordbook',
       (tester) async {

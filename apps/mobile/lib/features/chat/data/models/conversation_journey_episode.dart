@@ -10,6 +10,7 @@ class ConversationJourneyEpisode {
     required this.examples,
     required this.meanings,
     this.estimatedMinutes = 3,
+    this.hubDescription,
   });
 
   final int number;
@@ -18,17 +19,33 @@ class ConversationJourneyEpisode {
   final List<String> goals;
   final int estimatedMinutes;
   final String place;
+  final String? hubDescription;
   final List<String> keywords;
   final List<String> examples;
   final List<String> meanings;
+
+  int estimatedMinutesWithFallback(int? scenarioMinutes) {
+    return scenarioMinutes != null && scenarioMinutes > 0
+        ? scenarioMinutes
+        : estimatedMinutes;
+  }
+
+  String descriptionWithFallback(String? scenarioDescription) {
+    final description = scenarioDescription?.trim() ?? '';
+    return hubDescription ??
+        (description.isNotEmpty ? description : goals.firstOrNull ?? '');
+  }
 }
+
+const tokyoFirstDayTitle = '도쿄에서의 첫날';
 
 const tokyoFirstDayEpisodes = [
   ConversationJourneyEpisode(
     number: 1,
     scenarioId: '7089ccbe-53d2-5263-a1be-a6975a2d4072',
     title: '공항에서 시내행 열차표 사기',
-    place: '공항 교통 안내소',
+    place: '공항 매표소',
+    hubDescription: '공항 매표소에서 신주쿠까지 가는 열차를 물어보고 표 한 장을 사요.',
     goals: ['시내행 열차편 묻기', '목적지를 말하고 표 요청하기'],
     keywords: ['新宿・電車', '新宿・切符'],
     examples: ['新宿へはどの電車に乗ればいいですか。', '新宿までの切符を一枚お願いします。'],

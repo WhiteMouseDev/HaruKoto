@@ -4,18 +4,7 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/services/haptic_service.dart';
 import '../../data/models/scenario_model.dart';
-
-final _difficultyStyles = {
-  'BEGINNER': const _DiffStyle('초급', AppColors.difficultyBeginner),
-  'INTERMEDIATE': const _DiffStyle('중급', AppColors.difficultyIntermediate),
-  'ADVANCED': const _DiffStyle('고급', AppColors.difficultyAdvanced),
-};
-
-class _DiffStyle {
-  final String label;
-  final Color color;
-  const _DiffStyle(this.label, this.color);
-}
+import '../scenario_difficulty.dart';
 
 class ScenarioCard extends StatelessWidget {
   final ScenarioModel scenario;
@@ -35,8 +24,12 @@ class ScenarioCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final diff = _difficultyStyles[scenario.difficulty] ??
-        _DiffStyle(scenario.difficulty, AppColors.overlay(0.5));
+    final difficultyColor = switch (scenario.difficulty) {
+      'BEGINNER' => AppColors.difficultyBeginner,
+      'INTERMEDIATE' => AppColors.difficultyIntermediate,
+      'ADVANCED' => AppColors.difficultyAdvanced,
+      _ => AppColors.overlay(0.5),
+    };
 
     return Material(
       color: Colors.transparent,
@@ -74,15 +67,15 @@ class ScenarioCard extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: diff.color.withValues(alpha: 0.15),
+                            color: difficultyColor.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            diff.label,
+                            scenarioDifficultyLabel(scenario.difficulty),
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
-                              color: diff.color,
+                              color: difficultyColor,
                             ),
                           ),
                         ),

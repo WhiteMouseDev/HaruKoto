@@ -37,13 +37,13 @@ class ScenarioPreparationSheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 child: ConversationJourneyScene(
                   episodeNumber: episode.number,
-                  height: 84,
+                  height: 104,
                 ),
               ),
               const SizedBox(height: AppSizes.gap),
               Text(
                 '도쿄 첫날 · ${episode.number.toString().padLeft(2, '0')}'
-                ' · 약 ${episode.estimatedMinutes}분',
+                ' · 약 ${episode.estimatedMinutesWithFallback(scenario.estimatedMinutes)}분',
                 style: theme.textTheme.labelMedium?.copyWith(
                   color: accent,
                   fontWeight: FontWeight.w700,
