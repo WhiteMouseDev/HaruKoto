@@ -44,3 +44,7 @@ Widgetbook의 AppCard에서 기본 카드와 복습·퀴즈의 채움 스타일�
 4. 후속 화면은 적용하려는 카드·입력·시트의 Figma 컴포넌트와 상태가 확인되는 순서로 진행한다.
 
 첫 적용에서 Flutter 테스트 1,615개와 정적 분석이 통과했다. [공용 버튼 테스트](../../../apps/mobile/test/shared/widgets/haru_button_styles_test.dart)에서 시각 높이와 터치 영역, 비활성 색, 미선택 탭 클릭을 확인했다. 375pt iOS 시뮬레이터에서 같은 예시 데이터로 전후를 비교한 홈 학습 카드, 학습 화면 상단, 퀴즈 화면 상단의 픽셀은 일치했다. 라이트·다크 공용 버튼과 탭을 직접 눌러 동작도 확인했다.
+
+## 오늘 학습 시트 핸들
+
+오늘 학습 시트는 공용 `AppSheetHandle.todayStudy()`의 36×3pt 캡슐형 핸들을 사용한다. 위쪽 여백은 20pt다. 라이트 색은 시안의 `#C9C9CF`를 적용했고, 다크 색은 기존 앱 테마의 표면 위 글자색을 불투명도 20%로 사용한다. [피그마 핸들 인스턴스](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=179-4457&sublayer-id=I179-4457%3B179-4454)
