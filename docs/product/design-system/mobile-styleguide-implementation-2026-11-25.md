@@ -26,6 +26,16 @@ Figma의 `hover` 변형은 `#FF5173`이다. 모바일에서 손가락으로 누�
 
 [공용 타이포그래피](../../../apps/mobile/lib/core/theme/haru_typography.dart)는 Figma의 자간 백분율을 Flutter의 논리 픽셀로 환산한다. 화면에서 글자의 색 역할을 정한다.
 
+## 복습·퀴즈 카드
+
+[학습 복습 카드](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=60-1790)와 [퀴즈 시작 카드](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=120-1070)는 [`AppCard.compactSurface`](../../../apps/mobile/lib/shared/widgets/app_card.dart)를 사용한다. 두 화면 시안의 공통 배경 `#F7F7FB`, 반경 12pt, 기본 안쪽 여백 16pt를 맞췄다. 다크 배경은 각 화면의 역할을 따르고, 복습 상태별 정보와 퀴즈 시작 동작은 각 화면에서 정의한다. 42pt 버튼의 아래쪽 터치 여백 3pt를 고려해 화면에 보이는 카드 여백을 맞춘다.
+
+Widgetbook의 AppCard에서 기본 카드와 복습·퀴즈의 채움 스타일을 라이트·다크 모드로 확인할 수 있다.
+
+## 홈 학습 바텀시트
+
+홈에서 여는 오늘 학습 시트와 학습 진입 흐름의 이어하기 선택 시트는 공용 20pt 상단 반경을 쓴다. 이어하기 선택 시트도 공용 40×4pt 핸들을 사용한다. 같은 데이터의 375pt iOS 캡처에서 두 시트의 라이트·다크 화면을 전후 비교했고 앱 영역의 픽셀은 일치했다. 자유퀴즈 설정의 24pt 반경은 시안에 맞춘 별도 값이다. [공용 핸들](../../../apps/mobile/lib/shared/widgets/app_sheet_handle.dart) · [학습 진입](../../../apps/mobile/lib/features/study/presentation/study_entry_flow.dart)
+
 ## 화면 적용과 검증
 
 1. 화면의 Figma 인스턴스를 선택하고 연결된 가이드 컴포넌트, 버전과 변형을 확인한다. 화면에서 별도로 지정한 값도 함께 기록한다.
@@ -34,3 +44,7 @@ Figma의 `hover` 변형은 `#FF5173`이다. 모바일에서 손가락으로 누�
 4. 후속 화면은 적용하려는 카드·입력·시트의 Figma 컴포넌트와 상태가 확인되는 순서로 진행한다.
 
 첫 적용에서 Flutter 테스트 1,615개와 정적 분석이 통과했다. [공용 버튼 테스트](../../../apps/mobile/test/shared/widgets/haru_button_styles_test.dart)에서 시각 높이와 터치 영역, 비활성 색, 미선택 탭 클릭을 확인했다. 375pt iOS 시뮬레이터에서 같은 예시 데이터로 전후를 비교한 홈 학습 카드, 학습 화면 상단, 퀴즈 화면 상단의 픽셀은 일치했다. 라이트·다크 공용 버튼과 탭을 직접 눌러 동작도 확인했다.
+
+## 오늘 학습 시트 핸들
+
+오늘 학습 시트는 공용 `AppSheetHandle.todayStudy()`의 36×3pt 캡슐형 핸들을 사용한다. 위쪽 여백은 20pt다. 라이트 색은 시안의 `#C9C9CF`를 적용했고, 다크 색은 기존 앱 테마의 표면 위 글자색을 불투명도 20%로 사용한다. [피그마 핸들 인스턴스](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=179-4457&sublayer-id=I179-4457%3B179-4454)

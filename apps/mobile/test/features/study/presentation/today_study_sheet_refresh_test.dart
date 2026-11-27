@@ -18,9 +18,43 @@ import 'package:harukoto_mobile/features/study/presentation/widgets/today_study_
 import 'package:harukoto_mobile/features/study/presentation/widgets/today_study_start_button.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
 import 'package:harukoto_mobile/shared/widgets/app_error_retry.dart';
+import 'package:harukoto_mobile/shared/widgets/app_sheet_handle.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  for (final brightness in Brightness.values) {
+    testWidgets('today sheet handle uses the approved size in $brightness',
+        (tester) async {
+      final container =
+          await _pumpSheet(tester, _Scenario(), brightness: brightness);
+      try {
+        final handle = find.descendant(
+          of: find.byType(AppSheetHandle),
+          matching: find.byType(Container),
+        );
+        final sheet = tester.getRect(find.byType(TodayStudySheet));
+        final bounds = tester.getRect(handle);
+        expect(bounds.size, const Size(36, 3));
+        expect(bounds.center.dx, sheet.center.dx);
+        expect(bounds.top - sheet.top, 20);
+
+        final decoration =
+            tester.widget<Container>(handle).decoration! as BoxDecoration;
+        final colors = Theme.of(tester.element(handle)).colorScheme;
+        expect(decoration.borderRadius, BorderRadius.circular(500));
+        expect(
+          decoration.color,
+          brightness == Brightness.light
+              ? const Color(0xFFC9C9CF)
+              : colors.onSurface.withValues(alpha: 0.2),
+        );
+      } finally {
+        await tester.pumpWidget(const SizedBox());
+        container.dispose();
+      }
+    });
+  }
+
   testWidgets('small sheet scrolls to the live grammar recommendation',
       (tester) async {
     final scenario = _Scenario()
@@ -258,6 +292,7 @@ Future<ProviderContainer> _pumpSheet(
   String category = 'VOCABULARY',
   Size viewport = const Size(390, 900),
   double textScale = 1,
+  Brightness brightness = Brightness.light,
 }) async {
   tester.view.physicalSize = viewport;
   tester.view.devicePixelRatio = 1;
@@ -276,6 +311,7 @@ Future<ProviderContainer> _pumpSheet(
   await tester.pumpWidget(UncontrolledProviderScope(
     container: container,
     child: MaterialApp(
+      theme: ThemeData(brightness: brightness),
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context)
             .copyWith(textScaler: TextScaler.linear(textScale)),
