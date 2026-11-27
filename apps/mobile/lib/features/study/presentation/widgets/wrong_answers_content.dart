@@ -8,11 +8,17 @@ import '../../../../core/theme/text_theme.dart';
 import '../../../../shared/widgets/pagination_footer.dart';
 import '../../data/models/word_entry_model.dart';
 import '../../providers/wrong_answers_provider.dart';
+import 'study_list_sort_menu.dart';
 import 'study_list_status.dart';
 import 'wordbook_search_field.dart';
 import 'wrong_answer_card.dart';
 import 'wrong_answers_overview.dart';
-import 'wrong_answers_sort_menu.dart';
+
+const _wrongAnswersSortOptions = [
+  ('most-wrong', '많이 틀린 순'),
+  ('recent', '최근 순'),
+  ('alphabetical', '가나다 순'),
+];
 
 class WrongAnswersContent extends StatelessWidget {
   const WrongAnswersContent({
@@ -137,9 +143,11 @@ class WrongAnswersContent extends StatelessWidget {
                         ),
                       ),
                     ),
-                    WrongAnswersSortMenu(
+                    StudyListSortMenu(
+                      options: _wrongAnswersSortOptions,
                       activeSort: state.sort,
                       onSortChanged: onSortChanged,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                   ],
                 ),

@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/auth/current_account_provider.dart';
 import '../../../core/constants/colors.dart';
+import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../../core/theme/haru_typography.dart';
 import '../../../core/theme/text_theme.dart';
+import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/app_skeleton.dart';
 import '../../../shared/widgets/haru_button_styles.dart';
 import '../../home/data/models/dashboard_model.dart';
@@ -288,82 +290,77 @@ class _QuizHero extends StatelessWidget {
     final supportingText = HaruTypography.krBody3.copyWith(
       color: light ? _secondaryText : colors.onSurfaceVariant,
     );
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: light ? AppColors.redesignSurface : colors.surfaceContainerHigh,
+    return AppCard.compactSurface(
+      darkSurface: colors.surfaceContainerHigh,
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.md,
+        AppSizes.md,
+        AppSizes.md,
+        AppSizes.md - HaruButtonStyles.compactHitInset,
       ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          16,
-          16,
-          16,
-          16 - HaruButtonStyles.compactHitInset,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: colors.surfaceContainerLowest,
-                  ),
-                  child: SizedBox.square(
-                    dimension: 40,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 1),
-                      child: Center(
-                        child: Image.asset(
-                          'assets/icons/figma-practice-hero.png',
-                          width: 18,
-                          height: 17,
-                          excludeFromSemantics: true,
-                        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: colors.surfaceContainerLowest,
+                ),
+                child: SizedBox.square(
+                  dimension: 40,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 1),
+                    child: Center(
+                      child: Image.asset(
+                        'assets/icons/figma-practice-hero.png',
+                        width: 18,
+                        height: 17,
+                        excludeFromSemantics: true,
                       ),
                     ),
                   ),
                 ),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: colors.surfaceContainerLowest,
-                  ),
-                  child: Container(
-                    constraints: const BoxConstraints(
-                      minWidth: 59,
-                      minHeight: 28,
-                    ),
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
-                    ),
-                    child: Text('$_quizQuestionCount문제', style: supportingText),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '${category.label} 퀴즈 풀기',
-              style: HaruTypography.krTitle3.copyWith(
-                color: _practiceForeground(theme),
               ),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: colors.surfaceContainerLowest,
+                ),
+                child: Container(
+                  constraints: const BoxConstraints(
+                    minWidth: 59,
+                    minHeight: 28,
+                  ),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
+                  child: Text('$_quizQuestionCount문제', style: supportingText),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '${category.label} 퀴즈 풀기',
+            style: HaruTypography.krTitle3.copyWith(
+              color: _practiceForeground(theme),
             ),
-            const SizedBox(height: 4),
-            Text(category.description, style: supportingText),
-            const SizedBox(height: 12 - HaruButtonStyles.compactHitInset),
-            FilledButton(
-              key: const ValueKey('practice-start-quiz'),
-              onPressed: onStart,
-              style: HaruButtonStyles.primary(context),
-              child: const Text('퀴즈 풀기', textAlign: TextAlign.center),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+          Text(category.description, style: supportingText),
+          const SizedBox(height: 12 - HaruButtonStyles.compactHitInset),
+          FilledButton(
+            key: const ValueKey('practice-start-quiz'),
+            onPressed: onStart,
+            style: HaruButtonStyles.primary(context),
+            child: const Text('퀴즈 풀기', textAlign: TextAlign.center),
+          ),
+        ],
       ),
     );
   }

@@ -1,103 +1,83 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/sizes.dart';
+import '../../../../core/theme/haru_typography.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../data/models/wordbook_entry_model.dart';
 
 class WordbookEntryCardContent extends StatelessWidget {
-  final WordbookEntryModel entry;
-
   const WordbookEntryCardContent({
     super.key,
     required this.entry,
+    required this.expanded,
   });
+
+  final WordbookEntryModel entry;
+  final bool expanded;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final light = theme.brightness == Brightness.light;
+    final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final secondary =
+        light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
+    final (sourceLabel, sourceColor) = switch (entry.source) {
+      'QUIZ' => ('퀴즈', AppColors.redesignGrammar),
+      'CONVERSATION' => ('회화', AppColors.redesignSentence),
+      _ => ('직접 추가', AppColors.redesignVocabulary),
+    };
+
     return Row(
       children: [
-        Expanded(child: _WordbookEntryText(entry: entry)),
-        WordbookEntrySourceBadge(source: entry.source),
-      ],
-    );
-  }
-}
-
-class _WordbookEntryText extends StatelessWidget {
-  final WordbookEntryModel entry;
-
-  const _WordbookEntryText({required this.entry});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Wrap(
-          spacing: 6,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            Text(
-              entry.word,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+        Semantics(
+          label: sourceLabel,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: sourceColor,
+              borderRadius: BorderRadius.circular(4),
             ),
-            Text(
-              entry.reading,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 2),
-        Text(
-          entry.meaningKo,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            child: const SizedBox.square(dimension: 12),
           ),
         ),
-      ],
-    );
-  }
-}
-
-class WordbookEntrySourceBadge extends StatelessWidget {
-  final String source;
-
-  const WordbookEntrySourceBadge({
-    super.key,
-    required this.source,
-  });
-
-  String get label {
-    switch (source) {
-      case 'QUIZ':
-        return '퀴즈';
-      case 'CONVERSATION':
-        return '회화';
-      default:
-        return '직접 추가';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        label,
-        style: theme.textTheme.labelSmall?.copyWith(
-          fontSize: 10,
+        const SizedBox(width: 9),
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: 6,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    entry.word,
+                    style: HaruTypography.krTitle3.copyWith(
+                      color: foreground,
+                      fontFamily: redesignJapaneseFontFamily,
+                      fontSize: 16,
+                      letterSpacing: -0.4,
+                    ),
+                  ),
+                  if (entry.reading.trim().isNotEmpty)
+                    Text(entry.reading,
+                        style:
+                            HaruTypography.jpBody3.copyWith(color: secondary)),
+                ],
+              ),
+              const SizedBox(height: 2),
+              Text(entry.meaningKo,
+                  style: HaruTypography.krBody3.copyWith(color: secondary)),
+            ],
+          ),
         ),
-      ),
+        const SizedBox(width: AppSizes.sm),
+        Icon(expanded ? LucideIcons.chevronUp : LucideIcons.chevronDown,
+            size: 16, color: secondary),
+      ],
     );
   }
 }

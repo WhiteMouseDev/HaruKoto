@@ -5,21 +5,19 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/theme/text_theme.dart';
 import '../../../../shared/widgets/app_sheet_handle.dart';
 
-const _wrongAnswersSortOptions = [
-  ('most-wrong', '많이 틀린 순'),
-  ('recent', '최근 순'),
-  ('alphabetical', '가나다 순'),
-];
-
-class WrongAnswersSortMenu extends StatelessWidget {
-  const WrongAnswersSortMenu({
+class StudyListSortMenu extends StatelessWidget {
+  const StudyListSortMenu({
     super.key,
+    required this.options,
     required this.activeSort,
     required this.onSortChanged,
+    this.tapTargetSize = MaterialTapTargetSize.padded,
   });
 
+  final List<(String, String)> options;
   final String activeSort;
   final ValueChanged<String> onSortChanged;
+  final MaterialTapTargetSize tapTargetSize;
 
   Future<void> _selectSort(BuildContext context) async {
     final selected = await showModalBottomSheet<String>(
@@ -43,7 +41,7 @@ class WrongAnswersSortMenu extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              for (final (value, label) in _wrongAnswersSortOptions)
+              for (final (value, label) in options)
                 Semantics(
                   selected: value == activeSort,
                   child: ListTile(
@@ -78,9 +76,9 @@ class WrongAnswersSortMenu extends StatelessWidget {
     final foreground = colors.brightness == Brightness.light
         ? AppColors.redesignForeground
         : colors.onSurfaceVariant;
-    final label = _wrongAnswersSortOptions
+    final label = options
         .firstWhere((option) => option.$1 == activeSort,
-            orElse: () => _wrongAnswersSortOptions.first)
+            orElse: () => options.first)
         .$2;
 
     return TextButton.icon(
@@ -91,7 +89,7 @@ class WrongAnswersSortMenu extends StatelessWidget {
       style: TextButton.styleFrom(
         foregroundColor: foreground,
         minimumSize: const Size(48, 36),
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        tapTargetSize: tapTargetSize,
         visualDensity: VisualDensity.standard,
         padding: const EdgeInsetsDirectional.only(start: 8),
         textStyle: const TextStyle(

@@ -1,7 +1,7 @@
+import { randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@harukoto/database';
-import { WordbookSource } from '@harukoto/database';
+import { prisma, WordbookSource, type WordbookEntry } from '@harukoto/database';
 import { PAGINATION } from '@/lib/constants';
 import { z } from 'zod';
 
@@ -98,6 +98,24 @@ export async function POST(request: Request) {
     }
 
     const { word, reading, meaningKo, source, note } = parseResult.data;
+
+    if (source && source !== WordbookSource.MANUAL) {
+      // Decide at the conflicting row, so a concurrent mobile edit is preserved.
+      const [entry] = await prisma.$queryRaw<WordbookEntry[]>`
+        INSERT INTO wordbook_entries AS saved (id, user_id, word, reading, meaning_ko, source, note)
+        VALUES (${randomUUID()}::uuid, ${user.id}::uuid, ${word}, ${reading},
+                ${meaningKo}, ${source}::"WordbookSource", ${note || null})
+        ON CONFLICT (user_id, word) DO UPDATE SET
+          reading = CASE WHEN saved.source = 'MANUAL' THEN saved.reading ELSE EXCLUDED.reading END,
+          meaning_ko = CASE WHEN saved.source = 'MANUAL' THEN saved.meaning_ko ELSE EXCLUDED.meaning_ko END,
+          source = CASE WHEN saved.source = 'MANUAL' THEN saved.source ELSE EXCLUDED.source END,
+          note = CASE WHEN saved.source = 'MANUAL' OR ${note === undefined}
+                      THEN saved.note ELSE ${note ?? null}::text END
+        RETURNING id, user_id AS "userId", word, reading, meaning_ko AS "meaningKo",
+                  source::text AS source, note, created_at AS "createdAt"
+      `;
+      return NextResponse.json(entry, { status: 201 });
+    }
 
     const entry = await prisma.wordbookEntry.upsert({
       where: {
