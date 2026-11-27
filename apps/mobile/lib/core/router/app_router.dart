@@ -382,41 +382,19 @@ final routerProvider = Provider<GoRouter>((ref) {
       // GoRoute(path: '/pricing', ...),
       // GoRoute(path: '/subscription/checkout', ...),
       // GoRoute(path: '/subscription/success', ...),
-      GoRoute(
-        path: '/legal/privacy',
-        parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => _slideTransitionPage(
-          state: state,
-          child: const PrivacyPage(),
+      _legalRoute(
+        '/legal/privacy',
+        (onBack, onTabSelected) => PrivacyPage(
+          onBack: onBack,
+          onTabSelected: onTabSelected,
         ),
       ),
-      GoRoute(
-        path: '/legal/terms',
-        parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) {
-          void closeTerms() {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.go('/my');
-            }
-          }
-
-          const tabPaths = ['/home', '/study', '/practice', '/chat', '/my'];
-          return _slideTransitionPage(
-            state: state,
-            child: TermsPage(
-              onBack: closeTerms,
-              onTabSelected: (index) {
-                if (tabPaths[index] == '/my') {
-                  closeTerms();
-                } else {
-                  context.go(tabPaths[index]);
-                }
-              },
-            ),
-          );
-        },
+      _legalRoute(
+        '/legal/terms',
+        (onBack, onTabSelected) => TermsPage(
+          onBack: onBack,
+          onTabSelected: onTabSelected,
+        ),
       ),
     ],
   );
@@ -424,6 +402,38 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.onDispose(router.dispose);
   return router;
 });
+
+GoRoute _legalRoute(
+  String path,
+  Widget Function(VoidCallback onBack, ValueChanged<int> onTabSelected) builder,
+) {
+  return GoRoute(
+    path: path,
+    parentNavigatorKey: _rootNavigatorKey,
+    pageBuilder: (context, state) {
+      void closePage() {
+        if (context.canPop()) {
+          context.pop();
+        } else {
+          context.go('/my');
+        }
+      }
+
+      const tabPaths = ['/home', '/study', '/practice', '/chat', '/my'];
+      return _slideTransitionPage(
+        state: state,
+        child: builder(closePage, (index) {
+          final tabPath = tabPaths[index];
+          if (tabPath == '/my') {
+            closePage();
+          } else {
+            context.go(tabPath);
+          }
+        }),
+      );
+    },
+  );
+}
 
 GoRoute _statsRoute(String path) => GoRoute(
       path: path,

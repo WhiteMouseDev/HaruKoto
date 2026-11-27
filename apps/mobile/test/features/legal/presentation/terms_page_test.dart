@@ -76,7 +76,53 @@ void main() {
     expect(find.text('약관 열기'), findsOneWidget);
   });
 
-  testWidgets('existing terms entry and deep link keep back and tab navigation',
+  testWidgets('privacy title, tables and footer fit at large text sizes',
+      (tester) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: const TextScaler.linear(2),
+          ),
+          child: child!,
+        ),
+        home: PrivacyPage(onBack: () {}),
+      ),
+    );
+
+    final appBar = tester.getRect(find.byType(AppBar));
+    final title = tester.getRect(find.text('개인정보처리방침'));
+    expect(title.height, greaterThan(56));
+    expect(title.top, greaterThanOrEqualTo(appBar.top + 4));
+    expect(title.bottom, lessThanOrEqualTo(appBar.bottom - 4));
+    expect(find.text('시행일: 2025년 1월 1일'), findsOneWidget);
+
+    final tableEntry = find.text('Supabase Inc.');
+    await tester.scrollUntilVisible(tableEntry, 280);
+    final table = find.ancestor(of: tableEntry, matching: find.byType(Table));
+    expect(tester.getSize(table).width, lessThanOrEqualTo(280));
+
+    final finalArticle = find.text('제10조 (권익침해 구제방법)');
+    await tester.scrollUntilVisible(finalArticle, 280);
+    expect(finalArticle.hitTestable(), findsOneWidget);
+
+    final addendum = find.text('본 개인정보처리방침은 2025년 1월 1일부터 시행합니다.');
+    await tester.scrollUntilVisible(addendum, 280);
+    expect(addendum.hitTestable(), findsOneWidget);
+
+    final footer = find.byType(BusinessInfoFooter);
+    await tester.scrollUntilVisible(footer, 160);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(footer).width, 320);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('legal entries and deep links keep back and tab navigation',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     final preferences = await SharedPreferences.getInstance();
@@ -152,8 +198,38 @@ void main() {
 
       router.go('/legal/privacy');
       await tester.pumpAndSettle();
-      expect(find.byType(PrivacyPage), findsOneWidget);
-      expect(navigation, findsNothing);
+      final privacyPage = find.byType(PrivacyPage);
+      expect(privacyPage, findsOneWidget);
+      expect(router.canPop(), isFalse);
+      expect(tester.widget<BottomNav>(navigation).currentIndex, 4);
+
+      await tester.tap(find.byTooltip('Back'));
+      await tester.pumpAndSettle();
+      expect(find.byType(MyPage), findsOneWidget);
+
+      final privacyEntry = find.text('개인정보 처리방침');
+      await tester.scrollUntilVisible(privacyEntry, 280);
+      await tester.pumpAndSettle();
+      await tester.tap(privacyEntry.hitTestable());
+      await tester.pumpAndSettle();
+      expect(privacyPage, findsOneWidget);
+      expect(router.canPop(), isTrue);
+      expect(
+          tester.widget<BottomNav>(navigation.hitTestable()).currentIndex, 4);
+
+      await tester.tap(find.byTooltip('Back'));
+      await tester.pumpAndSettle();
+      expect(privacyEntry.hitTestable(), findsOneWidget);
+
+      await tester.tap(privacyEntry.hitTestable());
+      await tester.pumpAndSettle();
+      await tester.tap(find.descendant(
+        of: navigation.hitTestable(),
+        matching: find.text('홈'),
+      ));
+      await tester.pumpAndSettle();
+      expect(privacyPage, findsNothing);
+      expect(find.byType(HomePage), findsOneWidget);
     } finally {
       await tester.pumpWidget(const SizedBox.shrink());
       scope.dispose();
