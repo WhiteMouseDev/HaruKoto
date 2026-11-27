@@ -14,6 +14,8 @@ final deviceSettingsRepositoryProvider = Provider<DeviceSettingsRepository>(
 );
 
 class DeviceSettingsNotifier extends Notifier<DeviceSettings> {
+  Future<void> _pendingThemeWrite = Future<void>.value();
+
   DeviceSettingsRepository get _repository =>
       ref.read(deviceSettingsRepositoryProvider);
 
@@ -22,11 +24,18 @@ class DeviceSettingsNotifier extends Notifier<DeviceSettings> {
     return _repository.load();
   }
 
-  Future<void> setThemeMode(ThemeMode themeMode) async {
-    state = state.copyWith(
-      themePreference: AppThemePreference.fromThemeMode(themeMode),
-    );
-    await _repository.persistThemeMode(themeMode);
+  Future<void> setThemeMode(ThemeMode themeMode) {
+    final write = _pendingThemeWrite.then((_) async {
+      if (!ref.mounted || state.themeMode == themeMode) return;
+      await _repository.persistThemeMode(themeMode);
+      if (!ref.mounted) return;
+      state = state.copyWith(
+        themePreference: AppThemePreference.fromThemeMode(themeMode),
+      );
+    });
+    _pendingThemeWrite =
+        write.then<void>((_) {}, onError: (Object _, StackTrace __) {});
+    return write;
   }
 
   Future<void> setSoundEnabled(bool enabled) async {

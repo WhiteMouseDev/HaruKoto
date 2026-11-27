@@ -115,11 +115,18 @@ class DeviceSettingsRepository {
     );
   }
 
-  Future<void> persistThemeMode(ThemeMode themeMode) {
-    return _sharedPreferences.setString(
-      _keyThemeMode,
-      AppThemePreference.fromThemeMode(themeMode).toStorage(),
-    );
+  Future<void> persistThemeMode(ThemeMode themeMode) async {
+    try {
+      final saved = await _sharedPreferences.setString(
+        _keyThemeMode,
+        AppThemePreference.fromThemeMode(themeMode).toStorage(),
+      );
+      if (!saved) throw StateError('Theme preference was not saved');
+    } catch (_) {
+      // A failed write can still change SharedPreferences' in-memory value.
+      await _sharedPreferences.reload();
+      rethrow;
+    }
   }
 
   Future<void> persistSoundEnabled(bool enabled) async {

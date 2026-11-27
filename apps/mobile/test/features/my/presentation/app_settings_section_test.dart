@@ -7,10 +7,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
 import 'package:harukoto_mobile/core/providers/device_settings_provider.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
+import 'package:harukoto_mobile/core/providers/theme_provider.dart';
 import 'package:harukoto_mobile/core/settings/device_settings_repository.dart';
 import 'package:harukoto_mobile/features/my/presentation/widgets/app_settings_section.dart';
 import 'package:harukoto_mobile/features/my/presentation/widgets/my_settings_toggle_tile.dart';
 import 'package:harukoto_mobile/features/my/presentation/widgets/reminder_time_dialog.dart';
+import 'package:harukoto_mobile/features/my/presentation/widgets/theme_picker_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _channel = MethodChannel('com.harukoto.app/app_version');
@@ -121,6 +123,109 @@ void main() {
     expect(tester.widget<Switch>(soundToggle).value, enabled);
   });
 
+  testWidgets('theme cards stage a choice until Apply and restore it on reopen',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 812));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final semantics = tester.ensureSemantics();
+    await _pumpSettings(
+      tester,
+      initialSettings: {'device_theme_mode': 'light'},
+    );
+    final prefs = await SharedPreferences.getInstance();
+
+    final entry = find.widgetWithText(ListTile, '테마 선택');
+    final sheet = find.byType(ThemePickerSheet);
+    final light = find.widgetWithText(OutlinedButton, '라이트');
+    final dark = find.widgetWithText(OutlinedButton, '다크');
+    final system = find.widgetWithText(OutlinedButton, '시스템');
+    Brightness currentBrightness() =>
+        Theme.of(tester.element(find.byType(AppSettingsSection))).brightness;
+
+    await tester.tap(entry);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(sheet), const Size(375, 273));
+    expect(tester.getSize(light).width, closeTo(109, 0.01));
+    expect(tester.getSize(light).height, 90);
+    expect(tester.getTopLeft(dark).dx - tester.getTopRight(light).dx, 4);
+    expect(tester.getSemantics(light), isSemantics(isSelected: true));
+
+    await tester.tap(dark);
+    await tester.pumpAndSettle();
+    expect(tester.getSemantics(dark), isSemantics(isSelected: true));
+    expect(currentBrightness(), Brightness.light);
+    expect(prefs.getString('device_theme_mode'), 'light');
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(sheet, findsNothing);
+    expect(prefs.getString('device_theme_mode'), 'light');
+
+    await tester.tap(entry);
+    await tester.pumpAndSettle();
+    expect(tester.getSemantics(light), isSemantics(isSelected: true));
+    await tester.tap(dark);
+    await tester.tap(find.text('적용'));
+    await tester.pumpAndSettle();
+    expect(prefs.getString('device_theme_mode'), 'dark');
+    expect(currentBrightness(), Brightness.dark);
+
+    await tester.tap(entry);
+    await tester.pumpAndSettle();
+    expect(tester.getSemantics(dark), isSemantics(isSelected: true));
+    await tester.tap(system);
+    await tester.tap(find.text('적용'));
+    await tester.pumpAndSettle();
+    expect(prefs.getString('device_theme_mode'), 'system');
+    tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+    addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+    await tester.pumpAndSettle();
+    expect(currentBrightness(), Brightness.dark);
+    semantics.dispose();
+  });
+
+  testWidgets('theme applies at 320pt and 200% text scale', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(320, 568));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await _pumpSettings(tester, largeText: true);
+
+    await tester.tap(find.widgetWithText(ListTile, '테마 선택'));
+    await tester.pumpAndSettle();
+    final system = find.widgetWithText(OutlinedButton, '시스템');
+    expect(system.hitTestable(), findsOneWidget);
+    expect(tester.getSize(system).height, greaterThan(90));
+    await tester.tap(system);
+    await tester.tap(find.text('적용'));
+    await tester.pumpAndSettle();
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('device_theme_mode'), 'system');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a theme save failure leaves the last committed theme active',
+      (tester) async {
+    await _pumpSettings(
+      tester,
+      initialSettings: {'device_theme_mode': 'light'},
+      rejectThemeSave: true,
+    );
+
+    await tester.tap(find.widgetWithText(ListTile, '테마 선택'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, '다크'));
+    await tester.tap(find.text('적용'));
+    await tester.pumpAndSettle();
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('device_theme_mode'), 'light');
+    expect(find.text('라이트'), findsOneWidget);
+    expect(
+      find.text('테마 설정을 저장하지 못했어요. 다시 시도해주세요.'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('reminder wheels cancel and save through the device settings',
       (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 812));
@@ -182,6 +287,7 @@ void _mockVersionChannel(Future<Object?> Function(MethodCall call) handler) {
 Future<void> _pumpSettings(
   WidgetTester tester, {
   bool largeText = false,
+  bool rejectThemeSave = false,
   Map<String, Object> initialSettings = const {},
   NotificationScheduler? scheduler,
 }) async {
@@ -193,7 +299,11 @@ Future<void> _pumpSettings(
       currentAccountReaderProvider
           .overrideWithValue(() => 'app-settings-fixture'),
       sharedPreferencesProvider.overrideWithValue(prefs),
-      if (scheduler != null)
+      if (rejectThemeSave)
+        deviceSettingsRepositoryProvider.overrideWithValue(
+          _RejectThemeSave(sharedPreferences: prefs),
+        )
+      else if (scheduler != null)
         deviceSettingsRepositoryProvider.overrideWithValue(
           DeviceSettingsRepository(
             sharedPreferences: prefs,
@@ -201,18 +311,31 @@ Future<void> _pumpSettings(
           ),
         ),
     ],
-    child: MaterialApp(
-      builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context)
-            .copyWith(textScaler: TextScaler.linear(largeText ? 2 : 1)),
-        child: child!,
-      ),
-      home: const Scaffold(
-        body: SingleChildScrollView(child: AppSettingsSection()),
+    child: Consumer(
+      builder: (context, ref, child) => MaterialApp(
+        themeMode: ref.watch(themeProvider),
+        darkTheme: ThemeData.dark(),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: TextScaler.linear(largeText ? 2 : 1)),
+          child: child!,
+        ),
+        home: const Scaffold(
+          body: SingleChildScrollView(child: AppSettingsSection()),
+        ),
       ),
     ),
   ));
   await tester.pumpAndSettle();
+}
+
+class _RejectThemeSave extends DeviceSettingsRepository {
+  _RejectThemeSave({required super.sharedPreferences});
+
+  @override
+  Future<void> persistThemeMode(ThemeMode themeMode) async {
+    throw StateError('Setting was not saved');
+  }
 }
 
 class _RecordingScheduler implements NotificationScheduler {
