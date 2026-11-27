@@ -287,7 +287,7 @@ class LessonContinueBanner extends ConsumerWidget {
                         color: foreground,
                       )),
                   if (topic.isNotEmpty) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSizes.gap),
                     Container(
                       constraints: const BoxConstraints(minHeight: 33),
                       padding: const EdgeInsets.symmetric(
@@ -319,7 +319,9 @@ class LessonContinueBanner extends ConsumerWidget {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 12 - HaruButtonStyles.compactHitInset),
+                  const SizedBox(
+                    height: AppSizes.md - HaruButtonStyles.compactHitInset,
+                  ),
                   FilledButton(
                     key: const ValueKey('lesson-continue-action'),
                     style: HaruButtonStyles.primary(context),

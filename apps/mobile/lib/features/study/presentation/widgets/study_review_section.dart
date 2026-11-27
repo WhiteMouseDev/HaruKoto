@@ -182,7 +182,9 @@ class _StudyReviewSectionState extends ConsumerState<StudyReviewSection> {
                 ),
               ),
             ),
-            const SizedBox(height: 12 - HaruButtonStyles.compactHitInset),
+            const SizedBox(
+              height: AppSizes.md - HaruButtonStyles.compactHitInset,
+            ),
           ] else ...[
             Text('복습할 표현 ${summary.totalDue}개',
                 style: theme.textTheme.headlineSmall?.copyWith(
