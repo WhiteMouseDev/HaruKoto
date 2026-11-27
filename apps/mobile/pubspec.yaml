@@ -90,6 +90,8 @@ flutter:
     # https://github.com/orioncactus/pretendard/releases/tag/v1.3.9
     - family: Pretendard
       fonts:
+        - asset: assets/fonts/Pretendard-Light.otf
+          weight: 300
         - asset: assets/fonts/Pretendard-Regular.otf
           weight: 400
         - asset: assets/fonts/Pretendard-Medium.otf

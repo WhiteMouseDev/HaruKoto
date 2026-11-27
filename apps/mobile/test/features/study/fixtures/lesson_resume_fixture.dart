@@ -29,7 +29,8 @@ LessonDetailModel resumeDetail(
         {LessonProgressModel? progress = inProgress,
         String title = 'Fixture lesson',
         bool withReorder = true,
-        bool withRecognition = true}) =>
+        bool withRecognition = true,
+        bool withMatchingPairs = true}) =>
     LessonDetailModel(
       id: resumeLessonId,
       lessonNo: 1,
@@ -77,25 +78,27 @@ LessonDetailModel resumeDetail(
                   tokens: ['私', 'です']),
             ],
           ]),
-      vocabItems: const [
-        VocabItemModel(
+      vocabItems: [
+        const VocabItemModel(
             id: 'v1',
             word: '犬',
             reading: 'いぬ',
             meaningKo: '개',
             partOfSpeech: 'NOUN'),
-        VocabItemModel(
-            id: 'v2',
-            word: '猫',
-            reading: 'ねこ',
-            meaningKo: '고양이',
-            partOfSpeech: 'NOUN'),
-        VocabItemModel(
-            id: 'v3',
-            word: '本',
-            reading: 'ほん',
-            meaningKo: '책',
-            partOfSpeech: 'NOUN')
+        if (withMatchingPairs) ...const [
+          VocabItemModel(
+              id: 'v2',
+              word: '猫',
+              reading: 'ねこ',
+              meaningKo: '고양이',
+              partOfSpeech: 'NOUN'),
+          VocabItemModel(
+              id: 'v3',
+              word: '本',
+              reading: 'ほん',
+              meaningKo: '책',
+              partOfSpeech: 'NOUN'),
+        ],
       ],
       grammarItems: const [
         GrammarItemModel(

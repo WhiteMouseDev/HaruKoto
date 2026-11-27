@@ -5,9 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
+import 'package:harukoto_mobile/core/providers/device_settings_provider.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
+import 'package:harukoto_mobile/core/settings/device_settings_repository.dart';
 import 'package:harukoto_mobile/features/my/presentation/widgets/app_settings_section.dart';
 import 'package:harukoto_mobile/features/my/presentation/widgets/my_settings_toggle_tile.dart';
+import 'package:harukoto_mobile/features/my/presentation/widgets/reminder_time_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _channel = MethodChannel('com.harukoto.app/app_version');
@@ -102,6 +105,56 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.widget<Switch>(soundToggle).value, enabled);
   });
+
+  testWidgets('reminder wheels cancel and save through the device settings',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 812));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final scheduler = _RecordingScheduler();
+    await _pumpSettings(
+      tester,
+      scheduler: scheduler,
+      initialSettings: {
+        'notification_reminder_hour': 0,
+        'notification_reminder_minute': 59,
+      },
+    );
+
+    final row = find.text('리마인더 시간');
+    await tester.ensureVisible(row);
+    await tester.tap(row);
+    await tester.pumpAndSettle();
+    final dialog = find.byType(ReminderTimeDialog);
+    final surface = find.descendant(
+      of: dialog,
+      matching: find.byWidgetPredicate(
+        (widget) => widget is Material && widget.type == MaterialType.card,
+      ),
+    );
+    expect(tester.getSize(surface), const Size(335, 308));
+    final noon = find.descendant(of: dialog, matching: find.text('오후'));
+    await tester.tap(noon);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('취소'));
+    await tester.pumpAndSettle();
+    expect(find.text('오전 12:59'), findsOneWidget);
+    expect(scheduler.reminders, isEmpty);
+
+    await tester.tap(row);
+    await tester.pumpAndSettle();
+    await tester.tap(noon);
+    await tester.pumpAndSettle();
+    await tester.tap(find.descendant(of: dialog, matching: find.text('00')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('저장'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('오후 12:00'), findsOneWidget);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getInt('notification_reminder_hour'), 12);
+    expect(prefs.getInt('notification_reminder_minute'), 0);
+    expect(scheduler.reminders, [const TimeOfDay(hour: 12, minute: 0)]);
+  });
 }
 
 void _mockVersionChannel(Future<Object?> Function(MethodCall call) handler) {
@@ -111,9 +164,13 @@ void _mockVersionChannel(Future<Object?> Function(MethodCall call) handler) {
   addTearDown(() => messenger.setMockMethodCallHandler(_channel, null));
 }
 
-Future<void> _pumpSettings(WidgetTester tester,
-    {bool largeText = false}) async {
-  SharedPreferences.setMockInitialValues({});
+Future<void> _pumpSettings(
+  WidgetTester tester, {
+  bool largeText = false,
+  Map<String, Object> initialSettings = const {},
+  NotificationScheduler? scheduler,
+}) async {
+  SharedPreferences.setMockInitialValues(initialSettings);
   final prefs = await SharedPreferences.getInstance();
   await tester.pumpWidget(ProviderScope(
     overrides: [
@@ -121,6 +178,13 @@ Future<void> _pumpSettings(WidgetTester tester,
       currentAccountReaderProvider
           .overrideWithValue(() => 'app-settings-fixture'),
       sharedPreferencesProvider.overrideWithValue(prefs),
+      if (scheduler != null)
+        deviceSettingsRepositoryProvider.overrideWithValue(
+          DeviceSettingsRepository(
+            sharedPreferences: prefs,
+            notificationScheduler: scheduler,
+          ),
+        ),
     ],
     child: MaterialApp(
       builder: (context, child) => MediaQuery(
@@ -134,4 +198,25 @@ Future<void> _pumpSettings(WidgetTester tester,
     ),
   ));
   await tester.pumpAndSettle();
+}
+
+class _RecordingScheduler implements NotificationScheduler {
+  final reminders = <TimeOfDay>[];
+
+  @override
+  Future<void> scheduleDailyReminder({
+    required int hour,
+    required int minute,
+  }) async {
+    reminders.add(TimeOfDay(hour: hour, minute: minute));
+  }
+
+  @override
+  Future<void> cancelDailyReminder() async {}
+
+  @override
+  Future<void> scheduleStreakDefense() async {}
+
+  @override
+  Future<void> cancelStreakDefense() async {}
 }

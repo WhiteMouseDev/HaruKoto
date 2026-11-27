@@ -18,7 +18,6 @@ class LessonStepContent extends ConsumerWidget {
     required this.lessonId,
     required this.detail,
     required this.session,
-    required this.totalSteps,
     required this.onExit,
     this.ttsService,
     this.jlptLevel,
@@ -28,7 +27,6 @@ class LessonStepContent extends ConsumerWidget {
   final String lessonId;
   final LessonDetailModel detail;
   final LessonSessionState session;
-  final int totalSteps;
   final VoidCallback onExit;
   final TtsService? ttsService;
   final String? jlptLevel;
@@ -137,6 +135,7 @@ class LessonStepContent extends ConsumerWidget {
           initialLeft: session.matchingLeft,
           initialRight: session.matchingRight,
           autoAdvance: !session.restored,
+          onPrevious: sessionNotifier.goBack,
           onProgress: (matched, left, right) => sessionNotifier.updateMatching(
               matched: matched, left: left, right: right),
           onAnswer: (leftId, rightId, matched, left, right) =>
@@ -164,7 +163,6 @@ class LessonStepContent extends ConsumerWidget {
           key: ValueKey('step-4-${session.reorderIndex}'),
           questions: reorderQuestions,
           currentIndex: session.reorderIndex,
-          totalSteps: totalSteps,
           vocabItems: detail.vocabItems,
           shuffledBank: session.layout
               .reorderBanks[reorderQuestions[session.reorderIndex].order],
@@ -172,6 +170,7 @@ class LessonStepContent extends ConsumerWidget {
           initialAvailable: session.reorderAvailable,
           onDraftChanged: (selected, available) => sessionNotifier
               .updateReorder(selected: selected, available: available),
+          onPrevious: sessionNotifier.goBack,
           onAnswer: (answer) => sessionNotifier.answerReorder(
             detail: detail,
             answer: answer,

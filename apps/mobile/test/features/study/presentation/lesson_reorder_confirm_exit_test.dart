@@ -48,7 +48,7 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('です'));
     await tester.pump();
-    await tester.tap(find.text('확인'));
+    await tester.tap(find.text('정답 확인'));
     // No pump advances the previous 300ms delay before close begins.
     expect(h.state.answers[2]?['submittedOrder'], ['水', 'です']);
     expect(h.state.reorderIndex, 1);

@@ -14,6 +14,7 @@ import '../../../../core/services/haptic_service.dart';
 import '../../providers/settings_sync_provider.dart';
 import 'my_settings_group.dart';
 import 'my_settings_toggle_tile.dart';
+import 'reminder_time_dialog.dart';
 
 class AppSettingsSection extends ConsumerWidget {
   const AppSettingsSection({super.key});
@@ -159,37 +160,18 @@ class AppSettingsSection extends ConsumerWidget {
     }
   }
 
-  void _showTimePicker(BuildContext context, WidgetRef ref) async {
-    final theme = Theme.of(context);
+  Future<void> _showTimePicker(BuildContext context, WidgetRef ref) async {
     final settings = ref.read(notificationSettingsProvider);
-    final picked = await showTimePicker(
+    final picked = await showDialog<TimeOfDay>(
       context: context,
-      initialTime: TimeOfDay(
-          hour: settings.reminderHour, minute: settings.reminderMinute),
-      builder: (context, child) {
-        return Theme(
-          data: theme.copyWith(
-            timePickerTheme: TimePickerThemeData(
-              // AM/PM 선택 상태를 명확하게
-              dayPeriodColor: WidgetStateColor.resolveWith((states) {
-                if (states.contains(WidgetState.selected)) {
-                  return AppColors.sakura;
-                }
-                return theme.colorScheme.surfaceContainerHigh;
-              }),
-              dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
-                if (states.contains(WidgetState.selected)) {
-                  return Colors.white;
-                }
-                return theme.colorScheme.onSurface.withValues(alpha: 0.6);
-              }),
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: (context) => ReminderTimeDialog(
+        initialTime: TimeOfDay(
+          hour: settings.reminderHour,
+          minute: settings.reminderMinute,
+        ),
+      ),
     );
-    if (picked != null) {
+    if (context.mounted && picked != null) {
       unawaited(ref
           .read(notificationSettingsProvider.notifier)
           .setReminderTime(picked.hour, picked.minute));

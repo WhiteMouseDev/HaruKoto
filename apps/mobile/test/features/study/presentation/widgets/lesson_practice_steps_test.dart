@@ -351,7 +351,8 @@ void main() {
       },
     );
 
-    testWidgets('matching step completes after all pairs are matched',
+    testWidgets(
+        'matching enables the next step only after all pairs are matched',
         (tester) async {
       var completed = false;
 
@@ -383,6 +384,9 @@ void main() {
         ),
       );
 
+      final next = find.widgetWithText(FilledButton, '다음 학습');
+      expect(tester.widget<FilledButton>(next).onPressed, isNull);
+
       await tester.tap(find.text('犬'));
       await tester.pump();
       await tester.tap(find.text('개'));
@@ -393,6 +397,9 @@ void main() {
       await tester.tap(find.text('고양이'));
       await tester.pump(const Duration(milliseconds: 501));
 
+      expect(completed, isFalse);
+      expect(tester.widget<FilledButton>(next).onPressed, isNotNull);
+      await tester.tap(next);
       expect(completed, isTrue);
     });
 
@@ -414,7 +421,6 @@ void main() {
                 ),
               ],
               currentIndex: 0,
-              totalSteps: 8,
               vocabItems: const [
                 VocabItemModel(
                   id: 'vocab-1',
@@ -439,16 +445,18 @@ void main() {
       await tester.pump();
       await tester.tap(find.text('です'));
       await tester.pump();
-      await tester.tap(find.text('확인'));
+      await tester.tap(find.text('정답 확인'));
       expect(answer?['order'], 5);
       expect(answer?['submittedOrder'], ['私は', '学生', 'です']);
       // A second tap before a frame and after the former animation delay
       // cannot submit the same question again.
-      await tester.tap(find.text('확인'));
+      await tester.tap(find.text('정답 확인'));
       await tester.pump(const Duration(milliseconds: 301));
       expect(submissions, 1);
       expect(
-          tester.widget<ElevatedButton>(find.byType(ElevatedButton)).onPressed,
+          tester
+              .widget<FilledButton>(find.widgetWithText(FilledButton, '정답 확인'))
+              .onPressed,
           isNull);
     });
 
@@ -467,7 +475,6 @@ void main() {
                 ),
               ],
               currentIndex: 0,
-              totalSteps: 8,
               vocabItems: const [],
               onAnswer: (_) {},
             ),
@@ -475,10 +482,13 @@ void main() {
         ),
       );
 
-      expect(find.byKey(const ValueKey('answer-empty-line')), findsOneWidget);
-      expect(find.byKey(const ValueKey('answer-placeholder-0')), findsNothing);
-      expect(find.byKey(const ValueKey('answer-placeholder-1')), findsNothing);
-      expect(find.byKey(const ValueKey('answer-placeholder-2')), findsNothing);
+      final answerWell =
+          find.byKey(const ValueKey('sentence-reorder-answer-well'));
+      expect(answerWell, findsOneWidget);
+      expect(find.descendant(of: answerWell, matching: find.byType(Text)),
+          findsNothing);
+      final next = find.widgetWithText(FilledButton, '다음 학습');
+      expect(tester.widget<FilledButton>(next).onPressed, isNull);
     });
 
     testWidgets('sentence reorder compacts after removing selected token',
@@ -498,7 +508,6 @@ void main() {
                 ),
               ],
               currentIndex: 0,
-              totalSteps: 8,
               vocabItems: const [],
               onAnswer: (value) => answer = value,
             ),
@@ -528,16 +537,17 @@ void main() {
       expect(find.text('1'), findsNothing);
       expect(find.text('2'), findsNothing);
 
-      await tester.tap(find.text('私は'));
+      await tester.tap(find.byKey(const ValueKey('answer-target-0')));
       await tester.pump();
 
-      expect(find.text('선택 1/3'), findsOneWidget);
+      expect(find.byKey(const ValueKey('answer-target-0')), findsOneWidget);
+      expect(find.byKey(const ValueKey('answer-target-1')), findsNothing);
 
       await tester.tap(find.text('です'));
       await tester.pump();
       await tester.tap(find.text('私は'));
       await tester.pump();
-      await tester.tap(find.text('확인'));
+      await tester.tap(find.text('정답 확인'));
       await tester.pump(const Duration(milliseconds: 301));
 
       expect(answer?['submittedOrder'], ['学生', 'です', '私は']);

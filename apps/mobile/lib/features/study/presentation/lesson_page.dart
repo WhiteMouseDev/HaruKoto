@@ -294,29 +294,30 @@ class _LessonPageState extends ConsumerState<LessonPage>
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall)),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                AppSizes.pageHorizontal,
-                                AppSizes.xs,
-                                AppSizes.pageHorizontal,
-                                AppSizes.sm,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: LessonStepProgressBar(
-                                      currentStep: session.step.index,
-                                      totalSteps: LessonStep.values.length,
+                            if (session.step != LessonStep.result)
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  AppSizes.pageHorizontal,
+                                  AppSizes.xs,
+                                  AppSizes.pageHorizontal,
+                                  AppSizes.sm,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: LessonStepProgressBar(
+                                        currentStep: session.step.index,
+                                        totalSteps: LessonStep.result.index,
+                                      ),
                                     ),
-                                  ),
-                                  if (!showShortcutInHeader &&
-                                      dialogueShortcut != null) ...[
-                                    const SizedBox(width: AppSizes.sm),
-                                    dialogueShortcut,
+                                    if (!showShortcutInHeader &&
+                                        dialogueShortcut != null) ...[
+                                      const SizedBox(width: AppSizes.sm),
+                                      dialogueShortcut,
+                                    ],
                                   ],
-                                ],
+                                ),
                               ),
-                            ),
                             Expanded(
                               child: AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 300),
@@ -336,7 +337,6 @@ class _LessonPageState extends ConsumerState<LessonPage>
                                         lessonId: widget.lessonId,
                                         detail: detail,
                                         session: session,
-                                        totalSteps: LessonStep.values.length,
                                         jlptLevel: chapter?.jlptLevel,
                                         stationNo: chapter?.chapterNo,
                                         onExit: () {
