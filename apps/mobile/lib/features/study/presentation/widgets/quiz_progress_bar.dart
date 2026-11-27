@@ -30,10 +30,11 @@ class QuizProgressBar extends StatelessWidget {
     final labelStyle = TextStyle(
       fontFamily: redesignFontFamily,
       fontSize: 12,
-      height: 1.4,
+      fontWeight: FontWeight.w400,
+      height: 1.5,
       letterSpacing: -0.3,
       color: isLight
-          ? AppColors.redesignMutedForeground
+          ? const Color(0xFF767676)
           : theme.colorScheme.onSurfaceVariant,
     );
 

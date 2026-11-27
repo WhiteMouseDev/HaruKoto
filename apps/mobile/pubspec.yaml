@@ -104,6 +104,13 @@ flutter:
           weight: 400
         - asset: assets/fonts/PretendardJP-SemiBold.otf
           weight: 600
+    # Google Fonts Noto Sans JP 2.004 Medium (500), matching the Figma fallback.
+    - family: Noto Sans JP Fallback
+      fonts:
+        - asset: assets/fonts/NotoSansJP-Medium.ttf
+          weight: 500
   licenses:
     - assets/licenses/strokesvg.txt
     - assets/licenses/pretendard.txt
+    - assets/licenses/pretendard-jp.txt
+    - assets/licenses/noto-sans-jp.txt

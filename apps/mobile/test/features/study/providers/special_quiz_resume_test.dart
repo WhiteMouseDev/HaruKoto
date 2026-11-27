@@ -321,8 +321,101 @@ void main() {
           onAnswer: (_, __) {},
           onComplete: () {},
         )))));
-    expect(find.text('2/3'), findsOneWidget);
-    expect(find.text('1/2'), findsNothing);
+    expect(find.text('2개'), findsOneWidget);
+    expect(find.text('3개'), findsOneWidget);
+    expect(find.text('1개'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+      'arrange keeps the next question intact when the prior save lands',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final fixture = _Fixture({
+      'sessionId': 'same-session',
+      'quizType': 'SENTENCE_ARRANGE',
+      'mode': 'arrange',
+      'questions': [
+        _arrange('a1'),
+        {..._arrange('a2'), 'questionText': '두 번째 문제'},
+        {
+          ..._arrange('a3'),
+          'questionText': '세 번째 문제',
+          'japaneseSentence': '私も私です',
+          'tokens': ['私', 'も', '私', 'です'],
+        },
+      ],
+      'answeredQuestionIds': ['a1'],
+      'totalQuestions': 3,
+      'correctCount': 0,
+    }, prefs: prefs);
+    addTearDown(fixture.dispose);
+    await tester.runAsync(() => fixture.resume());
+    await tester.pumpWidget(UncontrolledProviderScope(
+      container: fixture.container,
+      child: MaterialApp(home: Consumer(builder: (context, ref, child) {
+        return QuizPageContent(
+          session: ref.watch(quizSessionProvider),
+          quizType: 'SENTENCE_ARRANGE',
+          jlptLevel: 'N5',
+          onBackRequested: () {},
+          onExit: () {},
+          onAnswer: (_) {},
+          onNext: () {},
+          onComplete: () {},
+          onSubmitSpecialAnswer: (id, correct, type, {optionId}) =>
+              fixture.controller.submitSpecialAnswer(
+            questionId: id,
+            isCorrect: correct,
+            questionType: type,
+            optionId: optionId,
+          ),
+        );
+      })),
+    ));
+
+    final firstTile = find.byKey(const ValueKey('sentence-arrange-bank-0'));
+    final answerToken = find.byKey(const ValueKey('sentence-arrange-answer-0'));
+    final answerWrites =
+        fixture.requests.where((r) => r.path == '/quiz/answer');
+    fixture.answerGate = Completer<void>();
+    expect(find.text('두 번째 문제'), findsOneWidget);
+    await tester.tap(firstTile);
+    await tester.pumpAndSettle();
+    expect(answerToken, findsOneWidget);
+    expect(answerWrites, isEmpty);
+    await tester.tap(find.text('정답 확인'));
+    await tester.pumpAndSettle();
+    expect(answerWrites, hasLength(1));
+    expect(answerWrites.single.data, containsPair('questionId', 'a2'));
+    expect(answerWrites.single.data, containsPair('selectedOptionId', 'wrong'));
+    expect(fixture.state.headerCount, '1/3 저장');
+
+    await tester.tap(find.text('다음 문제'));
+    await tester.pumpAndSettle();
+    expect(find.text('세 번째 문제'), findsOneWidget);
+    expect(answerToken, findsNothing);
+    await tester.tap(firstTile);
+    await tester.pumpAndSettle();
+    expect(answerToken, findsOneWidget);
+    final repeatedTile = find.byKey(const ValueKey('sentence-arrange-bank-2'));
+    final repeatedToken =
+        find.byKey(const ValueKey('sentence-arrange-answer-2'));
+    await tester.tap(repeatedTile);
+    await tester.pumpAndSettle();
+    await tester.tap(repeatedToken);
+    await tester.pumpAndSettle();
+    expect(repeatedToken, findsNothing);
+    expect(answerToken, findsOneWidget);
+
+    fixture.answerGate!.complete();
+    await tester.runAsync(() => fixture.controller.flushPendingAnswers());
+    await tester.pumpAndSettle();
+    expect(fixture.state.headerCount, '2/3 저장');
+    expect(find.text('세 번째 문제'), findsOneWidget);
+    expect(answerToken, findsOneWidget);
+    expect(answerWrites, hasLength(1));
     expect(tester.takeException(), isNull);
   });
 
