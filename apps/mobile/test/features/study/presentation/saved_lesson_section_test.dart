@@ -360,7 +360,7 @@ void main() {
     await tester.tap(find.text('이어하기'));
     await tester.pumpAndSettle();
     expect(find.text('2단계'), findsOneWidget);
-    expect(find.text('8단계'), findsOneWidget);
+    expect(find.text('7단계'), findsOneWidget);
     expect(find.text('단어 2 / 3'), findsOneWidget);
     expect(find.text('猫'), findsOneWidget);
     expect(find.text('이 기기에 저장된 위치에서 이어서 학습해요.'), findsOneWidget);

@@ -149,6 +149,36 @@ void main() {
     },
   );
 
+  for (final withRecognition in [true, false]) {
+    testWidgets(
+        'reorder Previous skips matching with one pair '
+        '(recognition: $withRecognition)', (tester) async {
+      final h = ResumeHarness(
+        repository: ResumeStudyRepository(
+          detail: resumeDetail(
+            withMatchingPairs: false,
+            withRecognition: withRecognition,
+          ),
+        ),
+      );
+      addTearDown(h.dispose);
+      await h.matching();
+      expect(h.state.layout.matchingVocabIds, hasLength(1));
+      expect(h.state.restored, isFalse);
+      await _mount(tester, h);
+      expect(h.state.step, LessonStep.sentenceReorder);
+
+      await tester.tap(find.text('이전'));
+      await tester.pumpAndSettle();
+
+      expect(
+        h.state.step,
+        withRecognition ? LessonStep.recognition : LessonStep.guidedReading,
+      );
+      expect(h.repository.submitCalls, 0);
+    });
+  }
+
   testWidgets(
       'all-matched restore never auto-submits and uses explicit continue',
       (tester) async {
@@ -166,7 +196,7 @@ void main() {
     await _mount(tester, h);
     await tester.pump(const Duration(seconds: 1));
     expect(h.repository.submitCalls, 0);
-    expect(find.text('계속하기'), findsOneWidget);
+    expect(find.text('다음 학습'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

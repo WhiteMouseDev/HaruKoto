@@ -665,6 +665,11 @@ class LessonSessionController extends Notifier<LessonSessionState> {
   void goBack() {
     if (!_editable || state.canPop) return;
     final previousStep = switch (state.step) {
+      LessonStep.sentenceReorder
+          when !state.restored && state.layout.matchingVocabIds.length < 2 =>
+        state.hasRecognitionStep
+            ? LessonStep.recognition
+            : LessonStep.guidedReading,
       LessonStep.matching when !state.hasRecognitionStep =>
         LessonStep.guidedReading,
       LessonStep.guidedReading when _detail?.grammarItems.isEmpty ?? true =>

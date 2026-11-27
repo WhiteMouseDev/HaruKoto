@@ -1,15 +1,30 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/theme/haru_typography.dart';
 import '../../data/models/lesson_models.dart';
+import 'lesson_stage_actions.dart';
 
 class LessonSentenceReorderStep extends StatefulWidget {
+  const LessonSentenceReorderStep({
+    super.key,
+    required this.questions,
+    required this.currentIndex,
+    required this.vocabItems,
+    required this.onAnswer,
+    this.shuffledBank,
+    this.initialSelected = const [],
+    this.initialAvailable,
+    this.onDraftChanged,
+    this.onPrevious,
+  });
+
   final List<LessonQuestionModel> questions;
   final int currentIndex;
-  final int totalSteps;
   final List<VocabItemModel> vocabItems;
   final ValueChanged<Map<String, dynamic>> onAnswer;
   final List<String>? shuffledBank;
@@ -17,19 +32,7 @@ class LessonSentenceReorderStep extends StatefulWidget {
   final List<String>? initialAvailable;
   final void Function(List<String> selected, List<String> available)?
       onDraftChanged;
-
-  const LessonSentenceReorderStep({
-    super.key,
-    required this.questions,
-    required this.currentIndex,
-    required this.totalSteps,
-    required this.vocabItems,
-    required this.onAnswer,
-    this.shuffledBank,
-    this.initialSelected = const [],
-    this.initialAvailable,
-    this.onDraftChanged,
-  });
+  final VoidCallback? onPrevious;
 
   @override
   State<LessonSentenceReorderStep> createState() =>
@@ -37,12 +40,18 @@ class LessonSentenceReorderStep extends StatefulWidget {
 }
 
 class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
-  late List<String> _available;
-  final List<String> _selected = [];
+  static final _quotedPrompt = RegExp(
+    r"^'(.+)'[을를] (?:올바른 순서로 )?배열하세요\.?$",
+  );
+  static const _moveEarlier = CustomSemanticsAction(label: '앞으로 이동');
+  static const _moveLater = CustomSemanticsAction(label: '뒤로 이동');
+
+  late List<String> _bank;
+  late List<int> _available;
+  final List<int> _selected = [];
   late int _correctTokenCount;
   bool _submitting = false;
-  String? _lastAddedToken;
-  String? _lastRemovedToken;
+  bool _showHint = false;
   int _dragHoverIndex = -1;
 
   @override
@@ -63,55 +72,68 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
 
   void _reset() {
     final question = widget.questions[widget.currentIndex];
-    final correctTokens = question.tokens ?? [];
-    _correctTokenCount = correctTokens.length;
+    final tokens = question.tokens ?? const [];
+    _correctTokenCount = tokens.length;
 
-    final correctSet = correctTokens.toSet();
-    final distractors = widget.vocabItems
-        .map((vocab) => vocab.word)
-        .where((word) => word.trim().isNotEmpty && !correctSet.contains(word))
-        .toSet()
-        .toList()
-      ..shuffle(Random());
-    final picked = distractors.take(min(3, distractors.length)).toList();
+    final restoredAvailable = widget.initialAvailable;
+    _bank = switch ((widget.shuffledBank, restoredAvailable)) {
+      (final bank?, _) => List.of(bank),
+      (_, final available?) => [...available, ...widget.initialSelected],
+      _ => _makeBank(tokens),
+    };
 
-    _available = widget.initialAvailable != null
-        ? List<String>.from(widget.initialAvailable!)
-        : widget.shuffledBank != null
-            ? List<String>.from(widget.shuffledBank!)
-            : ([...correctTokens, ...picked]..shuffle(Random()));
+    // Use a separate slot for each occurrence of repeated tokens.
+    final unused = [for (var slot = 0; slot < _bank.length; slot++) slot];
+    int takeSlot(String token) {
+      final index = unused.indexWhere((slot) => _bank[slot] == token);
+      if (index >= 0) return unused.removeAt(index);
+      _bank.add(token);
+      return _bank.length - 1;
+    }
+
     _selected
       ..clear()
-      ..addAll(widget.initialSelected);
+      ..addAll(widget.initialSelected.map(takeSlot));
+    _available = restoredAvailable == null
+        ? unused
+        : restoredAvailable.map(takeSlot).toList();
     _submitting = false;
-    _lastAddedToken = null;
-    _lastRemovedToken = null;
+    _showHint = false;
     _dragHoverIndex = -1;
   }
 
-  void _notifyDraft() => widget.onDraftChanged
-      ?.call(List<String>.from(_selected), List<String>.from(_available));
+  List<String> _makeBank(List<String> tokens) {
+    final distractors = widget.vocabItems
+        .map((item) => item.word)
+        .where((word) => word.trim().isNotEmpty && !tokens.contains(word))
+        .toSet()
+        .toList()
+      ..shuffle(Random());
+    final picked = distractors.take(min(3, distractors.length));
+    return [...tokens, ...picked]..shuffle(Random());
+  }
 
-  void _selectToken(String token) {
-    if (_isFull || _submitting) return;
+  List<String> _wordsFor(List<int> slots) {
+    return [for (final slot in slots) _bank[slot]];
+  }
+
+  void _notifyDraft() => widget.onDraftChanged?.call(
+        _wordsFor(_selected),
+        _wordsFor(_available),
+      );
+
+  void _selectToken(int slot) {
+    if (_isFull || _submitting || !_available.contains(slot)) return;
     setState(() {
-      _available.remove(token);
-      _selected.add(token);
-      _lastAddedToken = token;
-      _lastRemovedToken = null;
+      _available.remove(slot);
+      _selected.add(slot);
     });
     _notifyDraft();
   }
 
   void _deselectToken(int index) {
-    if (_submitting) return;
-    if (index < 0 || index >= _selected.length) return;
-    setState(() {
-      final token = _selected.removeAt(index);
-      _available.add(token);
-      _lastRemovedToken = token;
-      _lastAddedToken = null;
-    });
+    if (_submitting || index < 0 || index >= _selected.length) return;
+    setState(() => _available.add(_selected.removeAt(index)));
     _notifyDraft();
   }
 
@@ -134,11 +156,10 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
   void _submit() {
     if (!_isFull || _submitting) return;
     final question = widget.questions[widget.currentIndex];
-    final submittedOrder = List<String>.from(_selected);
+    final submittedOrder = _wordsFor(_selected);
     setState(() => _submitting = true);
-    // Confirm is the answer boundary. The parent's step transition supplies
-    // the animation; recording must happen before close/background can flush.
-    // Stay locked until the next question resets this widget.
+    // Confirm is the answer boundary. Record before close or background can
+    // flush the checkpoint and stay locked until the parent transitions.
     widget.onAnswer({
       'order': question.order,
       'submittedOrder': submittedOrder,
@@ -146,341 +167,277 @@ class _LessonSentenceReorderStepState extends State<LessonSentenceReorderStep> {
     });
   }
 
-  Widget _buildAnswerArea() {
-    if (_selected.isEmpty) {
-      return const _EmptyAnswerArea();
-    }
-
-    final children = <Widget>[];
-
-    for (int index = 0; index < _selected.length; index++) {
-      final token = _selected[index];
-      final isHovered = _dragHoverIndex == index;
-
-      children.add(
-        IntrinsicWidth(
-          child: DragTarget<int>(
-            key: ValueKey('answer-target-$index'),
-            onWillAcceptWithDetails: (details) {
-              if (details.data != index) {
-                setState(() => _dragHoverIndex = index);
-              }
-              return details.data != index;
-            },
-            onLeave: (_) {
-              if (_dragHoverIndex == index) {
-                setState(() => _dragHoverIndex = -1);
-              }
-            },
-            onAcceptWithDetails: (details) {
-              _onReorder(details.data, index);
-            },
-            builder: (context, candidateData, rejectedData) {
-              final isJustAdded = _lastAddedToken == token;
-              return LongPressDraggable<int>(
-                data: index,
-                delay: const Duration(milliseconds: 200),
-                feedback: Material(
-                  color: Colors.transparent,
-                  child: _AnswerToken(
-                    text: token,
-                    isDragging: true,
-                    isHovered: false,
-                  ),
-                ),
-                childWhenDragging: Opacity(
-                  opacity: 0.3,
-                  child: _AnswerToken(
-                    text: token,
-                    isDragging: false,
-                    isHovered: false,
-                  ),
-                ),
-                child: TweenAnimationBuilder<double>(
-                  tween: Tween(begin: isJustAdded ? 0.8 : 1.0, end: 1.0),
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOut,
-                  builder: (context, scale, child) =>
-                      Transform.scale(scale: scale, child: child),
-                  child: GestureDetector(
-                    onTap: _submitting ? null : () => _deselectToken(index),
-                    child: _AnswerToken(
-                      text: token,
-                      isDragging: false,
-                      isHovered: isHovered,
-                    ),
-                  ),
-                ),
-              );
-            },
+  Widget _answerToken(int index) {
+    final slot = _selected[index];
+    final text = _bank[slot];
+    final editable = !_submitting;
+    final onTap = editable ? () => _deselectToken(index) : null;
+    return DragTarget<int>(
+      key: ValueKey('answer-target-$index'),
+      onWillAcceptWithDetails: (details) {
+        if (!editable || details.data == index) return false;
+        setState(() => _dragHoverIndex = index);
+        return true;
+      },
+      onLeave: (_) {
+        if (_dragHoverIndex == index) {
+          setState(() => _dragHoverIndex = -1);
+        }
+      },
+      onAcceptWithDetails: (details) => _onReorder(details.data, index),
+      builder: (context, candidateData, rejectedData) {
+        return LongPressDraggable<int>(
+          data: index,
+          maxSimultaneousDrags: editable ? 1 : 0,
+          delay: const Duration(milliseconds: 200),
+          feedback: Material(
+            type: MaterialType.transparency,
+            child: _ReorderToken(text: text, highlighted: true),
           ),
-        ),
-      );
-    }
+          childWhenDragging: Opacity(
+            opacity: 0.3,
+            child: _ReorderToken(text: text),
+          ),
+          child: Semantics(
+            button: true,
+            enabled: editable,
+            label: text,
+            hint: editable ? '탭해서 토큰 목록으로 돌려보내기' : null,
+            onTap: onTap,
+            customSemanticsActions: editable
+                ? {
+                    if (index > 0)
+                      _moveEarlier: () => _onReorder(index, index - 1),
+                    if (index + 1 < _selected.length)
+                      _moveLater: () => _onReorder(index, index + 1),
+                  }
+                : null,
+            excludeSemantics: true,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onTap,
+              child: _ReorderToken(
+                text: text,
+                highlighted: _dragHoverIndex == index,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: children,
+  Widget _bankToken(int slot) {
+    final text = _bank[slot];
+    final placed = !_available.contains(slot);
+    final enabled = !placed && !_isFull && !_submitting;
+    final onTap = enabled ? () => _selectToken(slot) : null;
+    return Semantics(
+      key: ValueKey('bank-slot-$slot'),
+      button: true,
+      enabled: enabled,
+      label: text,
+      value: placed ? '답안에 배치됨' : null,
+      onTap: onTap,
+      excludeSemantics: true,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: _ReorderToken(text: text, muted: placed),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final light = theme.brightness == Brightness.light;
+    final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final muted =
+        light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
+    final outline = light ? AppColors.redesignOutline : colors.outlineVariant;
     final question = widget.questions[widget.currentIndex];
+    final rawPrompt = question.prompt.trim();
+    final hint = question.explanation?.trim();
+    final prompt = _quotedPrompt.firstMatch(rawPrompt)?.group(1) ?? rawPrompt;
+    final selectedCount = _selected.length;
 
-    return Padding(
-      padding: const EdgeInsets.all(AppSizes.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '5/${widget.totalSteps} · 문항 ${widget.currentIndex + 1}/${widget.questions.length}',
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: AppColors.lightSubtext,
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(
+              AppSizes.pageHorizontal,
+              AppSizes.md,
+              AppSizes.pageHorizontal,
+              AppSizes.md,
             ),
-          ),
-          const SizedBox(height: AppSizes.md),
-          Text(
-            question.prompt,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.lightText,
-            ),
-          ),
-          if (question.explanation != null) ...[
-            const SizedBox(height: AppSizes.xs),
-            Text(
-              question.explanation!,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: AppColors.lightSubtext,
-                fontSize: 13,
-              ),
-            ),
-          ],
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '정답 영역',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: AppColors.lightSubtext,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                '선택 ${_selected.length}/$_correctTokenCount',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: _isFull ? AppColors.purple : AppColors.lightSubtext,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSizes.sm),
-          Container(
-            width: double.infinity,
-            constraints: const BoxConstraints(minHeight: 70),
-            padding: const EdgeInsets.all(AppSizes.gap),
-            decoration: BoxDecoration(
-              color: AppColors.lightCard,
-              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              border: Border.all(color: AppColors.lightBorder),
-            ),
-            child: _buildAnswerArea(),
-          ),
-          const SizedBox(height: 20),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: _available.asMap().entries.map((entry) {
-              final token = entry.value;
-              final isJustReturned = _lastRemovedToken == token;
-              final disabled = _isFull || _submitting;
-              return TweenAnimationBuilder<double>(
-                key: ValueKey('bank-$token-${entry.key}'),
-                tween: Tween(begin: isJustReturned ? 0.8 : 1.0, end: 1.0),
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeOut,
-                builder: (context, scale, child) =>
-                    Transform.scale(scale: scale, child: child),
-                child: _BankToken(
-                  text: token,
-                  disabled: disabled,
-                  onTap: disabled ? null : () => _selectToken(token),
-                ),
-              );
-            }).toList(),
-          ),
-          if (_available.isNotEmpty && _selected.isEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: AppSizes.gap),
-              child: Center(
-                child: Text(
-                  '토큰을 탭해서 문장을 만드세요',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.lightSubtext,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  '문장 배열',
+                  style: HaruTypography.krTitle3.copyWith(
+                    color: foreground,
+                    fontSize: 16,
+                    letterSpacing: -0.4,
                   ),
                 ),
-              ),
-            ),
-          const Spacer(),
-          SafeArea(
-            top: false,
-            child: SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: (_isFull && !_submitting) ? _submit : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.sakura,
-                  disabledBackgroundColor:
-                      AppColors.lightBorder.withValues(alpha: 0.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                  ),
-                  elevation: 0,
+                const SizedBox(height: AppSizes.xs),
+                Text(
+                  '토큰을 탭해서 주어진 뜻에 맞게 문장을 완성하세요.',
+                  style: HaruTypography.krBody3.copyWith(color: muted),
                 ),
-                child: _submitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Text(
-                        '확인',
-                        style: TextStyle(
+                const SizedBox(height: AppSizes.lg),
+                Container(
+                  padding: const EdgeInsets.all(AppSizes.md),
+                  decoration: BoxDecoration(
+                    color: light
+                        ? AppColors.redesignSurface
+                        : colors.surfaceContainerHigh,
+                    border: Border.all(color: outline),
+                    borderRadius: BorderRadius.circular(AppSizes.gap),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        prompt,
+                        textAlign: TextAlign.center,
+                        style: HaruTypography.krTitle3.copyWith(
+                          color: foreground,
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: _isFull
-                              ? AppColors.onGradient
-                              : AppColors.lightSubtext,
+                          letterSpacing: -0.4,
                         ),
                       ),
-              ),
+                      const SizedBox(height: AppSizes.md),
+                      Semantics(
+                        container: true,
+                        label: '정답 영역, 선택 $selectedCount/$_correctTokenCount',
+                        child: Container(
+                          key: const ValueKey('sentence-reorder-answer-well'),
+                          width: double.infinity,
+                          constraints: const BoxConstraints(minHeight: 56),
+                          padding: const EdgeInsets.all(AppSizes.xs),
+                          decoration: BoxDecoration(
+                            color: light
+                                ? AppColors.lightCard
+                                : colors.surfaceContainerLowest,
+                            border: Border.all(color: outline),
+                            borderRadius:
+                                BorderRadius.circular(AppSizes.radiusSm),
+                          ),
+                          child: Wrap(
+                            spacing: AppSizes.xs,
+                            runSpacing: AppSizes.xs,
+                            children: [
+                              for (var index = 0;
+                                  index < selectedCount;
+                                  index++)
+                                _answerToken(index),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSizes.lg),
+                Wrap(
+                  spacing: AppSizes.sm,
+                  children: [
+                    for (var slot = 0; slot < _bank.length; slot++)
+                      _bankToken(slot),
+                  ],
+                ),
+                if (hint != null && hint.isNotEmpty) ...[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton(
+                      onPressed: () => setState(() => _showHint = !_showHint),
+                      child: Text(_showHint ? '힌트 숨기기' : '힌트 보기'),
+                    ),
+                  ),
+                  if (_showHint)
+                    Text(hint,
+                        style: HaruTypography.krBody3.copyWith(color: muted)),
+                ],
+              ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _EmptyAnswerArea extends StatelessWidget {
-  const _EmptyAnswerArea();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 48,
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Container(
-          key: const ValueKey('answer-empty-line'),
-          height: 1,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: AppColors.lightBorder.withValues(alpha: 0.65),
-            borderRadius: BorderRadius.circular(1),
-          ),
         ),
-      ),
+        LessonStageActions(
+          nextLabel: _isFull ? '정답 확인' : '다음 학습',
+          onNext: _isFull && !_submitting ? _submit : null,
+          onPrevious: _submitting ? null : widget.onPrevious,
+          showPrevious: true,
+          accentNext: false,
+          showNextChevron: false,
+        ),
+      ],
     );
   }
 }
 
-class _AnswerToken extends StatelessWidget {
-  final String text;
-  final bool isDragging;
-  final bool isHovered;
-
-  const _AnswerToken({
+class _ReorderToken extends StatelessWidget {
+  const _ReorderToken({
     required this.text,
-    required this.isDragging,
-    required this.isHovered,
+    this.muted = false,
+    this.highlighted = false,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 150),
-      constraints: const BoxConstraints(minHeight: 48),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-      decoration: BoxDecoration(
-        color: isHovered ? AppColors.purpleContainer : AppColors.purpleTrack,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.purple,
-          width: isHovered ? 2.0 : 1.5,
-        ),
-        boxShadow: isDragging
-            ? [
-                BoxShadow(
-                  color: AppColors.purple.withValues(alpha: 0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : null,
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: AppColors.lightText,
-          fontSize: isDragging ? 17 : 16,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
-
-class _BankToken extends StatelessWidget {
   final String text;
-  final bool disabled;
-  final VoidCallback? onTap;
-
-  const _BankToken({
-    required this.text,
-    required this.disabled,
-    this.onTap,
-  });
+  final bool muted;
+  final bool highlighted;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 200),
-        opacity: disabled ? 0.4 : 1.0,
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final light = theme.brightness == Brightness.light;
+    final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final outline = light ? AppColors.redesignOutline : colors.outlineVariant;
+    final surface = light ? AppColors.lightCard : colors.surfaceContainerLowest;
+    final background = muted
+        ? light
+            ? AppColors.redesignControl
+            : colors.surfaceContainerHigh
+        : surface;
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
+      child: Center(
+        widthFactor: 1,
+        heightFactor: 1,
         child: Container(
-          constraints: const BoxConstraints(minHeight: 48),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-          decoration: BoxDecoration(
-            color: AppColors.lightCard,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.lightBorder),
-            boxShadow: disabled
-                ? null
-                : [
-                    BoxShadow(
-                      color: AppColors.purple.withValues(alpha: 0.08),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+          constraints: const BoxConstraints(minHeight: 40, minWidth: 40),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.sm,
+            vertical: AppSizes.xs,
           ),
-          child: Text(
-            text,
-            style: const TextStyle(
-              color: AppColors.lightText,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+          decoration: BoxDecoration(
+            color: background,
+            border: Border.all(
+              color: highlighted ? colors.primary : outline,
+            ),
+            borderRadius: BorderRadius.circular(AppSizes.xs),
+          ),
+          child: Center(
+            widthFactor: 1,
+            heightFactor: 1,
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: HaruTypography.jpBody3.copyWith(
+                fontSize: 14,
+                letterSpacing: -0.35,
+                fontWeight: FontWeight.w500,
+                color: muted
+                    ? light
+                        ? AppColors.redesignMutedForeground
+                        : colors.onSurfaceVariant
+                    : foreground,
+              ),
             ),
           ),
         ),
