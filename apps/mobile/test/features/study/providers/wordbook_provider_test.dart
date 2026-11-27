@@ -24,7 +24,30 @@ void main() {
       expect(repository.lastFilter, 'ALL');
       expect(state.loading, isFalse);
       expect(state.entries, repository.entries);
+      expect(state.total, 52);
       expect(state.totalPages, 3);
+    });
+
+    test('changing sort keeps the active query and returns to page one',
+        () async {
+      final repository = _FakeStudyRepository();
+      final container = _buildContainer(repository);
+      final sub = container.listen(wordbookProvider, (_, __) {});
+      addTearDown(sub.close);
+      addTearDown(container.dispose);
+
+      final notifier = container.read(wordbookProvider.notifier);
+      await notifier.changeSearch('食べ');
+      await notifier.changeFilter('QUIZ');
+      await notifier.nextPage();
+      await notifier.changeSort('most-wrong', search: '食べる');
+      await notifier.changeSort('most-wrong');
+
+      expect(repository.fetchCalls, 4);
+      expect(repository.lastPage, 1);
+      expect(repository.lastSort, 'most-wrong');
+      expect(repository.lastSearch, '食べる');
+      expect(repository.lastFilter, 'QUIZ');
     });
 
     test('search and filter changes reset pagination before loading', () async {
@@ -141,7 +164,7 @@ class _FakeStudyRepository extends Fake implements StudyRepository {
     lastFilter = filter;
     return (
       entries: entries,
-      total: entries.length,
+      total: 52,
       totalPages: 3,
     );
   }

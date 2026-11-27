@@ -9,7 +9,10 @@ class WordbookList extends StatelessWidget {
   final List<WordbookEntryModel> entries;
   final int totalPages;
   final int page;
-  final ValueChanged<String> onDelete;
+  final String? expandedEntryId;
+  final ValueChanged<String> onOpen;
+  final Widget Function(String id) buildDetail;
+  final Future<void> Function(String) onDelete;
   final VoidCallback onPagePrev;
   final VoidCallback onPageNext;
 
@@ -18,6 +21,9 @@ class WordbookList extends StatelessWidget {
     required this.entries,
     required this.totalPages,
     required this.page,
+    required this.expandedEntryId,
+    required this.onOpen,
+    required this.buildDetail,
     required this.onDelete,
     required this.onPagePrev,
     required this.onPageNext,
@@ -35,10 +41,15 @@ class WordbookList extends StatelessWidget {
               final entry = entries[index];
 
               return Padding(
+                key: ValueKey(entry.id),
                 padding: const EdgeInsets.only(bottom: 8),
                 child: WordbookEntryCard(
                   entry: entry,
+                  onOpen: () => onOpen(entry.id),
                   onDelete: () => onDelete(entry.id),
+                  detail: expandedEntryId == entry.id
+                      ? buildDetail(entry.id)
+                      : null,
                 ),
               );
             },
