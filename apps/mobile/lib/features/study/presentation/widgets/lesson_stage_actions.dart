@@ -13,6 +13,8 @@ class LessonStageActions extends StatelessWidget {
     this.onPrevious,
     this.showPrevious = false,
     this.compact = false,
+    this.accentNext = true,
+    this.showNextChevron = true,
   });
 
   final String nextLabel;
@@ -20,6 +22,8 @@ class LessonStageActions extends StatelessWidget {
   final VoidCallback? onPrevious;
   final bool showPrevious;
   final bool compact;
+  final bool accentNext;
+  final bool showNextChevron;
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +54,13 @@ class LessonStageActions extends StatelessWidget {
     final next = FilledButton(
       onPressed: onNext,
       style: FilledButton.styleFrom(
-        backgroundColor: AppColors.primaryStrong,
-        foregroundColor: Colors.white,
+        backgroundColor: accentNext
+            ? AppColors.primaryStrong
+            : light
+                ? AppColors.redesignStrong
+                : colors.inverseSurface,
+        foregroundColor:
+            accentNext || light ? Colors.white : colors.onInverseSurface,
         disabledBackgroundColor:
             light ? AppColors.redesignControl : colors.surfaceContainerHigh,
         disabledForegroundColor: colors.onSurfaceVariant,
@@ -62,7 +71,7 @@ class LessonStageActions extends StatelessWidget {
         shape: shape,
         textStyle: textStyle,
       ),
-      child: hasPreviousButton
+      child: hasPreviousButton && showNextChevron
           ? _ActionLabel(nextLabel, trailing: LucideIcons.chevronRight)
           : Text(nextLabel, textAlign: TextAlign.center),
     );

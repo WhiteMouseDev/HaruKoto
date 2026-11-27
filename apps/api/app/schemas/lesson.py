@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Annotated
 from uuid import UUID
 
-from pydantic import UUID4, ConfigDict, StrictInt, StrictStr
+from pydantic import UUID4, ConfigDict, Field, StrictInt, StrictStr
 
 from app.exceptions import ErrorDetails
 from app.schemas.common import CamelModel
@@ -98,6 +99,7 @@ class GrammarItem(CamelModel):
 
 class LessonDetailResponse(CamelModel):
     activity_content_version: str | None = None
+    recognition_feedback_version: str | None = None
     id: UUID
     lesson_no: int
     chapter_lesson_no: int
@@ -109,6 +111,23 @@ class LessonDetailResponse(CamelModel):
     vocab_items: list[VocabItem]
     grammar_items: list[GrammarItem]
     progress: LessonProgressResponse | None = None
+
+
+class LessonRecognitionFeedbackRequest(CamelModel):
+    model_config = ConfigDict(extra="forbid")
+
+    expected_user_id: UUID
+    feedback_version: Annotated[StrictStr, Field(min_length=1, max_length=64)]
+    selected_answer: Annotated[StrictStr, Field(min_length=1, max_length=4096)]
+
+
+class LessonRecognitionFeedbackResponse(CamelModel):
+    feedback_version: str
+    question_order: int
+    selected_answer: str
+    correct_answer: Annotated[str, Field(min_length=1)]
+    is_correct: bool
+    explanation: str | None
 
 
 # ── Response: 레슨 진도 ──

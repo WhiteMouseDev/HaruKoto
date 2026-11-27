@@ -225,6 +225,7 @@ async def test_get_lesson_detail(client, mock_user):
     lesson.topic = "카페"
     lesson.estimated_minutes = 15
     lesson.is_published = True
+    lesson.updated_at = datetime(2026, 11, 27, 1, 30, tzinfo=UTC)
     lesson.content_jsonb = {
         "reading": {
             "type": "dialogue",
@@ -356,6 +357,8 @@ async def test_get_lesson_detail(client, mock_user):
     ]
     assert data["content"]["questions"][0]["correctAnswer"] is None
     assert data["content"]["questions"][0]["correctOrder"] is None
+    assert data["content"]["questions"][0]["explanation"] == "커피를 뜻합니다."
+    assert data["recognitionFeedbackVersion"] == "2026-11-27T01:30:00+00:00"
     assert data["content"]["questions"][1]["correctAnswer"] is None
     assert data["content"]["questions"][1]["correctOrder"] is None
     assert data["progress"]["status"] == "IN_PROGRESS"

@@ -1,5 +1,7 @@
 // Lesson API 모델 (Chapter 목록, Lesson 상세, 퀴즈 제출)
 
+import '../../domain/lesson_recognition_feedback.dart';
+
 // ── Chapter 목록 ──
 
 class ChapterListModel {
@@ -117,6 +119,9 @@ class LessonDetailModel {
   /// Missing/null on old servers and while attendance acceptance is disabled.
   final String? activityContentVersion;
 
+  /// Missing/null on servers that do not offer an immediate recognition check.
+  final String? recognitionFeedbackVersion;
+
   const LessonDetailModel({
     required this.id,
     required this.lessonNo,
@@ -130,6 +135,7 @@ class LessonDetailModel {
     required this.grammarItems,
     this.progress,
     this.activityContentVersion,
+    this.recognitionFeedbackVersion,
   });
 
   factory LessonDetailModel.fromJson(Map<String, dynamic> json) {
@@ -158,6 +164,9 @@ class LessonDetailModel {
                   .hasMatch(json['activityContentVersion'] as String)
           ? json['activityContentVersion'] as String
           : null,
+      recognitionFeedbackVersion: LessonRecognitionFeedback.parseVersion(
+        json['recognitionFeedbackVersion'],
+      ),
     );
   }
 }

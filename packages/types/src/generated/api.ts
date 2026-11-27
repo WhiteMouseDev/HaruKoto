@@ -1898,6 +1898,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/lessons/{lesson_id}/questions/{question_order}/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Get Recognition Feedback */
+        post: operations["get_recognition_feedback_api_v1_lessons__lesson_id__questions__question_order__feedback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/lessons/{lesson_id}/submissions": {
         parameters: {
             query?: never;
@@ -3364,6 +3381,8 @@ export interface components {
         LessonDetailResponse: {
             /** Activitycontentversion */
             activityContentVersion?: string | null;
+            /** Recognitionfeedbackversion */
+            recognitionFeedbackVersion?: string | null;
             /**
              * Id
              * Format: uuid
@@ -3404,6 +3423,33 @@ export interface components {
             completedAt?: string | null;
             /** Srsregisteredat */
             srsRegisteredAt?: string | null;
+        };
+        /** LessonRecognitionFeedbackRequest */
+        LessonRecognitionFeedbackRequest: {
+            /**
+             * Expecteduserid
+             * Format: uuid
+             */
+            expectedUserId: string;
+            /** Feedbackversion */
+            feedbackVersion: string;
+            /** Selectedanswer */
+            selectedAnswer: string;
+        };
+        /** LessonRecognitionFeedbackResponse */
+        LessonRecognitionFeedbackResponse: {
+            /** Feedbackversion */
+            feedbackVersion: string;
+            /** Questionorder */
+            questionOrder: number;
+            /** Selectedanswer */
+            selectedAnswer: string;
+            /** Correctanswer */
+            correctAnswer: string;
+            /** Iscorrect */
+            isCorrect: boolean;
+            /** Explanation */
+            explanation: string | null;
         };
         /** LessonStudyActivityResponse */
         LessonStudyActivityResponse: {
@@ -8772,6 +8818,93 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_recognition_feedback_api_v1_lessons__lesson_id__questions__question_order__feedback_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lesson_id: string;
+                question_order: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LessonRecognitionFeedbackRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonRecognitionFeedbackResponse"];
+                };
+            };
+            /** @description 이해 체크에서 채점할 수 없는 문항 또는 잘못된 답안 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 원래 계정 인증 회복 후 같은 제출 ID로 조회/재시도 */
+            401: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 원래 계정과 인증 계정 불일치 또는 접근 불가. 쓰기 없음 */
+            403: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 공개 레슨 또는 문항을 찾을 수 없음 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 현재 공개된 레슨과 채점 버전이 다름 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
+                };
+            };
+            /** @description 요청 구조 검증 실패 */
+            422: {
+                headers: {
+                    /** @description private, no-store */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonSubmissionErrorResponse"];
                 };
             };
         };

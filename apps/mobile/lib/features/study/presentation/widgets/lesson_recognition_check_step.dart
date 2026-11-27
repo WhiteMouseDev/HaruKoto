@@ -1,394 +1,342 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/theme/text_theme.dart';
 import '../../data/models/lesson_models.dart';
+import '../../domain/lesson_recognition_feedback.dart';
+import 'lesson_stage_actions.dart';
 
-class LessonRecognitionCheckStep extends StatefulWidget {
-  final List<LessonQuestionModel> questions;
-  final int currentIndex;
-  final int totalSteps;
-  final ValueChanged<Map<String, dynamic>> onAnswer;
-  final String? initialSelection;
-  final List<String>? optionOrder;
-  final ValueChanged<String>? onSelectionChanged;
+const _optionHeight = 42.0;
+// Keep the visible 12-point gap with a 48-point interaction area per choice.
+const _optionGap = AppSizes.gap - (kMinInteractiveDimension - _optionHeight);
 
+class LessonRecognitionCheckStep extends StatelessWidget {
   const LessonRecognitionCheckStep({
     super.key,
-    required this.questions,
+    required this.question,
     required this.currentIndex,
-    required this.totalSteps,
-    required this.onAnswer,
-    this.initialSelection,
+    required this.questionCount,
+    required this.onSelectionChanged,
+    required this.onConfirm,
+    required this.onNext,
     this.optionOrder,
-    this.onSelectionChanged,
+    this.selectedOptionId,
+    this.confirmed = false,
+    this.usesServerFeedback = false,
+    this.feedbackPending = false,
+    this.feedbackUnavailable = false,
+    this.feedback,
+    this.onRetryFeedback,
+    this.onPrevious,
   });
 
-  @override
-  State<LessonRecognitionCheckStep> createState() =>
-      _LessonRecognitionCheckStepState();
-}
+  final LessonQuestionModel question;
+  final int currentIndex;
+  final int questionCount;
+  final List<String>? optionOrder;
+  final String? selectedOptionId;
+  final bool confirmed;
+  final bool usesServerFeedback;
+  final bool feedbackPending;
+  final bool feedbackUnavailable;
+  final LessonRecognitionFeedback? feedback;
+  final ValueChanged<String> onSelectionChanged;
+  final VoidCallback onConfirm;
+  final VoidCallback? onRetryFeedback;
+  final VoidCallback onNext;
+  final VoidCallback? onPrevious;
 
-class _LessonRecognitionCheckStepState extends State<LessonRecognitionCheckStep>
-    with SingleTickerProviderStateMixin {
-  String? _selected;
-  late List<QuizOptionModel> _shuffledOptions;
-  late AnimationController _entryController;
-
-  @override
-  void initState() {
-    super.initState();
-    _selected = widget.initialSelection;
-    _shuffleOptions();
-    _entryController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _entryController.forward();
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant LessonRecognitionCheckStep oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.currentIndex != widget.currentIndex) {
-      _selected = null;
-      _shuffleOptions();
-      _entryController.forward(from: 0);
-    }
-  }
-
-  @override
-  void dispose() {
-    _entryController.dispose();
-    super.dispose();
-  }
-
-  void _shuffleOptions() {
-    final question = widget.questions[widget.currentIndex];
-    final order = widget.optionOrder;
-    _shuffledOptions = order == null
-        ? (List.of(question.options ?? [])..shuffle(Random()))
-        : [
-            for (final id in order)
-              (question.options ?? []).firstWhere((option) => option.id == id)
-          ];
-  }
-
-  Widget _staggered(int index, Widget child) {
-    final start = (index * 0.1).clamp(0.0, 0.7);
-    final end = (start + 0.4).clamp(0.0, 1.0);
-    final animation = CurvedAnimation(
-      parent: _entryController,
-      curve: Interval(start, end, curve: Curves.easeOutCubic),
-    );
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) => Opacity(
-        opacity: animation.value,
-        child: Transform.translate(
-          offset: Offset(0, 12 * (1 - animation.value)),
-          child: child,
-        ),
-      ),
-      child: child,
-    );
-  }
-
-  bool _hasAnswerKey(LessonQuestionModel question) =>
-      question.correctAnswer != null && question.correctAnswer!.isNotEmpty;
-
-  bool _isCorrectOption(LessonQuestionModel question, QuizOptionModel option) =>
-      _hasAnswerKey(question) && option.id == question.correctAnswer;
-
-  bool _isSelectedCorrect(LessonQuestionModel question) =>
-      _hasAnswerKey(question) && _selected == question.correctAnswer;
-
-  QuizOptionModel? _correctOption(LessonQuestionModel question) {
-    if (!_hasAnswerKey(question)) return null;
-    for (final option in question.options ?? const <QuizOptionModel>[]) {
-      if (option.id == question.correctAnswer) return option;
-    }
-    return null;
-  }
-
-  Color _optionBgColor(LessonQuestionModel question, QuizOptionModel option) {
-    if (_selected == null) return AppColors.lightCard;
-    if (_selected == option.id) {
-      if (!_hasAnswerKey(question)) return AppColors.sakuraTrack;
-      return _isSelectedCorrect(question)
-          ? AppColors.quizCorrectBg
-          : AppColors.quizWrongBg;
-    }
-    if (_isCorrectOption(question, option)) {
-      return AppColors.quizCorrectBg.withValues(alpha: 0.75);
-    }
-    return AppColors.lightCard;
-  }
-
-  Color _optionBorderColor(
-    LessonQuestionModel question,
-    QuizOptionModel option,
-  ) {
-    if (_selected == null) return AppColors.lightBorder;
-    if (_selected == option.id) {
-      if (!_hasAnswerKey(question)) return AppColors.sakura;
-      return _isSelectedCorrect(question)
-          ? AppColors.quizCorrectText
-          : AppColors.quizWrongText;
-    }
-    if (_isCorrectOption(question, option)) return AppColors.quizCorrectText;
-    return AppColors.lightBorder;
-  }
-
-  IconData? _optionIcon(LessonQuestionModel question, QuizOptionModel option) {
-    if (_selected == null) return null;
-    if (_selected == option.id) {
-      if (!_hasAnswerKey(question)) return LucideIcons.check;
-      return _isSelectedCorrect(question)
-          ? LucideIcons.checkCircle2
-          : LucideIcons.xCircle;
-    }
-    if (_isCorrectOption(question, option)) return LucideIcons.checkCircle2;
-    return null;
-  }
-
-  Color _optionIconColor(LessonQuestionModel question, QuizOptionModel option) {
-    if (_selected == option.id && _hasAnswerKey(question)) {
-      return _isSelectedCorrect(question)
-          ? AppColors.quizCorrectText
-          : AppColors.quizWrongText;
-    }
-    if (_isCorrectOption(question, option)) return AppColors.quizCorrectText;
-    return AppColors.sakura;
-  }
-
-  void _select(String id) {
-    setState(() => _selected = id);
-    widget.onSelectionChanged?.call(id);
-  }
-
-  void _continue() {
-    final selected = _selected;
-    if (selected == null) return;
-    widget.onAnswer({
-      'order': widget.questions[widget.currentIndex].order,
-      'selectedAnswer': selected,
-      'responseMs': 0,
-    });
+  List<QuizOptionModel> get _options {
+    final options = question.options ?? const [];
+    final order = optionOrder;
+    if (order == null) return options;
+    final remaining = {for (final option in options) option.id: option};
+    return [
+      for (final id in order)
+        if (remaining.remove(id) case final option?) option,
+      ...remaining.values,
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final question = widget.questions[widget.currentIndex];
-    final selectedCorrect = _isSelectedCorrect(question);
-    final correctOption = _correctOption(question);
-    final feedbackAccent = !_hasAnswerKey(question)
-        ? AppColors.sakura
-        : selectedCorrect
-            ? AppColors.quizCorrectText
-            : AppColors.quizWrongText;
-    final feedbackBg = !_hasAnswerKey(question)
-        ? AppColors.sakuraTrack
-        : selectedCorrect
-            ? AppColors.quizCorrectBg
-            : AppColors.quizWrongBg;
-    final feedbackTitle = !_hasAnswerKey(question)
-        ? '확인했어요'
-        : selectedCorrect
-            ? '정답이에요!'
-            : '아쉬워요';
+    final colors = theme.colorScheme;
+    final light = theme.brightness == Brightness.light;
+    final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final muted =
+        light ? AppColors.redesignMutedForeground : colors.onSurfaceVariant;
+    final options = _options;
+    final unavailable = usesServerFeedback && feedbackUnavailable;
+    final grading = usesServerFeedback && feedbackPending && !unavailable;
+    final correctAnswer =
+        usesServerFeedback ? feedback?.correctAnswer : question.correctAnswer;
+    final correctOption =
+        options.where((option) => option.id == correctAnswer).firstOrNull;
+    final grade = confirmed && !grading && !unavailable && correctOption != null
+        ? (usesServerFeedback
+            ? feedback?.isCorrect
+            : selectedOptionId == correctAnswer)
+        : null;
+    final isLast = currentIndex == questionCount - 1;
+    final nextLabel = confirmed
+        ? (isLast ? '다음 학습' : '다음 문제')
+        : (usesServerFeedback || correctOption != null ? '정답 확인' : '답안 확인');
+    final status = switch (grade) {
+      true => '정답이에요!',
+      false => '아쉬워요',
+      null when grading => '채점 중…',
+      null when unavailable => '지금은 채점할 수 없어요. 레슨 결과를 확인해 주세요.',
+      null when usesServerFeedback => '정오답을 확인하지 못했어요',
+      null => '답안을 확인했어요',
+    };
+    final explanation = usesServerFeedback
+        ? (grade != null ? feedback?.explanation : null)
+        : question.explanation;
+    final canRetry =
+        usesServerFeedback && !grading && !unavailable && grade == null;
+    const smallText = TextStyle(
+      fontFamily: redesignFontFamily,
+      fontSize: 12,
+      height: 1.4,
+    );
 
-    return Padding(
-      padding: const EdgeInsets.all(AppSizes.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _staggered(
-            0,
-            Row(
-              children: [
-                Text(
-                  '문항 ${widget.currentIndex + 1}/${widget.questions.length}',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: AppColors.lightSubtext,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  '이해 체크',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: AppColors.sakura,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            key: ValueKey(question.order),
+            padding: const EdgeInsets.fromLTRB(
+              AppSizes.pageHorizontal,
+              AppSizes.md,
+              AppSizes.pageHorizontal,
+              AppSizes.md,
             ),
-          ),
-          const SizedBox(height: AppSizes.md),
-          _staggered(
-            1,
-            Container(
+            child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(AppSizes.md),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 34),
               decoration: BoxDecoration(
-                color: AppColors.sakuraTrack,
+                color: light
+                    ? AppColors.redesignSurface
+                    : colors.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                border: Border.all(
-                  color: AppColors.sakura.withValues(alpha: 0.18),
-                ),
               ),
-              child: Text(
-                question.prompt,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.lightText,
-                  height: 1.4,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: AppSizes.lg),
-          ..._shuffledOptions.asMap().entries.map((entry) {
-            final option = entry.value;
-            return _staggered(
-              entry.key + 2,
-              Padding(
-                padding: const EdgeInsets.only(bottom: AppSizes.sm),
-                child: GestureDetector(
-                  onTap: _selected != null ? null : () => _select(option.id),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(AppSizes.md),
-                    decoration: BoxDecoration(
-                      color: _optionBgColor(question, option),
-                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                      border: Border.all(
-                        color: _optionBorderColor(question, option),
-                        width: _selected == option.id ? 1.5 : 1.0,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: DecoratedBox(
+                          decoration: ShapeDecoration(
+                            color: light
+                                ? AppColors.redesignVocabulary
+                                : colors.primaryContainer,
+                            shape: const StadiumBorder(),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSizes.sm,
+                              vertical: 2,
+                            ),
+                            child: Text(
+                              '이해 체크',
+                              style: smallText.copyWith(
+                                color: light
+                                    ? Colors.white
+                                    : colors.onPrimaryContainer,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSizes.sm),
+                      Expanded(
+                        child: Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: Text(
+                            '문제 ${currentIndex + 1} / $questionCount',
+                            textAlign: TextAlign.end,
+                            style: smallText.copyWith(color: muted),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSizes.xl),
+                  Text(
+                    question.prompt,
+                    textAlign: TextAlign.center,
+                    style: smallText.copyWith(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      color: foreground,
+                    ),
+                  ),
+                  const SizedBox(height: 54),
+                  for (final (index, option) in options.indexed) ...[
+                    if (index != 0) const SizedBox(height: _optionGap),
+                    _RecognitionOption(
+                      option: option,
+                      selected: option.id == selectedOptionId,
+                      status: grade != null && option.id == correctAnswer
+                          ? _OptionStatus.correct
+                          : option.id != selectedOptionId
+                              ? _OptionStatus.plain
+                              : grade == false
+                                  ? _OptionStatus.wrong
+                                  : _OptionStatus.selected,
+                      onPressed: confirmed
+                          ? null
+                          : () => onSelectionChanged(option.id),
+                    ),
+                  ],
+                  if (confirmed) ...[
+                    const SizedBox(height: AppSizes.md),
+                    Semantics(
+                      liveRegion: true,
+                      child: Column(
+                        children: [
+                          Text(
+                            status,
+                            textAlign: TextAlign.center,
+                            style: smallText.copyWith(
+                              color: grade == null
+                                  ? muted
+                                  : grade
+                                      ? AppColors.success(theme.brightness)
+                                      : AppColors.error(theme.brightness),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          if (grade == false && correctOption != null) ...[
+                            const SizedBox(height: AppSizes.xs),
+                            Text(
+                              '정답: ${correctOption.text}',
+                              textAlign: TextAlign.center,
+                              style: smallText.copyWith(
+                                color: foreground,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                          if (explanation?.trim() case final text?
+                              when text.isNotEmpty) ...[
+                            const SizedBox(height: AppSizes.xs),
+                            Text(
+                              text,
+                              textAlign: TextAlign.center,
+                              style: smallText.copyWith(color: muted),
+                            ),
+                          ],
+                          if (canRetry && onRetryFeedback != null)
+                            TextButton(
+                              onPressed: onRetryFeedback,
+                              child: const Text('다시 확인'),
+                            ),
+                        ],
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            option.text,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: AppColors.lightText,
-                            ),
-                          ),
-                        ),
-                        if (_optionIcon(question, option) != null) ...[
-                          const SizedBox(width: AppSizes.sm),
-                          Icon(
-                            _optionIcon(question, option),
-                            size: 18,
-                            color: _optionIconColor(question, option),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
-          if (_selected != null) ...[
-            const SizedBox(height: AppSizes.md),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(AppSizes.gap),
-              decoration: BoxDecoration(
-                color: feedbackBg,
-                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                border:
-                    Border.all(color: feedbackAccent.withValues(alpha: 0.2)),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    !_hasAnswerKey(question)
-                        ? LucideIcons.lightbulb
-                        : selectedCorrect
-                            ? LucideIcons.checkCircle2
-                            : LucideIcons.xCircle,
-                    size: 16,
-                    color: feedbackAccent,
-                  ),
-                  const SizedBox(width: AppSizes.sm),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          feedbackTitle,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: feedbackAccent,
-                            fontWeight: FontWeight.w700,
-                            height: 1.4,
-                          ),
-                        ),
-                        if (!selectedCorrect && correctOption != null) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            '정답: ${correctOption.text}',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: AppColors.lightText,
-                              fontWeight: FontWeight.w600,
-                              height: 1.4,
-                            ),
-                          ),
-                        ],
-                        if (question.explanation != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            question.explanation!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: AppColors.lightText,
-                              height: 1.4,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
+                  ],
                 ],
               ),
             ),
-          ],
-          const Spacer(),
-          SafeArea(
-            top: false,
-            child: SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton.icon(
-                onPressed: _selected == null ? null : _continue,
-                icon: const Icon(LucideIcons.chevronRight),
-                label: const Text('다음으로'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.sakura,
-                  disabledBackgroundColor:
-                      AppColors.lightBorder.withValues(alpha: 0.5),
-                  foregroundColor: AppColors.onGradient,
-                  disabledForegroundColor: AppColors.lightSubtext,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                  ),
-                  elevation: 0,
-                ),
-              ),
-            ),
           ),
-        ],
+        ),
+        LessonStageActions(
+          nextLabel: nextLabel,
+          showPrevious: true,
+          onPrevious: onPrevious,
+          onNext: selectedOptionId == null || grading
+              ? null
+              : confirmed
+                  ? onNext
+                  : onConfirm,
+          accentNext: confirmed && isLast,
+          showNextChevron: confirmed,
+        ),
+      ],
+    );
+  }
+}
+
+enum _OptionStatus { plain, selected, correct, wrong }
+
+class _RecognitionOption extends StatelessWidget {
+  const _RecognitionOption({
+    required this.option,
+    required this.selected,
+    required this.status,
+    required this.onPressed,
+  });
+
+  final QuizOptionModel option;
+  final bool selected;
+  final _OptionStatus status;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final light = theme.brightness == Brightness.light;
+    final surface = light ? AppColors.lightCard : colors.surfaceContainerLowest;
+    final foreground = light ? AppColors.redesignForeground : colors.onSurface;
+    final (background, outline) = switch (status) {
+      _OptionStatus.plain => (
+          surface,
+          light ? AppColors.redesignOutline : colors.outlineVariant,
+        ),
+      _OptionStatus.selected => (
+          surface,
+          light ? AppColors.brandPink : colors.primary,
+        ),
+      _OptionStatus.correct => (
+          light ? AppColors.quizCorrectBg : AppColors.quizCorrectBgDark,
+          light ? AppColors.quizCorrect : AppColors.quizCorrectTextDark,
+        ),
+      _OptionStatus.wrong => (
+          light ? AppColors.quizWrongBg : AppColors.quizWrongBgDark,
+          light ? AppColors.quizWrongText : AppColors.quizWrongTextDark,
+        ),
+    };
+
+    return Semantics(
+      selected: selected,
+      value: switch (status) {
+        _OptionStatus.correct => '정답',
+        _OptionStatus.wrong => '선택한 오답',
+        _ => null,
+      },
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          backgroundColor: background,
+          disabledBackgroundColor: background,
+          foregroundColor: foreground,
+          disabledForegroundColor: foreground,
+          side: BorderSide(
+            color: outline,
+            width: status == _OptionStatus.selected ? 2 : 1,
+          ),
+          shape: const StadiumBorder(),
+          minimumSize: const Size(double.infinity, _optionHeight),
+          tapTargetSize: MaterialTapTargetSize.padded,
+          visualDensity: VisualDensity.standard,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.gap,
+            vertical: AppSizes.sm,
+          ),
+          textStyle: const TextStyle(
+            fontFamily: redesignFontFamily,
+            fontSize: 13,
+            height: 1.4,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        child: Text(option.text, textAlign: TextAlign.center),
       ),
     );
   }

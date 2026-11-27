@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql.dml import Delete
 
 from app.seeds import lessons as lesson_seed
@@ -23,9 +24,35 @@ from app.seeds.lessons import (
     _resolve_extra_content_file,
     _seed_one_chapter,
     _selected_lesson_levels,
+    _upsert_lesson,
     audit_lesson_seed_sync,
     seed_lessons,
 )
+
+
+async def test_lesson_seed_bumps_feedback_revision_only_on_content_or_publish_change() -> None:
+    db = AsyncMock()
+    lesson = MagicMock()
+    result = MagicMock()
+    result.scalar_one.return_value = lesson
+    db.execute.return_value = result
+    chapter = MagicMock(id=uuid.uuid4(), jlpt_level="N5")
+    data = {
+        "lesson_no": 1,
+        "chapter_lesson_no": 1,
+        "title": "인사",
+        "topic": "일상",
+        "estimated_minutes": 3,
+        "content_jsonb": {"questions": [{"order": 1, "correct_answer": "b"}]},
+    }
+
+    assert await _upsert_lesson(db, chapter, data, is_published=True) is lesson
+
+    statement = db.execute.await_args_list[0].args[0]
+    sql = str(statement.compile(dialect=postgresql.dialect()))
+    assert "lessons.content_jsonb IS DISTINCT FROM excluded.content_jsonb" in sql
+    assert "lessons.is_published IS DISTINCT FROM excluded.is_published" in sql
+    assert "THEN clock_timestamp() ELSE lessons.updated_at END" in sql
 
 
 @pytest.mark.parametrize("status", ["PILOT", "PUBLISHED"])

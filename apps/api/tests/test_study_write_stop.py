@@ -84,6 +84,7 @@ REVIEWED_ALLOW_ROUTES = frozenset(
         ("GET", "/api/v1/lessons/review/summary"),
         ("POST", "/api/v1/lessons/{lesson_id}/script-lines/{line_index}/tts"),
         ("POST", "/api/v1/lessons/{lesson_id}/questions/{question_order}/tts"),
+        ("POST", "/api/v1/lessons/{lesson_id}/questions/{question_order}/feedback"),
         ("GET", "/api/v1/lessons/{lesson_id}"),
     }
 )
