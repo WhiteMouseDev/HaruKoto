@@ -393,10 +393,30 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/legal/terms',
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => _slideTransitionPage(
-          state: state,
-          child: const TermsPage(),
-        ),
+        pageBuilder: (context, state) {
+          void closeTerms() {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/my');
+            }
+          }
+
+          const tabPaths = ['/home', '/study', '/practice', '/chat', '/my'];
+          return _slideTransitionPage(
+            state: state,
+            child: TermsPage(
+              onBack: closeTerms,
+              onTabSelected: (index) {
+                if (tabPaths[index] == '/my') {
+                  closeTerms();
+                } else {
+                  context.go(tabPaths[index]);
+                }
+              },
+            ),
+          );
+        },
       ),
     ],
   );

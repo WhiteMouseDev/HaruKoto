@@ -90,3 +90,27 @@
 - 대화 전체에 공통 번역 스위치 하나를 사용한다. 기본값은 OFF다. ON이면 각 문장의 번역을 말풍선 안 구분선 아래에 표시한다. [번역 ON 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=325-7532) · [번역 OFF 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=333-8045)
 - 상황 안내는 테두리형 카드로 표시한다. 화자에 따라 말풍선을 왼쪽·오른쪽에 놓고 각 문장의 발음 버튼을 말풍선 아래에 둔다. 전체 듣기는 상단에서 사용할 수 있다.
 - 하단에 ‘이전’·‘다음학습’을 둔다. 문법이 없는 레슨에서는 ‘이전’에서 단어 단계로 돌아간다. 다음 단계를 준비하는 중에는 양쪽 버튼을 잠근다. 화면을 벗어나면 현재 레슨의 재생을 중지한다.
+
+### 2026-11-27 피그마 재대조
+
+최신 `main`의 `fe0e102a`와 Design의 Page 1을 대조했다. 아래는 `codex/mobile-lesson-practice-figma` 작업 상태다.
+
+| 순서 | 피그마 화면 | 상태 |
+| --- | --- | --- |
+| 1 | [레슨 6단계 단어 매칭](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=349-6656) | 실제 단어·뜻으로 2열 카드를 구성했다. 선택·정답·오답을 구분하고, 모든 짝을 맞춘 뒤 ‘다음 학습’을 활성화한다. |
+| 2 | [레슨 7단계 문장 배열](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=356-7427) | 지문, 답안 영역, 토큰 배치와 하단 버튼을 적용했다. 기존 해설은 ‘힌트 보기’로 열 수 있다. [정답](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=376-8133)과 [오답](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=376-8616) 시안의 토큰별 색상은 제출 전 채점 결과를 제공하는 서버 경로가 필요하다. |
+| 3 | [레슨 결과](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=376-9192) | 피그마에서 ‘작업중’으로 표시된다. 앱의 기존 결과로 채점을 확인할 수 있다. |
+| 4 | [이용약관](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=412-8548)·마이페이지 리마인더 | 약관 프레임과 리마인더 시간 컴포넌트를 앱에 반영했다. 세부 내용은 아래에 기록했다. |
+
+레슨 진행 바는 피그마처럼 7단계까지 센다. 레슨 제출과 결과는 기존 서버 경로를 사용한다. 실전회화의 상황 선택·준비·통화, 가입·온보딩, 학습한 단어와 알림함은 Page 1에서 구현에 사용할 독립 화면을 확인하지 못했다. 가나 실습과 4지선다 이외 퀴즈 풀이도 기존 화면을 사용한다.
+
+#### 리마인더 시간·이용약관·단어 매칭 보정
+
+- 리마인더 시간은 가로 335pt, 기본 높이 308pt인 다이얼로그에서 오전·오후, 시, 분을 고른다. 선택된 숫자는 Pretendard 36/500, 나머지는 36/300이다. 저장 시 기존 기기 설정과 알림 예약을 갱신하고 취소하면 이전 시간을 유지한다. [리마인더 시간 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=405-7330)
+- 이용약관은 시행일, 조항 제목·본문·번호 목록, 마이페이지와 같은 사업자 정보 푸터, 하단 탭을 적용한다. 본문은 기존 전체 조항을 사용한다. [이용약관 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=412-8548)
+- 단어 매칭은 ‘대화 다시 보기’가 들어 있는 진행 바 영역의 높이를 고려해 이 단계의 상단 여백을 조정했다. 일본어는 Pretendard JP 15/600, 읽기는 12/400, 한국어 뜻은 Pretendard 14/500이다. 모두 자간 -2.5%를 사용한다. 라이트 테마의 맞춘 카드는 카드 전체에 시안의 50% 불투명도를 적용한다. [선택 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=349-6656) · [완료 버튼 상태 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=356-7245)
+- 라이트 테마의 하단 내비게이션은 검정 4%, Y -4, blur 8, spread 0인 피그마 그림자를 사용한다. 리마인더의 ‘취소’와 ‘저장’은 48pt 버튼 안에서 Pretendard 글자 픽셀을 기준으로 1pt 위로 보정했다. [하단 내비게이션 컴포넌트](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=60-1317)
+
+#### 학습 카드 여백
+
+피그마의 학습 프레임에 달린 여백 코멘트 3개를 기준으로, 복습 설명에서 버튼까지 16pt, 추천 레슨 제목에서 표현 박스까지 12pt, 표현 박스에서 버튼까지 16pt를 적용했다. 버튼은 시안의 42pt 외형과 앱의 48pt 이상 터치 영역을 함께 유지한다. [학습 탭 시안](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=60-1790)

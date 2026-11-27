@@ -34,9 +34,9 @@ class BottomNav extends StatelessWidget {
     final inactiveText =
         isDark ? AppColors.darkSubtext : const Color(0xFF767676);
 
-    return Material(
+    final bar = Material(
       color: surface,
-      elevation: 3,
+      elevation: isDark ? 3 : 0,
       shadowColor: Colors.black12,
       child: SafeArea(
         top: false,
@@ -100,6 +100,21 @@ class BottomNav extends StatelessWidget {
           ),
         ),
       ),
+    );
+    if (isDark) return bar;
+
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x0A000000),
+            offset: Offset(0, -4),
+            // Flutter radius 6 approximates the Figma 8px blur (sigma 4).
+            blurRadius: 6,
+          ),
+        ],
+      ),
+      child: bar,
     );
   }
 
