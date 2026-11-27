@@ -12,15 +12,10 @@ import '../data/models/scenario_model.dart';
 import '../providers/conversation_session_provider.dart';
 import 'conversation_feedback_launch.dart';
 import 'conversation_launch.dart';
+import 'scenario_difficulty.dart';
 import 'widgets/chat_bubble.dart';
 import 'widgets/chat_input_bar.dart';
 import 'widgets/typing_indicator.dart';
-
-const _difficultyLabels = {
-  'BEGINNER': '초급',
-  'INTERMEDIATE': '중급',
-  'ADVANCED': '고급',
-};
 
 class ConversationPage extends ConsumerStatefulWidget {
   const ConversationPage({
@@ -275,7 +270,7 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
             ),
             if (session.scenario != null)
               Text(
-                '${_difficultyLabels[session.scenario!.difficulty] ?? session.scenario!.difficulty} · 역할: ${session.scenario!.yourRole}',
+                '${scenarioDifficultyLabel(session.scenario!.difficulty)} · 역할: ${session.scenario!.yourRole}',
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: colorScheme.onSurface.withValues(alpha: 0.6),
                 ),

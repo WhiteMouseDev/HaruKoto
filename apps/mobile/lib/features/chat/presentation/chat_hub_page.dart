@@ -8,6 +8,8 @@ import '../../../core/constants/colors.dart';
 import '../../../core/constants/sizes.dart';
 import '../../../core/providers/user_preferences_provider.dart';
 import '../../../core/settings/call_settings.dart';
+import '../../../core/theme/haru_typography.dart';
+import '../../../shared/widgets/app_segmented_tabs.dart';
 import '../../../shared/widgets/call_settings_sheet.dart';
 import '../../my/providers/settings_sync_provider.dart';
 import '../data/models/conversation_journey_episode.dart';
@@ -140,8 +142,10 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
               context: context,
               useRootNavigator: true,
               isScrollControlled: true,
+              useSafeArea: true,
               builder: (_) => ConversationJourneySheet(
                 episodes: tokyoFirstDayEpisodes,
+                scenarios: available,
                 practicedIds: practicedIds,
                 recommendedId: recommended.scenarioId,
               ),
@@ -201,22 +205,20 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
       (episode) => !practicedIds.contains(episode.scenarioId),
       orElse: () => tokyoFirstDayEpisodes.first,
     );
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSizes.lg),
-      child: ConversationJourneyCard(
-        episode: recommended,
-        practicedCount: practicedIds.length,
-        totalCount: tokyoFirstDayEpisodes.length,
-        allPracticed: practicedIds.length == tokyoFirstDayEpisodes.length,
-        onPrepare: () =>
-            _openJourney(accountId, available, practicedIds, recommended),
-        onViewAll: () => _openJourney(
-          accountId,
-          available,
-          practicedIds,
-          recommended,
-          showAll: true,
-        ),
+    return ConversationJourneyCard(
+      episode: recommended,
+      scenario: available[recommended.scenarioId]!,
+      practicedCount: practicedIds.length,
+      totalCount: tokyoFirstDayEpisodes.length,
+      isRecommendedPracticed: practicedIds.contains(recommended.scenarioId),
+      onPrepare: () =>
+          _openJourney(accountId, available, practicedIds, recommended),
+      onViewAll: () => _openJourney(
+        accountId,
+        available,
+        practicedIds,
+        recommended,
+        showAll: true,
       ),
     );
   }
@@ -285,48 +287,31 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(
-                        AppSizes.md, AppSizes.md, AppSizes.md, AppSizes.sm),
+                      AppSizes.pageHorizontal,
+                      10,
+                      AppSizes.pageHorizontal - AppSizes.gap,
+                      0,
+                    ),
                     child: Row(
                       children: [
-                        Flexible(
-                          child: Text(
-                            '실전회화',
-                            style: theme.textTheme.headlineSmall
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        const SizedBox(width: AppSizes.sm),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: isLight
-                                ? AppColors.purpleTrack
-                                : AppColors.purple.withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(LucideIcons.flaskConical,
-                                  size: 12, color: AppColors.purple),
-                              const SizedBox(width: 2),
-                              Text(
-                                'Beta',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: AppColors.purple,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                        Expanded(
+                          child: Semantics(
+                            header: true,
+                            child: Text(
+                              '실전회화',
+                              style: HaruTypography.krTitle2.copyWith(
+                                color: isLight
+                                    ? AppColors.redesignForeground
+                                    : colorScheme.onSurface,
                               ),
-                            ],
+                            ),
                           ),
                         ),
-                        const Spacer(),
                         IconButton(
                           icon: Icon(
                             LucideIcons.settings,
-                            size: 20,
-                            color: colorScheme.onSurface.withValues(alpha: 0.6),
+                            size: AppSizes.iconMd,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           tooltip: '통화 설정',
                           onPressed: () => _showCallSettings(context),
@@ -337,79 +322,20 @@ class _ChatHubPageState extends ConsumerState<ChatHubPage>
                 ),
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: AppSizes.md),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isLight
-                            ? AppColors.sakuraTrack
-                            : colorScheme.secondaryContainer
-                                .withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-                      ),
-                      padding: const EdgeInsets.all(4),
-                      child: TabBar(
-                        controller: _tabController,
-                        indicator: BoxDecoration(
-                          color: colorScheme.surface,
-                          borderRadius:
-                              BorderRadius.circular(AppSizes.radiusMd),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.overlay(0.05),
-                              blurRadius: 4,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        dividerColor: Colors.transparent,
-                        labelColor: isLight
-                            ? AppColors.sakuraOn
-                            : colorScheme.onSurface,
-                        unselectedLabelColor:
-                            colorScheme.onSurface.withValues(alpha: 0.5),
-                        labelStyle: theme.textTheme.bodySmall
-                            ?.copyWith(fontWeight: FontWeight.w600),
-                        tabs: [
-                          Tab(
-                            height:
-                                MediaQuery.textScalerOf(context).scale(14) > 18
-                                    ? 64
-                                    : 48,
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(LucideIcons.mic, size: 16),
-                                SizedBox(width: 6),
-                                Flexible(
-                                    child: Text('회화 연습',
-                                        textAlign: TextAlign.center)),
-                              ],
-                            ),
-                          ),
-                          Tab(
-                            height:
-                                MediaQuery.textScalerOf(context).scale(14) > 18
-                                    ? 64
-                                    : 48,
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(LucideIcons.phone, size: 16),
-                                SizedBox(width: 6),
-                                Flexible(
-                                    child: Text('친구와 통화',
-                                        textAlign: TextAlign.center)),
-                              ],
-                            ),
-                          ),
-                        ],
+                    padding: AppSizes.pageHorizontalEdge,
+                    child: AnimatedBuilder(
+                      animation: _tabController,
+                      builder: (context, child) => AppSegmentedTabs(
+                        compact: true,
+                        labelFontWeight: FontWeight.w500,
+                        labels: const ['회화 연습', 'AI 친구 통화'],
+                        selectedIndex: _tabController.index,
+                        onChanged: _tabController.animateTo,
                       ),
                     ),
                   ),
                 ),
-                const SliverToBoxAdapter(child: SizedBox(height: AppSizes.md)),
+                const SliverToBoxAdapter(child: SizedBox(height: 20)),
                 SliverFillRemaining(
                   hasScrollBody: true,
                   child: TabBarView(

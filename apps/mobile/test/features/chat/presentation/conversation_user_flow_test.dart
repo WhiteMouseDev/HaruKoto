@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:harukoto_mobile/core/auth/current_account_provider.dart';
+import 'package:harukoto_mobile/core/constants/colors.dart';
 import 'package:harukoto_mobile/core/providers/shared_preferences_provider.dart';
 import 'package:harukoto_mobile/features/chat/data/chat_repository.dart';
 import 'package:harukoto_mobile/features/chat/data/models/conversation_model.dart';
@@ -10,7 +11,10 @@ import 'package:harukoto_mobile/features/chat/data/models/scenario_model.dart';
 import 'package:harukoto_mobile/features/chat/presentation/chat_entry_mode.dart';
 import 'package:harukoto_mobile/features/chat/presentation/chat_hub_page.dart';
 import 'package:harukoto_mobile/features/chat/presentation/voice_call_record_page.dart';
+import 'package:harukoto_mobile/features/chat/presentation/widgets/conversation_journey_elements.dart';
+import 'package:harukoto_mobile/features/chat/presentation/widgets/conversation_journey_sheet.dart';
 import 'package:harukoto_mobile/features/chat/presentation/widgets/scenario_list_view.dart';
+import 'package:harukoto_mobile/features/chat/presentation/widgets/text_tab.dart';
 import 'package:harukoto_mobile/features/chat/providers/chat_provider.dart';
 import 'package:harukoto_mobile/features/chat/providers/conversation_journey_progress_provider.dart';
 import 'package:harukoto_mobile/features/chat/providers/voice_call_session_provider.dart';
@@ -48,7 +52,7 @@ void main() {
     ));
     await tester.pumpAndSettle();
 
-    expect(find.text('미션 준비'), findsNothing);
+    expect(find.text('도쿄에서의 첫날'), findsNothing);
     await tester.tap(find.text('여행'));
     await tester.pumpAndSettle();
     expect(find.text('공항에서 시내행 열차표 사기'), findsOneWidget);
@@ -85,13 +89,79 @@ void main() {
     ));
     await tester.pumpAndSettle();
     expect(find.text('체크인 전 짐 맡기기'), findsOneWidget);
-    expect(find.text('3장면 중 1장면 연습'), findsOneWidget);
+    expect(find.text('1 / 3장면'), findsOneWidget);
+    expect(find.text('연습 전'), findsOneWidget);
+    expect(find.text('중급'), findsOneWidget);
+    expect(find.text('약 5분'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('중급')).dx,
+      lessThan(tester.getTopLeft(find.text('연습 전')).dx),
+    );
+    final hubProgress = find.byType(ConversationJourneyProgressSummary);
+    expect(tester.getSize(hubProgress).height, 32);
+    expect(_decorationOf(tester, hubProgress).color, AppColors.redesignSurface);
+    expect(_decorationOf(tester, hubProgress).border, isNull);
+    final progressLeft = tester.getTopLeft(hubProgress).dx;
+    expect(tester.getTopLeft(find.text('도쿄에서의 첫날')).dx, progressLeft);
+    expect(tester.getTopLeft(find.text('이어서 말하기')).dx, progressLeft + 8);
+    expect(
+      _episodeRing(tester, find.byType(ConversationJourneyEpisodeNumber)),
+      const BorderSide(color: AppColors.redesignOutline, width: 4),
+    );
 
-    await tester.tap(find.text('여정 전체 보기'));
+    final prepare = find.text('연습 시작');
+    await tester.ensureVisible(prepare);
+    await tester.tap(prepare);
     await tester.pumpAndSettle();
-    expect(find.textContaining('연습 기록 있음'), findsOneWidget);
-    expect(find.textContaining('다음 추천'), findsOneWidget);
-    await tester.tap(find.text('카페에서 테이크아웃'));
+    expect(find.text('1. 체크인 시작 시간 묻기'), findsOneWidget);
+    expect(find.textContaining(' · 약 5분'), findsOneWidget);
+    Navigator.of(tester.element(find.text('1. 체크인 시작 시간 묻기'))).pop();
+    await tester.pumpAndSettle();
+
+    final viewJourney = find.text('장면 전체 보기');
+    await tester.ensureVisible(viewJourney);
+    await tester.tap(viewJourney);
+    await tester.pumpAndSettle();
+    final sheet = find.byType(ConversationJourneySheet);
+    Finder inSheet(String value) =>
+        find.descendant(of: sheet, matching: find.text(value));
+    expect(inSheet('도쿄에서의 첫날'), findsOneWidget);
+    expect(inSheet('추천 순서대로,\n또는 필요한 장면부터 골라요.'), findsOneWidget);
+    expect(inSheet('연습 현황'), findsOneWidget);
+    expect(inSheet('1 / 3장면'), findsOneWidget);
+    expect(inSheet('연습함'), findsOneWidget);
+    expect(inSheet('연습 전'), findsNWidgets(2));
+    expect(inSheet('다음 추천'), findsOneWidget);
+    expect(inSheet('초급'), findsOneWidget);
+    expect(inSheet('중급'), findsOneWidget);
+    expect(inSheet('고급'), findsOneWidget);
+    expect(inSheet('약 5분'), findsOneWidget);
+    expect(inSheet('약 3분'), findsNWidgets(2));
+    expect(inSheet('공항 매표소에서 신주쿠까지 가는 열차를 물어보고 표 한 장을 사요.'), findsOneWidget);
+    final listProgress = find.descendant(
+      of: sheet,
+      matching: find.byType(ConversationJourneyProgressSummary),
+    );
+    final firstCard = find.widgetWithText(OutlinedButton, '공항에서 시내행 열차표 사기');
+    expect(tester.getSize(listProgress).height, 34);
+    expect(_decorationOf(tester, listProgress).color, isNull);
+    expect(
+      _decorationOf(tester, listProgress).border?.top.color,
+      AppColors.redesignOutline,
+    );
+    expect(
+      tester.getTopLeft(firstCard).dy - tester.getBottomLeft(listProgress).dy,
+      40,
+    );
+    final firstRing = find.descendant(
+      of: firstCard,
+      matching: find.byType(ConversationJourneyEpisodeNumber),
+    );
+    expect(
+      _episodeRing(tester, firstRing),
+      const BorderSide(color: AppColors.redesignVocabulary, width: 4),
+    );
+    await tester.tap(inSheet('카페에서 테이크아웃'));
     await tester.pumpAndSettle();
     expect(find.text('1. 아이스 커피 한 잔 주문하기'), findsOneWidget);
     final speak = find.text('말하기로 연습');
@@ -103,6 +173,88 @@ void main() {
         controller.request?.scenarioId, tokyoFirstDayEpisodes.last.scenarioId);
     await tester.pumpWidget(const SizedBox());
     await tester.pump();
+  });
+
+  testWidgets('saved scenes show practiced status at narrow, scaled viewports',
+      (tester) async {
+    const owner = 'completed-pilot';
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    final store = ConversationJourneyProgressStore(preferences);
+    for (final episode in tokyoFirstDayEpisodes) {
+      await store.markPracticed(
+        owner,
+        episode.scenarioId,
+        isCurrentAccount: () => true,
+      );
+    }
+
+    tester.view.physicalSize = const Size(320, 568);
+    tester.view.devicePixelRatio = 1;
+    tester.view.padding = const FakeViewPadding(top: 44);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPadding);
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        currentAccountIdProvider.overrideWithValue(owner),
+        currentAccountReaderProvider.overrideWithValue(() => owner),
+        sharedPreferencesProvider.overrideWithValue(preferences),
+        chatHistoryProvider.overrideWith((ref) async => []),
+        scenariosProvider('TRAVEL').overrideWith(
+          (ref) async => tokyoFirstDayEpisodes.map(_scenarioFor).toList(),
+        ),
+      ],
+      child: MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: const ChatHubPage(),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.text('다시 말하기'), findsOneWidget);
+    final sceneCount = find.text('3 / 3장면');
+    expect(sceneCount, findsOneWidget);
+    expect(tester.getTopRight(sceneCount).dx, greaterThan(280));
+
+    expect(find.text('공항에서 시내행 열차표 사기'), findsOneWidget);
+    expect(
+      find.text('공항 매표소에서 신주쿠까지 가는 열차를 물어보고 표 한 장을 사요.'),
+      findsOneWidget,
+    );
+    expect(find.text('연습함'), findsOneWidget);
+    expect(find.text('약 3분'), findsOneWidget);
+    final prepare = find.text('연습 시작');
+    await tester.dragUntilVisible(
+      prepare.hitTestable(),
+      find.byType(TextTab),
+      const Offset(0, -120),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(prepare);
+    await tester.pumpAndSettle();
+    expect(find.text('1. 시내행 열차편 묻기'), findsOneWidget);
+    Navigator.of(tester.element(find.text('1. 시내행 열차편 묻기'))).pop();
+    await tester.pumpAndSettle();
+
+    final viewJourney = find.text('장면 전체 보기');
+    await tester.dragUntilVisible(
+      viewJourney.hitTestable(),
+      find.byType(TextTab),
+      const Offset(0, -120),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(viewJourney);
+    await tester.pumpAndSettle();
+    final title = find.descendant(
+      of: find.byType(ConversationJourneySheet),
+      matching: find.text('도쿄에서의 첫날'),
+    );
+    expect(tester.getTopLeft(title).dy, greaterThanOrEqualTo(44));
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets(
@@ -210,14 +362,32 @@ void main() {
   });
 }
 
+BorderSide _episodeRing(WidgetTester tester, Finder sign) =>
+    _decorationOf(tester, sign).border!.top;
+
+BoxDecoration _decorationOf(WidgetTester tester, Finder widget) {
+  final container = tester.widget<Container>(
+    find.descendant(of: widget, matching: find.byType(Container)),
+  );
+  return container.decoration! as BoxDecoration;
+}
+
 ScenarioModel _scenarioFor(ConversationJourneyEpisode episode) => ScenarioModel(
       id: episode.scenarioId,
       title: episode.title,
       titleJa: episode.place,
       description: episode.goals.first,
       category: 'TRAVEL',
-      difficulty: 'BEGINNER',
-      estimatedMinutes: episode.estimatedMinutes,
+      difficulty: switch (episode.number) {
+        2 => 'INTERMEDIATE',
+        3 => 'ADVANCED',
+        _ => 'BEGINNER',
+      },
+      estimatedMinutes: switch (episode.number) {
+        2 => 5,
+        3 => 0,
+        _ => episode.estimatedMinutes,
+      },
       keyExpressions: episode.examples,
       situation: episode.place,
       yourRole: '여행자',
