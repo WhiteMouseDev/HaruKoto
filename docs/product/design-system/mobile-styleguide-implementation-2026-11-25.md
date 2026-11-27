@@ -48,3 +48,9 @@ Widgetbook의 AppCard에서 기본 카드와 복습·퀴즈의 채움 스타일�
 ## 오늘 학습 시트 핸들
 
 오늘 학습 시트는 공용 `AppSheetHandle.todayStudy()`의 36×3pt 캡슐형 핸들을 사용한다. 위쪽 여백은 20pt다. 라이트 색은 시안의 `#C9C9CF`를 적용했고, 다크 색은 기존 앱 테마의 표면 위 글자색을 불투명도 20%로 사용한다. [피그마 핸들 인스턴스](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=179-4457&sublayer-id=I179-4457%3B179-4454)
+
+## 2026-11-27 세부 정렬 재검증
+
+- 홈·학습·퀴즈의 브랜드 버튼은 캡슐 크기와 터치 영역을 유지하며 Pretendard 라벨의 잉크 중심을 1pt 위로 보정한다. 리마인더의 기존 라벨 보정도 이 공용 스타일을 사용한다.
+- 자유퀴즈 설정의 4지선다·매칭·빈칸·어순에는 피그마의 16pt 아이콘을 사용한다. 선택지의 시각 높이 42pt, 터치 영역 48pt, 가로 간격 4pt를 유지한다. 두 줄의 시각 간격은 터치 영역을 겹치지 않도록 6pt로 두고, 마지막 줄에서 시작 버튼까지는 24pt다. [자유퀴즈 설정](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=127-1993)
+- 4지선다에 피그마의 24pt 스피커 원본을 사용한다. 제목은 Pretendard 20/600, 한국어 선택지는 14/500·행간 140%·자간 −2.5%다. 일본어 읽기는 Pretendard JP 12/400·행간 150%다. 색과 굵기 판단에는 아이콘과 글자의 원본 속성과 같은 배율의 앱 캡처를 함께 사용한다. [4지선다](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=242-4332) · [스피커](https://www.figma.com/design/y0vVcOVXYyJDDmF6VovDdG/Design?node-id=243-6660)

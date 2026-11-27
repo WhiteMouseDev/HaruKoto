@@ -32,6 +32,11 @@ void main() {
     expect(find.text('앱 버전'), findsOneWidget);
     expect(find.text('4.17.8 (214)'), findsOneWidget);
     expect(find.text('테마 선택'), findsOneWidget);
+    final furigana = find.widgetWithText(MySettingsToggleTile, '읽기(후리가나) 표시');
+    final furiganaRow = tester.getRect(furigana);
+    final subtitle = tester.getRect(find.text('퀴즈에서 한자 위에 히라가나 표시'));
+    expect(furiganaRow.height, greaterThan(56));
+    expect(subtitle.bottom, lessThan(furiganaRow.bottom));
     expect(tester.takeException(), isNull);
   });
 
@@ -70,11 +75,21 @@ void main() {
     await _pumpSettings(tester);
 
     final card = tester.getRect(find.byType(Card));
-    final versionRow = tester.getRect(find.widgetWithText(ListTile, '앱 버전'));
-    final themeRow = tester.getRect(find.widgetWithText(ListTile, '테마 선택'));
-    expect(versionRow.top - card.top, 9);
-    expect(versionRow.height, 56);
-    expect(themeRow.top, versionRow.bottom);
+    const labels = [
+      '앱 버전',
+      '테마 선택',
+      '읽기(후리가나) 표시',
+      '효과음',
+      '진동 피드백',
+      '학습 리마인더',
+      '리마인더 시간',
+      '연속학습 알림',
+    ];
+    for (final (index, label) in labels.indexed) {
+      final row = tester.getRect(find.widgetWithText(ListTile, label));
+      expect(row.top - card.top, 9 + index * 56, reason: label);
+      expect(row.height, 56, reason: label);
+    }
     expect(tester.getTopLeft(find.text('앱 버전')).dx - card.left, 49);
 
     final soundTile = find.widgetWithText(MySettingsToggleTile, '효과음');

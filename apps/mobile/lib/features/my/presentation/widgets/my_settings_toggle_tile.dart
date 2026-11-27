@@ -20,18 +20,39 @@ class MySettingsToggleTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final light = colors.brightness == Brightness.light;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
         : const Duration(milliseconds: 180);
     final selectedTrack = light ? AppColors.redesignVocabulary : colors.primary;
+    final subtitle = this.subtitle;
 
     return MergeSemantics(
       child: ListTile(
         leading: leading,
-        title: title,
-        subtitle: subtitle,
+        // Keep both labels in one slot so ListTile centers the group and
+        // honors the settings row height even with a second line.
+        title: subtitle == null
+            ? title
+            : Transform.translate(
+                // Align the Pretendard glyphs with the switch center.
+                offset: const Offset(0, -1.5),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    title,
+                    const SizedBox(height: 2),
+                    DefaultTextStyle.merge(
+                      style: ListTileTheme.of(context).subtitleTextStyle ??
+                          theme.textTheme.bodyMedium,
+                      child: subtitle,
+                    ),
+                  ],
+                ),
+              ),
         onTap: () => onChanged(!value),
         trailing: Stack(
           alignment: AlignmentDirectional.centerEnd,

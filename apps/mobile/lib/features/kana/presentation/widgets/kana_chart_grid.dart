@@ -63,6 +63,9 @@ class KanaChartGrid extends StatelessWidget {
     final kanaColor = light ? const Color(0xFF505050) : colors.onSurfaceVariant;
     final readingColor =
         light ? const Color(0xFF767676) : colors.onSurfaceVariant;
+    final vowelFill = light
+        ? const Color(0xFFFBDFE2)
+        : AppColors.redesignVocabulary.withValues(alpha: 0.32);
     final onCharacterTap = _onCharacterTap;
     final loading = onCharacterTap == null;
     const placeholder = AppSkeletonBlock(radius: 4);
@@ -103,8 +106,7 @@ class KanaChartGrid extends StatelessWidget {
                       : _KanaAxisCell(
                           kana: katakana ? katakanaGlyph : hiragana,
                           reading: korean,
-                          color: AppColors.redesignVocabulary
-                              .withValues(alpha: 0.32),
+                          color: vowelFill,
                           kanaColor: kanaColor,
                           readingColor: readingColor,
                         ),

@@ -13,6 +13,7 @@ class TtsPlayButton extends StatefulWidget {
   final String? url;
   final double iconSize;
   final Color? iconColor;
+  final String? idleIconAsset;
   final TtsService? ttsService;
 
   const TtsPlayButton({
@@ -24,6 +25,7 @@ class TtsPlayButton extends StatefulWidget {
     this.url,
     this.iconSize = 20,
     this.iconColor,
+    this.idleIconAsset,
     this.ttsService,
   }) : assert(
           vocabId != null ||
@@ -118,6 +120,9 @@ class _TtsPlayButtonState extends State<TtsPlayButton>
       builder: (context, playback, _) {
         final active = identical(playback.owner, _owner) && playback.isActive;
         final loading = active && playback.phase == TtsPlaybackPhase.loading;
+        final color = widget.iconColor ??
+            theme.colorScheme.onSurface.withValues(alpha: 0.5);
+        final asset = active ? null : widget.idleIconAsset;
         return IconButton(
           tooltip: active ? '음성 정지' : '음성 듣기',
           onPressed: () => unawaited(_onTap()),
@@ -126,10 +131,16 @@ class _TtsPlayButtonState extends State<TtsPlayButton>
                   width: widget.iconSize,
                   height: widget.iconSize,
                   child: const CircularProgressIndicator(strokeWidth: 2))
-              : Icon(active ? LucideIcons.square : LucideIcons.volume2,
-                  size: widget.iconSize,
-                  color: widget.iconColor ??
-                      theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+              : asset != null
+                  ? Image.asset(
+                      asset,
+                      width: widget.iconSize,
+                      height: widget.iconSize,
+                      color: color,
+                      excludeFromSemantics: true,
+                    )
+                  : Icon(active ? LucideIcons.square : LucideIcons.volume2,
+                      size: widget.iconSize, color: color),
         );
       },
     );

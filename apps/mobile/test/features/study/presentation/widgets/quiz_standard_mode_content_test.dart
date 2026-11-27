@@ -63,6 +63,15 @@ void main() {
       final title = find.text('N5 단어퀴즈');
       expect(tester.getTopLeft(title).dx, 52);
       expect(tester.widget<Text>(title).style?.fontSize, 20);
+      final speaker = find.descendant(
+        of: find.byTooltip('음성 듣기'),
+        matching: find.byType(Image),
+      );
+      expect(tester.getSize(speaker), const Size.square(24));
+      expect(
+        tester.widget<Image>(speaker).image,
+        const AssetImage('assets/icons/figma-quiz-speaker.png'),
+      );
       final badge = find
           .ancestor(
             of: find.text('Q1'),
@@ -72,6 +81,8 @@ void main() {
       expect(tester.getTopLeft(badge).dy, closeTo(228, 2));
       const optionLabels = ['먹다', '보다', '읽다', '놀다'];
       for (final (index, label) in optionLabels.indexed) {
+        expect(tester.widget<Text>(find.text(label)).style?.fontWeight,
+            FontWeight.w500);
         final outline = find
             .ancestor(of: find.text(label), matching: find.byType(Ink))
             .first;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/theme/text_theme.dart';
 import '../../../../shared/widgets/app_sheet_handle.dart';
+import '../../../../shared/widgets/haru_button_styles.dart';
 import '../../data/models/quiz_session_model.dart';
 import 'free_quiz_selection.dart';
 
@@ -28,10 +28,10 @@ class FreeQuizSheetContent extends StatelessWidget {
   });
 
   static const _modeIcons = {
-    'normal': LucideIcons.listChecks,
-    'matching': LucideIcons.shuffle,
-    'cloze': LucideIcons.textCursorInput,
-    'arrange': LucideIcons.arrowUpDown,
+    'normal': 'assets/icons/figma-quiz-mode-normal.png',
+    'matching': 'assets/icons/figma-quiz-mode-matching.png',
+    'cloze': 'assets/icons/figma-quiz-mode-cloze.png',
+    'arrange': 'assets/icons/figma-quiz-mode-arrange.png',
   };
 
   @override
@@ -75,16 +75,17 @@ class FreeQuizSheetContent extends StatelessWidget {
               emphasizeSelection: true,
               onChanged: onLevelChanged,
             ),
-            const SizedBox(height: 6),
+            // The level pill's touch area includes a 3pt painted inset.
+            const SizedBox(height: 8 - HaruButtonStyles.compactHitInset),
             _FreeQuizStatsStrip(
               label: selection.contentLabel,
               stats: stats,
               loading: statsLoading,
               onRetry: onRetryStats,
             ),
-            const SizedBox(height: 22),
+            const SizedBox(height: 24),
             Text('퀴즈 유형', style: heading),
-            const SizedBox(height: 8),
+            const SizedBox(height: 9),
             _FreeQuizChoices(
               choices: selection.availableModes,
               selected: selection.mode,
@@ -93,15 +94,12 @@ class FreeQuizSheetContent extends StatelessWidget {
               icons: _modeIcons,
               onChanged: onModeChanged,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 24 - HaruButtonStyles.compactHitInset),
             FilledButton(
               onPressed: onStartQuiz,
-              style: FilledButton.styleFrom(
-                backgroundColor: light ? AppColors.brandPink : null,
-                foregroundColor: light ? Colors.white : null,
-                minimumSize: const Size(0, 48),
-                shape: const StadiumBorder(),
-                textStyle: heading.copyWith(fontSize: 14, letterSpacing: -0.35),
+              style: HaruButtonStyles.primary(
+                context,
+                size: HaruButtonSize.regular,
               ),
               child: const Text('퀴즈 시작', textAlign: TextAlign.center),
             ),
@@ -118,7 +116,7 @@ class _FreeQuizChoices extends StatelessWidget {
   final String selected;
   final int columnLimit;
   final Map<String, String> labels;
-  final Map<String, IconData> icons;
+  final Map<String, String> icons;
   final ValueChanged<String> onChanged;
 
   const _FreeQuizChoices({
@@ -157,7 +155,8 @@ class _FreeQuizChoices extends StatelessWidget {
 
         return Wrap(
           spacing: spacing,
-          runSpacing: spacing,
+          // Adjacent 48pt targets leave a 6pt gap between 42pt surfaces.
+          runSpacing: 0,
           children: [
             for (final choice in choices)
               SizedBox(
@@ -174,6 +173,8 @@ class _FreeQuizChoices extends StatelessWidget {
                           color: choice == selected ? accent : outline,
                         ),
                         minimumSize: const Size(0, 42),
+                        tapTargetSize: MaterialTapTargetSize.padded,
+                        visualDensity: VisualDensity.standard,
                         shape: const StadiumBorder(),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
@@ -193,14 +194,27 @@ class _FreeQuizChoices extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if (icons[choice] case final icon?) ...[
-                            Icon(icon, size: 14),
+                          if (icons[choice] case final asset?) ...[
+                            Image.asset(
+                              asset,
+                              width: 16,
+                              height: 16,
+                              color: choice == selected
+                                  ? accent
+                                  : light
+                                      ? AppColors.redesignStrong
+                                      : foreground,
+                              excludeFromSemantics: true,
+                            ),
                             const SizedBox(width: 6),
                           ],
                           Flexible(
-                            child: Text(
-                              labels[choice] ?? choice,
-                              textAlign: TextAlign.center,
+                            child: Transform.translate(
+                              offset: const Offset(0, -1),
+                              child: Text(
+                                labels[choice] ?? choice,
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
                         ],
@@ -237,7 +251,7 @@ class _FreeQuizStatsStrip extends StatelessWidget {
     final countFormat = MaterialLocalizations.of(context).formatDecimal;
 
     return Container(
-      constraints: const BoxConstraints(minHeight: 32),
+      constraints: const BoxConstraints(minHeight: 34),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: light
