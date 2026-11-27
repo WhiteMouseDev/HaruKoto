@@ -6,7 +6,7 @@ from io import BytesIO
 from pathlib import Path
 from unittest.mock import Mock, call, patch
 from urllib.error import HTTPError
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import rollout_cloud_run as rollout
@@ -15,6 +15,9 @@ PROJECT = "test-project"
 REGION = "asia-northeast3"
 SERVICE = "harukoto-api"
 SERVICE_NAME = f"projects/{PROJECT}/locations/{REGION}/services/{SERVICE}"
+SERVICE_PATH = f"namespaces/{PROJECT}/services/{SERVICE}"
+API_HOST = f"{REGION}-run.googleapis.com"
+API_PATH = f"/apis/serving.knative.dev/v1/{SERVICE_PATH}"
 TAG = "verify-123-1"
 TAG_URL = f"https://{TAG}---{SERVICE}-test.a.run.app"
 PUBLIC_URL = f"https://{SERVICE}-test.a.run.app"
@@ -36,7 +39,7 @@ def target(revision, percent, *, tag=None):
     return value
 
 
-def service(generation, requested, *, candidate_created=False, statuses=None, etag=None):
+def service(generation, requested, *, candidate_created=False, statuses=None, resource_version=None):
     statuses = deepcopy(statuses if statuses is not None else requested)
     for entry in statuses:
         if entry["type"] == LATEST:
@@ -48,7 +51,7 @@ def service(generation, requested, *, candidate_created=False, statuses=None, et
         "uid": "test-service-uid",
         "generation": str(generation),
         "observedGeneration": str(generation),
-        "etag": etag if etag is not None else f"etag-{generation}",
+        "resourceVersion": resource_version if resource_version is not None else f"rv-{generation}",
         "reconciling": False,
         "terminalCondition": {"type": "Ready", "state": "CONDITION_SUCCEEDED"},
         "traffic": deepcopy(requested),
@@ -91,7 +94,7 @@ class RolloutTests(unittest.TestCase):
         return deepcopy(self.active)
 
     def set_traffic(self, current, traffic):
-        self.assertEqual(current["etag"], self.active["etag"])
+        self.assertEqual(current["resourceVersion"], self.active["resourceVersion"])
         self.active = service(int(current["generation"]) + 1, traffic, candidate_created=True)
         return deepcopy(self.active)
 
@@ -114,7 +117,7 @@ class RolloutTests(unittest.TestCase):
         self.run_rollout()
         self.cloud.describe_revision.assert_called_with(CANDIDATE)
         current, traffic = self.cloud.set_traffic.call_args.args
-        self.assertEqual(current["etag"], "etag-6")
+        self.assertEqual(current["resourceVersion"], "rv-6")
         self.assert_traffic(traffic, CANDIDATE)
         self.assertEqual(
             sequence.mock_calls,
@@ -146,14 +149,15 @@ class RolloutTests(unittest.TestCase):
             self.run_rollout()
         self.cloud.set_traffic.assert_not_called()
 
-    def test_missing_or_changed_etag_never_authorizes_promotion(self):
-        for etag in (None, "changed-etag"):
-            with self.subTest(etag=etag):
+    def test_missing_resource_version_or_changed_generation_blocks_promotion(self):
+        for field, value in (("resourceVersion", None), ("generation", "7")):
+            with self.subTest(field=field):
                 changed = deepcopy(self.active)
-                if etag is None:
-                    del changed["etag"]
+                if value is None:
+                    del changed[field]
                 else:
-                    changed["etag"] = etag
+                    changed[field] = value
+                    changed["observedGeneration"] = value
                 self.cloud.describe_service.side_effect = [
                     deepcopy(self.active),
                     changed,
@@ -190,10 +194,10 @@ class RolloutTests(unittest.TestCase):
         self.cloud.set_traffic.assert_not_called()
         self.assertTrue(all(item == call(TAG_URL, SCHEMA) for item in self.smoke.call_args_list))
 
-    def test_promotion_patch_conflict_or_unknown_outcome_is_never_retried(self):
+    def test_promotion_conflict_or_unknown_outcome_is_never_retried(self):
         for failure in (
-            RuntimeError("etag conflict"),
-            TimeoutError("PATCH response lost"),
+            RuntimeError("resource version conflict"),
+            TimeoutError("PUT response lost"),
         ):
             with self.subTest(failure=failure):
                 self.cloud.set_traffic.reset_mock(side_effect=True)
@@ -202,25 +206,29 @@ class RolloutTests(unittest.TestCase):
                     self.run_rollout()
                 self.assertEqual(self.cloud.set_traffic.call_count, 1)
 
-    def test_rolls_back_to_concrete_previous_revision_and_preserves_existing_tag(self):
+    def test_status_only_version_changes_allow_promotion_and_rollback_with_a_fresh_version(self):
         self.before = service(5, [{"type": LATEST, "percent": 100}, self.debug])
 
         def smoke(url, _schema):
-            if url == PUBLIC_URL:
+            if url == TAG_URL:
+                self.active["resourceVersion"] = "rv-6-after-tag"
+            elif url == PUBLIC_URL:
+                self.active["resourceVersion"] = "rv-7-after-public"
                 raise rollout.OpenAPIMismatchError("stale public")
 
         self.smoke.side_effect = smoke
         with self.assertRaisesRegex(rollout.OpenAPIMismatchError, "stale public"):
             self.run_rollout()
         promotion, rollback = [item.args for item in self.cloud.set_traffic.call_args_list]
-        self.assertEqual(promotion[0]["etag"], "etag-6")
-        self.assertEqual(rollback[0]["etag"], "etag-7")
+        self.assertEqual(promotion[0]["resourceVersion"], "rv-6-after-tag")
+        self.assertEqual(rollback[0]["resourceVersion"], "rv-7-after-public")
         self.assert_traffic(rollback[1], PREVIOUS)
 
-    def test_does_not_rollback_when_operator_changed_generation_or_etag(self):
+    def test_does_not_rollback_when_operator_changed_generation_uid_or_traffic(self):
         for changed_field, field_value in (
             ("generation", "8"),
-            ("etag", "operator-etag"),
+            ("uid", "operator-uid"),
+            ("traffic", [target(FOREIGN, 100)]),
         ):
             with self.subTest(changed_field=changed_field):
                 self.active = service(6, [self.old, self.debug, self.candidate], candidate_created=True)
@@ -236,7 +244,7 @@ class RolloutTests(unittest.TestCase):
                     self.run_rollout()
                 self.assertEqual(self.cloud.set_traffic.call_count, 1)
 
-    def test_rollback_patch_conflict_does_not_reapply_or_overwrite_foreign_state(self):
+    def test_rollback_conflict_does_not_reapply_or_overwrite_foreign_state(self):
         self.smoke.side_effect = [None, RuntimeError("public verification failed")]
         self.cloud.set_traffic.side_effect = lambda current, traffic: self._conflict_on_rollback(current, traffic)
         with self.assertRaisesRegex(RuntimeError, "public verification failed"):
@@ -248,7 +256,7 @@ class RolloutTests(unittest.TestCase):
         if self.cloud.set_traffic.call_count == 1:
             return self.set_traffic(current, traffic)
         self.active = service(8, [target(FOREIGN, 100), self.debug], candidate_created=True)
-        raise RuntimeError("etag conflict")
+        raise RuntimeError("resource version conflict")
 
     def test_public_checks_wait_for_serving_generation_and_status_to_converge(self):
         def transient_then_current():
@@ -278,141 +286,171 @@ class SmokeTests(unittest.TestCase):
             rollout.smoke(TAG_URL, SCHEMA)
 
 
+def v1_target(revision_name, percent, *, tag=None, latest=False, url=None):
+    entry = {"percent": percent}
+    if revision_name is not None:
+        entry["revisionName"] = revision_name
+    if latest:
+        entry["latestRevision"] = True
+    if tag is not None:
+        entry["tag"] = tag
+    if url is not None:
+        entry["url"] = url
+    return entry
+
+
+def raw_service(generation, *, resource_version=None, requested=None, statuses=None, ready="True"):
+    requested = [v1_target(PREVIOUS, 100)] if requested is None else requested
+    return {
+        "apiVersion": "serving.knative.dev/v1",
+        "kind": "Service",
+        "metadata": {
+            "name": SERVICE,
+            "namespace": "123456789012",
+            "uid": "test-service-uid",
+            "resourceVersion": resource_version if resource_version is not None else f"rv-{generation}",
+            "generation": generation,
+            "labels": {"keep": "label"},
+            "annotations": {"keep": "annotation"},
+        },
+        "spec": {
+            "template": {
+                "metadata": {"annotations": {"keep-template": "value"}},
+                "spec": {
+                    "containers": [{"image": IMAGE, "env": [{"name": "FIXTURE", "value": "private fixture config"}]}],
+                    "timeoutSeconds": 42,
+                },
+            },
+            "traffic": deepcopy(requested),
+        },
+        "status": {
+            "observedGeneration": generation,
+            "conditions": [{"type": "Ready", "status": ready}],
+            "latestCreatedRevisionName": CANDIDATE,
+            "latestReadyRevisionName": PREVIOUS,
+            "url": PUBLIC_URL,
+            "traffic": deepcopy(statuses if statuses is not None else requested),
+        },
+    }
+
+
 class CloudRunTransportTests(unittest.TestCase):
     def setUp(self):
         self.cloud = rollout.CloudRun(PROJECT, REGION, SERVICE)
         self.before = service(6, [target(PREVIOUS, 100)], candidate_created=True)
+        self.raw_before = raw_service(6)
         self.promoted = [target(CANDIDATE, 100)]
-        self.applied = service(7, self.promoted, candidate_created=True)
-        self.operation = f"projects/{PROJECT}/locations/{REGION}/operations/test-operation"
+        self.raw_promoted = [v1_target(CANDIDATE, 100)]
 
-    def test_apply_sends_only_traffic_identity_and_etag_and_waits_for_done(self):
-        self.before["template"] = {"contains": "not-part-of-the-patch"}
-        responses = [
-            {"name": self.operation},
-            {"name": self.operation, "done": True, "response": self.applied},
-        ]
-        with (
-            patch.object(self.cloud, "request", side_effect=responses) as request,
-            patch.object(rollout.time, "sleep") as sleep,
-        ):
-            self.assertEqual(self.cloud.set_traffic(self.before, self.promoted), self.applied)
+    def test_replaces_traffic_using_the_full_spec_and_original_resource_version(self):
+        returned = raw_service(7, requested=self.raw_promoted, statuses=[v1_target(PREVIOUS, 100)], ready="Unknown")
+        with patch.object(self.cloud, "request", side_effect=[deepcopy(self.raw_before), returned]) as request:
+            result = self.cloud.set_traffic(self.before, self.promoted)
 
-        self.assertEqual(
-            request.call_args_list,
-            [
-                call(
-                    SERVICE_NAME,
-                    query={"updateMask": "traffic"},
-                    body={
-                        "name": SERVICE_NAME,
-                        "etag": "etag-6",
-                        "traffic": self.promoted,
-                    },
-                ),
-                call(self.operation),
-            ],
-        )
-        sleep.assert_called_once()
+        self.assertEqual(request.call_count, 2)
+        request_args, request_kwargs = request.call_args_list[0]
+        self.assertEqual(request_args, (SERVICE_PATH,))
+        self.assertIsNone(request_kwargs.get("body"))
+        request_args, request_kwargs = request.call_args_list[1]
+        self.assertEqual(request_args, (SERVICE_PATH,))
+        self.assertIsNone(request_kwargs.get("query"))
+        body = request_kwargs["body"]
+        self.assertEqual(body["metadata"]["resourceVersion"], "rv-6")
+        self.assertEqual(body["metadata"]["name"], SERVICE)
+        for key in ("labels", "annotations"):
+            self.assertEqual(body["metadata"][key], self.raw_before["metadata"][key])
+        self.assertEqual(body["spec"], self.raw_before["spec"] | {"traffic": self.raw_promoted})
+        self.assertNotIn("status", body)
+        self.assertEqual((result["generation"], result["resourceVersion"], result["uid"]), ("7", "rv-7", self.before["uid"]))
 
-    def test_done_operation_error_reports_code_without_logging_error_body(self):
-        result = {
-            "name": self.operation,
-            "done": True,
-            "error": {"code": 10, "message": "private upstream detail"},
-        }
-        with (
-            patch.object(self.cloud, "request", return_value=result) as request,
-            self.assertRaisesRegex(RuntimeError, "code 10") as error,
-        ):
-            self.cloud.set_traffic(self.before, self.promoted)
-        self.assertNotIn("private upstream detail", str(error.exception))
-        request.assert_called_once()
+    def test_an_inconsistent_replacement_response_fails_without_another_write(self):
+        for field in ("uid", "generation", "traffic"):
+            with self.subTest(field=field):
+                returned = raw_service(7, requested=self.raw_promoted)
+                if field == "uid":
+                    returned["metadata"]["uid"] = "unexpected-service-uid"
+                elif field == "generation":
+                    returned["metadata"]["generation"] = 8
+                else:
+                    returned["spec"]["traffic"] = [v1_target(FOREIGN, 100)]
+                with (
+                    patch.object(self.cloud, "request", side_effect=[deepcopy(self.raw_before), returned]) as request,
+                    self.assertRaisesRegex(RuntimeError, "did not confirm"),
+                ):
+                    self.cloud.set_traffic(self.before, self.promoted)
+                self.assertEqual(request.call_count, 2)
 
-    def test_timeout_is_uncertain_and_never_sends_a_second_write(self):
-        with (
-            patch.object(self.cloud, "request", return_value={"name": self.operation}) as request,
-            patch.object(rollout.time, "monotonic", side_effect=[0, 999]),
-            self.assertRaisesRegex(RuntimeError, "did not finish"),
-        ):
-            self.cloud.set_traffic(self.before, self.promoted)
-        request.assert_called_once()
+    def test_traffic_replacement_keeps_named_endpoints_and_zero_percent(self):
+        desired = [target(CANDIDATE, 100), target(FOREIGN, 0, tag=DEBUG_TAG)]
+        returned = raw_service(7, requested=[*self.raw_promoted, v1_target(FOREIGN, 0, tag=DEBUG_TAG)])
+        with patch.object(self.cloud, "request", side_effect=[self.raw_before, returned]) as request:
+            self.cloud.set_traffic(self.before, desired)
+        raw_targets = request.call_args.kwargs["body"]["spec"]["traffic"]
+        self.assertEqual(raw_targets, returned["spec"]["traffic"])
+        self.assertTrue(all("url" not in item for item in raw_targets))
 
     def test_missing_precondition_is_rejected_before_any_request(self):
-        del self.before["etag"]
-        with (
-            patch.object(self.cloud, "request") as request,
-            self.assertRaisesRegex(RuntimeError, "precondition"),
-        ):
+        del self.before["resourceVersion"]
+        with patch.object(self.cloud, "request") as request, self.assertRaises(RuntimeError):
             self.cloud.set_traffic(self.before, self.promoted)
         request.assert_not_called()
 
-    def test_untrusted_operation_name_is_never_polled(self):
-        for operation in (
-            "https://example.invalid/operations/test",
-            self.operation.replace(PROJECT, "other-project"),
-        ):
-            with (
-                self.subTest(operation=operation),
-                patch.object(self.cloud, "request", return_value={"name": operation}) as request,
-                self.assertRaisesRegex(RuntimeError, "operation name"),
-            ):
-                self.cloud.set_traffic(self.before, self.promoted)
-            request.assert_called_once()
+    def test_change_before_full_get_prevents_writing(self):
+        operator = raw_service(6, resource_version="rv-operator")
+        with patch.object(self.cloud, "request", return_value=operator) as request, self.assertRaises(RuntimeError):
+            self.cloud.set_traffic(self.before, self.promoted)
+        self.assertEqual(request.call_count, 1)
+        self.assertIsNone(request.call_args.kwargs.get("body"))
 
-    def test_stale_http_etag_is_not_retried_or_logged(self):
+    def test_timeout_is_uncertain_and_uses_one_put(self):
+        with (
+            patch.object(self.cloud, "request", side_effect=[self.raw_before, TimeoutError("PUT response lost")]) as request,
+            self.assertRaisesRegex(TimeoutError, "PUT response lost"),
+        ):
+            self.cloud.set_traffic(self.before, self.promoted)
+        self.assertEqual(request.call_count, 2)
+        self.assertEqual(request.call_args.kwargs["body"]["metadata"]["resourceVersion"], "rv-6")
+
+    def test_change_after_full_get_is_rejected_on_wire_without_another_write(self):
         self.cloud.token = "fixture-only-token"
         for status in (409, 412):
             with self.subTest(status=status):
-                error = HTTPError(
-                    "https://run.googleapis.com",
-                    status,
-                    "private upstream detail",
-                    None,
-                    BytesIO(),
-                )
+                before = BytesIO(json.dumps(self.raw_before).encode())
+                conflict = HTTPError(f"https://{API_HOST}", status, "private upstream detail", None, BytesIO())
                 with (
-                    patch.object(self.cloud.opener, "open", side_effect=error) as opening,
-                    self.assertRaisesRegex(RuntimeError, "conditional update") as raised,
+                    patch.object(self.cloud.opener, "open", side_effect=[before, conflict]) as opening,
+                    self.assertRaisesRegex(RuntimeError, "conditional update") as caught,
                 ):
                     self.cloud.set_traffic(self.before, self.promoted)
-                self.assertNotIn("private upstream detail", str(raised.exception))
-                self.assertNotIn(self.cloud.token, str(raised.exception))
-                opening.assert_called_once()
-                actual = opening.call_args.args[0]
-                url = urlsplit(actual.full_url)
-                self.assertEqual(
-                    (url.scheme, url.netloc, url.path),
-                    ("https", "run.googleapis.com", f"/v2/{SERVICE_NAME}"),
-                )
-                self.assertEqual(parse_qs(url.query), {"updateMask": ["traffic"]})
-                self.assertEqual(actual.get_method(), "PATCH")
-                self.assertEqual(
-                    json.loads(actual.data),
-                    {"name": SERVICE_NAME, "etag": "etag-6", "traffic": self.promoted},
-                )
+                self.assertNotIn("private upstream detail", str(caught.exception))
+                self.assertNotIn("private fixture config", str(caught.exception))
+                self.assertNotIn(self.cloud.token, str(caught.exception))
+                self.assertEqual(opening.call_count, 2)
+                read, write = [entry.args[0] for entry in opening.call_args_list]
+                self.assertEqual((read.get_method(), write.get_method()), ("GET", "PUT"))
+                url = urlsplit(write.full_url)
+                self.assertEqual((url.scheme, url.netloc, url.path, url.query), ("https", API_HOST, API_PATH, ""))
+                self.assertEqual(json.loads(write.data)["metadata"]["resourceVersion"], "rv-6")
 
-    def test_snapshot_requests_only_routing_and_identity_fields(self):
-        with patch.object(self.cloud, "request", return_value=self.before) as request:
-            self.assertEqual(rollout.snapshot(self.cloud), self.before)
+    def test_snapshot_normalizes_v1_identity_traffic_and_tag_uri_without_template(self):
+        requested = [v1_target(None, 100, latest=True), v1_target(FOREIGN, 0, tag=DEBUG_TAG)]
+        tag_uri = f"https://{DEBUG_TAG}---{SERVICE}-test.a.run.app"
+        statuses = [v1_target(PREVIOUS, 100, latest=True), v1_target(FOREIGN, 0, tag=DEBUG_TAG, url=tag_uri)]
+        raw = raw_service(6, requested=requested, statuses=statuses)
+        with patch.object(self.cloud, "request", return_value=raw) as request:
+            result = rollout.snapshot(self.cloud)
         request.assert_called_once()
-        args, kwargs = request.call_args
-        self.assertEqual(args, (SERVICE_NAME,))
-        self.assertEqual(set(kwargs), {"query"})
-        fields = set(kwargs["query"]["fields"].split(","))
-        self.assertTrue(
-            {
-                "name",
-                "uid",
-                "etag",
-                "traffic",
-                "trafficStatuses",
-                "generation",
-                "observedGeneration",
-            }
-            <= fields
-        )
-        self.assertTrue({"template", "annotations", "labels", "env"}.isdisjoint(fields))
+        self.assertEqual(request.call_args.args, (SERVICE_PATH,))
+        self.assertIsNone(request.call_args.kwargs.get("body"))
+        self.assertEqual(result["name"], SERVICE_NAME)
+        self.assertEqual(result["uid"], self.before["uid"])
+        self.assertEqual((result["generation"], result["observedGeneration"], result["resourceVersion"]), ("6", "6", "rv-6"))
+        self.assertEqual(result["latestCreatedRevision"], f"{SERVICE_NAME}/revisions/{CANDIDATE}")
+        self.assertEqual(result["traffic"], [{"type": LATEST, "percent": 100}, target(FOREIGN, 0, tag=DEBUG_TAG)])
+        self.assertEqual(rollout.serving_targets(result), [target(PREVIOUS, 100), target(FOREIGN, 0, tag=DEBUG_TAG)])
+        self.assertEqual(result["trafficStatuses"][1]["uri"], tag_uri)
+        self.assertNotIn("private fixture config", json.dumps(result))
+        self.assertNotIn("template", result)
 
 
 if __name__ == "__main__":

@@ -14,7 +14,8 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
 REVISION = "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION"
 LATEST = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
 SERVICE_FIELDS = (
-    "name,uid,etag,generation,observedGeneration,reconciling,traffic,trafficStatuses,uri,latestCreatedRevision,terminalCondition(state)"
+    "metadata(name,uid,generation,resourceVersion),spec(traffic),"
+    "status(traffic,url,observedGeneration,latestCreatedRevisionName,conditions(type,status))"
 )
 
 
@@ -34,7 +35,9 @@ class RejectRedirects(HTTPRedirectHandler):
 class CloudRun:
     def __init__(self, project: str, region: str, service: str) -> None:
         self.name = f"projects/{project}/locations/{region}/services/{service}"
-        self.operation_prefix = f"projects/{project}/locations/{region}/operations/"
+        self.service = service
+        self.service_path = f"namespaces/{project}/services/{service}"
+        self.endpoint = f"https://{region}-run.googleapis.com/apis/serving.knative.dev/v1"
         self.options = [f"--project={project}", f"--region={region}", "--quiet"]
         self.opener = build_opener(RejectRedirects())
         self.token: str | None = None
@@ -44,10 +47,10 @@ class CloudRun:
             self.token = subprocess.check_output(["gcloud", "auth", "print-access-token", "--quiet"], text=True, timeout=30).strip()
         query_string = f"?{urlencode(query)}" if query else ""
         request = Request(
-            f"https://run.googleapis.com/v2/{path}{query_string}",
+            f"{self.endpoint}/{path}{query_string}",
             data=json.dumps(body).encode() if body is not None else None,
             headers={"Authorization": f"Bearer {self.token}", "Content-Type": "application/json"},
-            method="PATCH" if body is not None else "GET",
+            method="PUT" if body is not None else "GET",
         )
         try:
             with self.opener.open(request, timeout=20) as result:
@@ -58,7 +61,30 @@ class CloudRun:
             raise RuntimeError(f"Cloud Run Admin API returned HTTP {error.code}") from None
 
     def describe_service(self) -> dict:
-        return self.request(self.name, query={"fields": SERVICE_FIELDS})
+        resource = self.request(self.service_path, query={"fields": SERVICE_FIELDS})
+        return self.service_state(resource)
+
+    def service_state(self, resource: dict) -> dict:
+        metadata = resource["metadata"]
+        if metadata["name"] != self.service:
+            raise RuntimeError("Cloud Run returned the wrong service")
+        status = resource.get("status", {})
+        conditions = {entry["type"]: entry["status"] for entry in status.get("conditions", [])}
+        ready = conditions.get("Ready")
+        created = status.get("latestCreatedRevisionName")
+        return {
+            "name": self.name,
+            "uid": metadata["uid"],
+            "generation": str(metadata["generation"]),
+            "observedGeneration": str(status.get("observedGeneration", "")),
+            "resourceVersion": metadata.get("resourceVersion"),
+            "reconciling": ready not in ("True", "False"),
+            "terminalCondition": {"state": "CONDITION_SUCCEEDED" if ready == "True" else "CONDITION_FAILED"},
+            "latestCreatedRevision": f"{self.name}/revisions/{created}" if created else None,
+            "uri": status.get("url"),
+            "traffic": [from_cloud_run_target(entry) for entry in resource["spec"].get("traffic", [])],
+            "trafficStatuses": [from_cloud_run_target(entry) for entry in status.get("traffic", [])],
+        }
 
     def describe_revision(self, name: str) -> dict:
         response = subprocess.check_output(
@@ -77,29 +103,48 @@ class CloudRun:
         return json.loads(response)
 
     def set_traffic(self, current: dict, traffic: list[dict]) -> dict:
-        if current["name"] != self.name or not current.get("etag"):
+        if current["name"] != self.name or not current.get("resourceVersion"):
             raise RuntimeError("Cloud Run service identity or update precondition is missing")
-        operation = self.request(
-            self.name,
-            query={"updateMask": "traffic"},
-            body={"name": self.name, "etag": current["etag"], "traffic": traffic},
-        )
-        name = operation.get("name", "")
-        if name.rpartition("/")[0] + "/" != self.operation_prefix or not name.rpartition("/")[2]:
-            raise RuntimeError("Cloud Run returned an unexpected operation name")
-        deadline = time.monotonic() + 240
-        while not operation.get("done"):
-            if time.monotonic() >= deadline:
-                raise RuntimeError("Cloud Run traffic operation did not finish. Check the live allocation.")
-            time.sleep(3)
-            operation = self.request(name)
-        if "error" in operation:
-            code = operation["error"].get("code")
-            raise RuntimeError(f"Cloud Run traffic operation failed (code {code}). Check the live allocation.")
-        result = operation.get("response", {})
-        if result.get("name") != self.name or not result.get("etag") or not result.get("generation"):
-            raise RuntimeError("Cloud Run operation did not return the updated service. Check the live allocation.")
-        return result
+
+        # v1 ReplaceService honors resourceVersion. Read the full service only
+        # here to preserve its template and metadata. Never print or save it.
+        raw = self.request(self.service_path)
+        metadata = raw["metadata"]
+        if (
+            metadata["name"] != self.service
+            or metadata["uid"] != current["uid"]
+            or metadata["resourceVersion"] != current["resourceVersion"]
+        ):
+            raise RuntimeError("Cloud Run traffic changed before the conditional update")
+        raw.pop("status", None)
+        raw["spec"]["traffic"] = [to_cloud_run_target(entry) for entry in traffic]
+        applied = self.service_state(self.request(self.service_path, body=raw))
+        if (
+            applied["uid"] != current["uid"]
+            or int(applied["generation"]) != int(current["generation"]) + 1
+            or traffic_key(applied["traffic"]) != traffic_key(traffic)
+        ):
+            raise RuntimeError("Cloud Run did not confirm the requested allocation. Check the live traffic.")
+        return applied
+
+
+def from_cloud_run_target(entry: dict) -> dict:
+    target = {"type": LATEST if entry.get("latestRevision") else REVISION, "percent": entry.get("percent", 0)}
+    for source, destination in (("revisionName", "revision"), ("tag", "tag"), ("url", "uri")):
+        if entry.get(source):
+            target[destination] = entry[source]
+    return target
+
+
+def to_cloud_run_target(entry: dict) -> dict:
+    target = {"percent": entry.get("percent", 0)}
+    if entry["type"] == LATEST:
+        target["latestRevision"] = True
+    else:
+        target["revisionName"] = entry["revision"]
+    if entry.get("tag"):
+        target["tag"] = entry["tag"]
+    return target
 
 
 def traffic_key(targets: list[dict]) -> list[tuple[str, str, int, str]]:
@@ -125,8 +170,8 @@ def require_ready(service: dict, *, allow_failed: bool = False) -> None:
         or (not allow_failed and service["terminalCondition"]["state"] != "CONDITION_SUCCEEDED")
     ):
         raise PendingVerificationError("Cloud Run service has not reconciled")
-    if not service.get("etag") or not service.get("generation"):
-        raise RuntimeError("Cloud Run service generation or etag is missing")
+    if not service.get("resourceVersion") or not service.get("generation"):
+        raise RuntimeError("Cloud Run service generation or resourceVersion is missing")
 
 
 def snapshot(cloud: CloudRun) -> dict:
@@ -149,13 +194,13 @@ def smoke(url: str, expected_schema: dict) -> None:
                 raise PendingVerificationError("Health check did not return the expected response")
 
 
-def wait_for_verification(check: Callable[[], None], *, allow_stale_schema: bool = False) -> None:
-    for attempt in range(5):
+def wait_for_verification(check: Callable[[], None], *, allow_stale_schema: bool = False, attempts: int = 5) -> None:
+    for attempt in range(attempts):
         try:
             check()
             return
         except (OSError, PendingVerificationError, OpenAPIMismatchError, subprocess.SubprocessError) as error:
-            if attempt == 4 or (isinstance(error, OpenAPIMismatchError) and not allow_stale_schema):
+            if attempt == attempts - 1 or (isinstance(error, OpenAPIMismatchError) and not allow_stale_schema):
                 raise
             time.sleep(3)
 
@@ -190,7 +235,7 @@ def verify_serving(cloud: CloudRun, traffic: list[dict], expected_schema: dict |
             smoke(service["uri"], expected_schema)
 
     # The public endpoint may briefly return the previous schema during propagation.
-    wait_for_verification(check, allow_stale_schema=True)
+    wait_for_verification(check, allow_stale_schema=True, attempts=12)
 
 
 def rollout(
@@ -223,7 +268,11 @@ def rollout(
     verify_candidate(cloud, candidate, expected_image, expected_sha, expected_schema)
     current = cloud.describe_service()
     require_ready(current)
-    if (current["uid"], current["etag"]) != (service["uid"], service["etag"]):
+    if (
+        current["uid"] != service["uid"]
+        or current["generation"] != service["generation"]
+        or traffic_key(current["traffic"]) != traffic_key(service["traffic"])
+    ):
         raise RuntimeError("Cloud Run configuration changed during candidate verification")
 
     # Keep the previous named endpoints, even though they receive no normal traffic.
@@ -238,7 +287,6 @@ def rollout(
             if (
                 failed["uid"] != current["uid"]
                 or failed["generation"] != applied["generation"]
-                or failed["etag"] != applied["etag"]
                 or traffic_key(failed["traffic"]) != traffic_key(promoted)
             ):
                 raise RuntimeError("Cloud Run allocation changed after promotion. Check the current traffic.")
