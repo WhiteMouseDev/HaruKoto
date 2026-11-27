@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
-import '../../../../core/theme/text_theme.dart';
+import '../../../../core/theme/haru_typography.dart';
 
 class QuizHeader extends StatelessWidget {
   final String title;
@@ -43,12 +43,7 @@ class QuizHeader extends StatelessWidget {
                 header: true,
                 child: Text(
                   title,
-                  style: TextStyle(
-                    fontFamily: redesignFontFamily,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
-                    letterSpacing: -0.4,
+                  style: HaruTypography.krTitle2.copyWith(
                     color: foreground,
                   ),
                 ),

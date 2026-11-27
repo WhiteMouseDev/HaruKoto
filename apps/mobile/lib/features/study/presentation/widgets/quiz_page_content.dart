@@ -41,7 +41,7 @@ class QuizPageContent extends ConsumerWidget {
   String get _headerTitle {
     if (session.resolvedMode == 'wrong_answer_review') return '이번 퀴즈의 오답 복습';
     if (session.resolvedMode == 'review') return '복습';
-    if (session.resolvedMode == 'arrange') return '$jlptLevel 문장 배열';
+    if (session.resolvedMode == 'arrange') return '$jlptLevel 문장배열 퀴즈';
     final category = switch (session.displayQuizType(quizType)) {
       'VOCABULARY' => '단어',
       'GRAMMAR' => '문법',
@@ -123,6 +123,7 @@ class QuizPageContent extends ConsumerWidget {
         QuizSpecialModeContent(
           title: _headerTitle,
           count: session.headerCount,
+          redesignedHeader: session.resolvedMode == 'arrange',
           onBack: onBackRequested,
           child: specialModeChild,
         ),
