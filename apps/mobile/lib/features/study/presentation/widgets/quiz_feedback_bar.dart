@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/theme/text_theme.dart';
+import '../../../../shared/widgets/haru_button_styles.dart';
 import '../../data/models/quiz_question_model.dart';
 
 class QuizFeedbackBar extends StatelessWidget {
@@ -141,21 +142,9 @@ class QuizFeedbackBar extends StatelessWidget {
           FilledButton(
             key: const ValueKey('quiz-next'),
             onPressed: answered ? onNext : null,
-            style: FilledButton.styleFrom(
-              backgroundColor: light ? AppColors.brandPink : null,
-              foregroundColor: light ? Colors.white : null,
-              disabledBackgroundColor: light ? AppColors.redesignControl : null,
-              disabledForegroundColor: light ? const Color(0xFF999999) : null,
-              minimumSize: const Size(0, 48),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: const StadiumBorder(),
-              textStyle: const TextStyle(
-                fontFamily: redesignFontFamily,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                height: 1.4,
-                letterSpacing: -0.35,
-              ),
+            style: HaruButtonStyles.primary(
+              context,
+              size: HaruButtonSize.regular,
             ),
             child: Text(
               isLastQuestion && answered ? '결과 보기' : '다음 문제',

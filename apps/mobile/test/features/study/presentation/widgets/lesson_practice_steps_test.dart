@@ -6,6 +6,7 @@ import 'package:harukoto_mobile/features/study/domain/lesson_recognition_feedbac
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_matching_game_step.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_recognition_check_step.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/lesson_sentence_reorder_step.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 void main() {
   group('Lesson practice steps', () {
@@ -385,7 +386,19 @@ void main() {
       );
 
       final next = find.widgetWithText(FilledButton, '다음 학습');
-      expect(tester.widget<FilledButton>(next).onPressed, isNull);
+      final inactiveNext = tester.widget<FilledButton>(next);
+      const disabled = {WidgetState.disabled};
+      expect(inactiveNext.onPressed, isNull);
+      expect(inactiveNext.style?.foregroundColor?.resolve(disabled),
+          const Color(0xFF999999));
+      expect(inactiveNext.style?.iconColor?.resolve(disabled),
+          const Color(0xFFA5A5AF));
+      final capsule = tester.getRect(next);
+      final chevron = find.byIcon(LucideIcons.chevronRight);
+      expect(capsule.height, 48);
+      expect(tester.getRect(chevron).height, 20);
+      expect(tester.getCenter(chevron).dy, capsule.center.dy);
+      expect(tester.getCenter(find.text('다음 학습')).dy, capsule.center.dy - 1);
 
       await tester.tap(find.text('犬'));
       await tester.pump();

@@ -42,6 +42,10 @@ void main() {
       expect(hitRect.height, 48);
       expect(paintRect.height, compact ? 42 : 48);
       expect(hitRect.center, paintRect.center);
+      expect(
+        tester.getCenter(find.text('학습 시작')).dy,
+        closeTo(paintRect.center.dy - 1, 0.001),
+      );
       final enabledSurface = tester.widget<Material>(surface);
       expect(enabledSurface.color, const Color(0xFFFF6A87));
       expect(enabledSurface.textStyle?.color, const Color(0xFFFFFFFF));

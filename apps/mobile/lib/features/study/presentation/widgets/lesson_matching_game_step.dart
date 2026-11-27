@@ -205,19 +205,26 @@ class _LessonMatchingGameStepState extends State<LessonMatchingGameStep>
               children: [
                 Semantics(
                   header: true,
-                  child: Text(
-                    '단어 매칭',
-                    style: HaruTypography.krTitle3.copyWith(
-                      fontSize: 16,
-                      letterSpacing: -0.4,
-                      color: foreground,
+                  // Match visible baselines while retaining the card spacing.
+                  child: Transform.translate(
+                    offset: const Offset(0, -4),
+                    child: Text(
+                      '단어 매칭',
+                      style: HaruTypography.krTitle3.copyWith(
+                        fontSize: 16,
+                        letterSpacing: -0.4,
+                        color: foreground,
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(height: AppSizes.xs),
-                Text(
-                  '일본어와 뜻을 연결하세요.',
-                  style: HaruTypography.krBody3.copyWith(color: muted),
+                Transform.translate(
+                  offset: const Offset(0, -3),
+                  child: Text(
+                    '일본어와 뜻을 연결하세요.',
+                    style: HaruTypography.krBody3.copyWith(color: muted),
+                  ),
                 ),
                 const SizedBox(height: AppSizes.sm),
                 AnimatedBuilder(
@@ -388,7 +395,10 @@ class _MatchCard extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(label, textAlign: TextAlign.center),
+              Transform.translate(
+                offset: const Offset(0, -2),
+                child: Text(label, textAlign: TextAlign.center),
+              ),
               if (reading case final value?) ...[
                 const SizedBox(height: AppSizes.xs / 2),
                 Text(

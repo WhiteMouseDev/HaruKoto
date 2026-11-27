@@ -17,6 +17,7 @@ abstract final class HaruButtonStyles {
   }) {
     final light = Theme.of(context).brightness == Brightness.light;
     final compact = size == HaruButtonSize.compact;
+    final verticalPadding = compact ? AppSizes.sm : AppSizes.gap;
 
     return FilledButton.styleFrom(
       backgroundColor: light ? AppColors.brandPink : null,
@@ -26,9 +27,12 @@ abstract final class HaruButtonStyles {
       minimumSize: Size(0, compact ? _compactHeight : AppSizes.buttonHeight),
       tapTargetSize: MaterialTapTargetSize.padded,
       visualDensity: VisualDensity.standard,
-      padding: EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: compact ? AppSizes.sm : AppSizes.gap,
+      // Align the visible Pretendard glyphs with the Figma capsule center.
+      padding: EdgeInsets.fromLTRB(
+        20,
+        verticalPadding - 1,
+        20,
+        verticalPadding + 1,
       ),
       shape: const StadiumBorder(),
       textStyle: compact

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../../core/theme/haru_typography.dart';
 import '../../../../core/theme/text_theme.dart';
 import '../../../../shared/widgets/tts_play_button.dart';
 import '../../data/models/quiz_question_model.dart';
@@ -82,6 +83,9 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
         light ? AppColors.redesignForeground : theme.colorScheme.onSurface;
     final accent = light ? AppColors.brandPink : AppColors.sakuraContainer;
     final reading = widget.question.questionSubText;
+    final showReading = widget.showFurigana &&
+        reading != null &&
+        reading != widget.question.questionText;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -123,16 +127,14 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
           ),
           textAlign: TextAlign.center,
         ),
-        if (widget.showFurigana &&
-            reading != null &&
-            reading != widget.question.questionText) ...[
+        if (showReading) ...[
           const SizedBox(height: 3.2),
           Text(
             reading,
             style: theme.textTheme.bodyMedium?.copyWith(
               fontFamily: redesignJapaneseFontFamily,
               fontSize: 12,
-              height: 1.4,
+              height: 1.5,
               letterSpacing: -0.3,
               color: light
                   ? const Color(0xFF767676)
@@ -141,12 +143,13 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
             textAlign: TextAlign.center,
           ),
         ],
-        const SizedBox(height: 2),
+        SizedBox(height: showReading ? 1 : 2),
         Center(
           child: TtsPlayButton(
             vocabId: widget.question.questionId,
-            iconSize: 22,
+            iconSize: 24,
             iconColor: accent,
+            idleIconAsset: 'assets/icons/figma-quiz-speaker.png',
           ),
         ),
         const SizedBox(height: 9),
@@ -217,17 +220,11 @@ class _FourChoiceQuizState extends State<FourChoiceQuiz>
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 40),
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.fromLTRB(16, 9.5, 16, 10.5),
                   child: Center(
                     child: Text(
                       option.text,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontFamily: redesignFontFamily,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        height: 1.4,
-                        letterSpacing: -0.35,
+                      style: HaruTypography.krCompactButton.copyWith(
                         color: light
                             ? AppColors.redesignForeground
                             : theme.colorScheme.onSurface,

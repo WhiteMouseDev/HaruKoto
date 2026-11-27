@@ -34,10 +34,6 @@ class _ReminderTimeDialogState extends State<ReminderTimeDialog> {
     final actionStyle = HaruButtonStyles.primary(
       context,
       size: HaruButtonSize.regular,
-    ).copyWith(
-      // Center the visible Pretendard glyphs within the 48pt capsule.
-      padding:
-          const WidgetStatePropertyAll(EdgeInsets.fromLTRB(20, 11, 20, 13)),
     );
 
     return Dialog(

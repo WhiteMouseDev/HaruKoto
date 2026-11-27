@@ -3,7 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
-import '../../../../core/theme/text_theme.dart';
+import '../../../../core/theme/haru_typography.dart';
 
 class LessonStageActions extends StatelessWidget {
   const LessonStageActions({
@@ -38,12 +38,6 @@ class LessonStageActions extends StatelessWidget {
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppSizes.radiusFull),
     );
-    const textStyle = TextStyle(
-      fontFamily: redesignFontFamily,
-      fontSize: 14,
-      fontWeight: FontWeight.w500,
-      height: 1.4,
-    );
     const padding = EdgeInsets.symmetric(
       horizontal: AppSizes.gap,
       vertical: AppSizes.sm,
@@ -63,17 +57,22 @@ class LessonStageActions extends StatelessWidget {
             accentNext || light ? Colors.white : colors.onInverseSurface,
         disabledBackgroundColor:
             light ? AppColors.redesignControl : colors.surfaceContainerHigh,
-        disabledForegroundColor: colors.onSurfaceVariant,
+        disabledForegroundColor:
+            light ? const Color(0xFF999999) : colors.onSurfaceVariant,
+        disabledIconColor: light ? const Color(0xFFA5A5AF) : null,
         minimumSize: minimumSize,
         tapTargetSize: tapTargetSize,
         visualDensity: visualDensity,
         padding: padding,
         shape: shape,
-        textStyle: textStyle,
+        textStyle: HaruTypography.krCompactButton,
       ),
-      child: hasPreviousButton && showNextChevron
-          ? _ActionLabel(nextLabel, trailing: LucideIcons.chevronRight)
-          : Text(nextLabel, textAlign: TextAlign.center),
+      child: _ActionLabel(
+        nextLabel,
+        trailing: hasPreviousButton && showNextChevron
+            ? LucideIcons.chevronRight
+            : null,
+      ),
     );
 
     return SafeArea(
@@ -95,6 +94,7 @@ class LessonStageActions extends StatelessWidget {
                     backgroundColor: colors.surfaceContainerLowest,
                     foregroundColor:
                         light ? AppColors.redesignForeground : colors.onSurface,
+                    iconColor: light ? AppColors.redesignStrong : null,
                     side: BorderSide(
                         color:
                             light ? AppColors.redesignOutline : colors.outline),
@@ -103,7 +103,7 @@ class LessonStageActions extends StatelessWidget {
                     visualDensity: visualDensity,
                     padding: padding,
                     shape: shape,
-                    textStyle: textStyle,
+                    textStyle: HaruTypography.krCompactButton,
                   ),
                   child: const _ActionLabel('이전',
                       leading: LucideIcons.chevronLeft),
@@ -133,13 +133,20 @@ class _ActionLabel extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (leading != null) ...[
-          Icon(leading, size: AppSizes.iconSm),
+          Icon(leading, size: AppSizes.iconMd),
           const SizedBox(width: AppSizes.xs),
         ],
-        Flexible(child: Text(text, textAlign: TextAlign.center)),
+        Flexible(
+          // Pretendard ink sits 1pt below its line-box center. Keep the icons
+          // and the button's hit target centered on the original geometry.
+          child: Transform.translate(
+            offset: const Offset(0, -1),
+            child: Text(text, textAlign: TextAlign.center),
+          ),
+        ),
         if (trailing != null) ...[
           const SizedBox(width: AppSizes.xs),
-          Icon(trailing, size: AppSizes.iconSm),
+          Icon(trailing, size: AppSizes.iconMd),
         ],
       ],
     );
