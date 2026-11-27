@@ -1,10 +1,55 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/providers/device_settings_provider.dart';
 import 'package:harukoto_mobile/core/settings/device_settings.dart';
 import 'package:harukoto_mobile/core/settings/device_settings_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  for (final firstFails in [false, true]) {
+    test('theme writes remain ordered when the first write fails: $firstFails',
+        () async {
+      SharedPreferences.setMockInitialValues({'device_theme_mode': 'light'});
+      final prefs = await SharedPreferences.getInstance();
+      final repository = _StagedThemeRepository(sharedPreferences: prefs);
+      final container = ProviderContainer(
+        overrides: [
+          deviceSettingsRepositoryProvider.overrideWithValue(repository),
+        ],
+      );
+      addTearDown(container.dispose);
+      final notifier = container.read(deviceSettingsProvider.notifier);
+      final firstRequest = notifier.setThemeMode(ThemeMode.dark);
+      final firstResult = firstFails
+          ? expectLater(firstRequest, throwsStateError)
+          : firstRequest;
+      // If the first write succeeds, the second choice matches the stale state
+      // seen during the write but must restore it after dark was committed.
+      final latestMode = firstFails ? ThemeMode.system : ThemeMode.light;
+      final latestRequest = notifier.setThemeMode(latestMode);
+
+      await repository.firstWriteStarted.future;
+      expect(repository.writes, [ThemeMode.dark]);
+      expect(container.read(deviceSettingsProvider).themeMode, ThemeMode.light);
+      expect(prefs.getString('device_theme_mode'), 'light');
+      if (firstFails) {
+        repository.firstWrite
+            .completeError(StateError('Setting was not saved'));
+      } else {
+        repository.firstWrite.complete();
+      }
+      await firstResult;
+      await latestRequest;
+
+      expect(repository.writes, [ThemeMode.dark, latestMode]);
+      expect(container.read(deviceSettingsProvider).themeMode, latestMode);
+      expect(prefs.getString('device_theme_mode'), latestMode.name);
+    });
+  }
+
   group('DeviceSettingsRepository', () {
     test(
       'defaults to light theme when no theme preference is stored',
@@ -116,6 +161,29 @@ void main() {
       expect(scheduler.streakCancelled, isTrue);
     });
   });
+}
+
+class _StagedThemeRepository extends DeviceSettingsRepository {
+  _StagedThemeRepository({required super.sharedPreferences})
+      : super(
+          notificationScheduler: _FakeNotificationScheduler(),
+          soundDriver: _FakeToggleSettingDriver(),
+          hapticDriver: _FakeToggleSettingDriver(),
+        );
+
+  final firstWriteStarted = Completer<void>();
+  final firstWrite = Completer<void>();
+  final writes = <ThemeMode>[];
+
+  @override
+  Future<void> persistThemeMode(ThemeMode themeMode) async {
+    writes.add(themeMode);
+    if (writes.length == 1) {
+      firstWriteStarted.complete();
+      await firstWrite.future;
+    }
+    await super.persistThemeMode(themeMode);
+  }
 }
 
 class _FakeNotificationScheduler implements NotificationScheduler {

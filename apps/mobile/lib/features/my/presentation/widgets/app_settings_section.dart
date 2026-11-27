@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/providers/device_settings_provider.dart';
@@ -15,12 +14,20 @@ import '../../providers/settings_sync_provider.dart';
 import 'my_settings_group.dart';
 import 'my_settings_toggle_tile.dart';
 import 'reminder_time_dialog.dart';
+import 'theme_picker_sheet.dart';
 
-class AppSettingsSection extends ConsumerWidget {
+class AppSettingsSection extends ConsumerStatefulWidget {
   const AppSettingsSection({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppSettingsSection> createState() => _AppSettingsSectionState();
+}
+
+class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
+  bool _themePickerOpenOrSaving = false;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final light = theme.brightness == Brightness.light;
     final valueStyle = TextStyle(
@@ -64,10 +71,10 @@ class AppSettingsSection extends ConsumerWidget {
           leading: const MySettingsIcon('theme'),
           title: const Text('테마 선택', style: TextStyle(fontSize: 14)),
           trailing: Text(
-            _themeModeLabel(themeMode),
+            themeModeLabel(themeMode),
             style: valueStyle,
           ),
-          onTap: () => _showThemeSheet(context, ref, themeMode),
+          onTap: () => _showThemeSheet(themeMode),
         ),
 
         // Furigana
@@ -149,17 +156,6 @@ class AppSettingsSection extends ConsumerWidget {
     );
   }
 
-  String _themeModeLabel(ThemeMode mode) {
-    switch (mode) {
-      case ThemeMode.light:
-        return '라이트';
-      case ThemeMode.dark:
-        return '다크';
-      case ThemeMode.system:
-        return '시스템';
-    }
-  }
-
   Future<void> _showTimePicker(BuildContext context, WidgetRef ref) async {
     final settings = ref.read(notificationSettingsProvider);
     final picked = await showDialog<TimeOfDay>(
@@ -178,53 +174,37 @@ class AppSettingsSection extends ConsumerWidget {
     }
   }
 
-  void _showThemeSheet(BuildContext context, WidgetRef ref, ThemeMode current) {
-    showModalBottomSheet(
-      context: context,
-      shape: AppSizes.sheetShape,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    '테마 선택',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ),
-                for (final entry in [
-                  (ThemeMode.light, '라이트', LucideIcons.sun),
-                  (ThemeMode.dark, '다크', LucideIcons.moon),
-                  (ThemeMode.system, '시스템', LucideIcons.smartphone),
-                ])
-                  ListTile(
-                    leading: Icon(entry.$3, size: 20),
-                    title: Text(entry.$2),
-                    trailing: current == entry.$1
-                        ? Icon(LucideIcons.check,
-                            color: Theme.of(context).colorScheme.primary)
-                        : null,
-                    onTap: () {
-                      unawaited(
-                        ref
-                            .read(deviceSettingsProvider.notifier)
-                            .setThemeMode(entry.$1),
-                      );
-                      Navigator.pop(context);
-                    },
-                  ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+  Future<void> _showThemeSheet(ThemeMode current) async {
+    if (_themePickerOpenOrSaving) return;
+    _themePickerOpenOrSaving = true;
+    try {
+      final theme = Theme.of(context);
+      final selected = await showModalBottomSheet<ThemeMode>(
+        context: context,
+        useRootNavigator: true,
+        isScrollControlled: true,
+        useSafeArea: true,
+        showDragHandle: false,
+        shape: AppSizes.sheetShape,
+        clipBehavior: Clip.antiAlias,
+        backgroundColor: theme.brightness == Brightness.light
+            ? AppColors.lightCard
+            : theme.colorScheme.surfaceContainer,
+        builder: (_) => ThemePickerSheet(initialMode: current),
+      );
+      if (!mounted || selected == null) return;
+      await ref.read(deviceSettingsProvider.notifier).setThemeMode(selected);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('테마 설정을 저장하지 못했어요. 다시 시도해주세요.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      _themePickerOpenOrSaving = false;
+    }
   }
 }
 
