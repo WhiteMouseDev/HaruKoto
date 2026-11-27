@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+import '../../../core/auth/current_account_provider.dart';
 import '../data/models/wordbook_entry_model.dart';
 import 'study_provider.dart';
 
@@ -61,12 +63,14 @@ class WordbookController extends Notifier<WordbookState> {
 
   @override
   WordbookState build() {
+    ref.onDispose(() => _requestSerial++);
     return const WordbookState();
   }
 
   Future<void> refresh() async {
     final requestId = ++_requestSerial;
-    final page = state.page;
+    final owner = ref.read(currentAccountReaderProvider)();
+    var page = state.page;
     final sort = state.sort;
     final search = state.search;
     final filter = state.filter;
@@ -77,28 +81,48 @@ class WordbookController extends Notifier<WordbookState> {
     );
 
     try {
-      final data = await ref.read(studyRepositoryProvider).fetchWordbook(
-            page: page,
-            sort: sort,
-            search: search,
-            filter: filter,
-          );
-      if (requestId != _requestSerial) return;
-      state = state.copyWith(
-        loading: false,
-        entries: data.entries,
-        total: data.total,
-        totalPages: data.totalPages,
-      );
+      final repository = ref.read(studyRepositoryProvider);
+      while (true) {
+        final data = await repository.fetchWordbook(
+          page: page,
+          sort: sort,
+          search: search,
+          filter: filter,
+        );
+        if (!_isCurrent(requestId, owner)) return;
+        final lastPage = math.max(1, data.totalPages);
+        if (data.total > 0 &&
+            page > 1 &&
+            (page > lastPage || data.entries.isEmpty)) {
+          // The count and page rows may reflect different versions of the
+          // list. Retry a lower page with the same query before publishing it.
+          page = math.min(page - 1, lastPage);
+          continue;
+        }
+        state = state.copyWith(
+          loading: false,
+          page: data.total == 0 ? 1 : page,
+          entries: data.entries,
+          total: data.total,
+          totalPages: data.totalPages,
+        );
+        return;
+      }
     } catch (error, stackTrace) {
+      if (!_isCurrent(requestId, owner)) return;
       unawaited(Sentry.captureException(error, stackTrace: stackTrace));
-      if (requestId != _requestSerial) return;
       state = state.copyWith(
         loading: false,
         error: '단어장을 불러올 수 없습니다.',
       );
     }
   }
+
+  bool _isCurrent(int requestId, String? owner) =>
+      requestId == _requestSerial && _isCurrentOwner(owner);
+
+  bool _isCurrentOwner(String? owner) =>
+      ref.mounted && ref.read(currentAccountReaderProvider)() == owner;
 
   Future<void> changeSearch(String search) async {
     if (state.search == search) return;
@@ -137,8 +161,11 @@ class WordbookController extends Notifier<WordbookState> {
   }
 
   Future<bool> deleteWord(String id) async {
+    final owner = ref.read(currentAccountReaderProvider)();
+    if (owner == null) return false;
     try {
       await ref.read(studyRepositoryProvider).deleteWord(id);
+      if (!_isCurrentOwner(owner)) return false;
       unawaited(refresh());
       return true;
     } catch (error, stackTrace) {
