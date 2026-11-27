@@ -100,19 +100,24 @@ class LessonStepContent extends ConsumerWidget {
           return const SizedBox.shrink(key: ValueKey('step-2-skip'));
         }
 
+        final index = session.recognitionIndex;
+        final question = recognitionQuestions[index];
+        final confirmedAnswer = session.answers[question.order];
+
         return LessonRecognitionCheckStep(
-          key: ValueKey('step-2-${session.recognitionIndex}'),
-          questions: recognitionQuestions,
-          currentIndex: session.recognitionIndex,
-          totalSteps: totalSteps,
-          initialSelection: session.recognitionSelection ??
-              session.answers[recognitionQuestions[session.recognitionIndex]
-                  .order]?['selectedAnswer'] as String?,
-          optionOrder: session.layout.recognitionOptions[
-              recognitionQuestions[session.recognitionIndex].order],
-          onSelectionChanged: sessionNotifier.selectRecognition,
-          onAnswer: (answer) =>
-              sessionNotifier.answerRecognition(detail, answer),
+          key: ValueKey('step-2-$index'),
+          question: question,
+          currentIndex: index,
+          questionCount: recognitionQuestions.length,
+          optionOrder: session.layout.recognitionOptions[question.order],
+          selectedOptionId: confirmedAnswer?['selectedAnswer'] as String? ??
+              session.recognitionSelection,
+          confirmed: confirmedAnswer != null,
+          onSelectionChanged: (value) =>
+              sessionNotifier.selectRecognition(question.order, value),
+          onConfirm: () => sessionNotifier.confirmRecognition(question.order),
+          onNext: () => sessionNotifier.nextRecognition(question.order),
+          onPrevious: () => sessionNotifier.previousRecognition(question.order),
         );
       case LessonStep.matching:
         return LessonMatchingGameStep(

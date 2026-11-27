@@ -43,6 +43,7 @@ LessonDetailModel activityDetail(
         {String? version,
         bool enabled = true,
         bool recognition = true,
+        bool secondRecognition = false,
         bool reorder = true,
         int reorderCount = 1}) =>
     LessonDetailModel(
@@ -65,6 +66,16 @@ LessonDetailModel activityDetail(
                     QuizOptionModel(id: 'a', text: '물'),
                     QuizOptionModel(id: 'b', text: '책')
                   ]),
+            if (secondRecognition)
+              const LessonQuestionModel(
+                order: 7,
+                type: 'VOCAB_MCQ',
+                prompt: '本의 뜻은?',
+                options: [
+                  QuizOptionModel(id: 'c', text: '책'),
+                  QuizOptionModel(id: 'd', text: '물'),
+                ],
+              ),
             if (reorder)
               for (var index = 0; index < reorderCount; index++)
                 LessonQuestionModel(

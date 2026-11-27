@@ -68,6 +68,8 @@ class LessonSessionState {
   final bool submissionPending;
   final int seed;
   final LessonPracticeLayout layout;
+
+  /// Draft for the first unanswered recognition question, even during review.
   final String? recognitionSelection;
   final Set<int> matchingMatched;
   final int? matchingLeft;

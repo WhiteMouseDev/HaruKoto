@@ -16,31 +16,46 @@ void main() {
   });
 
   test(
-      'option tap saves attendance with selection, Next never duplicates or grades',
-      () async {
-    final h = ActivityHarness(preferences: prefs);
-    addTearDown(h.dispose);
-    await h.start();
-    h.controller.selectRecognition('b');
-    await h.controller.flush();
-    await h.sync();
-    await activityFlush();
-    expect(h.repository.posts, hasLength(1));
-    expect(h.repository.posts.single['kind'], 'RECOGNITION');
-    expect(h.repository.posts.single['answer'],
-        {'questionOrder': 1, 'selectedAnswer': 'b'});
-    expect(h.state.recognitionSelection, 'b');
-    expect(h.state.answers, isEmpty);
-    expect(h.study.submissions, 0);
-    h.controller.selectRecognition('a');
-    h.controller.answerRecognition(
-        h.study.detail, {'order': 1, 'selectedAnswer': 'b', 'responseMs': 0});
-    await h.controller.flush();
-    await h.sync();
-    expect(h.repository.posts, hasLength(1));
-    expect(h.state.answers[1]!['selectedAnswer'], 'b');
-    expect(h.study.submissions, 0);
-  });
+    'first choice records attendance and Confirm saves the final choice without grading',
+    () async {
+      final h = ActivityHarness(preferences: prefs);
+      addTearDown(h.dispose);
+      await h.start();
+      h.controller.selectRecognition('b', expectedOrder: 99);
+      h.controller.confirmRecognition(1);
+      expect(h.state.recognitionSelection, isNull);
+      expect(h.state.answers, isEmpty);
+
+      h.controller.selectRecognition('b');
+      await h.controller.flush();
+      await h.sync();
+      await activityFlush();
+      expect(h.repository.posts, hasLength(1));
+      expect(h.repository.posts.single['kind'], 'RECOGNITION');
+      expect(h.repository.posts.single['answer'], {
+        'questionOrder': 1,
+        'selectedAnswer': 'b',
+      });
+      expect(h.state.recognitionSelection, 'b');
+      expect(h.state.answers, isEmpty);
+      expect(h.study.submissions, 0);
+      h.controller.selectRecognition('a');
+      h.controller.confirmRecognition(99);
+      expect(h.state.answers, isEmpty);
+      h.controller.confirmRecognition(1);
+      expect(h.state.recognitionIndex, 0);
+      expect(h.state.answers[1]!['selectedAnswer'], 'a');
+      h.controller.selectRecognition('b');
+      h.controller.confirmRecognition(1);
+      h.controller.answerRecognition(h.study.detail, h.state.answers[1]!);
+      await h.controller.flush();
+      await h.sync();
+      expect(h.repository.posts, hasLength(1));
+      expect(h.state.answers[1]!['selectedAnswer'], 'a');
+      expect(h.state.recognitionSelection, isNull);
+      expect(h.study.submissions, 0);
+    },
+  );
 
   test('cold restore preserves selected answer and makes no new activity',
       () async {
@@ -67,6 +82,48 @@ void main() {
     await cold.sync();
     expect(repository.posts, hasLength(1));
     expect(repository.posts.single['activityId'], id);
+  });
+
+  test('reviewing an earlier answer preserves the later draft and its receipt',
+      () async {
+    final repository = ActivityRepositoryFixture();
+    final detail = activityDetail(secondRecognition: true);
+    final first = ActivityHarness(
+        preferences: prefs, detail: detail, activityRepository: repository);
+    await first.start();
+    first.controller.selectRecognition('a', expectedOrder: 1);
+    first.controller.confirmRecognition(1);
+    first.controller.nextRecognition(1);
+    first.controller.selectRecognition('c', expectedOrder: 7);
+    first.controller.previousRecognition(7);
+    expect(first.state.recognitionIndex, 0);
+    await first.controller.flush();
+    await first.sync();
+    await activityFlush();
+    expect(repository.posts, hasLength(2));
+    final activityIds =
+        repository.posts.map((post) => post['activityId']).toList();
+    first.dispose();
+
+    final cold = ActivityHarness(
+        preferences: prefs, detail: detail, activityRepository: repository);
+    addTearDown(cold.dispose);
+    await cold.controller.initialize(detail);
+    expect(cold.state.restored, isTrue);
+    expect(cold.state.recognitionIndex, 0);
+    expect(cold.state.answers[1]?['selectedAnswer'], 'a');
+    expect(cold.state.answers[7], isNull);
+    cold.controller.nextRecognition(1);
+    expect(cold.state.recognitionIndex, 1);
+    expect(cold.state.recognitionSelection, 'c');
+    cold.controller.selectRecognition('d', expectedOrder: 7);
+    cold.controller.confirmRecognition(7);
+    cold.controller.nextRecognition(7);
+    await cold.controller.flush();
+    await cold.sync();
+    expect(cold.state.answers[7]?['selectedAnswer'], 'd');
+    expect(repository.posts.map((post) => post['activityId']), activityIds);
+    expect(cold.study.submissions, 0);
   });
 
   test('old selected checkpoint upgraded to new server does not backfill',

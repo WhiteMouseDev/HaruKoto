@@ -143,6 +143,24 @@ class _LessonPageState extends ConsumerState<LessonPage>
         ref.read(lessonSessionProvider(widget.lessonId).notifier);
 
     final sessionActions = sessionNotifier.actions;
+    final showShortcutInHeader = session.step == LessonStep.recognition;
+    final dialogueShortcut = session.showDialogueShortcut && detail != null
+        ? IconButton(
+            tooltip: '대화 다시 보기',
+            onPressed: _exiting
+                ? null
+                : () {
+                    _tts.stop(lessonId: widget.lessonId);
+                    unawaited(showLessonDialogueSheet(context, detail,
+                        ttsService: _tts));
+                  },
+            icon: const Icon(
+              LucideIcons.messageSquare,
+              size: 18,
+              color: AppColors.sakura,
+            ),
+          )
+        : null;
 
     ref.listen<LessonSessionState>(
       lessonSessionProvider(widget.lessonId),
@@ -222,6 +240,13 @@ class _LessonPageState extends ConsumerState<LessonPage>
             icon: const Icon(LucideIcons.arrowLeft, size: AppSizes.iconMd),
             onPressed: _exiting ? null : () => unawaited(_exit()),
           ),
+          actions: [
+            if (showShortcutInHeader && dialogueShortcut != null)
+              Padding(
+                padding: const EdgeInsets.only(right: AppSizes.sm),
+                child: dialogueShortcut,
+              ),
+          ],
         ),
         bottomNavigationBar: detail == null
             ? null
@@ -284,22 +309,10 @@ class _LessonPageState extends ConsumerState<LessonPage>
                                       totalSteps: LessonStep.values.length,
                                     ),
                                   ),
-                                  if (session.showDialogueShortcut) ...[
+                                  if (!showShortcutInHeader &&
+                                      dialogueShortcut != null) ...[
                                     const SizedBox(width: AppSizes.sm),
-                                    IconButton(
-                                      tooltip: '대화 다시 보기',
-                                      onPressed: () {
-                                        _tts.stop(lessonId: widget.lessonId);
-                                        unawaited(showLessonDialogueSheet(
-                                            context, detail,
-                                            ttsService: _tts));
-                                      },
-                                      icon: const Icon(
-                                        LucideIcons.messageSquare,
-                                        size: 18,
-                                        color: AppColors.sakura,
-                                      ),
-                                    ),
+                                    dialogueShortcut,
                                   ],
                                 ],
                               ),

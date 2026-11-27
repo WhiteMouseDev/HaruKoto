@@ -24,33 +24,41 @@ class LessonCheckpoint {
     return DateTime.fromMillisecondsSinceEpoch(value, isUtc: true);
   }
 
-  String encode(LessonDetailModel detail) => jsonEncode({
-        'version': 1,
-        if (lastStudiedAt != null)
-          'lastStudiedAtMs': lastStudiedAt!.toUtc().millisecondsSinceEpoch,
-        'lessonId': detail.id,
-        'content': lessonContentSignature(detail),
-        'progressStamp': progressStamp,
-        'acknowledged': acknowledged,
-        'step': state.step.name,
-        'vocabIndex': state.vocabIndex,
-        'grammarIndex': state.grammarIndex,
-        'recognitionIndex': state.recognitionIndex,
-        'reorderIndex': state.reorderIndex,
-        'answers': {
-          for (final entry in state.answers.entries) '${entry.key}': entry.value
-        },
-        'practiceStarted': state.practiceStarted,
-        'submissionPending': state.submissionPending,
-        'seed': state.seed,
-        'layout': state.layout.toJson(),
-        'recognitionSelection': state.recognitionSelection,
-        'matchingMatched': state.matchingMatched.toList()..sort(),
-        'matchingLeft': state.matchingLeft,
-        'matchingRight': state.matchingRight,
-        'reorderSelected': state.reorderSelected,
-        'reorderAvailable': state.reorderAvailable,
-      });
+  String encode(LessonDetailModel detail) {
+    final selection = state.recognitionSelection;
+    final reviewing = selection != null &&
+        state.answers.containsKey(
+          lessonRecognitionQuestions(detail)[state.recognitionIndex].order,
+        );
+    return jsonEncode({
+      'version': 1,
+      if (lastStudiedAt != null)
+        'lastStudiedAtMs': lastStudiedAt!.toUtc().millisecondsSinceEpoch,
+      'lessonId': detail.id,
+      'content': lessonContentSignature(detail),
+      'progressStamp': progressStamp,
+      'acknowledged': acknowledged,
+      'step': state.step.name,
+      'vocabIndex': state.vocabIndex,
+      'grammarIndex': state.grammarIndex,
+      'recognitionIndex': state.recognitionIndex,
+      'reorderIndex': state.reorderIndex,
+      'answers': {
+        for (final entry in state.answers.entries) '${entry.key}': entry.value
+      },
+      'practiceStarted': state.practiceStarted,
+      'submissionPending': state.submissionPending,
+      'seed': state.seed,
+      'layout': state.layout.toJson(),
+      'recognitionSelection': reviewing ? null : selection,
+      if (reviewing) 'parkedRecognitionSelection': selection,
+      'matchingMatched': state.matchingMatched.toList()..sort(),
+      'matchingLeft': state.matchingLeft,
+      'matchingRight': state.matchingRight,
+      'reorderSelected': state.reorderSelected,
+      'reorderAvailable': state.reorderAvailable,
+    });
+  }
 
   factory LessonCheckpoint.decode(String raw, LessonDetailModel detail) {
     if (raw.length > 512 * 1024) {
@@ -176,11 +184,25 @@ class LessonCheckpoint {
       }
       answers[order] = answer;
     }
-    final selected = json['recognitionSelection'];
+    final parked = json['parkedRecognitionSelection'];
+    final activeSelection = json['recognitionSelection'];
+    final currentQuestion =
+        recognition.isEmpty ? null : recognition[recognitionIndex];
+    if (parked != null &&
+        (activeSelection != null ||
+            !answers.containsKey(currentQuestion?.order))) {
+      throw const FormatException('invalid parked recognition draft');
+    }
+    final selected = parked ?? activeSelection;
+    final selectionQuestion = parked == null
+        ? currentQuestion
+        : recognition
+            .where((question) => !answers.containsKey(question.order))
+            .firstOrNull;
     if (selected != null &&
         (selected is! String ||
-            recognition.isEmpty ||
-            !(recognition[recognitionIndex].options ?? [])
+            selectionQuestion == null ||
+            !(selectionQuestion.options ?? [])
                 .any((option) => option.id == selected))) {
       throw const FormatException('invalid selected option');
     }
