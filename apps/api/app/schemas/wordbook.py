@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Annotated
 from uuid import UUID
 
-from pydantic import Field
+from pydantic import Field, StringConstraints
 
 from app.models.enums import WordbookSource
 from app.schemas.common import CamelModel, omit_schema_default
@@ -19,6 +20,11 @@ class WordbookEntryResponse(CamelModel):
     created_at: datetime
 
 
+class WordbookEntryDetailResponse(WordbookEntryResponse):
+    example_sentence: str | None = Field(default=None, json_schema_extra=omit_schema_default)
+    example_translation: str | None = Field(default=None, json_schema_extra=omit_schema_default)
+
+
 class WordbookCreateRequest(CamelModel):
     word: str
     reading: str
@@ -32,8 +38,14 @@ class WordbookCreateRequest(CamelModel):
     )
 
 
+type WordbookEditableText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+
+
 class WordbookUpdateRequest(CamelModel):
     note: str | None = None
+    word: WordbookEditableText | None = Field(default=None, json_schema_extra=omit_schema_default)
+    reading: WordbookEditableText | None = Field(default=None, json_schema_extra=omit_schema_default)
+    meaning_ko: WordbookEditableText | None = Field(default=None, json_schema_extra=omit_schema_default)
 
 
 class WordbookListResponse(CamelModel):

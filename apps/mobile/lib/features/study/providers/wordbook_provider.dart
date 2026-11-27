@@ -10,6 +10,7 @@ class WordbookState {
   const WordbookState({
     this.loading = true,
     this.entries = const [],
+    this.total = 0,
     this.totalPages = 1,
     this.page = 1,
     this.sort = 'recent',
@@ -22,6 +23,7 @@ class WordbookState {
 
   final bool loading;
   final List<WordbookEntryModel> entries;
+  final int total;
   final int totalPages;
   final int page;
   final String sort;
@@ -32,6 +34,7 @@ class WordbookState {
   WordbookState copyWith({
     bool? loading,
     List<WordbookEntryModel>? entries,
+    int? total,
     int? totalPages,
     int? page,
     String? sort,
@@ -42,6 +45,7 @@ class WordbookState {
     return WordbookState(
       loading: loading ?? this.loading,
       entries: entries ?? this.entries,
+      total: total ?? this.total,
       totalPages: totalPages ?? this.totalPages,
       page: page ?? this.page,
       sort: sort ?? this.sort,
@@ -83,6 +87,7 @@ class WordbookController extends Notifier<WordbookState> {
       state = state.copyWith(
         loading: false,
         entries: data.entries,
+        total: data.total,
         totalPages: data.totalPages,
       );
     } catch (error, stackTrace) {
@@ -110,6 +115,12 @@ class WordbookController extends Notifier<WordbookState> {
       filter: filter,
       page: 1,
     );
+    await refresh();
+  }
+
+  Future<void> changeSort(String sort, {String? search}) async {
+    if (state.sort == sort) return;
+    state = state.copyWith(sort: sort, search: search, page: 1);
     await refresh();
   }
 

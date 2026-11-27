@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:harukoto_mobile/core/network/api_exception.dart';
 import 'package:harukoto_mobile/features/study/data/study_repository.dart';
 
 void main() {
@@ -67,5 +68,103 @@ void main() {
       'source': 'CONVERSATION',
       'preserveExisting': true,
     });
+  });
+
+  test('updates word fields without a note and rejects legacy no-op responses',
+      () async {
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    final entry = <String, Object?>{
+      'id': 'word-id',
+      'word': '預ける',
+      'reading': 'あずける',
+      'meaningKo': '맡기다',
+      'source': 'MANUAL',
+      'note': '호텔에서 본 단어',
+      'createdAt': '2026-11-26T00:00:00Z',
+    };
+    final patches = <Map<String, dynamic>>[];
+    Map<String, dynamic>? duplicateAdd;
+    var legacyServer = true;
+    final subscription = server.listen((request) async {
+      if (request.method == 'POST' && request.uri.path == '/wordbook/') {
+        duplicateAdd = jsonDecode(await utf8.decoder.bind(request).join())
+            as Map<String, dynamic>;
+        request.response.headers.contentType = ContentType.json;
+        request.response.write(jsonEncode(entry));
+      } else if (request.uri.path != '/wordbook/word-id') {
+        request.response.statusCode = HttpStatus.notFound;
+      } else {
+        if (request.method == 'PATCH') {
+          final patch = jsonDecode(await utf8.decoder.bind(request).join())
+              as Map<String, dynamic>;
+          patches.add(patch);
+          if (!legacyServer) entry.addAll(patch);
+        }
+        request.response.headers.contentType = ContentType.json;
+        request.response.write(jsonEncode({
+          ...entry,
+          if (!legacyServer && request.method == 'GET') ...{
+            'exampleSentence': '荷物を預ける。',
+            'exampleTranslation': '짐을 맡기다.',
+          },
+        }));
+      }
+      await request.response.close();
+    });
+    final dio = Dio(BaseOptions(
+      baseUrl: 'http://127.0.0.1:${server.port}',
+      receiveTimeout: const Duration(seconds: 3),
+    ));
+    addTearDown(() async {
+      dio.close(force: true);
+      await server.close(force: true);
+      await subscription.cancel();
+    });
+    final repository = ApiStudyRepository(dio);
+
+    Future<void> updateEntry() => repository.updateWordbookEntry(
+          'word-id',
+          word: '預ける',
+          reading: 'あずける',
+          meaningKo: '짐을 맡기다',
+        );
+
+    expect((await repository.fetchWordbookEntry('word-id')).exampleSentence,
+        isNull);
+    await expectLater(
+      repository.addWord(
+        word: '預ける',
+        reading: 'あずける',
+        meaningKo: '짐을 맡기다',
+        preserveExisting: true,
+      ),
+      throwsA(isA<ApiException>().having(
+        (error) => error.statusCode,
+        'status code',
+        HttpStatus.conflict,
+      )),
+    );
+    expect(duplicateAdd?['preserveExisting'], true);
+    expect(duplicateAdd?.containsKey('note'), false);
+    await expectLater(
+      updateEntry(),
+      throwsA(isA<ApiException>().having(
+        (error) => error.errorCode,
+        'error code',
+        'WORDBOOK_EDIT_UNAVAILABLE',
+      )),
+    );
+
+    legacyServer = false;
+    await updateEntry();
+    final saved = await repository.fetchWordbookEntry('word-id');
+    expect(saved.meaningKo, '짐을 맡기다');
+    expect(saved.note, '호텔에서 본 단어');
+    expect(saved.exampleSentence, '荷物を預ける。');
+    expect(saved.exampleTranslation, '짐을 맡기다.');
+    expect(patches, [
+      {'word': '預ける', 'reading': 'あずける', 'meaningKo': '짐을 맡기다'},
+      {'word': '預ける', 'reading': 'あずける', 'meaningKo': '짐을 맡기다'},
+    ]);
   });
 }
