@@ -137,7 +137,11 @@ void main() {
     _smallViewport(tester);
     final repository = _ExpressionRepository();
     await tester.pumpWidget(ProviderScope(
-      overrides: [studyRepositoryProvider.overrideWithValue(repository)],
+      overrides: [
+        currentAccountIdProvider.overrideWithValue('test-owner'),
+        currentAccountReaderProvider.overrideWithValue(() => 'test-owner'),
+        studyRepositoryProvider.overrideWithValue(repository),
+      ],
       child: _app(
         const Scaffold(
           body: SafeArea(

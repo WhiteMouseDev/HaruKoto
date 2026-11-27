@@ -11,6 +11,7 @@ import 'package:harukoto_mobile/features/study/presentation/wordbook_page.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/wordbook_filter_chips.dart';
 import 'package:harukoto_mobile/features/study/presentation/widgets/wordbook_loading_list.dart';
 import 'package:harukoto_mobile/features/study/providers/study_provider.dart';
+import 'package:harukoto_mobile/features/study/providers/wordbook_provider.dart';
 import 'package:harukoto_mobile/shared/widgets/tts_play_button.dart';
 
 void main() {
@@ -18,7 +19,11 @@ void main() {
       (tester) async {
     final repository = _WordbookRepository();
     await tester.pumpWidget(ProviderScope(
-      overrides: [studyRepositoryProvider.overrideWithValue(repository)],
+      overrides: [
+        currentAccountIdProvider.overrideWithValue('owner'),
+        currentAccountReaderProvider.overrideWithValue(() => 'owner'),
+        studyRepositoryProvider.overrideWithValue(repository),
+      ],
       child: const MaterialApp(home: WordbookPage()),
     ));
     await tester.pump();
@@ -218,7 +223,13 @@ void main() {
 
   testWidgets('wordbook sort resets pagination and keeps the filtered count',
       (tester) async {
-    final repository = _WordbookRepository(serverTotal: 42, serverPages: 3);
+    final repository = _WordbookRepository(entries: [
+      for (var index = 0; index < 20; index++)
+        _matchingEntry(index, source: 'QUIZ', meaning: '여행'),
+      _WordbookRepository._savedEntries.last,
+      for (var index = 20; index < 41; index++)
+        _matchingEntry(index, source: 'QUIZ', meaning: '여행'),
+    ]);
     await _pumpPage(tester, repository);
     final filters = find.byType(WordbookFilterChips);
     await tester.tap(find.descendant(of: filters, matching: find.text('퀴즈')));
@@ -248,6 +259,63 @@ void main() {
     expect(find.text('예문'), findsNothing);
   });
 
+  for (final edit in [true, false]) {
+    testWidgets(
+        '${edit ? 'editing' : 'deleting'} the final filtered result opens the last valid page',
+        (tester) async {
+      final repository = _WordbookRepository(entries: [
+        for (var index = 0; index < 40; index++) _matchingEntry(index),
+        _manualEntry,
+        _matchingEntry(40, source: 'QUIZ'),
+      ]);
+      await _pumpPage(tester, repository);
+      await tester.tap(find.descendant(
+          of: find.byType(WordbookFilterChips), matching: find.text('직접 추가')));
+      await tester.enterText(find.byType(TextField), '연습');
+      await tester.pump(const Duration(milliseconds: 320));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('최근 추가순'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('많이 틀린 순'));
+      await tester.pumpAndSettle();
+      for (var index = 0; index < 2; index++) {
+        await tester.tap(find.text('다음'));
+        await tester.pumpAndSettle();
+      }
+      expect(find.text('3 / 3'), findsOneWidget);
+      expect(find.text('41개'), findsOneWidget);
+      await tester.tap(find.text('練習'));
+      await tester.pumpAndSettle();
+
+      final fetchesBeforeMutation = repository.fetchCalls;
+      if (edit) {
+        await tester.tap(find.text('수정'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextFormField).at(2), '공부');
+        await tester.tap(find.widgetWithText(FilledButton, '저장'));
+      } else {
+        await tester.tap(find.text('삭제'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.descendant(
+            of: find.byType(AlertDialog), matching: find.text('삭제')));
+      }
+      await tester.pumpAndSettle();
+
+      expect(find.text('2 / 2'), findsOneWidget);
+      expect(find.text('40개'), findsOneWidget);
+      expect(find.text('項目20'), findsOneWidget);
+      expect(find.text('練習'), findsNothing);
+      expect(find.text('검색 결과가 없어요'), findsNothing);
+      expect(repository.fetchCalls, fetchesBeforeMutation + 2);
+      expect(repository.lastPage, 2);
+      expect(repository.lastSearch, '연습');
+      expect(repository.lastFilter, 'MANUAL');
+      expect(repository.lastSort, 'most-wrong');
+      expect(find.text('많이 틀린 순'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('swiping keeps the list usable after removal', (tester) async {
     final repository = _WordbookRepository(entries: [_manualEntry]);
     await _pumpPage(tester, repository);
@@ -274,6 +342,91 @@ void main() {
     expect(repository.fetchCalls, 2);
     expect(find.text('旅行'), findsOneWidget);
     expect(find.byType(TextField), findsOneWidget);
+  });
+
+  testWidgets('a mounted wordbook clears the previous account and loads anew',
+      (tester) async {
+    var owner = 'old-owner';
+    final oldRepository = _WordbookRepository(entries: [_manualEntry]);
+    final newRepository = _WordbookRepository(entries: [
+      const WordbookEntryModel(
+        id: 'manual-id',
+        word: '新規',
+        reading: 'しんき',
+        meaningKo: '새 계정 단어',
+        source: 'MANUAL',
+        createdAt: '',
+      ),
+    ]);
+    final container = ProviderContainer(overrides: [
+      currentAccountIdProvider.overrideWith((ref) => owner),
+      currentAccountReaderProvider.overrideWithValue(() => owner),
+      studyRepositoryProvider.overrideWith((ref) =>
+          ref.watch(currentAccountIdProvider) == 'old-owner'
+              ? oldRepository
+              : newRepository),
+    ]);
+    addTearDown(container.dispose);
+    await tester.pumpWidget(UncontrolledProviderScope(
+      container: container,
+      child: const MaterialApp(home: WordbookPage()),
+    ));
+    await tester.pumpAndSettle();
+    final field = find.byType(TextField);
+    final filters = find.byType(WordbookFilterChips);
+    await tester
+        .tap(find.descendant(of: filters, matching: find.text('직접 추가')));
+    await tester.enterText(field, '연습');
+    await tester.pump(const Duration(milliseconds: 320));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('최근 추가순'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('많이 틀린 순'));
+    await tester.pumpAndSettle();
+    await tester.enterText(field, '이전 계정의 대기 중인 검색');
+    await tester.tap(find.text('練習'));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('수정'), findsOneWidget);
+
+    final oldRead = oldRepository.pendingListRead = Completer<void>();
+    unawaited(container.read(wordbookProvider.notifier).refresh());
+    await tester.pump();
+    expect(find.text('練習'), findsOneWidget);
+    expect(find.byType(WordbookLoadingList), findsNothing);
+    final newRead = newRepository.pendingListRead = Completer<void>();
+    owner = 'new-owner';
+    container.invalidate(currentAccountIdProvider);
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(WordbookLoadingList), findsOneWidget);
+    expect(find.text('練習'), findsNothing);
+    expect(find.text('수정'), findsNothing);
+
+    newRead.complete();
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(newRepository.fetchCalls, 1);
+    expect(find.byType(WordbookPage), findsOneWidget);
+    expect(find.text('新規'), findsOneWidget);
+    expect(find.text('練習'), findsNothing);
+    expect(find.text('수정'), findsNothing);
+    expect(tester.widget<TextField>(field).controller!.text, isEmpty);
+    expect(find.text('최근 추가순'), findsOneWidget);
+    expect(tester.widget<WordbookFilterChips>(filters).activeFilter, 'ALL');
+    expect(newRepository.lastPage, 1);
+    expect(newRepository.lastSearch, isEmpty);
+
+    oldRead.complete();
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pumpAndSettle();
+    expect(oldRepository.fetchCalls, 5);
+    expect(newRepository.fetchCalls, 1);
+    expect(newRepository.openedIds, isEmpty);
+    expect(find.text('新規'), findsOneWidget);
+    expect(find.text('練習'), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('filter with no rows keeps controls to clear the selection',
@@ -339,14 +492,23 @@ const _manualEntry = WordbookEntryModel(
   createdAt: '2026-11-03T05:00:00Z',
 );
 
+WordbookEntryModel _matchingEntry(int index,
+        {String source = 'MANUAL', String meaning = '연습'}) =>
+    WordbookEntryModel(
+      id: 'entry-$index',
+      word: '項目$index',
+      reading: '',
+      meaningKo: '$meaning $index',
+      source: source,
+      createdAt: '2026-11-03T05:00:00Z',
+    );
+
 class _WordbookRepository implements StudyRepository {
   _WordbookRepository({
     List<WordbookEntryModel> entries = _savedEntries,
     this.failFirstRead = false,
     this.duplicateFirstEdit = false,
     this.detailError,
-    this.serverTotal,
-    this.serverPages = 1,
   }) : entries = entries.toList();
 
   static const _savedEntries = [
@@ -374,10 +536,9 @@ class _WordbookRepository implements StudyRepository {
   final List<WordbookEntryModel> entries;
   final bool failFirstRead;
   final bool duplicateFirstEdit;
-  final int? serverTotal;
-  final int serverPages;
   ApiException? detailError;
   Completer<void>? pendingEdit;
+  Completer<void>? pendingListRead;
   final openedIds = <String>[];
   final deletedIds = <String>[];
   final edits = <(String, String, String, String)>[];
@@ -412,10 +573,11 @@ class _WordbookRepository implements StudyRepository {
               entry.reading.contains(search) ||
               entry.meaningKo.contains(search));
     }).toList();
+    await pendingListRead?.future;
     return (
-      entries: results,
-      total: serverTotal ?? results.length,
-      totalPages: serverPages,
+      entries: results.skip((page - 1) * limit).take(limit).toList(),
+      total: results.length,
+      totalPages: (results.length + limit - 1) ~/ limit,
     );
   }
 

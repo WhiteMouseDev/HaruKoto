@@ -41,9 +41,19 @@ class _WordbookPageState extends ConsumerState<WordbookPage> {
   @override
   void initState() {
     super.initState();
+    final owner = ref.read(currentAccountIdProvider);
+    ref.listenManual<String?>(currentAccountIdProvider, (_, nextOwner) {
+      _debounce?.cancel();
+      _searchController.clear();
+      _collapseEntry();
+      ref.invalidate(wordbookProvider);
+      if (nextOwner != null) {
+        // Let providers that watch the account invalidate before reading them.
+        scheduleMicrotask(() => _refreshList(nextOwner));
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      unawaited(ref.read(wordbookProvider.notifier).refresh());
+      if (owner != null) _refreshList(owner);
     });
   }
 
@@ -57,14 +67,20 @@ class _WordbookPageState extends ConsumerState<WordbookPage> {
   void _onSearchChanged(String value) {
     _collapseEntry();
     _debounce?.cancel();
+    final owner = ref.read(currentAccountReaderProvider)();
+    if (owner == null) return;
     _debounce = Timer(const Duration(milliseconds: 300), () {
-      unawaited(ref.read(wordbookProvider.notifier).changeSearch(value));
+      if (_isCurrent(owner)) {
+        unawaited(ref.read(wordbookProvider.notifier).changeSearch(value));
+      }
     });
   }
 
   Future<void> _deleteWord(String id) async {
+    final owner = ref.read(currentAccountReaderProvider)();
+    if (owner == null) return;
     final deleted = await ref.read(wordbookProvider.notifier).deleteWord(id);
-    if (!mounted) return;
+    if (!mounted || ref.read(currentAccountReaderProvider)() != owner) return;
     if (deleted && _expandedEntryId == id) _collapseEntry();
 
     ScaffoldMessenger.of(context).showSnackBar(
